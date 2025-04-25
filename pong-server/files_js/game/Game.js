@@ -1,7 +1,11 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.Game = void 0;
-class Game {
+export class Game {
+    ball;
+    player1;
+    player2;
+    width;
+    height;
+    status;
+    jsonWebsocket;
     constructor(ball, player1, player2, width = 800, height = 600, status = "playing", jsonWebsocket = "") {
         this.ball = ball;
         this.player1 = player1;
@@ -11,27 +15,36 @@ class Game {
         this.status = status;
         this.jsonWebsocket = jsonWebsocket;
     }
-    start(ball) {
+    start(ball, socket) {
+        socket.on('message', (message) => {
+            const msg = message.toString();
+            if (msg === "p1_up")
+                this.player1.move("up");
+            else if (msg === "p1_down")
+                this.player1.move("down");
+            if (msg === "p2_up")
+                this.player2.move("up");
+            else if (msg === "p2_down")
+                this.player2.move("down");
+        });
         const idInterval = setInterval(() => {
-            if (this.update(ball))
+            if (this.update(ball, socket))
                 clearInterval(idInterval);
         }, 1000 / 60);
     }
     ;
-    update(ball) {
+    update(ball, socket) {
         if (this.getStatus() === "WAITING") {
             return false;
         }
         this.ball.move();
-        this.player1.move();
-        this.player2.move();
         this.detectionCollision();
         this.jsonWebsocket = JSON.stringify({
             ball: this.ball,
             player1: this.player1,
             player2: this.player2
         });
-        console.log(this.jsonWebsocket);
+        socket.send(this.jsonWebsocket);
         if (this.checkScore(this.player1, this.player2)) {
             return (true);
         }
@@ -82,11 +95,11 @@ class Game {
             switch (direction) {
                 case 1:
                     ball.d_x = -1;
-                    ball.d_y = 0.50; //a remettre a 0
+                    ball.d_y = 0; //a remettre a 0
                     break;
                 case 0:
                     ball.d_x = 1;
-                    ball.d_y = 0.50; // a remettre a zero
+                    ball.d_y = 0; // a remettre a zero
                     break;
             }
             this.setStatus("PLAYING");
@@ -108,6 +121,5 @@ class Game {
     getBall() { return (this.ball); }
     setStatus(stat) { this.status = stat; }
 }
-exports.Game = Game;
 // reset(): void{};
 // draw(): void{};
