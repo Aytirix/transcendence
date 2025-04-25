@@ -11,7 +11,18 @@ export class Paddle {
 		public readonly speed: number = 10,
 		private score: number = 0
 	) {}
-	move(): void {
+	move(cmd: string): void {
+	
+		switch (cmd) {
+		case "up":
+			if (this.pos_y >= 3)
+				this.pos_y -= 5;
+			break;
+		case "down":
+			if (this.pos_y + this.height <= 600)
+				this.pos_y += 5;
+			break;
+		}
 	}
 	isCollidingWithBall(ball: Ball): boolean {
 		const ball_x: number = ball.pos_x + (ball.pos_x > 400 ? ball.radius : -ball.radius);

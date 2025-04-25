@@ -1,7 +1,12 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.Paddle = void 0;
-class Paddle {
+export class Paddle {
+    pos_x;
+    pos_y;
+    userName;
+    height;
+    width;
+    margin;
+    speed;
+    score;
     constructor(pos_x, //20
     pos_y, // 250
     userName, height = 100, width = 10, margin = 10, speed = 10, score = 0) {
@@ -14,7 +19,17 @@ class Paddle {
         this.speed = speed;
         this.score = score;
     }
-    move() {
+    move(cmd) {
+        switch (cmd) {
+            case "up":
+                if (this.pos_y >= 3)
+                    this.pos_y -= 5;
+                break;
+            case "down":
+                if (this.pos_y + this.height <= 600)
+                    this.pos_y += 5;
+                break;
+        }
     }
     isCollidingWithBall(ball) {
         const ball_x = ball.pos_x + (ball.pos_x > 400 ? ball.radius : -ball.radius);
@@ -54,4 +69,3 @@ class Paddle {
     setUsername() { return (this.userName); }
     getScore() { return (this.score); }
 }
-exports.Paddle = Paddle;

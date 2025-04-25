@@ -1,5 +1,7 @@
 import { Ball } from "./Ball.js";
 import { Paddle } from "./Paddle.js";
+import { WebSocket,  RawData} from 'ws';
+
 
 export class Game {
 	constructor (
@@ -12,8 +14,18 @@ export class Game {
 		private jsonWebsocket: string = ""
 	) {}
 	start(ball: Ball, socket: WebSocket): void{
+		socket.on('message', (message: RawData) => {
+			const msg = message.toString()
+			if (msg === "p1_up")
+				this.player1.move("up");
+			else if (msg === "p1_down")	
+				this.player1.move("down");
+			if (msg === "p2_up")
+				this.player2.move("up");
+			else if (msg === "p2_down")	
+				this.player2.move("down");
+		  })
 		const idInterval = setInterval(() => {
-
 			if (this.update(ball, socket))
 				clearInterval(idInterval);
 		}, 1000 / 60)
@@ -21,16 +33,13 @@ export class Game {
 	update(ball: Ball, socket: WebSocket): boolean{
 		if (this.getStatus() === "WAITING") { return false }
 		this.ball.move();
-		this.player1.move();
-		this.player2.move();
 		this.detectionCollision();
 		this.jsonWebsocket = JSON.stringify({
 			ball: this.ball,
 			player1: this.player1,
 			player2: this.player2
 		});
-		socket.send(this.jsonWebsocket); //envoi du websocket en direct
-
+		socket.send(this.jsonWebsocket);
 		if (this.checkScore(this.player1, this.player2)) {
 			return (true);
 		}
@@ -82,11 +91,11 @@ export class Game {
 			switch (direction) {
 				case 1 :
 					ball.d_x = -1;
-					ball.d_y = 0.50; //a remettre a 0
+					ball.d_y = 0; //a remettre a 0
 					break;
 				case 0 :
 					ball.d_x = 1;
-					ball.d_y = 0.50; // a remettre a zero
+					ball.d_y = 0; // a remettre a zero
 					break;
 			}
 			this.setStatus("PLAYING");
