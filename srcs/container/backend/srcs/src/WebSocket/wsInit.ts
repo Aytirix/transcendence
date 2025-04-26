@@ -25,7 +25,7 @@ async function initWebSocket(server: FastifyInstance) {
 				chatWebSocket(wss, ws, user, req);
 				break;
 			case '/pong' :
-				pongWebSocket(wss, ws, user);
+				pongWebSocket(ws, user);
 				break; 
 			default:
 				const errorMsg = 'Erreur : chemin WebSocket non reconnu.';

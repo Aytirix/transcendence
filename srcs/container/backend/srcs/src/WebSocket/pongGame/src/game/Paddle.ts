@@ -10,6 +10,7 @@ export class Paddle {
 		public readonly margin: number = 10,
 		public readonly speed: number = 10,
 		private score: number = 0
+
 	) {}
 	move(cmd: string): void {
 	
