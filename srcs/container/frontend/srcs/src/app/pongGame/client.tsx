@@ -117,11 +117,11 @@ export const Pong: React.FC = () => {
 			const socket = socketRef.current;
 			if (!socket || socket.readyState !== WebSocket.OPEN) return;
 
-			if (keyPressed.current.up_p1) socket.send('p1_up');
-			else if (keyPressed.current.down_p1) socket.send('p1_down');
+			if (keyPressed.current.up_p1) socket.send(JSON.stringify({ type: 'Move', value: 'p1_up' }));
+			else if (keyPressed.current.down_p1) socket.send(JSON.stringify({ type: 'Move', value: 'p1_down' }));
 
-			if (keyPressed.current.up_p2) socket.send('p2_up');
-			else if (keyPressed.current.down_p2) socket.send('p2_down');
+			if (keyPressed.current.up_p2) socket.send(JSON.stringify({ type: 'Move', value: 'p2_up' }));
+			else if (keyPressed.current.down_p2) socket.send(JSON.stringify({ type: 'Move', value: 'p2_down' }));
 		}, 1000 / 60);
 
 		return () => {
@@ -131,6 +131,13 @@ export const Pong: React.FC = () => {
 		};
 	}, []);
 
+	// 🔥 Fonction SameKeyboard pour ton bouton
+	function SameKeyboard() {
+		const socket = socketRef.current;
+		if (!socket || socket.readyState !== WebSocket.OPEN) return;
+		socket.send(JSON.stringify({ type: "SameKeyboard" }));
+	}
+
 	return (
 		<div>
 			<canvas
@@ -139,6 +146,9 @@ export const Pong: React.FC = () => {
 				height={600}
 				style={{ border: '2px solid black', display: 'block', margin: '0 auto' }}
 			/>
+			<button onClick={SameKeyboard}>Same Keyboard</button>
+			<button>Solo</button>
+			<button>Multi</button>
 		</div>
 	);
 };

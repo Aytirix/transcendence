@@ -1,6 +1,7 @@
 import { Ball } from "./Ball";
 import { Paddle } from "./Paddle";
 import { WebSocket,  RawData} from 'ws';
+import { isJson } from "../server";
 
 
 export class Game {
@@ -8,23 +9,13 @@ export class Game {
 		private ball: Ball,
 		private player1: Paddle,
 		private player2: Paddle,
+		private mode: "Multi" | "SameKeyboard" | "Solo",
 		private readonly width: number = 800,
 		private readonly height: number = 600,
 		private status: string = "playing",
 		private jsonWebsocket: string = ""
 	) {}
 	start(ball: Ball, socket: WebSocket): void{
-		socket.on('message', (message: RawData) => {
-			const msg = message.toString()
-			if (msg === "p1_up")
-				this.player1.move("up");
-			else if (msg === "p1_down")	
-				this.player1.move("down");
-			if (msg === "p2_up")
-				this.player2.move("up");
-			else if (msg === "p2_down")	
-				this.player2.move("down");
-		  })
 		const idInterval = setInterval(() => {
 			if (this.update(ball, socket))
 				clearInterval(idInterval);
@@ -49,35 +40,25 @@ export class Game {
 	};
 	detectionCollision(): void {
 		if (this.player1.isCollidingWithBall(this.ball)) {
-			console.log("REBOND droit ", this.ball.pos_x);
 			this.ball.d_x = -1;
 			this.player1.zoneEffect(this.ball);
 		}
 		else if ((this.ball.pos_x + this.ball.radius) >= this.width) {
-			console.log("REBOND droit ", this.ball.pos_x);
 			this.player1.setScore();
-			console.log(`${this.player1.setUsername()} : score ${this.player1.getScore()}`);
-			console.log(`${this.player2.setUsername()} : score ${this.player2.getScore()}`);
 			this.serviceBall(0, this.ball);
 		}
 		else if (this.player2.isCollidingWithBall(this.ball)) {
-			console.log("REBOND gauche ", this.ball.pos_x);
 			this.ball.d_x = 1;
 			this.player2.zoneEffect(this.ball);
 		}
 		else if ((this.ball.pos_x - this.ball.radius) <= 0 ){
-			console.log("REBOND gauche ", this.ball.pos_x);
 			this.player2.setScore();
-			console.log(`${this.player2.setUsername()} : score ${this.player2.getScore()}`);
-			console.log(`${this.player1.setUsername()} : score ${this.player1.getScore()}`);
 			this.serviceBall(1, this.ball);
 		}
 		if ((this.ball.pos_y - this.ball.radius)<= 0) {
-			console.log("REBOND haut ", this.ball.pos_y);
 			this.ball.d_y = 1;
 		}
 		else if ((this.ball.pos_y  + this.ball.radius)>= this.height) {
-			console.log("REBOND BAS ", this.ball.pos_y);
 			this.ball.d_y = -1;
 		}
 	}
@@ -112,9 +93,23 @@ export class Game {
 		}
 		return (false)
 	}
+	handleMove(cmd: string, mode: string) {
+		if (mode === "SameKeyboard") {
+			if (cmd === "p1_up")
+				this.player1.move("up");
+			else if (cmd === "p1_down")	
+				this.player1.move("down");
+			else if (cmd === "p2_up")
+				this.player2.move("up");
+			else if (cmd === "p2_down")	
+				this.player2.move("down");
+		}
+	}
 	getJsonWebsocket() { return (this.jsonWebsocket); } 
 	getStatus() : string { return (this.status); }
 	getBall() : Ball {return (this.ball); }
+	getPlayer1() : Paddle {return (this.player1); }
+	getPlayer2() : Paddle {return (this.player2); }
 	setStatus(stat: string) { this.status = stat; }
 }
 	// reset(): void{};
