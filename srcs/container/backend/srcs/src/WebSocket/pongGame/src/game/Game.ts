@@ -1,6 +1,7 @@
 import { Ball } from "./Ball";
 import { Paddle } from "./Paddle";
 import { WebSocket,  RawData} from 'ws';
+import { playerStat } from "../server";
 import { isJson } from "../server";
 
 
@@ -9,34 +10,61 @@ export class Game {
 		private ball: Ball,
 		private player1: Paddle,
 		private player2: Paddle,
-		private mode: "Multi" | "SameKeyboard" | "Solo",
+		// private mode: "Multi" | "SameKeyboard" | "Solo",
 		private readonly width: number = 800,
 		private readonly height: number = 600,
 		private status: string = "playing",
 		private jsonWebsocket: string = ""
 	) {}
-	start(ball: Ball, socket: WebSocket): void{
+	start(): void{
 		const idInterval = setInterval(() => {
-			if (this.update(ball, socket))
+			if (this.update())
 				clearInterval(idInterval);
 		}, 1000 / 60)
 	};
-	update(ball: Ball, socket: WebSocket): boolean{
+	update(): boolean{
 		if (this.getStatus() === "WAITING") { return false }
 		this.ball.move();
 		this.detectionCollision();
 		this.jsonWebsocket = JSON.stringify({
-			ball: this.ball,
-			player1: this.player1,
-			player2: this.player2
+			ball: {
+				pos_x: this.ball.pos_x,
+				pos_y: this.ball.pos_y,
+				d_x: this.ball.d_x,
+				d_y: this.ball.d_y,
+				speed: this.ball.speed,
+				radius: this.ball.radius
+			},
+			player1: {
+				pos_x: this.player1.pos_x,
+				pos_y: this.player1.pos_y,
+				height: this.player1.height,
+				width: this.player1.width,
+				margin: this.player1.margin,
+				speed: this.player1.speed,
+				score: this.player1.getScore()
+			},
+			player2: {
+				pos_x: this.player2.pos_x,
+				pos_y: this.player2.pos_y,
+				height: this.player2.height,
+				width: this.player2.width,
+				margin: this.player2.margin,
+				speed: this.player2.speed,
+				score: this.player2.getScore()
+			}
 		});
-		socket.send(this.jsonWebsocket);
+		if (this.player1.getPlayerInfos().mode === "Multi"
+			&& this.player2.getPlayerInfos().mode === "Multi") {
+				this.player1.getPlayerInfos().socket.send(this.jsonWebsocket);
+				this.player2.getPlayerInfos().socket.send(this.jsonWebsocket);
+			}
+		else
+			this.player1.getPlayerInfos().socket.send(this.jsonWebsocket);
 		if (this.checkScore(this.player1, this.player2)) {
 			return (true);
 		}
 		return (false);
-
-		// this.draw();
 	};
 	detectionCollision(): void {
 		if (this.player1.isCollidingWithBall(this.ball)) {
@@ -103,8 +131,19 @@ export class Game {
 				this.player2.move("up");
 			else if (cmd === "p2_down")	
 				this.player2.move("down");
+		}		
+		else if (mode === "Multi") {
+			if (cmd === "p1_up")
+				this.player1.move("up");
+			else if (cmd === "p1_down")	
+				this.player1.move("down");
+			else if (cmd === "p2_up")
+				this.player2.move("up");
+			else if (cmd === "p2_down")
+				this.player2.move("down");
 		}
 	}
+	
 	getJsonWebsocket() { return (this.jsonWebsocket); } 
 	getStatus() : string { return (this.status); }
 	getBall() : Ball {return (this.ball); }

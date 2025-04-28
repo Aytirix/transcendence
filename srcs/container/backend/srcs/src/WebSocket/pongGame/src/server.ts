@@ -5,7 +5,7 @@ import { WebSocket, RawData } from 'ws'
 import { User } from '@types'
 import { Paddle } from './game/Paddle';
 
-interface playerStat {
+export interface playerStat {
 	game?: Game;
 	avatar?: string;
 	email: string;
@@ -13,47 +13,66 @@ interface playerStat {
 	id: number;
 	mode?: "Multi" | "Solo" | "SameKeyboard" | "Tournois" | "Undefined" | "Move";
 	inGame : boolean;
+	socket: WebSocket;
 };
 
-interface webMsg {
+export interface webMsg {
 	type:  "Multi" | "Solo" | "SameKeyboard" | "Tournois" | "Undefined" | "Move";
 	value?: string; 
 };
 
+const sockets = new Map<WebSocket, playerStat>();
 
 export function pongWebSocket(socket: WebSocket, user: User) {
-	const sockets = new Map<WebSocket, playerStat>();
-	const playerstat: playerStat = {
+	const playerInfos: playerStat = {
 		avatar: user.avatar,
 		email: user.email,
 		name: user.username,
 		id: user.id,
 		mode: "Undefined",
-		inGame: false
+		inGame: false,
+		socket: socket
 	};
-	sockets.set(socket, playerstat);
+	sockets.set(socket, playerInfos);
 	socket.on('message', (data: RawData) => {
-		const player = sockets.get(socket);
+		const playerInfos = sockets.get(socket);
 		if (isJson(data.toString())) {
 			const msg: webMsg = JSON.parse(data.toString()); 
-			if (player) {
+			if (playerInfos) {
 				if (msg.type === "SameKeyboard") {
-					player.mode = msg.type;
-					if (player.inGame === false) {
-						player.inGame = true;
-						player.game = createGame(player.mode);
-						player.game.start(player.game.getBall(), socket);
+					playerInfos.mode = msg.type;
+					if (playerInfos.inGame === false) {
+						playerInfos.inGame = true;
+						playerInfos.game = createGame(playerInfos);
+						playerInfos.game.start();
 					}
 				}
 				else if (msg.type === "Multi") {
-					
+					playerInfos.mode = msg.type;
+					for (const [playerSocket, player2Infos] of sockets) {
+						if (player2Infos.mode === "Multi"
+								&& player2Infos.inGame === false
+								&& playerSocket !== socket) {
+							playerInfos.inGame = true;
+							player2Infos.inGame = true;
+							const multiGame : Game = createGame(playerInfos, player2Infos);
+							playerInfos.game = multiGame;
+							player2Infos.game = multiGame;
+							multiGame.start();
+							break ;
+						}
+					}
+					if (playerInfos.inGame === false)
+					{
+						console.log("en attente d un second joueur ");
+					}
 				}
 				else if (msg.type === "Move") {
-					player.game.handleMove(msg.value, player.mode);
-				}
+					playerInfos.game.handleMove(msg.value, playerInfos.mode);
+				}		
 			}
 		}
-	})
+	});
 }
 
 export function isJson(data: string) : boolean {

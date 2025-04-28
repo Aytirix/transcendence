@@ -2,11 +2,25 @@ import { Game } from "./Game";
 import { Ball } from "./Ball";
 import { Paddle } from "./Paddle";
 import { WebSocket } from "ws";
+import { playerStat } from "../server";
 
-export function createGame(mode: "Multi" | "SameKeyboard" | "Solo") : Game {
-	const ball = new Ball(20, 271, 1, 0);
-	const player1 = new Paddle(780, 250, "player1");
-	const player2 = new Paddle(20, 250, "player2");
-	const game: Game = new Game(ball, player1, player2, mode);
-	return (game);
+export function createGame(playerInfos: playerStat, player2Infos?: playerStat) : Game {
+	if (playerInfos.mode === "SameKeyboard") {
+		const ball = new Ball(20, 271, 1, 0);
+		const player1 = new Paddle(780, 250, playerInfos);
+		const player2 = new Paddle(20, 250);
+		const game: Game = new Game(ball, player1, player2);
+		return (game);
+	}
+	else if (playerInfos.mode === "Multi" && player2Infos.mode === "Multi") {
+		const ball = new Ball(20, 271, 1, 0);
+		const player1 = new Paddle(780, 250, playerInfos);
+		const player2 = new Paddle(20, 250, player2Infos);
+		const game: Game = new Game(ball, player1, player2);
+		playerInfos.socket.send(JSON.stringify({ type: "assign", value: "player1" }));
+		player2Infos.socket.send(JSON.stringify({ type: "assign", value: "player2" }));
+		return (game);
+	}
 }
+
+// voir si j insere pas directement la map dans les paddle pour avoir la totalite des infos 

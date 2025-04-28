@@ -1,10 +1,12 @@
 import { Ball } from "./Ball";
+import { WebSocket } from "ws";
+import { playerStat } from "../server";
 
 export class Paddle {
 	constructor (
 		public pos_x: number, //20
 		public pos_y: number, // 250
-		private userName: string,
+		private playerInfos?: playerStat,
 		public readonly height: number = 100,
 		public readonly width: number = 10,
 		public readonly margin: number = 10,
@@ -62,6 +64,6 @@ export class Paddle {
 	setScore() : void {
 		this.score += 1;
 	}
-	setUsername() : string {return (this.userName); }
 	getScore() : number { return (this.score); }
+	getPlayerInfos() : playerStat {return (this.playerInfos); }
 }
