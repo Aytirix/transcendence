@@ -39,8 +39,10 @@ export const Pong: React.FC = () => {
 	const [whoAmI, setWhoAmI] = useState<"player1" | "player2" | null>(null);
 
 	const keyPressed = useRef({
-		up: false,
-		down: false,
+		up_p1: false,
+		down_p1: false,
+		up_p2: false,
+		down_p2: false,
 	});
 
 	useEffect(() => {
@@ -49,6 +51,13 @@ export const Pong: React.FC = () => {
 
 		socket.addEventListener('open', () => {
 			console.log('✅ Connexion établie');
+
+			// 🔥 Récupère et renvoie automatiquement le mode sauvegardé
+			const savedMode = localStorage.getItem('pongMode') as "SameKeyboard" | "Solo" | "Multi" | null;
+			if (savedMode) {
+				socket.send(JSON.stringify({ type: savedMode }));
+				setMode(savedMode);
+			}
 		});
 
 		socket.addEventListener('message', (event: MessageEvent) => {
@@ -92,13 +101,17 @@ export const Pong: React.FC = () => {
 
 	useEffect(() => {
 		const handleKeyDown = (e: KeyboardEvent) => {
-			if (e.key === 'ArrowUp') keyPressed.current.up = true;
-			if (e.key === 'ArrowDown') keyPressed.current.down = true;
+			if (e.key === 'ArrowUp') keyPressed.current.up_p1 = true;
+			if (e.key === 'ArrowDown') keyPressed.current.down_p1 = true;
+			if (e.key === 'w') keyPressed.current.up_p2 = true;
+			if (e.key === 's') keyPressed.current.down_p2 = true;
 		};
 
 		const handleKeyUp = (e: KeyboardEvent) => {
-			if (e.key === 'ArrowUp') keyPressed.current.up = false;
-			if (e.key === 'ArrowDown') keyPressed.current.down = false;
+			if (e.key === 'ArrowUp') keyPressed.current.up_p1 = false;
+			if (e.key === 'ArrowDown') keyPressed.current.down_p1 = false;
+			if (e.key === 'w') keyPressed.current.up_p2 = false;
+			if (e.key === 's') keyPressed.current.down_p2 = false;
 		};
 
 		window.addEventListener('keydown', handleKeyDown);
@@ -109,15 +122,18 @@ export const Pong: React.FC = () => {
 			if (!socket || socket.readyState !== WebSocket.OPEN || !mode) return;
 
 			if (mode === "SameKeyboard") {
-				if (keyPressed.current.up) socket.send(JSON.stringify({ type: 'Move', value: 'p1_up' }));
-				else if (keyPressed.current.down) socket.send(JSON.stringify({ type: 'Move', value: 'p1_down' }));
+				if (keyPressed.current.up_p1) socket.send(JSON.stringify({ type: 'Move', value: 'p1_up' }));
+				else if (keyPressed.current.down_p1) socket.send(JSON.stringify({ type: 'Move', value: 'p1_down' }));
+
+				if (keyPressed.current.up_p2) socket.send(JSON.stringify({ type: 'Move', value: 'p2_up' }));
+				else if (keyPressed.current.down_p2) socket.send(JSON.stringify({ type: 'Move', value: 'p2_down' }));
 			} else if (mode === "Multi" && whoAmI) {
 				if (whoAmI === "player1") {
-					if (keyPressed.current.up) socket.send(JSON.stringify({ type: 'Move', value: 'p1_up' }));
-					else if (keyPressed.current.down) socket.send(JSON.stringify({ type: 'Move', value: 'p1_down' }));
+					if (keyPressed.current.up_p1) socket.send(JSON.stringify({ type: 'Move', value: 'p1_up' }));
+					else if (keyPressed.current.down_p1) socket.send(JSON.stringify({ type: 'Move', value: 'p1_down' }));
 				} else if (whoAmI === "player2") {
-					if (keyPressed.current.up) socket.send(JSON.stringify({ type: 'Move', value: 'p2_up' }));
-					else if (keyPressed.current.down) socket.send(JSON.stringify({ type: 'Move', value: 'p2_down' }));
+					if (keyPressed.current.up_p1) socket.send(JSON.stringify({ type: 'Move', value: 'p2_up' }));
+					else if (keyPressed.current.down_p1) socket.send(JSON.stringify({ type: 'Move', value: 'p2_down' }));
 				}
 			}
 		}, 1000 / 60);
@@ -132,6 +148,8 @@ export const Pong: React.FC = () => {
 	function sendMode(selectedMode: "SameKeyboard" | "Solo" | "Multi") {
 		const socket = socketRef.current;
 		if (!socket || socket.readyState !== WebSocket.OPEN) return;
+		
+		localStorage.setItem('pongMode', selectedMode); // 🔥 Stocke le mode
 		setMode(selectedMode);
 		socket.send(JSON.stringify({ type: selectedMode }));
 	}

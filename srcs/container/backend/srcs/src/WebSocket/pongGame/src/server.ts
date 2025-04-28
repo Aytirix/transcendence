@@ -22,18 +22,31 @@ export interface webMsg {
 };
 
 const sockets = new Map<WebSocket, playerStat>();
+const waitingID = new Map<number, playerStat>();
 
 export function pongWebSocket(socket: WebSocket, user: User) {
-	const playerInfos: playerStat = {
-		avatar: user.avatar,
-		email: user.email,
-		name: user.username,
-		id: user.id,
-		mode: "Undefined",
-		inGame: false,
-		socket: socket
-	};
-	sockets.set(socket, playerInfos);
+	if (waitingID.has(user.id))
+	{
+		const tempPlayer = waitingID.get(user.id);
+		sockets.delete(tempPlayer.socket);
+		tempPlayer.socket = socket;
+		sockets.set(socket, tempPlayer);
+		waitingID.delete(user.id);
+		tempPlayer.game.getPlayer1().getPlayerInfos().socket = socket;
+		tempPlayer.game.setStatus("PLAYING");
+	}
+	else {
+		const playerInfos: playerStat = {
+			avatar: user.avatar,
+			email: user.email,
+			name: user.username,
+			id: user.id,
+			mode: "Undefined",
+			inGame: false,
+			socket: socket
+		};
+		sockets.set(socket, playerInfos);
+	}
 	socket.on('message', (data: RawData) => {
 		const playerInfos = sockets.get(socket);
 		if (isJson(data.toString())) {
@@ -46,6 +59,11 @@ export function pongWebSocket(socket: WebSocket, user: User) {
 						playerInfos.game = createGame(playerInfos);
 						playerInfos.game.start();
 					}
+					socket.on('close', (data: RawData) => {
+						playerInfos.game.setStatus("WAITING")
+						console.log("TEST TEST");
+						waitingID.set(playerInfos.id, playerInfos);
+					})
 				}
 				else if (msg.type === "Multi") {
 					playerInfos.mode = msg.type;

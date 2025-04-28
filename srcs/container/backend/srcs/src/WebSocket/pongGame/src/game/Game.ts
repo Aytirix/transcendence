@@ -13,7 +13,7 @@ export class Game {
 		// private mode: "Multi" | "SameKeyboard" | "Solo",
 		private readonly width: number = 800,
 		private readonly height: number = 600,
-		private status: string = "playing",
+		private status: "PLAYING" | "WAITING" = "PLAYING",
 		private jsonWebsocket: string = ""
 	) {}
 	start(): void{
@@ -93,6 +93,10 @@ export class Game {
 	serviceBall(direction: number, ball: Ball) : void {
 		ball.pos_x = this.width / 2;
 		ball.pos_y = this.height / 2;
+		this.player1.pos_x = 780;
+		this.player1.pos_y = 250;
+		this.player2.pos_x = 20;
+		this.player2.pos_y = 250;
 		this.setStatus("WAITING");
 		console.log("Service dans 2 sec");
 
@@ -122,7 +126,7 @@ export class Game {
 		return (false)
 	}
 	handleMove(cmd: string, mode: string) {
-		if (mode === "SameKeyboard") {
+		if (mode === "SameKeyboard" && this.getStatus() === "PLAYING") {
 			if (cmd === "p1_up")
 				this.player1.move("up");
 			else if (cmd === "p1_down")	
@@ -132,7 +136,7 @@ export class Game {
 			else if (cmd === "p2_down")	
 				this.player2.move("down");
 		}		
-		else if (mode === "Multi") {
+		else if (mode === "Multi" && this.getStatus() === "PLAYING") {
 			if (cmd === "p1_up")
 				this.player1.move("up");
 			else if (cmd === "p1_down")	
@@ -149,7 +153,7 @@ export class Game {
 	getBall() : Ball {return (this.ball); }
 	getPlayer1() : Paddle {return (this.player1); }
 	getPlayer2() : Paddle {return (this.player2); }
-	setStatus(stat: string) { this.status = stat; }
+	setStatus(stat: "PLAYING" | "WAITING") { this.status = stat; }
 }
 	// reset(): void{};
 	// draw(): void{};
