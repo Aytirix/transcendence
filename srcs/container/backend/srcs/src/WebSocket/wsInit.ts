@@ -19,7 +19,7 @@ async function initWebSocket(server: FastifyInstance) {
 
 	wss.on('connection', (ws: WebSocket, user: User, req: IncomingMessage) => {
 		const path = req.url;
-
+	
 		switch (path) {
 			case '/chat':
 				chatWebSocket(wss, ws, user, req);
