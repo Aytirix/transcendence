@@ -1,9 +1,5 @@
 import { Ball } from "./Ball";
 import { Paddle } from "./Paddle";
-import { WebSocket,  RawData} from 'ws';
-import { playerStat } from "../server";
-import { isJson } from "../server";
-
 
 export class Game {
 	constructor (
@@ -13,7 +9,7 @@ export class Game {
 		// private mode: "Multi" | "SameKeyboard" | "Solo",
 		private readonly width: number = 800,
 		private readonly height: number = 600,
-		private status: "PLAYING" | "WAITING" = "PLAYING",
+		private status: "PLAYING" | "WAITING" | "EXIT" = "PLAYING",
 		private jsonWebsocket: string = ""
 	) {}
 	start(): void{
@@ -62,6 +58,11 @@ export class Game {
 		else
 			this.player1.getPlayerInfos().socket.send(this.jsonWebsocket);
 		if (this.checkScore(this.player1, this.player2)) {
+			this.player1.getPlayerInfos().socket.send(JSON.stringify({type: "EXIT"}));
+			return (true);
+		}
+		if (this.getStatus() === "EXIT") {
+			this.player1.getPlayerInfos().socket.send(JSON.stringify({type: "EXIT"}));
 			return (true);
 		}
 		return (false);
@@ -125,35 +126,35 @@ export class Game {
 		}
 		return (false)
 	}
-	handleMove(cmd: string, mode: string) {
-		if (mode === "SameKeyboard" && this.getStatus() === "PLAYING") {
-			if (cmd === "p1_up")
-				this.player1.move("up");
-			else if (cmd === "p1_down")	
-				this.player1.move("down");
-			else if (cmd === "p2_up")
-				this.player2.move("up");
-			else if (cmd === "p2_down")	
-				this.player2.move("down");
-		}		
-		else if (mode === "Multi" && this.getStatus() === "PLAYING") {
-			if (cmd === "p1_up")
-				this.player1.move("up");
-			else if (cmd === "p1_down")	
-				this.player1.move("down");
-			else if (cmd === "p2_up")
-				this.player2.move("up");
-			else if (cmd === "p2_down")
-				this.player2.move("down");
-		}
-	}
+	// handleMove(cmd: string, mode: string) {
+	// 	if (mode === "SameKeyboard" && this.getStatus() === "PLAYING") {
+	// 		if (cmd === "p1_up")
+	// 			this.player1.move("up");
+	// 		else if (cmd === "p1_down")	
+	// 			this.player1.move("down");
+	// 		else if (cmd === "p2_up")
+	// 			this.player2.move("up");
+	// 		else if (cmd === "p2_down")	
+	// 			this.player2.move("down");
+	// 	}		
+	// 	else if (mode === "Multi" && this.getStatus() === "PLAYING") {
+	// 		if (cmd === "p1_up")
+	// 			this.player1.move("up");
+	// 		else if (cmd === "p1_down")	
+	// 			this.player1.move("down");
+	// 		else if (cmd === "p2_up")
+	// 			this.player2.move("up");
+	// 		else if (cmd === "p2_down")
+	// 			this.player2.move("down");
+	// 	}
+	// }
 	
 	getJsonWebsocket() { return (this.jsonWebsocket); } 
 	getStatus() : string { return (this.status); }
 	getBall() : Ball {return (this.ball); }
 	getPlayer1() : Paddle {return (this.player1); }
 	getPlayer2() : Paddle {return (this.player2); }
-	setStatus(stat: "PLAYING" | "WAITING") { this.status = stat; }
+	setStatus(stat: "PLAYING" | "WAITING" | "EXIT") { this.status = stat; }
 }
 	// reset(): void{};
 	// draw(): void{};

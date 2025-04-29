@@ -2,7 +2,7 @@ import { Game } from "./Game";
 import { Ball } from "./Ball";
 import { Paddle } from "./Paddle";
 import { WebSocket } from "ws";
-import { playerStat } from "../server";
+import { playerStat } from "../types/playerStat";
 
 export function createGame(playerInfos: playerStat, player2Infos?: playerStat) : Game {
 	if (playerInfos.mode === "SameKeyboard") {

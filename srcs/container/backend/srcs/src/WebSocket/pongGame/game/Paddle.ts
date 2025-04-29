@@ -1,6 +1,5 @@
 import { Ball } from "./Ball";
-import { WebSocket } from "ws";
-import { playerStat } from "../server";
+import { playerStat } from "../types/playerStat";
 
 export class Paddle {
 	constructor (
