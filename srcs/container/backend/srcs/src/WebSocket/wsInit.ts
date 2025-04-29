@@ -8,7 +8,7 @@ import fastifyCookie from '@fastify/cookie';
 import Middleware from '@Middleware';
 import chatWebSocket from './chat/wsChat';
 import { User } from '@types';
-import { pongWebSocket } from './pongGame/src/server';
+import { pongWebSocket } from './pongGame/pongSocketHandler';
 
 let wss: WebSocketServer | null = null;
 

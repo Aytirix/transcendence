@@ -35,7 +35,7 @@ export const Pong: React.FC = () => {
 	const canvasRef = useRef<HTMLCanvasElement>(null);
 	const socketRef = useRef<WebSocket | null>(null);
 	const [parsedData, setParsedData] = useState<Parse | null>(null);
-	const [mode, setMode] = useState<"SameKeyboard" | "Solo" | "Multi" | null>(null);
+	const [mode, setMode] = useState<"SameKeyboard" | "Solo" | "Multi" | "EXIT" | null>(null);
 	const [whoAmI, setWhoAmI] = useState<"player1" | "player2" | null>(null);
 
 	const keyPressed = useRef({
@@ -52,7 +52,6 @@ export const Pong: React.FC = () => {
 		socket.addEventListener('open', () => {
 			console.log('✅ Connexion établie');
 
-			// 🔥 Récupère et renvoie automatiquement le mode sauvegardé
 			const savedMode = localStorage.getItem('pongMode') as "SameKeyboard" | "Solo" | "Multi" | null;
 			if (savedMode) {
 				socket.send(JSON.stringify({ type: savedMode }));
@@ -68,6 +67,11 @@ export const Pong: React.FC = () => {
 				if (json.type === "assign") {
 					setWhoAmI(json.value);
 					console.log('🧠 Assigné :', json.value);
+					return;
+				}
+				if (json.type === "EXIT") {
+					setMode("EXIT");
+					console.log("🎉 Partie terminée !");
 					return;
 				}
 
@@ -101,6 +105,8 @@ export const Pong: React.FC = () => {
 
 	useEffect(() => {
 		const handleKeyDown = (e: KeyboardEvent) => {
+			if (mode === "EXIT") return;
+
 			if (e.key === 'ArrowUp') keyPressed.current.up_p1 = true;
 			if (e.key === 'ArrowDown') keyPressed.current.down_p1 = true;
 			if (e.key === 'w') keyPressed.current.up_p2 = true;
@@ -108,6 +114,8 @@ export const Pong: React.FC = () => {
 		};
 
 		const handleKeyUp = (e: KeyboardEvent) => {
+			if (mode === "EXIT") return;
+
 			if (e.key === 'ArrowUp') keyPressed.current.up_p1 = false;
 			if (e.key === 'ArrowDown') keyPressed.current.down_p1 = false;
 			if (e.key === 'w') keyPressed.current.up_p2 = false;
@@ -119,7 +127,7 @@ export const Pong: React.FC = () => {
 
 		const interval = setInterval(() => {
 			const socket = socketRef.current;
-			if (!socket || socket.readyState !== WebSocket.OPEN || !mode) return;
+			if (!socket || socket.readyState !== WebSocket.OPEN || !mode || mode === "EXIT") return;
 
 			if (mode === "SameKeyboard") {
 				if (keyPressed.current.up_p1) socket.send(JSON.stringify({ type: 'Move', value: 'p1_up' }));
@@ -145,11 +153,24 @@ export const Pong: React.FC = () => {
 		};
 	}, [mode, whoAmI]);
 
-	function sendMode(selectedMode: "SameKeyboard" | "Solo" | "Multi") {
+	// 👇 Envoi du Ping toutes les 5 secondes
+	useEffect(() => {
+		const interval = setInterval(() => {
+			const socket = socketRef.current;
+			if (socket && socket.readyState === WebSocket.OPEN) {
+				socket.send(JSON.stringify({ type: 'Ping' }));
+				// console.log('📡 Ping envoyé');
+			}
+		}, 5000); // toutes les 5 secondes
+
+		return () => clearInterval(interval); // nettoyage à la fermeture
+	}, []);
+
+	function sendMode(selectedMode: "SameKeyboard" | "Solo" | "Multi" | "EXIT") {
 		const socket = socketRef.current;
 		if (!socket || socket.readyState !== WebSocket.OPEN) return;
-		
-		localStorage.setItem('pongMode', selectedMode); // 🔥 Stocke le mode
+
+		localStorage.setItem('pongMode', selectedMode);
 		setMode(selectedMode);
 		socket.send(JSON.stringify({ type: selectedMode }));
 	}
@@ -162,10 +183,16 @@ export const Pong: React.FC = () => {
 				height={600}
 				style={{ border: '2px solid black', display: 'block', margin: '0 auto' }}
 			/>
+			{mode === "EXIT" && (
+				<div style={{ textAlign: 'center', fontSize: '24px', marginTop: '20px', color: 'red' }}>
+					🎉 Partie terminée !
+				</div>
+			)}
 			<div style={{ textAlign: 'center', marginTop: '10px' }}>
 				<button onClick={() => sendMode("SameKeyboard")}>Same Keyboard</button>
 				<button onClick={() => sendMode("Solo")}>Solo</button>
 				<button onClick={() => sendMode("Multi")}>Multi</button>
+				<button onClick={() => sendMode("EXIT")}>EXIT</button>
 			</div>
 		</div>
 	);
