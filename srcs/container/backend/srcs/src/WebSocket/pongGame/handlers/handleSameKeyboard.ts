@@ -8,6 +8,7 @@ export function handleSameKeyboard(playerInfos: playerStat, msg: webMsg) {
 	if (playerInfos.inGame === false) {
 		playerInfos.inGame = true;
 		playerInfos.game = createGame(playerInfos);
+		console.log(`start game samekeyboard for ${playerInfos.name}`);
 		playerInfos.game.start();
 	}
 }

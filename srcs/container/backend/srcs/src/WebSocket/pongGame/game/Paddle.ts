@@ -39,7 +39,6 @@ export class Paddle {
 	}
 	zoneEffect(ball: Ball): void {
 		const y: number = ball.pos_y - this.pos_y;
-		console.log(`POSITION POUR EFFECT BALL ${ball.pos_y}`);
 		if (y < 0) 
 			ball.d_y = -1.5;
 		else if (y == 0) 
@@ -58,7 +57,6 @@ export class Paddle {
 			ball.d_y = 1.25;
 		else 
 			ball.d_y = 1.5;
-		console.log(`EFFECT SUR BALL ------ ${ball.d_y}`);
 	}
 	setScore() : void {
 		this.score += 1;
