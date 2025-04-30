@@ -10,6 +10,7 @@ import { handleClose } from './handlers/handleClose';
 import { handlePing, startingPing } from './handlers/handlePing';
 import { playerStat } from './types/playerStat';
 import { handleReconnection } from './handlers/handleReconnection';
+import { handleFinish } from './handlers/handleFinish';
 
 export let pingMonitoring: boolean = false;
 
@@ -51,7 +52,7 @@ export function pongWebSocket(socket: WebSocket, user: User) {
 				handleMove(playerInfos, msg.value);
 				break ;
 			case "EXIT" :
-				// handleFinish();
+				handleFinish(playerInfos);
 				break ;
 			case "Ping" :
 				handlePing(playerInfos);
@@ -60,6 +61,7 @@ export function pongWebSocket(socket: WebSocket, user: User) {
 	});
 	socket.on('close', () => {
 		const playerInfos = sockets.get(socket);
+		console.log("close");
 		if (playerInfos) handleClose(playerInfos);
 	});
 }
