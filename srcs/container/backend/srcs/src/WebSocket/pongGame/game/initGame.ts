@@ -22,5 +22,3 @@ export function createGame(playerInfos: playerStat, player2Infos?: playerStat) :
 		return (game);
 	}
 }
-
-// voir si j insere pas directement la map dans les paddle pour avoir la totalite des infos 

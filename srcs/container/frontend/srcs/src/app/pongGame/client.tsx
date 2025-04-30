@@ -37,6 +37,7 @@ export const Pong: React.FC = () => {
 	const [parsedData, setParsedData] = useState<Parse | null>(null);
 	const [mode, setMode] = useState<"SameKeyboard" | "Solo" | "Multi" | "EXIT" | null>(null);
 	const [whoAmI, setWhoAmI] = useState<"player1" | "player2" | null>(null);
+	const [resetView, setResetView] = useState(false); // ✅ état ajouté
 
 	const keyPressed = useRef({
 		up_p1: false,
@@ -85,7 +86,13 @@ export const Pong: React.FC = () => {
 					console.log("🎉 Partie terminée !");
 					return;
 				}
+				if (json.type === "reset") {
+					setResetView(true); // ✅ active l'effacement visuel
+					console.log("🔁 Affichage réinitialisé !");
+					return;
+				}
 
+				setResetView(false); // ✅ désactive le mode reset si on reçoit des données normales
 				setParsedData(json);
 			} catch {
 				console.log('📨 Réponse serveur :', str);
@@ -106,18 +113,21 @@ export const Pong: React.FC = () => {
 		const canvas = canvasRef.current;
 		const ctx = canvas?.getContext('2d');
 
-		if (!canvas || !ctx || !parsedData) return;
+		if (!canvas || !ctx) return;
 
 		ctx.clearRect(0, 0, canvas.width, canvas.height);
 		ctx.closePath();
-		ctx.fillStyle = 'black';
-		ctx.fillRect(parsedData.player1.pos_x, parsedData.player1.pos_y, parsedData.player1.width, parsedData.player1.height);
-		ctx.fillRect(parsedData.player2.pos_x, parsedData.player2.pos_y, parsedData.player2.width, parsedData.player2.height);
-		ctx.beginPath();
-		ctx.fillStyle = 'red';
-		ctx.arc(parsedData.ball.pos_x, parsedData.ball.pos_y, 10, 0, Math.PI * 2);
-		ctx.fill();
-	}, [parsedData]);
+
+		if (parsedData && !resetView) {
+			ctx.fillStyle = 'black';
+			ctx.fillRect(parsedData.player1.pos_x, parsedData.player1.pos_y, parsedData.player1.width, parsedData.player1.height);
+			ctx.fillRect(parsedData.player2.pos_x, parsedData.player2.pos_y, parsedData.player2.width, parsedData.player2.height);
+			ctx.beginPath();
+			ctx.fillStyle = 'red';
+			ctx.arc(parsedData.ball.pos_x, parsedData.ball.pos_y, 10, 0, Math.PI * 2);
+			ctx.fill();
+		}
+	}, [parsedData, resetView]);
 
 	useEffect(() => {
 		const handleKeyDown = (e: KeyboardEvent) => {

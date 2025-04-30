@@ -1,3 +1,4 @@
+import { handleFinish } from "../handlers/handleFinish";
 import { Ball } from "./Ball";
 import { Paddle } from "./Paddle";
 
@@ -6,7 +7,6 @@ export class Game {
 		private ball: Ball,
 		private player1: Paddle,
 		private player2: Paddle,
-		// private mode: "Multi" | "SameKeyboard" | "Solo",
 		private readonly width: number = 800,
 		private readonly height: number = 600,
 		private status: "PLAYING" | "WAITING" | "EXIT" = "PLAYING",
@@ -58,11 +58,36 @@ export class Game {
 		else
 			this.player1.getPlayerInfos().socket.send(this.jsonWebsocket);
 		if (this.checkScore(this.player1, this.player2)) {
-			this.player1.getPlayerInfos().socket.send(JSON.stringify({type: "EXIT"}));
+			if (this.player1.getPlayerInfos().mode === "Multi"
+			&& this.player2.getPlayerInfos().mode === "Multi") {
+				this.player1.getPlayerInfos().socket.send(JSON.stringify({type: "EXIT"}));
+				this.player2.getPlayerInfos().socket.send(JSON.stringify({type: "EXIT"}));
+				handleFinish(this.player1.getPlayerInfos());
+				handleFinish(this.player2.getPlayerInfos());
+				this.resetDisplay("Multi");
+			}
+			else {
+				this.player1.getPlayerInfos().socket.send(JSON.stringify({type: "EXIT"}));
+				handleFinish(this.player1.getPlayerInfos());
+				this.resetDisplay("SameKeyboard");
+			}
 			return (true);
+
 		}
 		if (this.getStatus() === "EXIT") {
-			this.player1.getPlayerInfos().socket.send(JSON.stringify({type: "EXIT"}));
+			if (this.player1.getPlayerInfos().mode === "Multi"
+			&& this.player2.getPlayerInfos().mode === "Multi") {
+				this.player1.getPlayerInfos().socket.send(JSON.stringify({type: "EXIT"}));
+				this.player2.getPlayerInfos().socket.send(JSON.stringify({type: "EXIT"}));
+				handleFinish(this.player1.getPlayerInfos());
+				handleFinish(this.player2.getPlayerInfos());
+				this.resetDisplay("Multi");
+			}
+			else {
+				this.player1.getPlayerInfos().socket.send(JSON.stringify({type: "EXIT"}));
+				handleFinish(this.player1.getPlayerInfos());
+				this.resetDisplay("SameKeyboard");
+			}
 			return (true);
 		}
 		return (false);
@@ -103,11 +128,11 @@ export class Game {
 			switch (direction) {
 				case 1 :
 					ball.d_x = -1;
-					ball.d_y = 0; //a remettre a 0
+					ball.d_y = 0;
 					break;
 				case 0 :
 					ball.d_x = 1;
-					ball.d_y = 0; // a remettre a zero
+					ball.d_y = 0;
 					break;
 			}
 			this.setStatus("PLAYING");
@@ -124,7 +149,14 @@ export class Game {
 		}
 		return (false)
 	}
-	
+	resetDisplay(msg: string) {
+		if (msg === "SameKeyboard")
+			this.player1.getPlayerInfos().socket.send(JSON.stringify({ type: "reset" }));
+		else {
+			this.player1.getPlayerInfos().socket.send(JSON.stringify({ type: "reset" }));
+			this.player2.getPlayerInfos().socket.send(JSON.stringify({ type: "reset" }));
+		}
+	}
 	getJsonWebsocket() { return (this.jsonWebsocket); } 
 	getStatus() : string { return (this.status); }
 	getBall() : Ball {return (this.ball); }
@@ -132,5 +164,3 @@ export class Game {
 	getPlayer2() : Paddle {return (this.player2); }
 	setStatus(stat: "PLAYING" | "WAITING" | "EXIT") { this.status = stat; }
 }
-	// reset(): void{};
-	// draw(): void{};

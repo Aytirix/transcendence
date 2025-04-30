@@ -5,7 +5,7 @@ import { createGame } from "../game/initGame";
 import { Game } from "../game/Game";
 
 export function handleMulti(playerInfos: playerStat, msg: webMsg) {
-	if (!playerInfos) return ;
+	if (!playerInfos || playerInfos.inGame === true) return ;
 	playerInfos.mode = msg.type;
 	if (waitingMulti.size === 1 && waitingMulti.has(playerInfos) === true) return ;
 	if (waitingMulti.size >= 1) {
