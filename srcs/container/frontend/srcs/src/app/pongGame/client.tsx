@@ -49,11 +49,21 @@ export const Pong: React.FC = () => {
 		const socket = new WebSocket('wss://localhost:7000/pong');
 		socketRef.current = socket;
 
+		const handleSocketClose = () => {
+			console.log("❌ WebSocket fermée : suppression pongMode");
+			localStorage.removeItem('pongMode');
+		};
+
+		const handleUnload = () => {
+			console.log("💨 Fermeture de l’onglet : suppression pongMode");
+			localStorage.removeItem('pongMode');
+		};
+
 		socket.addEventListener('open', () => {
 			console.log('✅ Connexion établie');
 
-			const savedMode = localStorage.getItem('pongMode') as "SameKeyboard" | "Solo" | "Multi" | null;
-			if (savedMode) {
+			const savedMode = localStorage.getItem('pongMode') as "SameKeyboard" | "Solo" | "Multi" | "EXIT" | null;
+			if (savedMode && savedMode !== "EXIT") {
 				socket.send(JSON.stringify({ type: savedMode }));
 				setMode(savedMode);
 			}
@@ -70,6 +80,7 @@ export const Pong: React.FC = () => {
 					return;
 				}
 				if (json.type === "EXIT") {
+					localStorage.removeItem('pongMode');
 					setMode("EXIT");
 					console.log("🎉 Partie terminée !");
 					return;
@@ -81,7 +92,12 @@ export const Pong: React.FC = () => {
 			}
 		});
 
+		socket.addEventListener('close', handleSocketClose);
+		window.addEventListener('beforeunload', handleUnload);
+
 		return () => {
+			socket.removeEventListener('close', handleSocketClose);
+			window.removeEventListener('beforeunload', handleUnload);
 			socket.close();
 		};
 	}, []);
@@ -153,17 +169,15 @@ export const Pong: React.FC = () => {
 		};
 	}, [mode, whoAmI]);
 
-	// 👇 Envoi du Ping toutes les 5 secondes
 	useEffect(() => {
 		const interval = setInterval(() => {
 			const socket = socketRef.current;
 			if (socket && socket.readyState === WebSocket.OPEN) {
 				socket.send(JSON.stringify({ type: 'Ping' }));
-				// console.log('📡 Ping envoyé');
 			}
-		}, 5000); // toutes les 5 secondes
+		}, 5000);
 
-		return () => clearInterval(interval); // nettoyage à la fermeture
+		return () => clearInterval(interval);
 	}, []);
 
 	function sendMode(selectedMode: "SameKeyboard" | "Solo" | "Multi" | "EXIT") {

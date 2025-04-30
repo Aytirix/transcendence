@@ -99,8 +99,6 @@ export class Game {
 		this.player2.pos_x = 20;
 		this.player2.pos_y = 250;
 		this.setStatus("WAITING");
-		console.log("Service dans 2 sec");
-
 		setTimeout(() => {
 			switch (direction) {
 				case 1 :
@@ -126,28 +124,6 @@ export class Game {
 		}
 		return (false)
 	}
-	// handleMove(cmd: string, mode: string) {
-	// 	if (mode === "SameKeyboard" && this.getStatus() === "PLAYING") {
-	// 		if (cmd === "p1_up")
-	// 			this.player1.move("up");
-	// 		else if (cmd === "p1_down")	
-	// 			this.player1.move("down");
-	// 		else if (cmd === "p2_up")
-	// 			this.player2.move("up");
-	// 		else if (cmd === "p2_down")	
-	// 			this.player2.move("down");
-	// 	}		
-	// 	else if (mode === "Multi" && this.getStatus() === "PLAYING") {
-	// 		if (cmd === "p1_up")
-	// 			this.player1.move("up");
-	// 		else if (cmd === "p1_down")	
-	// 			this.player1.move("down");
-	// 		else if (cmd === "p2_up")
-	// 			this.player2.move("up");
-	// 		else if (cmd === "p2_down")
-	// 			this.player2.move("down");
-	// 	}
-	// }
 	
 	getJsonWebsocket() { return (this.jsonWebsocket); } 
 	getStatus() : string { return (this.status); }
