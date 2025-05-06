@@ -1,11 +1,13 @@
 import { Ball } from "./Ball";
 import { playerStat } from "../types/playerStat";
+import { Ai } from "./pongAi/qLearning";
 
 export class Paddle {
 	constructor (
 		public pos_x: number, //20
 		public pos_y: number, // 250
 		private playerInfos?: playerStat,
+		private ai?: Ai,
 		public readonly height: number = 100,
 		public readonly width: number = 10,
 		public readonly margin: number = 10,
@@ -16,14 +18,16 @@ export class Paddle {
 	move(cmd: string): void {
 	
 		switch (cmd) {
-		case "up":
-			if (this.pos_y >= 3)
+		case "up" :
+			if (this.pos_y >= 3) 
 				this.pos_y -= 5;
 			break;
-		case "down":
+		case "down" :
 			if (this.pos_y + this.height <= 600)
 				this.pos_y += 5;
 			break;
+		case "center" :
+			break ;
 		}
 	}
 	isCollidingWithBall(ball: Ball): boolean {
@@ -63,4 +67,5 @@ export class Paddle {
 	}
 	getScore() : number { return (this.score); }
 	getPlayerInfos() : playerStat {return (this.playerInfos); }
+	getAi() : Ai { return (this.ai); }
 }

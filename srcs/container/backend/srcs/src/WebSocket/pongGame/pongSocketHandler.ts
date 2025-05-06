@@ -11,6 +11,7 @@ import { handlePing, startingPing } from './handlers/handlePing';
 import { playerStat } from './types/playerStat';
 import { handleReconnection } from './handlers/handleReconnection';
 import { handleFinish } from './handlers/handleFinish';
+import { handleSolo } from './handlers/handleSolo';
 
 export let pingMonitoring: boolean = false;
 
@@ -45,6 +46,7 @@ export function pongWebSocket(socket: WebSocket, user: User) {
 				handleMulti(playerInfos, msg);
 				break ;
 			case "Solo" :
+				handleSolo(playerInfos, msg);
 				break ;
 			case "Tournament" :
 				break ;
