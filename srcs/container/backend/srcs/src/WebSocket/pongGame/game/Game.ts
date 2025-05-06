@@ -1,12 +1,15 @@
+import { writeFile } from "fs";
 import { handleFinish } from "../handlers/handleFinish";
 import { Ball } from "./Ball";
 import { Paddle } from "./Paddle";
+import { join } from "path";
 
 export class Game {
 	constructor (
 		private ball: Ball,
 		private player1: Paddle,
 		private player2: Paddle,
+		private frameRate: number = 0,
 		private readonly width: number = 800,
 		private readonly height: number = 600,
 		private status: "PLAYING" | "WAITING" | "EXIT" = "PLAYING",
@@ -16,9 +19,15 @@ export class Game {
 		const idInterval = setInterval(() => {
 			if (this.update())
 				clearInterval(idInterval);
-		}, 1000 / 60)
+		}, 1000 / 1000) // 60
+		setInterval(() => {
+			this.player2.getAi().getStateFromGame(this.ball, this.player2);
+			this.player2.getAi().chooseAction();
+			this.player2.getAi().updateQtable();
+		}, 1000 / 16,66)
 	};
-	update(): boolean{
+	update(): boolean {
+		this.frameRate++;
 		if (this.getStatus() === "WAITING") { return false }
 		this.ball.move();
 		this.detectionCollision();
@@ -55,21 +64,37 @@ export class Game {
 				this.player1.getPlayerInfos().socket.send(this.jsonWebsocket);
 				this.player2.getPlayerInfos().socket.send(this.jsonWebsocket);
 			}
-		else
+		else if (this.player1.getPlayerInfos().mode === "SameKeyboard")
 			this.player1.getPlayerInfos().socket.send(this.jsonWebsocket);
+		else if (this.player1.getPlayerInfos().mode === "Solo") {
+			this.player1.pos_y = this.ball.pos_y;
+			this.player1.getPlayerInfos().socket.send(this.jsonWebsocket);
+			if (this.frameRate < this.player2.getAi().getLimitRate())
+				this.player2.move(this.player2.getAi().getAction());
+			else
+				this.frameRate = 0;
+		}
 		if (this.checkScore(this.player1, this.player2)) {
 			if (this.player1.getPlayerInfos().mode === "Multi"
 			&& this.player2.getPlayerInfos().mode === "Multi") {
 				this.player1.getPlayerInfos().socket.send(JSON.stringify({type: "EXIT"}));
 				this.player2.getPlayerInfos().socket.send(JSON.stringify({type: "EXIT"}));
-				handleFinish(this.player1.getPlayerInfos());
-				handleFinish(this.player2.getPlayerInfos());
+				handleFinish(this.player1.getPlayerInfos())
+				handleFinish(this.player2.getPlayerInfos())
 				this.resetDisplay("Multi");
 			}
 			else {
 				this.player1.getPlayerInfos().socket.send(JSON.stringify({type: "EXIT"}));
 				handleFinish(this.player1.getPlayerInfos());
 				this.resetDisplay("SameKeyboard");
+
+				const filePath = join(__dirname, 'pongAi', 'fileJson', 'qLearning.json');
+				writeFile(filePath, JSON.stringify(this.player2.getAi().qTable, null, 2), (err) => {
+					if (err)
+						console.error("❌ Erreur d’écriture fichier IA :", err);
+					else
+						console.log("✅ IA sauvegardée avec succès !");
+				});
 			}
 			return (true);
 
@@ -87,6 +112,15 @@ export class Game {
 				this.player1.getPlayerInfos().socket.send(JSON.stringify({type: "EXIT"}));
 				handleFinish(this.player1.getPlayerInfos());
 				this.resetDisplay("SameKeyboard");
+
+				const filePath = join(__dirname, 'pongAi', 'fileJson', 'qLearning.json');
+
+				writeFile(filePath, JSON.stringify(this.player2.getAi().qTable, null, 2), (err) => {
+					if (err)
+						console.error("❌ Erreur d’écriture fichier IA :", err);
+					else
+						console.log("✅ IA sauvegardée avec succès !");
+				});
 			}
 			return (true);
 		}
@@ -97,16 +131,21 @@ export class Game {
 			this.ball.d_x = -1;
 			this.player1.zoneEffect(this.ball);
 		}
-		else if ((this.ball.pos_x + this.ball.radius) >= this.width) {
+		else if ((this.ball.pos_x + this.ball.radius) <= 0) {
+			console.log("player 1 marque ")
 			this.player1.setScore();
+			this.player2.getAi().updateReward(2);
 			this.serviceBall(0, this.ball);
 		}
 		else if (this.player2.isCollidingWithBall(this.ball)) {
 			this.ball.d_x = 1;
+			this.player2.getAi().updateReward(3);
 			this.player2.zoneEffect(this.ball);
 		}
-		else if ((this.ball.pos_x - this.ball.radius) <= 0 ){
+		else if ((this.ball.pos_x - this.ball.radius) >= this.width ){
+			console.log("player 2 marque ")
 			this.player2.setScore();
+			this.player2.getAi().updateReward(1);
 			this.serviceBall(1, this.ball);
 		}
 		if ((this.ball.pos_y - this.ball.radius)<= 0) {
@@ -136,14 +175,14 @@ export class Game {
 					break;
 			}
 			this.setStatus("PLAYING");
-		}, 2000);
+		}, 0); //2000
 	}
 	checkScore(player1: Paddle, player2: Paddle) : boolean {
-		if (player1.getScore() == 21) {
+		if (player1.getScore() == 5000) {
 			console.log("Winner is player 2")
 			return (true);
 		}
-		else if (player2.getScore() == 21){
+		else if (player2.getScore() == 5000){
 			console.log("Winner is player 2")
 			return (true);
 		}
