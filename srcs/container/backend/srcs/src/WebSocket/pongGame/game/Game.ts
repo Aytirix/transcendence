@@ -19,12 +19,12 @@ export class Game {
 		const idInterval = setInterval(() => {
 			if (this.update())
 				clearInterval(idInterval);
-		}, 1000 / 1000) // 60
-		setInterval(() => {
-			this.player2.getAi().getStateFromGame(this.ball, this.player2);
-			this.player2.getAi().chooseAction();
-			this.player2.getAi().updateQtable();
-		}, 1000 / 16,66)
+		}, 1000 / 60) // 60
+		// setInterval(() => {
+		// 	this.player2.getAi().getStateFromGame(this.ball, this.player2);
+		// 	this.player2.getAi().chooseAction();
+		// 	this.player2.getAi().updateQtable();
+		// }, 1000)
 	};
 	update(): boolean {
 		this.frameRate++;
@@ -66,14 +66,14 @@ export class Game {
 			}
 		else if (this.player1.getPlayerInfos().mode === "SameKeyboard")
 			this.player1.getPlayerInfos().socket.send(this.jsonWebsocket);
-		else if (this.player1.getPlayerInfos().mode === "Solo") {
-			this.player1.pos_y = this.ball.pos_y;
-			this.player1.getPlayerInfos().socket.send(this.jsonWebsocket);
-			if (this.frameRate < this.player2.getAi().getLimitRate())
-				this.player2.move(this.player2.getAi().getAction());
-			else
-				this.frameRate = 0;
-		}
+		// else if (this.player1.getPlayerInfos().mode === "Solo") {
+		// 	this.player1.pos_y = this.ball.pos_y;
+		// 	this.player1.getPlayerInfos().socket.send(this.jsonWebsocket);
+		// 	if (this.frameRate < this.player2.getAi().getLimitRate())
+		// 		this.player2.move(this.player2.getAi().getAction());
+		// 	else
+		// 		this.frameRate = 0;
+		// }
 		if (this.checkScore(this.player1, this.player2)) {
 			if (this.player1.getPlayerInfos().mode === "Multi"
 			&& this.player2.getPlayerInfos().mode === "Multi") {
@@ -88,13 +88,13 @@ export class Game {
 				handleFinish(this.player1.getPlayerInfos());
 				this.resetDisplay("SameKeyboard");
 
-				const filePath = join(__dirname, 'pongAi', 'fileJson', 'qLearning.json');
-				writeFile(filePath, JSON.stringify(this.player2.getAi().qTable, null, 2), (err) => {
-					if (err)
-						console.error("❌ Erreur d’écriture fichier IA :", err);
-					else
-						console.log("✅ IA sauvegardée avec succès !");
-				});
+				// const filePath = join(__dirname, 'pongAi', 'fileJson', 'qLearning.json');
+				// writeFile(filePath, JSON.stringify(this.player2.getAi().qTable, null, 2), (err) => {
+				// 	if (err)
+				// 		console.error("❌ Erreur d’écriture fichier IA :", err);
+				// 	else
+				// 		console.log("✅ IA sauvegardée avec succès !");
+				// });
 			}
 			return (true);
 
@@ -113,14 +113,14 @@ export class Game {
 				handleFinish(this.player1.getPlayerInfos());
 				this.resetDisplay("SameKeyboard");
 
-				const filePath = join(__dirname, 'pongAi', 'fileJson', 'qLearning.json');
+				// const filePath = join(__dirname, 'pongAi', 'fileJson', 'qLearning.json');
 
-				writeFile(filePath, JSON.stringify(this.player2.getAi().qTable, null, 2), (err) => {
-					if (err)
-						console.error("❌ Erreur d’écriture fichier IA :", err);
-					else
-						console.log("✅ IA sauvegardée avec succès !");
-				});
+				// writeFile(filePath, JSON.stringify(this.player2.getAi().qTable, null, 2), (err) => {
+				// 	if (err)
+				// 		console.error("❌ Erreur d’écriture fichier IA :", err);
+				// 	else
+				// 		console.log("✅ IA sauvegardée avec succès !");
+				// });
 			}
 			return (true);
 		}
@@ -134,18 +134,18 @@ export class Game {
 		else if ((this.ball.pos_x + this.ball.radius) <= 0) {
 			console.log("player 1 marque ")
 			this.player1.setScore();
-			this.player2.getAi().updateReward(2);
+			// this.player2.getAi().updateReward(2);
 			this.serviceBall(0, this.ball);
 		}
 		else if (this.player2.isCollidingWithBall(this.ball)) {
 			this.ball.d_x = 1;
-			this.player2.getAi().updateReward(3);
+			// this.player2.getAi().updateReward(3);
 			this.player2.zoneEffect(this.ball);
 		}
 		else if ((this.ball.pos_x - this.ball.radius) >= this.width ){
 			console.log("player 2 marque ")
 			this.player2.setScore();
-			this.player2.getAi().updateReward(1);
+			// this.player2.getAi().updateReward(1);
 			this.serviceBall(1, this.ball);
 		}
 		if ((this.ball.pos_y - this.ball.radius)<= 0) {

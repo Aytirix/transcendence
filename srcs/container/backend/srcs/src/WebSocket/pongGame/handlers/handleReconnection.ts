@@ -12,6 +12,7 @@ export function handleReconnection(socket: WebSocket, user: User) : boolean {
 				tempPlayer.lastping = Date.now();
 				sockets.set(socket, tempPlayer);
 				waitingID.delete(user.id);
+				tempPlayer.socket.send(JSON.stringify({type: "SameKeyboard"}));
 				tempPlayer.game.getPlayer1().getPlayerInfos().socket = socket;
 				tempPlayer.game.setStatus("PLAYING");
 				return (true);

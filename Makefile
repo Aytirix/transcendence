@@ -1,5 +1,5 @@
 DOCKER_COMPOSE_FILE=srcs/docker-compose.yml
-DOCKER_COMPOSE=docker compose
+DOCKER_COMPOSE=docker-compose
 
 .PHONY: all dev build down stop start lf lb re exec logs
 
