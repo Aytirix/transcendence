@@ -1,7 +1,5 @@
-// Ton import ne change pas
 import React, { useEffect, useRef, useState } from 'react';
 
-// Interface comme avant
 interface Parse {
 	ball: {
 		pos_x: number;
@@ -39,7 +37,7 @@ export const Pong: React.FC = () => {
 	const [parsedData, setParsedData] = useState<Parse | null>(null);
 	const [mode, setMode] = useState<"SameKeyboard" | "Solo" | "Multi" | "EXIT" | null>(null);
 	const [whoAmI, setWhoAmI] = useState<"player1" | "player2" | null>(null);
-	const [resetView, setResetView] = useState(false);
+	const [resetView, setResetView] = useState(false); // ✅ état ajouté
 
 	const keyPressed = useRef({
 		up_p1: false,
@@ -64,6 +62,7 @@ export const Pong: React.FC = () => {
 
 		socket.addEventListener('open', () => {
 			console.log('✅ Connexion établie');
+
 			const savedMode = localStorage.getItem('pongMode') as "SameKeyboard" | "Solo" | "Multi" | "EXIT" | null;
 			if (savedMode && savedMode !== "EXIT") {
 				socket.send(JSON.stringify({ type: savedMode }));
@@ -75,6 +74,7 @@ export const Pong: React.FC = () => {
 			const str = event.data;
 			try {
 				const json = JSON.parse(str);
+
 				if (json.type === "assign") {
 					setWhoAmI(json.value);
 					console.log('🧠 Assigné :', json.value);
@@ -87,11 +87,15 @@ export const Pong: React.FC = () => {
 					return;
 				}
 				if (json.type === "reset") {
-					setResetView(true);
+					setResetView(true); // ✅ active l'effacement visuel
 					console.log("🔁 Affichage réinitialisé !");
 					return;
 				}
-				setResetView(false);
+				if (json.type === "SameKeyboard" || json.type === "Multi") {
+					setMode(json.type);
+					return;
+				}
+				setResetView(false); // ✅ désactive le mode reset si on reçoit des données normales
 				setParsedData(json);
 			} catch {
 				console.log('📨 Réponse serveur :', str);
@@ -131,7 +135,11 @@ export const Pong: React.FC = () => {
 	useEffect(() => {
 		const handleKeyDown = (e: KeyboardEvent) => {
 			if (mode === "EXIT") return;
-			if (e.key === 'ArrowUp') keyPressed.current.up_p1 = true;
+
+			if (e.key === 'ArrowUp') {
+				keyPressed.current.up_p1 = true;
+				console.log(`keydown ${e.key}`);
+			}
 			if (e.key === 'ArrowDown') keyPressed.current.down_p1 = true;
 			if (e.key === 'w') keyPressed.current.up_p2 = true;
 			if (e.key === 's') keyPressed.current.down_p2 = true;
@@ -139,10 +147,12 @@ export const Pong: React.FC = () => {
 
 		const handleKeyUp = (e: KeyboardEvent) => {
 			if (mode === "EXIT") return;
+
 			if (e.key === 'ArrowUp') keyPressed.current.up_p1 = false;
 			if (e.key === 'ArrowDown') keyPressed.current.down_p1 = false;
 			if (e.key === 'w') keyPressed.current.up_p2 = false;
 			if (e.key === 's') keyPressed.current.down_p2 = false;
+
 		};
 
 		window.addEventListener('keydown', handleKeyDown);
@@ -151,10 +161,11 @@ export const Pong: React.FC = () => {
 		const interval = setInterval(() => {
 			const socket = socketRef.current;
 			if (!socket || socket.readyState !== WebSocket.OPEN || !mode || mode === "EXIT") return;
-
+			console.log(`SameKeyboard '${mode}'`);
 			if (mode === "SameKeyboard") {
 				if (keyPressed.current.up_p1) socket.send(JSON.stringify({ type: 'Move', value: 'p1_up' }));
 				else if (keyPressed.current.down_p1) socket.send(JSON.stringify({ type: 'Move', value: 'p1_down' }));
+
 				if (keyPressed.current.up_p2) socket.send(JSON.stringify({ type: 'Move', value: 'p2_up' }));
 				else if (keyPressed.current.down_p2) socket.send(JSON.stringify({ type: 'Move', value: 'p2_down' }));
 			} else if (mode === "Multi" && whoAmI) {
@@ -165,9 +176,6 @@ export const Pong: React.FC = () => {
 					if (keyPressed.current.up_p1) socket.send(JSON.stringify({ type: 'Move', value: 'p2_up' }));
 					else if (keyPressed.current.down_p1) socket.send(JSON.stringify({ type: 'Move', value: 'p2_down' }));
 				}
-			} else if (mode === "Solo") {
-				if (keyPressed.current.up_p1) socket.send(JSON.stringify({ type: 'Move', value: 'p1_up' }));
-				else if (keyPressed.current.down_p1) socket.send(JSON.stringify({ type: 'Move', value: 'p1_down' }));
 			}
 		}, 1000 / 60);
 
@@ -192,6 +200,7 @@ export const Pong: React.FC = () => {
 	function sendMode(selectedMode: "SameKeyboard" | "Solo" | "Multi" | "EXIT") {
 		const socket = socketRef.current;
 		if (!socket || socket.readyState !== WebSocket.OPEN) return;
+
 		localStorage.setItem('pongMode', selectedMode);
 		setMode(selectedMode);
 		socket.send(JSON.stringify({ type: selectedMode }));
