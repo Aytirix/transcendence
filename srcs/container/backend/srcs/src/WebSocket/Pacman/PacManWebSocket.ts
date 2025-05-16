@@ -133,6 +133,9 @@ async function PacManWebSocket(ws: WebSocket, user: User): Promise<void> {
 			case 'launchRoom':
 				handleLaunchRoom(ws, player, text);
 				break;
+			case 'joinSpectator':
+				sendResponse(ws, 'error', 'error', ['Cette fonctionnalité n\'est pas encore disponible']);
+				break;
 			default:
 				ws.send(JSON.stringify({ action: 'error', result: 'error', notification: ['Action non reconnue'] })); // to close
 				break;
