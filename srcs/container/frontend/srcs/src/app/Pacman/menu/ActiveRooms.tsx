@@ -10,7 +10,7 @@ interface ActiveRoomsProps {
 const ActiveRooms: React.FC<ActiveRoomsProps> = ({ state }) => {
 
 	const handleSpectatorRoom = (roomId: number) => {
-		state.ws?.send(JSON.stringify({ action: 'SpectatorRoom', room_id: roomId }));
+		state.ws?.send(JSON.stringify({ action: 'joinSpectator', room_id: roomId }));
 	};
 
 	return (

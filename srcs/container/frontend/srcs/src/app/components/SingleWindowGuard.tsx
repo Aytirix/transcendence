@@ -60,24 +60,12 @@ const SingletonGuard: React.FC<SingletonGuardProps> = ({ children }) => {
 
 	if (!isPrimary) {
 		return (
-			<div className="h-screen flex items-center justify-center bg-red-50">
+			<div className="flex items-center justify-center bg-red-50 overflow-hidden">
 				<div className="bg-white p-8 rounded-xl shadow-xl text-center max-w-sm mx-4">
 					<h1 className="text-3xl font-extrabold text-red-600 mb-2">Oups !</h1>
 					<p className="text-gray-700 mb-6">
 						Cette application est déjà ouverte dans un autre onglet ou une autre fenêtre.
 					</p>
-					<button
-						onClick={() => {
-							channel.postMessage('FOCUS');
-							window.close();
-							setTimeout(() => {
-								window.location.reload();
-							}, 100);
-						}}
-						className="px-5 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition"
-					>
-						Revenir à l’onglet existant
-					</button>
 				</div>
 			</div>
 		);

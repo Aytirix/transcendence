@@ -1,4 +1,6 @@
 import { useEffect, useRef } from 'react';
+import notification from '../app/components/Notifications';
+
 
 const url = `wss://${window.location.hostname}:7000`;
 
@@ -42,6 +44,17 @@ export function useSafeWebSocket({ endpoint, onMessage, onStatusChange, reconnec
 		socket.onmessage = (evt) => {
 			try {
 				const data = JSON.parse(evt.data);
+				console.log('WS message :', data);
+				if (data.result === 'error' && data.notification) {
+					for (const message of data.notification) {
+						notification.error(message);
+					}
+					return;
+				} else if (data.result !== 'error' && data.notification) {
+					for (const message of data.notification) {
+						notification.success(message);
+					}
+				}
 				onMessage(data);
 			} catch {
 				console.error('WS parse error :', evt.data);
