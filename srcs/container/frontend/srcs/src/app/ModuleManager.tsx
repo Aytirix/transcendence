@@ -9,6 +9,7 @@ import {
 	DragStartEvent
 } from '@dnd-kit/core';
 import './assets/styles/ModuleManager.scss';
+import '../App.scss'
 import modulesDataImport from './assets/ListeModules.json';
 
 interface ModuleItem {
@@ -197,16 +198,16 @@ const DragAndDropModules: React.FC = () => {
 				modulesDataHash: modulesDataHash,
 				moduleInfoClosed: !showInfo
 			};
-			
+
 			const blob = new Blob([JSON.stringify(data)], { type: 'application/json' });
 			const url = URL.createObjectURL(blob);
-			
+
 			const a = document.createElement('a');
 			a.href = url;
 			a.download = 'Transcendence-Module-Export.json';
 			document.body.appendChild(a);
 			a.click();
-			
+
 			URL.revokeObjectURL(url);
 			document.body.removeChild(a);
 		} catch (error) {
@@ -223,21 +224,21 @@ const DragAndDropModules: React.FC = () => {
 		reader.onload = (event) => {
 			try {
 				const importedData = JSON.parse(event.target?.result as string);
-				
+
 				if (importedData.columns) {
 					setColumns(importedData.columns);
 					localStorage.setItem('moduleColumns', JSON.stringify(importedData.columns));
 				}
-				
+
 				if (importedData.modulesDataHash) {
 					localStorage.setItem('modulesDataHash', importedData.modulesDataHash);
 				}
-				
+
 				if (importedData.hasOwnProperty('moduleInfoClosed')) {
 					setShowInfo(!importedData.moduleInfoClosed);
 					localStorage.setItem('moduleInfoClosed', String(importedData.moduleInfoClosed));
 				}
-				
+
 				alert('Import réussi !');
 			} catch (error) {
 				console.error('Erreur lors de l\'import:', error);
@@ -245,7 +246,7 @@ const DragAndDropModules: React.FC = () => {
 			}
 		};
 		reader.readAsText(file);
-		
+
 		e.target.value = '';
 	};
 
@@ -305,37 +306,37 @@ const DragAndDropModules: React.FC = () => {
 		>
 			<div className="module-manager">
 				<div className="export-import-buttons">
-					<button 
-						className="export-btn" 
-						onClick={handleExportData} 
+					<button
+						className="export-btn"
+						onClick={handleExportData}
 						title="Exporter les données"
 					>
-						 📤 Exporter
+						📤 Exporter
 					</button>
-					
+
 					<label className="import-btn" title="Importer des données">
 						📥 Importer
-						<input 
-							type="file" 
-							accept=".json" 
-							onChange={handleImportData} 
-							style={{ display: 'none' }} 
+						<input
+							type="file"
+							accept=".json"
+							onChange={handleImportData}
+							style={{ display: 'none' }}
 						/>
 					</label>
-					
-					<button 
-						className="reset-btn" 
-						onClick={handleResetData} 
+
+					<button
+						className="reset-btn"
+						onClick={handleResetData}
 						title="Réinitialiser les modules"
 					>
-						 🔄 Réinitialiser
+						🔄 Réinitialiser
 					</button>
 				</div>
 
 				{showInfo && (
 					<div className="info-box">
 						<div className="info-message">
-							 ℹ️ Clique droit sur un module pour afficher ses détails
+							ℹ️ Clique droit sur un module pour afficher ses détails
 							<button
 								className="close-info-btn"
 								onClick={closeInfo}
@@ -364,7 +365,7 @@ const DragAndDropModules: React.FC = () => {
 					<div>Total de points : {points} / 100</div>
 					{!isValid && (
 						<div style={{ marginTop: '0.5rem', fontSize: '0.875rem' }}>
-							 ❌ Projet non valide : il faut au moins 7 modules majeurs (2 mineurs = 1 majeur)
+							❌ Projet non valide : il faut au moins 7 modules majeurs (2 mineurs = 1 majeur)
 						</div>
 					)}
 				</div>

@@ -1,11 +1,12 @@
 import { useEffect, useState } from 'react';
+import ApiService from '../../api/ApiService';
 import { useSafeWebSocket } from '../../api/useSafeWebSocket';
 import { state } from '../types/pacmanTypes';
 import { CenteredBox } from './menu/CenteredBox';
 import { useAuth } from '../../contexts/AuthContext';
 
 function initState(): state {
-	return {
+	const state: state = {
 		ws: null,
 		statusws: 'Connecting...',
 		player: useAuth().user,
@@ -14,6 +15,7 @@ function initState(): state {
 			waiting: [],
 		},
 	};
+	return state;
 }
 
 export default function WebSocketPacman() {

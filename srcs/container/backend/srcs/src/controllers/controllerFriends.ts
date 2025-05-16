@@ -1,10 +1,9 @@
-import { Message, Group, User, Friends } from '@types';
-import { send_friend_connected, req_newMessage, res_newMessage, State, send_init_connected, req_loadMoreMessage, res_loadMoreMessage, req_accept_friend, res_accept_friend, res_add_friend, req_add_friend, req_remove_friend, res_remove_friend, req_refuse_friend, res_refuse_friend, reponse, req_block_user, res_block_user, req_search_user, res_search_user } from '@typesChat';
-import { WebSocketServer, WebSocket } from 'ws';
+import { Group, User, Friends } from '@types';
+import { State, req_accept_friend, res_accept_friend, res_add_friend, req_add_friend, req_remove_friend, res_remove_friend, req_refuse_friend, res_refuse_friend, reponse, req_block_user, res_block_user, req_search_user, res_search_user } from '@typesChat';
+import { WebSocket } from 'ws';
 import modelsChat from '@models/modelChat';
 import modelsFriends from '@models/modelFriends';
 import modelsUser from '@models/modelUser';
-import { IncomingMessage } from 'http';
 import controllerChat from './controllerChat';
 
 export const userIsConnected = (user: User, state: State): boolean => {

@@ -20,4 +20,5 @@ export interface player {
 	avatar: string;
 	updateAt: number;
 	gameId: number;
+	elo: number;
 }

@@ -61,6 +61,9 @@ function handleSetOwnerRoom(ws: WebSocket, player: player, json: any): void {
 	if (newOwner.id === room.owner_id) return sendResponse(ws, 'error', 'error', ['Le joueur est déjà propriétaire']);
 	room.owner_id = newOwner.id;
 	room.owner_username = newOwner.username;
+	// mettre à jour le propriétaire tout en haut de la liste
+	room.players = room.players.filter(p => p.id !== newOwner.id);
+	room.players.unshift(newOwner);
 	sendResponse(ws, 'setOwner', 'success', ['Le joueur a été promu propriétaire']);
 }
 
@@ -89,6 +92,7 @@ async function PacManWebSocket(ws: WebSocket, user: User): Promise<void> {
 		lang: user.lang,
 		updateAt: Date.now(),
 		gameId: null,
+		elo: 1000,
 	};
 
 	handleAddUser(ws, player);
