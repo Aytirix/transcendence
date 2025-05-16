@@ -13,6 +13,7 @@ import Ajv from 'ajv';
 import addFormats from 'ajv-formats';
 import ajvErrors from 'ajv-errors';
 import dotenv from 'dotenv';
+import pacmanRoutes from './routes/pacmanRoutes';
 dotenv.config();
 
 const app = fastify({ trustProxy: true });
@@ -65,6 +66,7 @@ app.register(fastifyCors, {
 
 // Enregistrement des routes
 app.register(userRoutes);
+app.register(pacmanRoutes);
 
 // Intégration de WebSocket
 initWebSocket(app);  // Appel de la fonction initWebSocket

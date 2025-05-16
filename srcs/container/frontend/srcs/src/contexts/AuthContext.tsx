@@ -36,8 +36,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 			try {
 				const res = await ApiService.get('/isAuth');
 				if (isMounted) {
-					setLanguage(res.user.lang);
 					setUser(res.user)
+					if (res.isAuthenticated) setLanguage(res.user.lang);
 					if (res.isAuthenticated && (window.location.pathname == "/login" || window.location.pathname == "/register")) {
 						navigate('/');
 					} else if (!res.isAuthenticated && window.location.pathname !== "/login") {

@@ -75,6 +75,8 @@ class RoomManager {
 				if (!newOwner) return this.removeGame(roomId);
 				game.owner_id = newOwner.id;
 				game.owner_username = newOwner.username;
+				game.players = game.players.filter(player => player.id !== newOwner.id);
+				game.players.unshift(newOwner);
 			}
 			game.players = game.players.filter(player => player.id !== playerId);
 			this.rooms.set(roomId, game);

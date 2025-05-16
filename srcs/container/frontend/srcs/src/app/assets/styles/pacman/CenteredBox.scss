@@ -51,7 +51,8 @@
 			padding: 0.5rem 1rem;
 			border-radius: 0.5rem;
 			font-weight: medium;
-			transition: transform 0.2s;
+			transition: background 0.4s;
+			border: none;
 
 			&:hover {
 				background-color: #97b8ff;

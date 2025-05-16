@@ -4,6 +4,7 @@ import SingletonGuard from './app/components/SingleWindowGuard.tsx';
 import { LanguageProvider } from './contexts/LanguageContext.tsx';
 import { BrowserRouter } from 'react-router-dom';
 import AppRouter from './app/AppRouter.tsx';
+
 import { AuthProvider } from './contexts/AuthContext';
 import './index.css';
 import { useEffect } from 'react';
