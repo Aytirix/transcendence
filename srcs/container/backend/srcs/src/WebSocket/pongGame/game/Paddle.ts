@@ -16,7 +16,7 @@ export class Paddle {
 
 	) {}
 	move(cmd: string): void {
-	
+		// console.log(cmd)
 		switch (cmd) {
 		case "up" :
 			if (this.pos_y >= 3) {

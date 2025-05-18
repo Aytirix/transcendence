@@ -17,19 +17,16 @@ export class Game {
 		private jsonWebsocket: string = ""
 	) {}
 	start(): void{
+		let i: number = 0;
+		while (i < 1) {
+			this.player2.getAi().getReboundBall(this.ball, this.player2, this.player1); //calcule de prediction arrive ball sens oppose
+			this.player2.getAi().getStateFromGame(this.ball, this.player1, this.player2); //capture du current etat au lancement du jeu 
+			this.player2.getAi().chooseAction(); //choix de l action initial au lancement du jeu et mise en previous de l etat current
+			i++;
+		}
 		const idInterval = setInterval(() => {
 			if (this.update())
 				clearInterval(idInterval);
-			if (this.player1.getPlayerInfos().mode === "Solo") {
-				if (this.detectionPaddle === true) {
-					this.detectionPaddle = false;
-					this.frameRate = 0;
-					this.player2.getAi().getStateFromGame(this.ball, this.player1, this.player2);
-					this.player2.getAi().updateQtable();
-					this.player2.getAi().chooseAction();
-					this.player2.getAi().setReward(0);
-				}
-			}
 		}, 1000 / 60)
 	}
 	update(): boolean {
@@ -75,7 +72,6 @@ export class Game {
 		else if (this.player1.getPlayerInfos().mode === "Solo") {
 			this.player1.getPlayerInfos().socket.send(this.jsonWebsocket);
 			if (this.frameRate < this.player2.getAi().getLimitRate()){
-				
 				this.player2.move(this.player2.getAi().getAction());
 			}
 		}
@@ -120,46 +116,106 @@ export class Game {
 			if (this.ball.speed <= 12.5)
 				this.ball.speed += 0.5;
 			this.player1.zoneEffect(this.ball);
-			console.log("ball cote player1 :",this.ball.pos_y)
 			if (this.player1.getPlayerInfos().mode === "Solo") {
-				this.player2.getAi().updateReward(4);
-				this.player2.getAi().getReboundBall(this.ball, this.player2, this.player1);
-				this.detectionPaddle = true;
+			
+				this.player2.getAi().updateReward(3); //recompense de l action precedente choisis
+				this.player2.getAi().getReboundBall(this.ball, this.player2, this.player1); //calcule de prediction arrive ball sens oppose
+				this.player2.getAi().getStateFromGame(this.ball, this.player1, this.player2); //mise a jour du nouveau current
+				this.player2.getAi().updateQtable(); // update de  la Qtable du previous avec son reward  avec le nouveau current
+				this.frameRate = 0; //mise a zero des mouvements 
+				this.player2.getAi().chooseAction(); //choix de l action en fonction  du currentState et mise dans le previousstate le currentState
+
+
+
+
+				// this.player2.getAi().updateReward(3);
+				// console.log(this.player2.getAi().getReward());
+
+				// this.player2.getAi().getReboundBall(this.ball, this.player2, this.player1);
+				// this.frameRate = 0;
+				// this.player2.getAi().getStateFromGame(this.ball, this.player1, this.player2);
+				// this.player2.getAi().updateQtable();
+				// this.player2.getAi().chooseAction();
 			}
 		}
 		else if ((this.ball.pos_x + this.ball.radius) <= 0) {
-			console.log("player 1 marque ")
 			this.player1.setScore();
+			
+			this.player2.getAi().updateReward(2); //rewards player 2 prend un but reward negatif 
+			this.player2.getAi().setCurrentState("KICKOFF"); //mise du current State a "kickoff" pour faire 0 dans updateqtable
+			this.player2.getAi().updateQtable(); //mise a jour de la qtable avec le reward le previous state et le current a zero car but
+			this.frameRate = 0; //mise a zero des mouvements
+
+
+
+
+			// this.player2.getAi().updateReward(2);
+			// this.player2.getAi().updateQtable();
+			// console.log("now : ", this.player2.getAi().getCurrentState());
+			// this.player2.getAi().setCurrentState("KICKOFF");
+			// console.log(this.player2.getAi().getReward());
+			// this.player2.getAi().chooseAction();
+			
 			this.serviceBall(0, this.ball, this.player1, this.player2);
+
+			this.player2.getAi().setCurrentState(""); //re initialisation de currenState
+			this.player2.getAi().setPreviousState(""); // re initialisation previous state
 		}
 		else if (this.player2.isCollidingWithBall(this.ball)) {
 			this.ball.d_x = 1;
 			if (this.ball.speed <= 12.5)
 				this.ball.speed += 0.5;
 			this.player2.zoneEffect(this.ball);
-			console.log("ball cote player2 :",this.ball.pos_y)
 			if (this.player1.getPlayerInfos().mode === "Solo") {
-				this.player2.getAi().updateReward(3);
-				this.player2.getAi().getReboundBall(this.ball, this.player2, this.player1);
-				this.detectionPaddle = true;
+
+				this.player2.getAi().updateReward(4); //recompense de l action precedente choisis
+				this.player2.getAi().getReboundBall(this.ball, this.player2, this.player1); //calcule de prediction arrive ball sens oppose
+				this.player2.getAi().getStateFromGame(this.ball, this.player1, this.player2); //mise a jour du nouveau current
+				this.player2.getAi().updateQtable(); // update de  la Qtable du previous avec son reward  avec le nouveau current
+				this.frameRate = 0; //mise a zero des mouvements
+				this.player2.getAi().chooseAction(); //choix de l action en fonction du  currentState et mise dans le previousstate le currentState
+				
+
+
+
+				// this.player2.getAi().updateReward(4);
+				// console.log(this.player2.getAi().getReward());
+
+				// this.player2.getAi().getReboundBall(this.ball, this.player2, this.player1);
+				// this.frameRate = 0;
+				// this.player2.getAi().getStateFromGame(this.ball, this.player1, this.player2);
+				// this.player2.getAi().updateQtable();
+				// this.player2.getAi().chooseAction();
+
 			}
 		}
 		else if ((this.ball.pos_x - this.ball.radius) >= this.width ){
-			console.log("player 2 marque ")
 			this.player2.setScore();
+
+			this.player2.getAi().updateReward(1); //rewards player 2 marque un but reward positif 
+			this.player2.getAi().setCurrentState("KICKOFF"); //mise du current State a "kickoff" pour faire 0 dans updateqtable
+			this.player2.getAi().updateQtable(); //mise a jour de la qtable avec le reward le previous state et le current a zero car but
+			this.frameRate = 0; //mise a zero des mouvements
+			
+
+			// this.player2.getAi().updateReward(1);
+			// this.player2.getAi().updateQtable();
+			// console.log(this.player2.getAi().getReward());
+
+			// this.player2.getAi().setCurrentState("KICKOFF");
+			// this.player2.getAi().chooseAction();
+
 			this.serviceBall(1, this.ball, this.player1, this.player2);
+
+			this.player2.getAi().setCurrentState(""); //re initialisation de currenState
+			this.player2.getAi().setPreviousState(""); // re initialisation previous state
+
 		}
 		if ((this.ball.pos_y - this.ball.radius)<= 0) {
 			this.ball.d_y = 1;
-			if (this.player1.getPlayerInfos().mode === "Solo"&& this.ball.d_x > 0) {
-				this.player2.getAi().updateReward(5);
-			}
 		}
 		else if ((this.ball.pos_y  + this.ball.radius)>= this.height) {
 			this.ball.d_y = -1;
-			if (this.player1.getPlayerInfos().mode === "Solo"&& this.ball.d_x > 0) {
-				this.player2.getAi().updateReward(5);
-			}
 		}
 	}
 	serviceBall(direction: number, ball: Ball, player1: Paddle, player2: Paddle) : void {
@@ -183,15 +239,13 @@ export class Game {
 					ball.d_y = 0;
 					break;
 			}
-			if (this.player1.getPlayerInfos().mode === "Solo") {
-				this.player2.getAi().updateReward(1);
-				this.player2.getAi().getReboundBall(this.ball, this.player2, this.player1);
-				this.detectionPaddle = true;
-			}
-		}, 2000); //2000
+		}, 1000); //2000
 		setTimeout(() => {
 			this.setStatus("PLAYING");
-		}, 2000); //2000
+			this.player2.getAi().getReboundBall(this.ball, this.player2, this.player1); //calcule de prediction arrive ball sens oppose
+			this.player2.getAi().getStateFromGame(this.ball, this.player1, this.player2); //mise a jour du nouveau current
+			this.player2.getAi().chooseAction(); //choix de l action en fonction  du currentState et mise dans le previousstate le currentState
+		}, 1000); //2000
 	}
 	checkScore(player1: Paddle, player2: Paddle) : boolean {
 		if (player1.getScore() == 21) {
