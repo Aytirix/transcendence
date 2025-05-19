@@ -106,12 +106,21 @@ export const Pong: React.FC = () => {
 			if (mode === "EXIT") return;
 			if (e.key === 'ArrowUp') keyPressed.current.up_p1 = true;
 			if (e.key === 'ArrowDown') keyPressed.current.down_p1 = true;
+			if (mode === "SameKeyboard") {
+				if (e.key === 'w') keyPressed.current.up_p2 = true;
+				if (e.key === 's') keyPressed.current.down_p2 = true;
+			}
+
 		};
 
 		const handleKeyUp = (e: KeyboardEvent) => {
 			if (mode === "EXIT") return;
 			if (e.key === 'ArrowUp') keyPressed.current.up_p1 = false;
 			if (e.key === 'ArrowDown') keyPressed.current.down_p1 = false;
+			if (mode === "SameKeyboard") {
+				if (e.key === 'w') keyPressed.current.up_p2 = false;
+				if (e.key === 's') keyPressed.current.down_p2 = false;
+			}
 		};
 
 		window.addEventListener('keydown', handleKeyDown);

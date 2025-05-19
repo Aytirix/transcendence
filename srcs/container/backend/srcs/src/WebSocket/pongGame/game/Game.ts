@@ -3,6 +3,7 @@ import { handleFinish } from "../handlers/handleFinish";
 import { Ball } from "./Ball";
 import { Paddle } from "./Paddle";
 import { join } from "path";
+import { handleCollisionWithPlayer1, handleCollisionWithPlayer2, handleScorePlayer1, handleScorePlayer2 } from "../handlers/handleSolo";
 
 export class Game {
 	constructor (
@@ -18,7 +19,7 @@ export class Game {
 	) {}
 	start(): void{
 		let i: number = 0;
-		while (i < 1) {
+		while (i < 1 && this.player1.getPlayerInfos().mode === "Solo") {
 			this.player2.getAi().getReboundBall(this.ball, this.player2, this.player1); //calcule de prediction arrive ball sens oppose
 			this.player2.getAi().getStateFromGame(this.ball, this.player1, this.player2); //capture du current etat au lancement du jeu 
 			this.player2.getAi().chooseAction(); //choix de l action initial au lancement du jeu et mise en previous de l etat current
@@ -71,9 +72,8 @@ export class Game {
 			this.player1.getPlayerInfos().socket.send(this.jsonWebsocket);
 		else if (this.player1.getPlayerInfos().mode === "Solo") {
 			this.player1.getPlayerInfos().socket.send(this.jsonWebsocket);
-			if (this.frameRate < this.player2.getAi().getLimitRate()){
+			if (this.frameRate < this.player2.getAi().getLimitRate())
 				this.player2.move(this.player2.getAi().getAction());
-			}
 		}
 		if (this.checkScore(this.player1, this.player2)) {
 			if (this.player1.getPlayerInfos().mode === "Multi"
@@ -116,100 +116,31 @@ export class Game {
 			if (this.ball.speed <= 12.5)
 				this.ball.speed += 0.5;
 			this.player1.zoneEffect(this.ball);
-			if (this.player1.getPlayerInfos().mode === "Solo") {
-			
-				this.player2.getAi().updateReward(3); //recompense de l action precedente choisis
-				this.player2.getAi().getReboundBall(this.ball, this.player2, this.player1); //calcule de prediction arrive ball sens oppose
-				this.player2.getAi().getStateFromGame(this.ball, this.player1, this.player2); //mise a jour du nouveau current
-				this.player2.getAi().updateQtable(); // update de  la Qtable du previous avec son reward  avec le nouveau current
-				this.frameRate = 0; //mise a zero des mouvements 
-				this.player2.getAi().chooseAction(); //choix de l action en fonction  du currentState et mise dans le previousstate le currentState
-
-
-
-
-				// this.player2.getAi().updateReward(3);
-				// console.log(this.player2.getAi().getReward());
-
-				// this.player2.getAi().getReboundBall(this.ball, this.player2, this.player1);
-				// this.frameRate = 0;
-				// this.player2.getAi().getStateFromGame(this.ball, this.player1, this.player2);
-				// this.player2.getAi().updateQtable();
-				// this.player2.getAi().chooseAction();
-			}
+			if (this.player1.getPlayerInfos().mode === "Solo")
+				handleCollisionWithPlayer1(this.ball, this.player1, this.player2, this)
 		}
 		else if ((this.ball.pos_x + this.ball.radius) <= 0) {
 			this.player1.setScore();
-			
-			this.player2.getAi().updateReward(2); //rewards player 2 prend un but reward negatif 
-			this.player2.getAi().setCurrentState("KICKOFF"); //mise du current State a "kickoff" pour faire 0 dans updateqtable
-			this.player2.getAi().updateQtable(); //mise a jour de la qtable avec le reward le previous state et le current a zero car but
-			this.frameRate = 0; //mise a zero des mouvements
-
-
-
-
-			// this.player2.getAi().updateReward(2);
-			// this.player2.getAi().updateQtable();
-			// console.log("now : ", this.player2.getAi().getCurrentState());
-			// this.player2.getAi().setCurrentState("KICKOFF");
-			// console.log(this.player2.getAi().getReward());
-			// this.player2.getAi().chooseAction();
-			
-			this.serviceBall(0, this.ball, this.player1, this.player2);
-
-			this.player2.getAi().setCurrentState(""); //re initialisation de currenState
-			this.player2.getAi().setPreviousState(""); // re initialisation previous state
+			if (this.player1.getPlayerInfos().mode === "Solo")
+				handleScorePlayer1(this.ball, this.player1, this.player2, this)
+			else
+				this.serviceBall(0, this.ball, this.player1, this.player2);
 		}
 		else if (this.player2.isCollidingWithBall(this.ball)) {
 			this.ball.d_x = 1;
 			if (this.ball.speed <= 12.5)
 				this.ball.speed += 0.5;
 			this.player2.zoneEffect(this.ball);
-			if (this.player1.getPlayerInfos().mode === "Solo") {
-
-				this.player2.getAi().updateReward(4); //recompense de l action precedente choisis
-				this.player2.getAi().getReboundBall(this.ball, this.player2, this.player1); //calcule de prediction arrive ball sens oppose
-				this.player2.getAi().getStateFromGame(this.ball, this.player1, this.player2); //mise a jour du nouveau current
-				this.player2.getAi().updateQtable(); // update de  la Qtable du previous avec son reward  avec le nouveau current
-				this.frameRate = 0; //mise a zero des mouvements
-				this.player2.getAi().chooseAction(); //choix de l action en fonction du  currentState et mise dans le previousstate le currentState
-				
-
-
-
-				// this.player2.getAi().updateReward(4);
-				// console.log(this.player2.getAi().getReward());
-
-				// this.player2.getAi().getReboundBall(this.ball, this.player2, this.player1);
-				// this.frameRate = 0;
-				// this.player2.getAi().getStateFromGame(this.ball, this.player1, this.player2);
-				// this.player2.getAi().updateQtable();
-				// this.player2.getAi().chooseAction();
-
-			}
+			if (this.player1.getPlayerInfos().mode === "Solo") 
+				handleCollisionWithPlayer2(this.ball, this.player1, this.player2, this);
 		}
-		else if ((this.ball.pos_x - this.ball.radius) >= this.width ){
+		else if ((this.ball.pos_x - this.ball.radius) >= this.width){
 			this.player2.setScore();
 
-			this.player2.getAi().updateReward(1); //rewards player 2 marque un but reward positif 
-			this.player2.getAi().setCurrentState("KICKOFF"); //mise du current State a "kickoff" pour faire 0 dans updateqtable
-			this.player2.getAi().updateQtable(); //mise a jour de la qtable avec le reward le previous state et le current a zero car but
-			this.frameRate = 0; //mise a zero des mouvements
-			
-
-			// this.player2.getAi().updateReward(1);
-			// this.player2.getAi().updateQtable();
-			// console.log(this.player2.getAi().getReward());
-
-			// this.player2.getAi().setCurrentState("KICKOFF");
-			// this.player2.getAi().chooseAction();
-
-			this.serviceBall(1, this.ball, this.player1, this.player2);
-
-			this.player2.getAi().setCurrentState(""); //re initialisation de currenState
-			this.player2.getAi().setPreviousState(""); // re initialisation previous state
-
+			if (this.player1.getPlayerInfos().mode === "Solo")
+				handleScorePlayer2(this.ball, this.player1, this.player2, this)
+			else
+				this.serviceBall(1, this.ball, this.player1, this.player2);
 		}
 		if ((this.ball.pos_y - this.ball.radius)<= 0) {
 			this.ball.d_y = 1;
@@ -242,9 +173,11 @@ export class Game {
 		}, 1000); //2000
 		setTimeout(() => {
 			this.setStatus("PLAYING");
-			this.player2.getAi().getReboundBall(this.ball, this.player2, this.player1); //calcule de prediction arrive ball sens oppose
-			this.player2.getAi().getStateFromGame(this.ball, this.player1, this.player2); //mise a jour du nouveau current
-			this.player2.getAi().chooseAction(); //choix de l action en fonction  du currentState et mise dans le previousstate le currentState
+			if (player1.getPlayerInfos().mode === "Solo") {
+				this.player2.getAi().getReboundBall(this.ball, this.player2, this.player1); //calcule de prediction arrive ball sens oppose
+				this.player2.getAi().getStateFromGame(this.ball, this.player1, this.player2); //mise a jour du nouveau current
+				this.player2.getAi().chooseAction(); //choix de l action en fonction  du currentState et mise dans le previousstate le currentState
+			}
 		}, 1000); //2000
 	}
 	checkScore(player1: Paddle, player2: Paddle) : boolean {
@@ -272,4 +205,5 @@ export class Game {
 	getPlayer1() : Paddle {return (this.player1); }
 	getPlayer2() : Paddle {return (this.player2); }
 	setStatus(stat: "PLAYING" | "KICKOFF" | "EXIT") { this.status = stat; }
+	setFramerate(frameRate: number) { this.frameRate = frameRate; }
 }
