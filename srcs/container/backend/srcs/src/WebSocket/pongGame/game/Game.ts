@@ -145,7 +145,6 @@ export class Game {
 			}
 		}
 		else if ((this.ball.pos_x - this.ball.radius) >= this.width ){
-			console.log("player 2 marque ")
 			this.player2.setScore();
 			this.serviceBall(1, this.ball, this.player1, this.player2);
 		}
@@ -163,7 +162,6 @@ export class Game {
 		}
 	}
 	serviceBall(direction: number, ball: Ball, player1: Paddle, player2: Paddle) : void {
-		console.log(`vrai position de la ball en Y avant de sortir du terrain : ${this.ball.pos_y}`)
 		ball.pos_x = this.width / 2;
 		ball.pos_y = this.height / 2;
 		ball.speed = 7 //ici enlever

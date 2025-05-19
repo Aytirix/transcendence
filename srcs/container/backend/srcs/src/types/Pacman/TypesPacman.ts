@@ -1,4 +1,5 @@
-import { WebSocketServer, WebSocket } from 'ws';
+import { WebSocket } from 'ws';
+import Engine from '../../WebSocket/Pacman/game/Engine';
 
 export type GameState = 'waiting' | 'active' | 'finished';
 
@@ -11,9 +12,27 @@ export interface room {
 	numberOfPlayers?: number;
 	state: GameState;
 	startTime?: number;
+	engine?: Engine;
 }
 
-export interface player {
+export type vector2 = {
+	x: number;
+	y: number;
+};
+
+export type request = {
+	type: string;
+	data: any;
+};
+
+export interface Character {
+	position?: vector2;
+	direction?: vector2;
+	characterType?: CharacterType;
+	score?: number;
+}
+
+export interface player extends Character {
 	id: number;
 	username: string;
 	lang: string;
@@ -21,4 +40,28 @@ export interface player {
 	updateAt: number;
 	gameId: number;
 	elo: number;
+	ws?: WebSocket;
+}
+
+export enum TileType {
+	Empty = ' ',
+	Wall = '#',
+	GhostPortalBlock = '-',
+	Pellet = '.',
+	Bonus = 'o',
+	SpawnPacman = 'P',
+	SpawnBlinky = 'B',
+	SpawnInky = 'I',
+	SpawnPinky = 'Y',
+	SpawnClyde = 'C',
+	Teleport = 'T',
+}
+
+export enum CharacterType {
+	Pacman = 'P',
+	Blinky = 'B',
+	Inky = 'I',
+	Pinky = 'Y',
+	Clyde = 'C',
+	Ghost = 'G',
 }

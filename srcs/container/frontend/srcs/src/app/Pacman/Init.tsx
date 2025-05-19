@@ -39,6 +39,34 @@ export default function WebSocketPacman() {
 		}
 	};
 
+	const handleKeyDown = (event: KeyboardEvent) => {
+		if (!state.ws || state.ws.readyState !== WebSocket.OPEN) return;
+
+		const keyActions: Record<string, string> = {
+			'ArrowUp': 'UP',
+			'ArrowDown': 'DOWN',
+			'ArrowLeft': 'LEFT',
+			'ArrowRight': 'RIGHT'
+		};
+
+		const direction = keyActions[event.key];
+		if (direction) {
+			state.ws.send(JSON.stringify({
+				action: 'playerMove',
+				direction: direction
+			}));
+			event.preventDefault();
+		}
+	};
+
+	useEffect(() => {
+		window.addEventListener('keydown', handleKeyDown);
+		
+		return () => {
+			window.removeEventListener('keydown', handleKeyDown);
+		};
+	}, [state.ws]);
+
 	const websocket = useSafeWebSocket({
 		endpoint: '/Pacman',
 		onMessage: handleMessage,
