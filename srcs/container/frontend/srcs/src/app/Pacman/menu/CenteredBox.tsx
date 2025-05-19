@@ -11,8 +11,8 @@ import { state } from '../../types/pacmanTypes';
 import '../../assets/styles/pacman/CenteredBox.scss';
 
 const TABS = [
-	{ id: 'WaitingRooms', label: 'Parties en attente' },
-	{ id: 'ActiveRooms', label: 'Parties en cours' },
+	{ id: 'WaitingRooms', label: 'Lobby' },
+	{ id: 'ActiveRooms', label: 'En direct' },
 	{ id: 'Rules', label: 'Règles' },
 	{ id: 'Statistics', label: 'Statistiques' },
 	{ id: 'Settings', label: 'Paramètres' },
@@ -44,10 +44,36 @@ export const CenteredBox: React.FC<{ state: state }> = ({ state }) => {
 
 	return (
 		<div className="centered-box">
+			<div className='title-container'>
+				<h1>PACMAN</h1>
+			</div>
+			{/* Conteneur Principal */}
+			<div className="main-content">
+				{/* Colonne gauche - Menu */}
+				<div className='menu-column'>
+					{TABS.map((tab) => (
+						<button
+							key={tab.id}
+							className={`menu-button ${currentPage === tab.id ? 'selected' : ''}`}
+							onClick={() => setCurrentPage(tab.id)}
+						>
+							{tab.label}
+						</button>
+					))}
+				</div>
+				{/* Colonne droite - Contenu */}
+				<div className='content-column'>
+					{renderContent()}
+				</div>
+			</div>
+		</div>
+	)
+	/* return (
+		<div className="centered-box">
 			<div className="title-container">
 				<h1>PACMAN</h1>
 			</div>
-
+			
 			<Tab.Group
 				selectedIndex={TABS.findIndex(t => t.id === currentPage)}
 				onChange={i => setCurrentPage(TABS[i].id)}
@@ -75,7 +101,7 @@ export const CenteredBox: React.FC<{ state: state }> = ({ state }) => {
 				{renderContent()}
 			</div>
 		</div>
-	);
+	); */
 };
 
 export default CenteredBox;

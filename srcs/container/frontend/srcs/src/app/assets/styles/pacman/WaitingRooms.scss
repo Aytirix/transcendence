@@ -9,7 +9,11 @@
 	}
 
 	.create-room {
-		display: flex;
+		margin: 2rem;
+		display: grid;
+		position: relative;
+		grid-template-columns: 1fr auto;
+		grid-template-rows: auto;
 		gap: 0.5rem;
 		margin-bottom: 1rem;
 
@@ -108,7 +112,7 @@
 		align-items: center;
 		justify-content: space-between;
 		min-height: 400px; // Ajuster selon vos besoins
-		padding: 1rem;
+		//padding: 1rem;
 	}
 
 	.room-item {
