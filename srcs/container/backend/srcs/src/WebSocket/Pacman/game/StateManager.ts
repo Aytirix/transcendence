@@ -1,5 +1,6 @@
 import { player, room, GameState } from "@Pacman/TypesPacman";
 import { WebSocket } from 'ws'
+import Engine from "./Engine";
 
 class RoomManager {
 	private static instance: RoomManager;
@@ -122,6 +123,14 @@ class RoomManager {
 		return undefined;
 	}
 
+	public getRoomByPlayerId(playerId: number): room | undefined {
+		for (const game of this.rooms.values()) {
+			if (game.players.some(player => player.id === playerId)) {
+				return game;
+			}
+		}
+		return undefined;
+	}
 
 	public getRoomByName(name: string): room | undefined {
 		for (const game of this.rooms.values()) {
@@ -163,8 +172,9 @@ class RoomManager {
 class StateManager {
 	private static instance: StateManager;
 	private PlayerRoom: Map<number, player> = new Map();
+	private PlayerRoomWs: Map<number, WebSocket> = new Map();
 	private PlayerGame: Map<number, player> = new Map();
-	private Playerws: Map<number, WebSocket> = new Map();
+	private PlayerGameWs: Map<number, WebSocket> = new Map();
 	public RoomManager: RoomManager = RoomManager.getInstance();
 
 	private constructor() { }
@@ -182,13 +192,72 @@ class StateManager {
 
 	public addPlayer(ws: WebSocket, player: player): void {
 		this.PlayerRoom.set(player.id, player);
-		this.Playerws.set(player.id, ws);
+		this.PlayerRoomWs.set(player.id, ws);
+	}
+
+	public getPlayerWs(playerId: number): WebSocket | undefined {
+		return this.PlayerRoomWs.get(playerId);
 	}
 
 	public removePlayer(playerId: number): void {
 		this.PlayerRoom.delete(playerId);
 		this.RoomManager.removePlayerFromAllRoom(playerId);
-		this.Playerws.delete(playerId);
+		this.PlayerRoomWs.delete(playerId);
+	}
+
+	public startGame(game: room): void {
+		const LAYOUT: string[] = [
+			"############################",
+			"#............##............#",
+			"#.####.#####.##.#####.####.#",
+			"#o####.#####.##.#####.####o#",
+			"#.####.#####.##.#####.####.#",
+			"#..........................#",
+			"#.####.##.########.##.####.#",
+			"#.####.##.########.##.####.#",
+			"#......##....##....##......#",
+			"######.##### ## #####.######",
+			"     #.##### ## #####.#     ",
+			"     #.##          ##.#     ",
+			"     #.## ###--### ##.#     ",
+			"######.## # B  I # ##.######",
+			"T     .   # C  Y #   .     T",
+			"######.## #      # ##.######",
+			"     #.## ######## ##.#     ",
+			"     #.##          ##.#     ",
+			"     #.## ######## ##.#     ",
+			"######.## ######## ##.######",
+			"#............##............#",
+			"#.####.#####.##.#####.####.#",
+			"#.####.#####.##.#####.####.#",
+			"#o..##.......P........##..o#",
+			"###.##.##.########.##.##.###",
+			"###.##.##.########.##.##.###",
+			"#......##....##....##......#",
+			"#.##########.##.##########.#",
+			"#.##########.##.##########.#",
+			"#..........................#",
+			"############################",
+		];
+		if (game) {
+			game.state = 'active';
+			game.startTime = Date.now();
+			this.RoomManager.updateRoomState(game.id, 'active');
+			this.RoomManager.sendRooms(this.PlayerRoomWs);
+			game.engine = new Engine(LAYOUT, game.players);
+			game.engine.start();
+			game.players.forEach((p: player) => {
+				p.gameId = game.id;
+			});
+			// enlever les joueurs de la liste des joueurs
+			for (const player of game.players) {
+				this.PlayerRoom.delete(player.id);
+				this.PlayerGame.set(player.id, player);
+				this.PlayerGameWs.set(player.id, this.PlayerRoomWs.get(player.id));
+				this.PlayerRoomWs.delete(player.id);
+			}
+			this.RoomManager.sendRooms(this.PlayerRoomWs);
+		}
 	}
 
 	public async loopRooms(): Promise<void> {
@@ -213,7 +282,7 @@ class StateManager {
 					}
 				}
 			}
-			this.RoomManager.sendRooms(this.Playerws);
+			this.RoomManager.sendRooms(this.PlayerRoomWs);
 			await this.sleep(250);
 		}
 	}
