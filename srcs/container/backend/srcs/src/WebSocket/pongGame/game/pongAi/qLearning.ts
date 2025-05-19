@@ -111,13 +111,6 @@ export class Ai {
 		const array: ["up", "center", "down"] = [
 			"up", "center", "down"
 		]
-		// if (this.currentState === "KICKOFF") {
-		// 	this.Action = "center"; // Action fixe
-		// 	this.previousState = "KICKOFF";
-		// 	this.previousIndex = 4; // index central
-		// 	this.limitFrameRate = 0;
-		// 	return; // ✅ on ne fait rien d'autre
-		// }
 		const action = this.qTable[this.currentState];
 		if (this.epsilon < Math.random()) {
 			const value = Math.max(...action);
@@ -146,37 +139,15 @@ export class Ai {
 		this.previousIndex = this.currentIndex;
 		this.previousState = this.currentState;
 		this.limitFrameRate = Math.abs(this.limitFrameRate)
-		// console.log(this.currentIndex);
-		// console.log(this.Action);
-		// console.log(this.limitFrameRate)
 	}
 	updateQtable() {
-
-		// if (this.previousState === "TO_IA_POS_ZONE6_PRED_ZONE3") {
-
-		// 	console.log("🧠 updateQtable called");
-		// 	console.log("previousState:", this.previousState);
-		// 	console.log("previousIndex:", this.previousIndex);
-		// 	console.log("choose action : ", this.getAction());
-		// 	console.log("currentState:", this.currentState);
-		// 	console.log("reward:", this.reward);
-		// }
-		// if (!this.previousState || !(this.previousState in this.qTable)) {
-		// 		return;
-		// }
-		// if (this.previousState === "TO_IA_POS_ZONE6_PRED_ZONE3")
-		// 	console.log("avant calcule :", this.qTable[this.previousState][this.previousIndex])
-		// 💡 Si currentState est "KICKOFF", alors maxNext = 0 (état terminal)
 		const maxNext = this.currentState === "KICKOFF"
 			? 0
 			: Math.max(...this.qTable[this.currentState]);
-		// 📊 Q-learning update: Q(s, a) ← Q(s, a) + α × (r + γ × max(Q(s')) - Q(s, a))
+		// Q-learning update: Q(s, a) ← Q(s, a) + α × (r + γ × max(Q(s')) - Q(s, a))
 		const qPrev = this.qTable[this.previousState][this.previousIndex];
 		this.qTable[this.previousState][this.previousIndex] =
 			qPrev + this.alpha * (this.reward + this.gamma * maxNext - qPrev);
-		// if (this.previousState === "TO_IA_POS_ZONE6_PRED_ZONE3")
-		// 	console.log("apres calcule : ", this.qTable[this.previousState][this.previousIndex])
-		// ✅ Toujours reset le reward après mise à jour
 		this.reward = 0;
 	}
 	
@@ -198,35 +169,7 @@ export class Ai {
 				this.reward += 0.05; // si rien ne se passe 
 				break;
 			}
-			// console.log(this.reward)
 	}
-	// updateQtable() {
-	// 	// Q(s, a) = Q(s, a) + α * (r + γ * max(Q(s')) - Q(s, a)) formule de Q-learning
-		
-		
-	// 	// if (!this.previousState
-	// 	// 	|| this.previousState === "KICKOFF"
-	// 	// 	|| this.currentState  === "KICKOFF") {
-	// 	// 		return;
-	// 	// 	}
-	// 	if (
-	// 		!this.previousState ||
-	// 		this.previousState === "KICKOFF" ||
-	// 		!(this.previousState in this.qTable)
-	// 	) {
-	// 		return;
-	// 	}
-			
-	// 	if (!this.previousState || !(this.previousState in this.qTable)) {
-	// 		return;
-	// 	}
-	// 	const qPrev    = this.qTable[this.previousState][this.previousIndex];
-	// 	const maxNext  = Math.max(...this.qTable[this.currentState!]);
-	// 	this.qTable[this.previousState][this.previousIndex] =
-	// 	qPrev + this.alpha * (this.reward + this.gamma * maxNext - qPrev);
-
-	// 	this.reward = 0;
-	// }
 	limitMove(paddle: Paddle) {
 		let len: number = 0;
 		if (this.predPosBall < 550 && this.predPosBall > 50) {
