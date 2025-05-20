@@ -228,12 +228,21 @@ export default class PacmanMap {
 	/**
 	 * Convertit la grille en chaîne de caractères pour affichage
 	 */
-	public toString(): string[] {
+	public toString(removePlayer: boolean = true): string[] {
 		let result: string[] = [];
 		for (let y = 0; y < this.grid.length; y++) {
 			let row = '';
 			for (let x = 0; x < this.grid[y].length; x++) {
-				row += this.grid[y][x];
+				const tile = this.grid[y][x];
+				if (removePlayer && (tile === TileType.SpawnPacman ||
+					tile === TileType.SpawnBlinky ||
+					tile === TileType.SpawnInky ||
+					tile === TileType.SpawnPinky ||
+					tile === TileType.SpawnClyde)) {
+					row += TileType.Empty;
+				} else {
+					row += tile;
+				}
 			}
 			result.push(row);
 		}

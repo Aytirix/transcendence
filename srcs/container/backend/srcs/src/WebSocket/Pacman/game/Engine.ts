@@ -2,25 +2,32 @@
 import { player, room, GameState, vector2, CharacterType } from "@Pacman/TypesPacman";
 import { WebSocket } from 'ws';
 import PacmanMap from './map/Map';
+import Ghost from "./Character/Ghost";
+import Pacman from "./Character/Pacman";
 
 const TILE_SIZE = 32;
-const PACMAN_SPEED = 1;
-const GHOST_SPEED = 0.5;
 
 /**
  * Classe principale du moteur de jeu Pac-Man
  */
 export default class Engine {
-	private players: Map<number, player> = new Map();
+	private players: Map<number, Ghost | Pacman> = new Map();
 	private map: PacmanMap;
 	private tickRate = 1000 / 60; // 60 FPS
 	private lastTime = Date.now();
 	private intervalId: NodeJS.Timeout | null = null;
 	private sockets: Map<number, WebSocket> = new Map();
+	private isPaused: boolean = false;
+	private PauseMessage: string = "";
 
-	constructor(rawLayout: string[], initialPlayers: player[]) {
+	constructor(rawLayout: string[], initialPlayers: player[], initialPlayerSockets: Map<number, WebSocket>) {
 		this.map = new PacmanMap(rawLayout);
+		this.sockets = initialPlayerSockets;
 		this.addPlayer(initialPlayers);
+	}
+
+	public getPlayerById(id: number): Ghost | Pacman | undefined {
+		return this.players.get(id);
 	}
 
 	/**
@@ -30,67 +37,45 @@ export default class Engine {
 		// Déterminer les personnages disponibles: Pacman et fantômes
 		const characters = [CharacterType.Pacman, CharacterType.Blinky, CharacterType.Inky, CharacterType.Pinky, CharacterType.Clyde];
 		const usedCharacters = new Set<string>(
-			Array.from(this.players.values()).map(p => p.characterType || '')
+			Array.from(this.players.values()).map(p => p.nameChar)
 		);
 
 		// Filtrer les personnages disponibles
 		const availableCharacters = characters.filter(c => !usedCharacters.has(c));
 
 		players.forEach(p => {
-			// Si cest le premier joueur, lui attribuer Pacman
+			// Si cest le premier
+			let spawnIndex;
+			let spawns;
+			let player: Ghost | Pacman;
+			let characterType: CharacterType;
 			if (this.players.size === 0) {
-				p.characterType = CharacterType.Pacman;
-			} else if (!p.characterType && availableCharacters.length > 0) {
+				characterType = CharacterType.Pacman;
+				spawns = this.map.getSpawnPositions()[CharacterType.Pacman];
+				spawnIndex = this.players.size % availableCharacters.length;
+			} else {
 				const randomIndex = Math.floor(Math.random() * availableCharacters.length);
-				p.characterType = availableCharacters.splice(randomIndex, 1)[0];
-			}
+				const characterType = availableCharacters[randomIndex];
 
-			// Positionner le joueur sur un spawn selon son personnage
-			const spawns = this.map.getSpawnPositions()[p.characterType || ''];
-			if (spawns && spawns.length > 0) {
-				const spawnIndex = this.players.size % spawns.length;
-				p.position = this.gridToPixel(spawns[spawnIndex]);
-				p.direction = { x: 0, y: 0 };
+				spawns = this.map.getSpawnPositions()[characterType];
+				spawnIndex = this.players.size % spawns.length;
 			}
-			this.players.set(p.id, p);
+			const position = this.gridToPixel(spawns[spawnIndex]);
+
+			if (characterType === CharacterType.Pacman) player = new Pacman(p, position, characterType);
+			else player = new Ghost(p, position, characterType);
+
+			this.players.set(p.id, player);
 		});
 	}
 
-	public changePlayerDirection(playerId: number, direction: string): void {
-		const player = this.players.get(playerId);
-		if (player) {
-			let directionVector: vector2 | null = null;
-			switch (direction) {
-				case 'UP':
-					directionVector = { x: 0, y: -1 };
-					break;
-				case 'DOWN':
-					directionVector = { x: 0, y: 1 };
-					break;
-				case 'LEFT':
-					directionVector = { x: -1, y: 0 };
-					break;
-				case 'RIGHT':
-					directionVector = { x: 1, y: 0 };
-					break;
-			}
-			// checker si la direction est valide et qu'il y a pas de mur
-			if (directionVector) {
-				// Obtenir la position actuelle sur la grille
-				const currentGridPos = this.pixelToGrid(player.position);
-				
-				// Calculer la prochaine position sur la grille
-				const nextGridPos = {
-					x: currentGridPos.x + directionVector.x,
-					y: currentGridPos.y + directionVector.y
-				};
-				
-				// Vérifier si la case suivante est marchable
-				const isWalkable = this.map.isWalkable(nextGridPos);
-				
-				if (isWalkable) {
-					player.direction = directionVector;
-				}
+	public updatePlayer(player: player, ws: WebSocket): void {
+		if (this.players.has(player.id)) {
+			const existingPlayer = this.players.get(player.id);
+			if (existingPlayer) {
+				existingPlayer.player = player;
+				this.players.set(player.id, existingPlayer);
+				this.sockets.set(player.id, ws);
 			}
 		}
 	}
@@ -114,6 +99,40 @@ export default class Engine {
 	}
 
 	/**
+	 * Met le jeu en pause sans arrêter complètement la boucle
+	 * @returns true si le jeu a été mis en pause, false s'il était déjà en pause
+	 */
+	public pause(msg: string): boolean {
+		if (this.isPaused || !this.intervalId) {
+			return false;
+		}
+		this.isPaused = true;
+		this.PauseMessage = msg;
+		return true;
+	}
+
+	/**
+	 * Reprend le jeu après une pause
+	 * @returns true si le jeu a repris, false s'il n'était pas en pause
+	 */
+	public resume(): boolean {
+		if (!this.isPaused || !this.intervalId) {
+			return false;
+		}
+
+		this.isPaused = false;
+		this.lastTime = Date.now(); // Réinitialiser le temps pour éviter les sauts
+		return true;
+	}
+
+	/**
+	* Vérifie si le jeu est actuellement en pause
+	*/
+	public isGamePaused(): boolean {
+		return this.isPaused;
+	}
+
+	/**
 	 * Boucle principale de mise à jour et diffusion de l'état
 	 */
 	private gameLoop(): void {
@@ -121,8 +140,10 @@ export default class Engine {
 		const delta = now - this.lastTime;
 		this.lastTime = now;
 
-		this.update(delta);
-		this.broadcastState();
+		if (!this.isPaused) {
+			this.update(delta);
+			this.broadcastState();
+		}
 	}
 
 	/**
@@ -145,11 +166,23 @@ export default class Engine {
 		};
 	}
 
-	private calculateNextPosition(player: player, direction: vector2, delta: number): vector2 {
-		const speed = player.characterType === CharacterType.Pacman ? PACMAN_SPEED : GHOST_SPEED;
+	private calculateNextPosition(pl: Ghost | Pacman, delta: number): vector2 {
+		const speed = pl.nameChar === CharacterType.Pacman ? Pacman.speed : Ghost.speed;
+
+		const currentGridPos = this.pixelToGrid(pl.position);
+
+		const nextGridPos = {
+			x: currentGridPos.x + pl.nextDirection.x,
+			y: currentGridPos.y + pl.nextDirection.y
+		};
+		const isWalkable = this.map.isWalkable(nextGridPos);
+		if (isWalkable) {
+			pl.direction = pl.nextDirection;
+		}
+
 		return {
-			x: Math.round(player.position.x + direction.x * speed * (delta / 16)),
-			y: Math.round(player.position.y + direction.y * speed * (delta / 16))
+			x: Math.round(pl.position.x + pl.direction.x * speed * (delta / 16)),
+			y: Math.round(pl.position.y + pl.direction.y * speed * (delta / 16))
 		};
 	}
 
@@ -161,8 +194,8 @@ export default class Engine {
 		const displayMap = [...mapLines];
 
 		// Ajouter les joueurs à la représentation
-		this.players.forEach(player => {
-			const gridPos = this.pixelToGrid(player.position);
+		this.players.forEach(pl => {
+			const gridPos = this.pixelToGrid(pl.position);
 
 			// Vérifier que la position est dans les limites
 			if (gridPos.y >= 0 && gridPos.y < displayMap.length &&
@@ -170,7 +203,7 @@ export default class Engine {
 
 				// Remplacer le caractère à la position du joueur par son symbole
 				const rowChars = displayMap[gridPos.y].split('');
-				rowChars[gridPos.x] = this.getPlayerSymbol(player);
+				rowChars[gridPos.x] = pl.nameChar;
 				displayMap[gridPos.y] = rowChars.join('');
 			}
 		});
@@ -183,7 +216,7 @@ export default class Engine {
 		console.log("\nJoueurs:");
 		this.players.forEach(player => {
 			const gridPos = this.pixelToGrid(player.position);
-			console.log(`${player.characterType} (ID: ${player.id}):
+			console.log(`${player.nameChar} (ID: ${player.player.id}):
 				- Position pixel [${player.position.x}, ${player.position.y}]
 				- Position grille [${gridPos.x}, ${gridPos.y}]
 				- Direction [${player.direction?.x || 0}, ${player.direction?.y || 0}]
@@ -198,20 +231,6 @@ export default class Engine {
 	}
 
 	/**
-	 * Retourne un symbole pour représenter le joueur dans l'affichage de débogage
-	 */
-	private getPlayerSymbol(player: player): string {
-		switch (player.characterType) {
-			case CharacterType.Pacman: return 'P';
-			case CharacterType.Blinky: return 'B';
-			case CharacterType.Inky: return 'I';
-			case CharacterType.Pinky: return 'Y';
-			case CharacterType.Clyde: return 'C';
-			default: return '@';
-		}
-	}
-
-	/**
 	 * Met à jour la logique de jeu
 	 */
 	private update(delta: number): void {
@@ -219,7 +238,7 @@ export default class Engine {
 			if (!player.direction) return;
 
 			// Calculer la prochaine position en pixels
-			const nextPos: vector2 = this.calculateNextPosition(player, player.direction, delta);
+			const nextPos: vector2 = this.calculateNextPosition(player, delta);
 
 			// Convertir en coordonnées de grille pour vérification
 			const nextGridPos = this.pixelToGrid(nextPos);
@@ -250,12 +269,13 @@ export default class Engine {
 		const state = {
 			action: 'update',
 			data: {
-				players: Array.from(this.players.values()).map(p => ({ id: p.id, position: p.position, score: p.score })),
+				players: Array.from(this.players.values()).map(p => ({ id: p.player.id, position: p.position, score: p.score })),
 				grid: this.map.toString(),
+				paused: { paused: this.isPaused, message: this.PauseMessage }
 			}
 		};
 		this.sockets.forEach(ws => {
-			if (ws.readyState === WebSocket.OPEN) {
+			if (ws && ws.readyState === WebSocket.OPEN) {
 				ws.send(JSON.stringify(state));
 			}
 		});

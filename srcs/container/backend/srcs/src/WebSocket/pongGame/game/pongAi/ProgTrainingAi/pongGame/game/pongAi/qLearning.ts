@@ -4,12 +4,9 @@ import { Game } from "../Game";
 import { Paddle } from "../Paddle";
 import { join } from "path";
 
-
-
 export interface QTable {
 	[key: string]: [number, number , number, number, number, number, number, number, number];
 }; 
-
 
 export function qTableConstructor() : QTable {
 	const qtable: QTable = {};
@@ -30,13 +27,13 @@ export function qTableConstructor() : QTable {
 }
 export class Ai {
 	constructor (
-		public alpha: number, //learning rate
+		public alpha: number, 
 		public epsilon: number,
-		public gamma: number, //discount factor -> futur
+		public gamma: number, 
+		public json2: boolean,
 		public qTable: QTable = qTableConstructor(),
-		private reward: number = 0,
 
-		// private reb: "YES" | "NO" = "NO", //ici
+		private reward: number = 0,
 		private limitFrameRate: number = 0,
 		private Action: "up" | "center" | "down" | "undefined" = "undefined",
 		private predPosBall: number = 0,
@@ -45,38 +42,75 @@ export class Ai {
 		private previousIndex: number = 0,
 		private currentIndex: number = 0,
 	) {
-
+		if (this.json2 === false) {
 			try {
-				const filePath = join(__dirname, 'fileJson', 'qLearning.json');;
+				const filePath = join(__dirname, '..', '..', '..', 'game', 'pongAi', 'fileJson', 'qLearning2.json');;
 				const jsonString = readFileSync(filePath, 'utf8');
 				this.qTable = JSON.parse(jsonString);
 			} catch (err) {
 				console.warn("⚠️ Aucune Q-table chargée, IA démarre à zéro.");
 				this.qTable = qTableConstructor();
 			}
+		}
+		else if (this.json2 === true) {
+			try {
+				const filePath = join(__dirname, '..', '..', '..', 'game', 'pongAi', 'fileJson', 'qLearning.json');;
+				const jsonString = readFileSync(filePath, 'utf8');
+				this.qTable = JSON.parse(jsonString);
+			} catch (err) {
+				console.warn("⚠️ Aucune Q-table chargée, IA démarre à zéro.");
+				this.qTable = qTableConstructor();
+			}
+		}
 	}
-	getStateFromGame(ball: Ball, player1: Paddle ,player2: Paddle)
+	getStateFromGame(ball: Ball, player1: Paddle ,player2: Paddle, inter: number)
 	{
-		let sens: "TO_IA" | "TO_OPPONENT" = "TO_IA";
-		let pos_zone: "POS_ZONE1" | "POS_ZONE2" | "POS_ZONE3" | "POS_ZONE4" | "POS_ZONE5" | "POS_ZONE6";
-		let pre_zone: "PRED_ZONE1" | "PRED_ZONE2" | "PRED_ZONE3" | "PRED_ZONE4" | "PRED_ZONE5" | "PRED_ZONE6";
-		if (player2.getPlayerInfos().game?.getStatus() === "KICKOFF") {
-			this.currentState = "KICKOFF";
-			return ;
+		if (inter === 1) {
+			let sens: "TO_IA" | "TO_OPPONENT" = "TO_IA";
+			let pos_zone: "POS_ZONE1" | "POS_ZONE2" | "POS_ZONE3" | "POS_ZONE4" | "POS_ZONE5" | "POS_ZONE6";
+			let pre_zone: "PRED_ZONE1" | "PRED_ZONE2" | "PRED_ZONE3" | "PRED_ZONE4" | "PRED_ZONE5" | "PRED_ZONE6";
+			
+			if (player1.getPlayerInfos().game?.getStatus() === "KICKOFF") {
+				this.currentState = "KICKOFF";
+				return ;
+			}
+			
+			if (ball.d_x > 0) sens = "TO_IA";
+			else if (ball.d_x < 0) sens = "TO_OPPONENT";
+			if (sens === "TO_OPPONENT") {
+				pre_zone = this.getPredictionZone(player2);
+				pos_zone = this.getPositionPlayer(player2, ball);
+			}
+			else {
+				pre_zone = this.getPredictionZone(player1);
+				pos_zone = this.getPositionPlayer(player1, ball);
+			}
+			
+			this.limitMove(player1);
+			this.currentState = `${sens}_${pos_zone}_${pre_zone}`;
 		}
-		if (ball.d_x > 0) sens = "TO_OPPONENT";
-		else if (ball.d_x < 0) sens = "TO_IA";
-				
-		if (sens === "TO_OPPONENT") {
-			pre_zone = this.getPredictionZone(player1);
-			pos_zone = this.getPositionPlayer(player1, ball);
+		if (inter === 2) {
+			let sens: "TO_IA" | "TO_OPPONENT" = "TO_IA";
+			let pos_zone: "POS_ZONE1" | "POS_ZONE2" | "POS_ZONE3" | "POS_ZONE4" | "POS_ZONE5" | "POS_ZONE6";
+			let pre_zone: "PRED_ZONE1" | "PRED_ZONE2" | "PRED_ZONE3" | "PRED_ZONE4" | "PRED_ZONE5" | "PRED_ZONE6";
+			if (player2.getPlayerInfos().game?.getStatus() === "KICKOFF") {
+				this.currentState = "KICKOFF";
+				return ;
+			}
+			if (ball.d_x > 0) sens = "TO_OPPONENT";
+			else if (ball.d_x < 0) sens = "TO_IA";
+					
+			if (sens === "TO_OPPONENT") {
+				pre_zone = this.getPredictionZone(player1);
+				pos_zone = this.getPositionPlayer(player1, ball);
+			}
+			else {
+				pre_zone = this.getPredictionZone(player2);
+				pos_zone = this.getPositionPlayer(player2, ball);
+			}
+			this.limitMove(player2);
+			this.currentState = `${sens}_${pos_zone}_${pre_zone}`;
 		}
-		else {
-			pre_zone = this.getPredictionZone(player2);
-			pos_zone = this.getPositionPlayer(player2, ball);
-		}
-		this.limitMove(player2);
-		this.currentState = `${sens}_${pos_zone}_${pre_zone}`;
 	}
 	getPredictionZone(player: Paddle): "PRED_ZONE1" | "PRED_ZONE2" | "PRED_ZONE3" | "PRED_ZONE4" | "PRED_ZONE5" | "PRED_ZONE6"{
 		if (this.predPosBall <= 100)
@@ -106,7 +140,6 @@ export class Ai {
 		else
 			return ("POS_ZONE6")
 	}
-
 	chooseAction() {
 		const array: ["up", "center", "down"] = [
 			"up", "center", "down"
@@ -121,7 +154,7 @@ export class Ai {
 		if (this.currentIndex === 0
 			|| this.currentIndex === 3
 			|| this.currentIndex === 6)
-				this.limitFrameRate -= (Math.floor(Math.random() * 41) / 5); // ne pas oublier si j augmente la vitesse de la raquette de modifier peux le 5 
+				this.limitFrameRate -= (Math.floor(Math.random() * 41) / 5); 
 		else if (this.currentIndex === 1
 			|| this.currentIndex === 4
 			|| this.currentIndex === 7)
@@ -140,17 +173,6 @@ export class Ai {
 		this.previousState = this.currentState;
 		this.limitFrameRate = Math.abs(this.limitFrameRate)
 	}
-	updateQtable() {
-		const maxNext = this.currentState === "KICKOFF"
-			? 0
-			: Math.max(...this.qTable[this.currentState]);
-		// Q-learning update: Q(s, a) ← Q(s, a) + α × (r + γ × max(Q(s')) - Q(s, a))
-		const qPrev = this.qTable[this.previousState][this.previousIndex];
-		this.qTable[this.previousState][this.previousIndex] =
-			qPrev + this.alpha * (this.reward + this.gamma * maxNext - qPrev);
-		this.reward = 0;
-	}
-	
 	updateReward(reward: number) {
 		switch (reward) {
 			case 1:
@@ -170,6 +192,16 @@ export class Ai {
 				break;
 			}
 	}
+	updateQtable() {
+		const maxNext = this.currentState === "KICKOFF"
+			? 0
+			: Math.max(...this.qTable[this.currentState]);
+		// Q-learning update: Q(s, a) ← Q(s, a) + α × (r + γ × max(Q(s')) - Q(s, a))
+		const qPrev = this.qTable[this.previousState][this.previousIndex];
+		this.qTable[this.previousState][this.previousIndex] =
+			qPrev + this.alpha * (this.reward + this.gamma * maxNext - qPrev);
+		this.reward = 0;
+	}
 	limitMove(paddle: Paddle) {
 		let len: number = 0;
 		if (this.predPosBall < 550 && this.predPosBall > 50) {
@@ -177,7 +209,7 @@ export class Ai {
 		}
 		else if (this.predPosBall <= 50 || this.predPosBall >= 550)
 			len = Math.abs(paddle.pos_y - this.predPosBall);
-		this.limitFrameRate = (len  / 8);
+		this.limitFrameRate = (len  / 5);
 	}
 	getReboundBall(ball: Ball, paddleLeft: Paddle, paddleRight: Paddle): void {
 		let TempX: number = ball.pos_x;
