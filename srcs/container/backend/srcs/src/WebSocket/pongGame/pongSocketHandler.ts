@@ -49,6 +49,7 @@ export function pongWebSocket(socket: WebSocket, user: User) {
 				handleSolo(playerInfos, msg);
 				break ;
 			case "Tournament" :
+				// handleTournament(playerInfos, msg);
 				break ;
 			case "Move" :
 				handleMove(playerInfos, msg.value);
