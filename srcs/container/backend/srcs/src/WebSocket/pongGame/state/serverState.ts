@@ -9,3 +9,6 @@ export const waitingID = new Map<number, playerStat>();
 
 //information : set -> player waiting for multi
 export const waitingMulti = new Set<playerStat>();
+
+//information : set -> player waiting for tournament
+export const waitingTournament = new Set<playerStat>();
