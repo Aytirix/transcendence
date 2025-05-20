@@ -84,13 +84,17 @@ export class Game {
 				handleFinish(this.player2.getPlayerInfos())
 				this.resetDisplay("Multi");
 			}
-			else {
+			else if (this.player1.getPlayerInfos().mode === "SameKeyboard") {
 				this.player1.getPlayerInfos().socket.send(JSON.stringify({type: "EXIT"}));
 				handleFinish(this.player1.getPlayerInfos());
 				this.resetDisplay("SameKeyboard");
 			}
+			else if (this.player1.getPlayerInfos().mode === "Solo") {
+				this.player1.getPlayerInfos().socket.send(JSON.stringify({type: "EXIT"}));
+				handleFinish(this.player1.getPlayerInfos());
+				this.resetDisplay("Solo");
+			}
 			return (true);
-
 		}
 		if (this.getStatus() === "EXIT") {
 			if (this.player1.getPlayerInfos().mode === "Multi"
@@ -101,10 +105,15 @@ export class Game {
 				handleFinish(this.player2.getPlayerInfos());
 				this.resetDisplay("Multi");
 			}
-			else {
+			else if (this.player1.getPlayerInfos().mode === "SameKeyboard") {
 				this.player1.getPlayerInfos().socket.send(JSON.stringify({type: "EXIT"}));
 				handleFinish(this.player1.getPlayerInfos());
 				this.resetDisplay("SameKeyboard");
+			}
+			else if (this.player1.getPlayerInfos().mode === "Solo") {
+				this.player1.getPlayerInfos().socket.send(JSON.stringify({type: "EXIT"}));
+				handleFinish(this.player1.getPlayerInfos());
+				this.resetDisplay("Solo");
 			}
 			return (true);
 		}
@@ -150,14 +159,13 @@ export class Game {
 		}
 	}
 	serviceBall(direction: number, ball: Ball, player1: Paddle, player2: Paddle) : void {
-		console.log(`vrai position de la ball en Y avant de sortir du terrain : ${this.ball.pos_y}`)
 		ball.pos_x = this.width / 2;
 		ball.pos_y = this.height / 2;
 		ball.speed = 7 //ici enlever
-		this.player1.pos_x = 780;
-		this.player1.pos_y = 250;
-		this.player2.pos_x = 20;
-		this.player2.pos_y = 250;
+		player1.pos_x = 780;
+		player1.pos_y = 250;
+		player2.pos_x = 20;
+		player2.pos_y = 250;
 		this.setStatus("KICKOFF");
 		setTimeout(() => {
 			switch (direction) {
@@ -194,10 +202,12 @@ export class Game {
 	resetDisplay(msg: string) {
 		if (msg === "SameKeyboard")
 			this.player1.getPlayerInfos().socket.send(JSON.stringify({ type: "reset" }));
-		else {
+		else if (msg === "Multi") {
 			this.player1.getPlayerInfos().socket.send(JSON.stringify({ type: "reset" }));
 			this.player2.getPlayerInfos().socket.send(JSON.stringify({ type: "reset" }));
 		}
+		else if (msg === "Solo")
+			this.player1.getPlayerInfos().socket.send(JSON.stringify({ type: "reset" }));
 	}
 	getJsonWebsocket() { return (this.jsonWebsocket); } 
 	getStatus() : string { return (this.status); }

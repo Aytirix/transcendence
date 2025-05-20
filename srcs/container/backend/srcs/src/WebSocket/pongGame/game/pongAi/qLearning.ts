@@ -177,7 +177,7 @@ export class Ai {
 		}
 		else if (this.predPosBall <= 50 || this.predPosBall >= 550)
 			len = Math.abs(paddle.pos_y - this.predPosBall);
-		this.limitFrameRate = (len  / 5);
+		this.limitFrameRate = (len  / 8);
 	}
 	getReboundBall(ball: Ball, paddleLeft: Paddle, paddleRight: Paddle): void {
 		let TempX: number = ball.pos_x;

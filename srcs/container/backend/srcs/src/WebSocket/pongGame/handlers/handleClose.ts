@@ -6,6 +6,8 @@ export function handleClose(playerInfos: playerStat) {
 	playerInfos.game.setStatus("KICKOFF")
 	if (waitingID.has(playerInfos.id) === false && playerInfos.mode === "SameKeyboard")
 		waitingID.set(playerInfos.id, playerInfos);
+	else if (waitingID.has(playerInfos.id) === false && playerInfos.mode === "Solo")
+		waitingID.set(playerInfos.id, playerInfos);
 	else if (waitingID.has(playerInfos.id) === false && playerInfos.mode === "Multi")
 		waitingID.set(playerInfos.id, playerInfos);
 		setTimeout(() => {
