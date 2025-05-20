@@ -37,22 +37,7 @@ export default class Character {
 					directionVector = { x: 1, y: 0 };
 					break;
 			}
-			if (directionVector) {
-				this.nextDirection = directionVector;
-				
-				// const currentGridPos = this.pixelToGrid(player.position);
-
-				// const nextGridPos = {
-				// 	x: currentGridPos.x + directionVector.x,
-				// 	y: currentGridPos.y + directionVector.y
-				// };
-
-				// // Vérifier si la case suivante est marchable
-				// const isWalkable = this.map.isWalkable(nextGridPos);
-
-				// if (isWalkable) {
-				// 	player.direction = directionVector;
-			}
+			if (directionVector) this.nextDirection = directionVector;
 		}
 	}
 }

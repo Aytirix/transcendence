@@ -190,7 +190,7 @@ export default class Engine {
 		console.log("=== ÉTAT ACTUEL DU JEU (DÉBOGAGE) ===");
 
 		// Obtenir une copie de la grille
-		const mapLines = this.map.toString();
+		const mapLines = this.map.toString(false);
 		const displayMap = [...mapLines];
 
 		// Ajouter les joueurs à la représentation
@@ -255,9 +255,9 @@ export default class Engine {
 				player.position = this.gridToPixel(tp);
 			}
 
-			// Consommation de pastilles/bonus basée sur la position de grille
-			const points = this.map.consumePelletOrBonus(gridPos);
-			if (points > 0) player.score += points;
+			if (player.nameChar === CharacterType.Pacman) {
+				this.map.consumePelletOrBonus(player, gridPos);
+			}
 		});
 		this.debug();
 	}
@@ -267,7 +267,7 @@ export default class Engine {
 	 */
 	private broadcastState(): void {
 		const state = {
-			action: 'update',
+			action: 'update', 
 			data: {
 				players: Array.from(this.players.values()).map(p => ({ id: p.player.id, position: p.position, score: p.score })),
 				grid: this.map.toString(),

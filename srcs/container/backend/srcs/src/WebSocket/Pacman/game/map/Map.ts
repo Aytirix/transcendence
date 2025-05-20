@@ -1,4 +1,5 @@
 import { player, room, GameState, vector2, TileType } from "@Pacman/TypesPacman";
+import Pacman from "../Character/Pacman";
 
 
 export default class PacmanMap {
@@ -101,17 +102,16 @@ export default class PacmanMap {
 	 * Consomme une pastille ou un bonus à la position donnée et retourne les points gagnés
 	 * Retourne 0 si aucune pastille ou bonus n'est présent
 	 */
-	public consumePelletOrBonus(pos: vector2): number {
+	public consumePelletOrBonus(player: Pacman, pos: vector2): void {
 		const tile = this.getTile(pos);
 
 		if (tile === TileType.Pellet) {
 			this.setTile(pos, TileType.Empty);
-			return 10;
+			player.score += 10;
 		} else if (tile === TileType.Bonus) {
 			this.setTile(pos, TileType.Empty);
-			return 50;
+			player.score += 50;
 		}
-		return 0;
 	}
 
 	/**
