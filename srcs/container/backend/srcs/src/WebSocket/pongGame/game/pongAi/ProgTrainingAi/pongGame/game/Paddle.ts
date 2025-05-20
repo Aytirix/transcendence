@@ -6,30 +6,28 @@ export class Paddle {
 	constructor (
 		public pos_x: number, //20
 		public pos_y: number, // 250
-		
-		private playerInfos?: playerStat,
-		private ai?: Ai,
-		private score: number = 0,
-		
+		private playerInfos: playerStat,
+		private ai: Ai,
 		public readonly height: number = 100,
 		public readonly width: number = 10,
 		public readonly margin: number = 10,
-		public readonly speed: number = 0,
+		public readonly speed: number = 10,
+		private score: number = 0
 
 	) {}
 	move(cmd: string): void {
-		// console.log(cmd)
+	
 		switch (cmd) {
 		case "up" :
 			if (this.pos_y >= 3) {
-				for (let i: number = 0; i < 16; i++)
-					this.pos_y -= 0.5; // vitesse max 8
+				// console.log("up: ", this.pos_y);
+				this.pos_y -= 5;
 			}
 			break;
 		case "down" :
 			if (this.pos_y + this.height <= 600) {
-				for (let i: number = 0; i < 16; i++)
-					this.pos_y += 0.5; //vitesse max 8
+				// console.log("down: ", this.pos_y);
+				this.pos_y += 5;
 			}
 			break;
 		case "center" :

@@ -25,14 +25,8 @@ export type request = {
 	data: any;
 };
 
-export interface Character {
-	position?: vector2;
-	direction?: vector2;
-	characterType?: CharacterType;
-	score?: number;
-}
 
-export interface player extends Character {
+export interface player {
 	id: number;
 	username: string;
 	lang: string;
@@ -40,7 +34,7 @@ export interface player extends Character {
 	updateAt: number;
 	gameId: number;
 	elo: number;
-	ws?: WebSocket;
+	room?: room;
 }
 
 export enum TileType {

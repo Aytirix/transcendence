@@ -36,23 +36,21 @@ const WaitingRooms: React.FC<WaitingRoomsProps> = ({ state }) => {
 		state.ws?.send(JSON.stringify({ action: 'joinRoom', room_id: roomId }));
 	};
 
-	const handleKick = (roomId: number, userId: number) => {
-		state.ws?.send(JSON.stringify({ action: 'kickRoom', room_id: roomId, user_id: userId }));
+	const handleKick = (userId: number) => {
+		state.ws?.send(JSON.stringify({ action: 'kickRoom', user_id: userId }));
 	};
 
-	const handleSetOwner = (roomId: number, userId: number) => {
-		state.ws?.send(JSON.stringify({ action: 'setOwner', room_id: roomId, user_id: userId }));
+	const handleSetOwner = (userId: number) => {
+		state.ws?.send(JSON.stringify({ action: 'setOwner',user_id: userId }));
 	};
 
-	const handleLeave = (roomId: number) => {
-		state.ws?.send(JSON.stringify({ action: 'leaveRoom', room_id: roomId }));
+	const handleLeave = () => {
+		state.ws?.send(JSON.stringify({ action: 'leaveRoom' }));
 	};
 
-	const handleLaunch = (roomId: number) => {
-		state.ws?.send(JSON.stringify({ action: 'launchRoom', room_id: roomId }));
+	const handleLaunch = () => {
+		state.ws?.send(JSON.stringify({ action: 'launchRoom' }));
 	};
-
-
 
 	// Vérifier si l'utilisateur est déjà dans une salle d'attente
 	const currentRoom = state.rooms.waiting.find(r =>
@@ -128,14 +126,14 @@ const WaitingRooms: React.FC<WaitingRoomsProps> = ({ state }) => {
 												<div className="player-actions">
 													<button
 														className="kick-btn"
-														onClick={() => handleKick(currentRoom.id, player.id)}
+														onClick={() => handleKick(player.id)}
 														title="Exclure"
 													>
 														×
 													</button>
 													<button
 														className="promote-btn"
-														onClick={() => handleSetOwner(currentRoom.id, player.id)}
+														onClick={() => handleSetOwner(player.id)}
 														title="Promouvoir comme propriétaire"
 													>
 														↑
@@ -154,14 +152,14 @@ const WaitingRooms: React.FC<WaitingRoomsProps> = ({ state }) => {
 					<div className="room-actions">
 						<button
 							className="leave-btn"
-							onClick={() => handleLeave(currentRoom.id)}
+							onClick={() => handleLeave()}
 						>
 							Quitter la salle
 						</button>
 						{isOwner && (
 							<button
 								className="launch-btn"
-								onClick={() => handleLaunch(currentRoom.id)}
+								onClick={() => handleLaunch()}
 							>
 								Lancer la partie
 							</button>
