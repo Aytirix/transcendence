@@ -1,5 +1,6 @@
 import { player, room, GameState, vector2, TileType, CharacterType } from "@Pacman/TypesPacman";
 import Pacman from "../Character/Pacman";
+import { TILE_SIZE } from "../Engine";
 
 
 export default class PacmanMap {
@@ -253,10 +254,10 @@ export default class PacmanMap {
 		const key = `${pos.x},${pos.y}`;
 		let tp = this.teleportMap.get(key) || null;
 		if (!tp) return null;
-		// if (direction.x <= 0) tp = { x: tp.x - 1, y: tp.y };
-		// if (direction.x >= 0) tp = { x: tp.x + 1, y: tp.y };
-		// if (direction.y <= 0) tp = { x: tp.x, y: tp.y - 1 };
-		// if (direction.y >= 0) tp = { x: tp.x, y: tp.y + 1 };
+		tp = {
+			x: Math.round(tp.x * TILE_SIZE + TILE_SIZE / 2),
+			y: Math.round(tp.y * TILE_SIZE + TILE_SIZE / 2)
+		};
 		return tp;
 	}
 

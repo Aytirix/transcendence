@@ -1,12 +1,13 @@
 // Ghost.ts
-import { player, vector2, CharacterType } from "@Pacman/TypesPacman";
+import { player, vector2, CharacterType, TileType } from "@Pacman/TypesPacman";
 import PacmanMap from "../map/Map";
 import Pacman from "./Pacman";
 import Character from "./Character";
 import { TILE_SIZE } from "../Engine";
 
 /**
- * Classe Ghost enrichie avec AI officielle (scatter + chase).
+ * Classe Ghost enrichie avec AI officielle (scatter + chase) et prise en compte des téléporteurs.
+ * Elle s'adapte au fait que getTeleportDestination() renvoie désormais des coordonnées en pixels.
  */
 export default class Ghost extends Character {
 	private static _speed = 2;
@@ -19,9 +20,7 @@ export default class Ghost extends Character {
 	private isScattering: boolean = false;
 	// Durées (ms) en mode chase / scatter (vous pouvez ajuster pour caler au plus proche de l’original)
 	private static SCATTER_DURATION = 7000; // 7 secondes scatter
-	private static CHASE_DURATION = 20000; // 20 secondes chase
-	private modeTimer = 0;  // Compteur interne
-	private modeToggleAt = Ghost.SCATTER_DURATION; // moment du prochain changement de mode
+	private static CHASE_DURATION = 20000;  // 20 secondes chase
 	private lastModeSwitch = Date.now();
 
 	constructor(
@@ -44,13 +43,13 @@ export default class Ghost extends Character {
 	private getScatterCorner(): vector2 {
 		switch (this.nameChar) {
 			case CharacterType.Blinky: // rouge → en haut à droite
-				return { x: this.map.width - 1, y: 0 };
+				return { x: this.map.getWidth() - 1, y: 0 };
 			case CharacterType.Pinky:  // rose → en haut à gauche
 				return { x: 0, y: 0 };
 			case CharacterType.Inky:   // cyan → en bas à droite
-				return { x: this.map.width - 1, y: this.map.height - 1 };
+				return { x: this.map.getWidth() - 1, y: this.map.getHeight() - 1 };
 			case CharacterType.Clyde:  // orange → en bas à gauche
-				return { x: 0, y: this.map.height - 1 };
+				return { x: 0, y: this.map.getHeight() - 1 };
 			default:
 				return { x: 0, y: 0 };
 		}
@@ -95,7 +94,7 @@ export default class Ghost extends Character {
 					targetGrid = this.getClydeTarget(pacman, currentGrid);
 					break;
 				default:
-					targetGrid = pacman ? this.pixelToGrid(pacman.position) : currentGrid;
+					targetGrid = this.pixelToGrid(pacman.position);
 			}
 		}
 
@@ -127,8 +126,8 @@ export default class Ghost extends Character {
 			targetY -= 2;
 		}
 		// On clamp pour rester dans la grille
-		targetX = Math.max(0, Math.min(this.map.width - 1, targetX));
-		targetY = Math.max(0, Math.min(this.map.height - 1, targetY));
+		targetX = Math.max(0, Math.min(this.map.getWidth() - 1, targetX));
+		targetY = Math.max(0, Math.min(this.map.getHeight() - 1, targetY));
 		return { x: targetX, y: targetY };
 	}
 
@@ -156,8 +155,8 @@ export default class Ghost extends Character {
 		let targetX = blinkyGrid.x + vectX * 2;
 		let targetY = blinkyGrid.y + vectY * 2;
 		// On clamp pour rester dans la grille
-		targetX = Math.max(0, Math.min(this.map.width - 1, targetX));
-		targetY = Math.max(0, Math.min(this.map.height - 1, targetY));
+		targetX = Math.max(0, Math.min(this.map.getWidth() - 1, targetX));
+		targetY = Math.max(0, Math.min(this.map.getHeight() - 1, targetY));
 		return { x: targetX, y: targetY };
 	}
 
@@ -177,31 +176,44 @@ export default class Ghost extends Character {
 	}
 
 	/**
-	 * Recherche de chemin minimal (BFS) pour déterminer la direction immédiate qui rapproche vers targetGrid.
+	 * Recherche de chemin minimal (BFS) en prenant en compte les téléporteurs.
+	 * À chaque voisin, si c'est une case Teleport, on « saute » vers sa destination renvoyée par getTeleportDestination (en pixels),
+	 * puis on convertit ces pixels en coordonnées grille pour poursuivre la BFS.
 	 * Retourne un vector2 {x: -1|0|1, y: -1|0|1} indiquant la direction à prendre.
 	 */
 	private computeNextDirectionBFS(
 		startGrid: vector2,
 		targetGrid: vector2
 	): vector2 | null {
-		// Si on est déjà à la cible, on ne bouge pas.
+		// Si le fantôme est déjà sur la case cible, on ne bouge pas.
 		if (startGrid.x === targetGrid.x && startGrid.y === targetGrid.y) {
 			return { x: 0, y: 0 };
 		}
-		const width = this.map.width;
-		const height = this.map.height;
+
+		const width = this.map.getWidth();
+		const height = this.map.getHeight();
+
+		// visited[y][x] = true si on a déjà exploré la case (x,y)
 		const visited: boolean[][] = Array.from({ length: height }, () =>
 			Array(width).fill(false)
 		);
-		// Stocke pour chaque case la coordonnée de la case précédente (pour retracer le chemin)
+		// prev[y][x] = coordonnées {x, y} de la case précédente dans le chemin BFS
 		const prev: (vector2 | null)[][] = Array.from({ length: height }, () =>
 			Array(width).fill(null)
 		);
 
-		const queue: vector2[] = [];
-		queue.push({ x: startGrid.x, y: startGrid.y });
-		visited[startGrid.y][startGrid.x] = true;
+		const enqueue = (pos: vector2, from: vector2) => {
+			visited[pos.y][pos.x] = true;
+			prev[pos.y][pos.x] = from;
+			queue.push(pos);
+		};
 
+		// queue pour la structure FIFO du BFS
+		const queue: vector2[] = [];
+		visited[startGrid.y][startGrid.x] = true;
+		queue.push({ x: startGrid.x, y: startGrid.y });
+
+		// Directions orthogonales
 		const directions: vector2[] = [
 			{ x: 0, y: -1 }, // haut
 			{ x: 0, y: 1 },  // bas
@@ -210,44 +222,85 @@ export default class Ghost extends Character {
 		];
 
 		let found = false;
+
 		while (queue.length > 0 && !found) {
 			const curr = queue.shift()!;
+
 			for (const d of directions) {
+				// 1) Case voisine simple en grille
 				const nx = curr.x + d.x;
 				const ny = curr.y + d.y;
-				if (
-					nx >= 0 &&
-					nx < width &&
-					ny >= 0 &&
-					ny < height &&
-					!visited[ny][nx] &&
-					this.map.isWalkable(this.nameChar, { x: nx, y: ny })
-				) {
-					visited[ny][nx] = true;
-					prev[ny][nx] = { x: curr.x, y: curr.y };
-					if (nx === targetGrid.x && ny === targetGrid.y) {
+
+				// Vérifier qu'on reste dans la grille
+				if (nx < 0 || nx >= width || ny < 0 || ny >= height) {
+					continue;
+				}
+				if (visited[ny][nx]) {
+					continue;
+				}
+				// Vérifier qu'un fantôme de type this.nameChar peut marcher sur (nx, ny)
+				if (!this.map.isWalkable(this.nameChar, { x: nx, y: ny })) {
+					continue;
+				}
+
+				// On part du principe que le prochain nœud est (nx, ny),
+				// mais si c'est un téléporteur, on va sauter.
+				let nextGridPos: vector2 = { x: nx, y: ny };
+
+				// 2) Si la tuile (nx,ny) est un téléporteur, on récupère d'abord la destination en pixels,
+				//    puis on convertit ces pixels en grille.
+				const tileHere = this.map.getTile({ x: nx, y: ny });
+				if (tileHere === TileType.Teleport) {
+					// On récupère la coordonnée de sortie (en pixels) depuis la map
+					const tp = this.map.getTeleportDestination(d, { x: nx, y: ny });
+					if (tp && !this.teleport) {
+						this.teleport = true;
+						// Convertir ces pixels en coordonnées grille
+						// Si pixelDest.x = Gx * TILE_SIZE + TILE_SIZE/2, 
+						// alors Gx = floor(pixelDest.x / TILE_SIZE)
+						const gridX = Math.floor(tp.x / TILE_SIZE);
+						const gridY = Math.floor(tp.y / TILE_SIZE);
+						nextGridPos = { x: gridX, y: gridY };
+						console.log("Teleportation vers : ", nextGridPos);
+					} else if (!tp) this.teleport = false;
+				}
+
+				// 3) Si nextGridPos n’a pas encore été visité, on l’explore
+				if (!visited[nextGridPos.y][nextGridPos.x]) {
+					enqueue(nextGridPos, curr);
+
+					// Si on a atteint la cible, on peut interrompre la boucle
+					if (
+						nextGridPos.x === targetGrid.x &&
+						nextGridPos.y === targetGrid.y
+					) {
 						found = true;
 						break;
 					}
-					queue.push({ x: nx, y: ny });
 				}
 			}
 		}
 
-		// Si la cible n’a pas été atteinte (path impossible), on ne change pas de direction
+		// Si on n’a pas trouvé de chemin vers targetGrid, on ne change pas de direction
 		if (!found) {
 			return null;
 		}
 
-		// Sinon, on reconstruit le chemin arrière depuis target jusqu’à start
-		let step = { x: targetGrid.x, y: targetGrid.y };
-		while (
-			prev[step.y][step.x] != null &&
-			!(prev[step.y][step.x]!.x === startGrid.x && prev[step.y][step.x]!.y === startGrid.y)
-		) {
-			step = prev[step.y][step.x]!;
+		// Sinon, on reconstruit le chemin en remontant de target jusqu’à start
+		let step: vector2 = { x: targetGrid.x, y: targetGrid.y };
+		while (true) {
+			const previous = prev[step.y][step.x];
+			if (!previous) {
+				break;
+			}
+			// Si la case précédente est la case de départ, on s'arrête ici
+			if (previous.x === startGrid.x && previous.y === startGrid.y) {
+				break;
+			}
+			step = { x: previous.x, y: previous.y };
 		}
-		// À ce stade, `step` est la première case atteinte en partant de start vers target
+
+		// À ce stade, 'step' représente la première case à atteindre depuis startGrid
 		const dirX = step.x - startGrid.x;
 		const dirY = step.y - startGrid.y;
 		return { x: dirX, y: dirY };
