@@ -26,10 +26,6 @@ const PacmanMap: React.FC<PacmanMapProps> = ({ state }) => {
 	const mapWidth = numCols * tileSize;
 	const mapHeight = numRows * tileSize;
 
-	const [scale, setScale] = useState(1);
-	const zoomIn = () => setScale((prev) => Math.min(prev + 0.1, 2));
-	const zoomOut = () => setScale((prev) => Math.max(prev - 0.1, 0.5));
-
 	// Attribue une classe CSS à chaque caractère
 	const getTileClass = (char: string) => {
 		switch (char) {
@@ -44,13 +40,16 @@ const PacmanMap: React.FC<PacmanMapProps> = ({ state }) => {
 
 	return (
 		<div className="pacman-map-wrapper">
-			<div className="zoom-controls">
-				<button onClick={zoomIn}>+</button>
-				<button onClick={zoomOut}>−</button>
+			<div className="pacman-map-header">
+				<h3 className="score">{players[0]?.username} : {players[0]?.score}</h3>
+				<h3 className="score">{players[1]?.username} : {players[1]?.score}</h3>
+				<h3 className="score">{players[2]?.username} : {players[2]?.score}</h3>
+				<h3 className="score">{players[3]?.username} : {players[3]?.score}</h3>
+				<h3 className="score">{players[4]?.username} : {players[4]?.score}</h3>
 			</div>
 			<div
 				className="pacman-map-container"
-				style={{ width: mapWidth, height: mapHeight, transform: `scale(${scale})` }}
+				style={{ width: mapWidth, height: mapHeight}}
 			>
 				{/* 1. Dessiner la grille : un <div> par case */}
 				{grid.map((rowString, rowIndex) =>
