@@ -4,7 +4,7 @@ import { WebSocket } from 'ws';
 
 export default class Character {
 
-	public nameChar: string;
+	public nameChar: CharacterType;
 	public player: player;
 	public position: vector2;
 	public direction: vector2;

@@ -5,7 +5,7 @@ import PacmanMap from './map/Map';
 import Ghost from "./Character/Ghost";
 import Pacman from "./Character/Pacman";
 
-const TILE_SIZE = 50;
+export const TILE_SIZE = 50;
 
 /**
  * Classe principale du moteur de jeu Pac-Man
@@ -68,7 +68,7 @@ export default class Engine {
 			console.log(`Player ${p.username} (${p.id}) spawned at ${position.x}, ${position.y} with character ${characterType}`);
 
 			if (characterType === CharacterType.Pacman) player = new Pacman(p, position, characterType);
-			else player = new Ghost(p, position, characterType);
+			else player = new Ghost(p, position, characterType, this.map);
 			player.nameChar = characterType;
 
 			this.players.set(p.id, player);
@@ -168,6 +168,21 @@ export default class Engine {
 		this.lastTime = now;
 
 		if (!this.isPaused) {
+			let pacmanInstance: Pacman | undefined;
+			this.players.forEach(player => {
+				if (player.nameChar === CharacterType.Pacman) {
+					pacmanInstance = player as Pacman;
+				}
+			});
+			this.players.forEach(player => {
+				if (player instanceof Ghost) {
+					(player as Ghost).updateBehaviour(
+						pacmanInstance,
+						this.players as Map<number, Ghost>
+					);
+				}
+			}
+			);
 			this.update(delta);
 			this.broadcastState();
 		}
@@ -217,7 +232,7 @@ export default class Engine {
 				x: currentGridPos.x + pl.nextDirection.x,
 				y: currentGridPos.y + pl.nextDirection.y
 			};
-			if (this.map.isWalkable(nextDirectionGridPos)) {
+			if (this.map.isWalkable(pl.nameChar, nextDirectionGridPos)) {
 				pl.direction = { ...pl.nextDirection };
 			}
 		}
@@ -238,7 +253,7 @@ export default class Engine {
 				const rightEdge = desiredCenterX + TILE_SIZE / 2;
 				const gridX_of_rightEdge = Math.floor(rightEdge / TILE_SIZE);
 				// Si la case à droite (même Y) est un mur, on clamp le centre X
-				if (!this.map.isWalkable({ x: gridX_of_rightEdge, y: currentGridPos.y })) {
+				if (!this.map.isWalkable(pl.nameChar, { x: gridX_of_rightEdge, y: currentGridPos.y })) {
 					// Centre bloqué juste à gauche du mur = bord de la case courante + demi-tile
 					finalCenterX = currentGridPos.x * TILE_SIZE + TILE_SIZE / 2;
 				}
@@ -246,7 +261,7 @@ export default class Engine {
 				// Vers la gauche → on regarde l'arête gauche du sprite après déplacement
 				const leftEdge = desiredCenterX - TILE_SIZE / 2;
 				const gridX_of_leftEdge = Math.floor(leftEdge / TILE_SIZE);
-				if (!this.map.isWalkable({ x: gridX_of_leftEdge, y: currentGridPos.y })) {
+				if (!this.map.isWalkable(pl.nameChar, { x: gridX_of_leftEdge, y: currentGridPos.y })) {
 					// Centre bloqué juste à droite du mur = bord de la case courante - demi-tile
 					finalCenterX = (currentGridPos.x + 1) * TILE_SIZE - TILE_SIZE / 2;
 				}
@@ -259,7 +274,7 @@ export default class Engine {
 				// Vers le bas = on regarde l'arête inférieure
 				const bottomEdge = desiredCenterY + TILE_SIZE / 2;
 				const gridY_of_bottomEdge = Math.floor(bottomEdge / TILE_SIZE);
-				if (!this.map.isWalkable({ x: currentGridPos.x, y: gridY_of_bottomEdge })) {
+				if (!this.map.isWalkable(pl.nameChar, { x: currentGridPos.x, y: gridY_of_bottomEdge })) {
 					// Centre bloqué juste au-dessus du mur = bord inférieur de la case courante - demi-tile
 					finalCenterY = currentGridPos.y * TILE_SIZE + TILE_SIZE / 2;
 				}
@@ -267,7 +282,7 @@ export default class Engine {
 				// Vers le haut → on regarde l'arête supérieure
 				const topEdge = desiredCenterY - TILE_SIZE / 2;
 				const gridY_of_topEdge = Math.floor(topEdge / TILE_SIZE);
-				if (!this.map.isWalkable({ x: currentGridPos.x, y: gridY_of_topEdge })) {
+				if (!this.map.isWalkable(pl.nameChar, { x: currentGridPos.x, y: gridY_of_topEdge })) {
 					// Centre bloqué juste en-dessous du mur = bord supérieur de la case courante + demi-tile
 					finalCenterY = (currentGridPos.y + 1) * TILE_SIZE - TILE_SIZE / 2;
 				}
@@ -277,8 +292,6 @@ export default class Engine {
 		// On renvoie la position du centre (après clamp éventuel)
 		return { x: Math.round(finalCenterX), y: Math.round(finalCenterY) };
 	}
-
-
 
 	private debug(): void {
 		console.log("=== ÉTAT ACTUEL DU JEU (DÉBOGAGE) ===");
@@ -358,7 +371,7 @@ export default class Engine {
 		});
 
 		// Débogage si besoin
-		// this.debug();
+		this.debug();
 	}
 
 	/**
