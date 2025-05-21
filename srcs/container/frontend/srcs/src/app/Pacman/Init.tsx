@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import ApiService from '../../api/ApiService';
-import { useSafeWebSocket } from '../../api/useSafeWebSocket';
+import { useSafeWebSocket, WebSocketStatus } from '../../api/useSafeWebSocket';
 import { state } from '../types/pacmanTypes';
 import { CenteredBox } from './menu/CenteredBox';
 import { useAuth } from '../../contexts/AuthContext';
@@ -44,11 +44,6 @@ export default function WebSocketPacman() {
 				break;
 			}
 			case 'startGame': {
-				console.log('startGame', data);
-				console.log('grid', data.data.grid);
-				console.log('players', data.data.players);
-				console.log('tileSize', data.data.tileSize);
-				console.log('paused', data.data.paused);
 				setState((prevState: state) => ({
 					...prevState,
 					game: {
@@ -59,7 +54,6 @@ export default function WebSocketPacman() {
 						paused: data.data.paused,
 					},
 				}));
-				console.log('state', state);
 				break;
 			}
 			case 'updateGame': {
@@ -108,15 +102,33 @@ export default function WebSocketPacman() {
 		};
 	}, [state.ws]);
 
+	const resetState = (status: WebSocketStatus) => {
+		setState((prevState) => ({
+			...prevState,
+			statusws: status,
+			rooms: status !== 'Connected' ? { active: [], waiting: [] } : prevState.rooms,
+			game: status !== 'Connected'
+				? {
+					grid: [],
+					players: [],
+					tileSize: 50,
+					paused: {
+						paused: false,
+						message: '',
+					},
+				}
+				: prevState.game,
+		}));
+	};
+
 	const websocket = useSafeWebSocket({
 		endpoint: '/Pacman',
 		onMessage: handleMessage,
-		onStatusChange: (status) => {
-			setState((prevState) => ({ ...prevState, statusws: status }));
-		},
+		onStatusChange: resetState,
 		reconnectDelay: 1000,
 		pingInterval: 1000,
 	});
+
 
 	useEffect(() => {
 		setState((prevState) => ({
