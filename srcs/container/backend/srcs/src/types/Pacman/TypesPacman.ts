@@ -54,8 +54,8 @@ export enum TileType {
 export enum CharacterType {
 	Pacman = 'P',
 	Blinky = 'B',
-	Inky = 'I',
 	Pinky = 'Y',
+	Inky = 'I',
 	Clyde = 'C',
 	Ghost = 'G',
 }
