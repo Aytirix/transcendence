@@ -1,4 +1,4 @@
-import { player, room, GameState, vector2, TileType } from "@Pacman/TypesPacman";
+import { player, room, GameState, vector2, TileType, CharacterType } from "@Pacman/TypesPacman";
 import Pacman from "../Character/Pacman";
 
 
@@ -158,9 +158,15 @@ export default class PacmanMap {
 	/**
 	 * Si la position est un téléporteur, retourne la destination
 	 */
-	public getTeleportDestination(pos: vector2): vector2 | null {
+	public getTeleportDestination(direction: vector2, pos: vector2): vector2 | null {
 		const key = `${pos.x},${pos.y}`;
-		return this.teleportMap.get(key) || null;
+		let tp = this.teleportMap.get(key) || null;
+		if (!tp) return null;
+		// if (direction.x <= 0) tp = { x: tp.x - 1, y: tp.y };
+		// if (direction.x >= 0) tp = { x: tp.x + 1, y: tp.y };
+		// if (direction.y <= 0) tp = { x: tp.x, y: tp.y - 1 };
+		// if (direction.y >= 0) tp = { x: tp.x, y: tp.y + 1 };
+		return tp;
 	}
 
 	/**
@@ -228,21 +234,18 @@ export default class PacmanMap {
 	/**
 	 * Convertit la grille en chaîne de caractères pour affichage
 	 */
-	public toString(removePlayer: boolean = true): string[] {
+	public toString(): string[] {
 		let result: string[] = [];
 		for (let y = 0; y < this.grid.length; y++) {
 			let row = '';
 			for (let x = 0; x < this.grid[y].length; x++) {
 				const tile = this.grid[y][x];
-				if (removePlayer && (tile === TileType.SpawnPacman ||
-					tile === TileType.SpawnBlinky ||
-					tile === TileType.SpawnInky ||
-					tile === TileType.SpawnPinky ||
-					tile === TileType.SpawnClyde)) {
-					row += TileType.Empty;
-				} else {
-					row += tile;
+				if (tile === TileType.SpawnPacman || tile === TileType.SpawnBlinky ||
+					tile === TileType.SpawnInky || tile === TileType.SpawnPinky ||
+					tile === TileType.SpawnClyde) {
+					row += ' ';
 				}
+				else row += tile;
 			}
 			result.push(row);
 		}

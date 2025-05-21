@@ -1,0 +1,139 @@
+/* src/assets/styles/pacman/PacmanMap.scss */
+
+/* Conteneur principal de la carte */
+.pacman-map-container {
+	position: relative;
+	background-color: #000;    /* fond noir */
+	margin: 0 auto;
+	border: 4px solid #222;    /* bordure sombre */
+	box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+  }
+  
+  /* Chaque case de la grille */
+  .tile {
+	position: absolute;
+	box-sizing: border-box;
+  }
+  
+  /* MURS */
+  .tile.wall {
+	background-color: #00008b;  /* bleu foncé */
+	border: 2px solid #1e90ff;  /* contour bleu clair */
+  }
+  
+  /* COULOIR VIDE (espace) */
+  .tile.empty {
+	background-color: #000;     /* noir */
+  }
+  
+  /* TUNNEL (caractère 'T') */
+  .tile.tunnel {
+	background-color: #111;     /* gris très sombre */
+  }
+  
+  /* PASTILLE NORMALE (caractère '.') */
+  .tile.pellet {
+	background-color: #000;     /* fond noir */
+	display: flex;
+	justify-content: center;
+	align-items: center;
+  }
+  .tile.pellet .dot {
+	width: 6px;
+	height: 6px;
+	border-radius: 50%;
+	background-color: #ffd700;  /* jaune */
+  }
+  
+  /* POWER‑PELLET (caractère 'o') */
+  .tile.power-pellet {
+	background-color: #000;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+  }
+  .tile.power-pellet .big-dot {
+	width: 14px;
+	height: 14px;
+	border-radius: 50%;
+	background-color: #ff0000;  /* rouge vif */
+  }
+  
+  /* -----------------------------------------
+	 SPRITES JOUEURS : PAC‑MAN et FANTÔMES
+  ------------------------------------------ */
+  
+  /* Conteneur commun à tous les joueurs */
+  .player {
+	position: absolute;
+	box-sizing: border-box;
+	z-index: 10;                 /* au-dessus des cases */
+	display: flex;
+	justify-content: center;
+	align-items: center;
+  }
+  
+  /* === PAC‑MAN === */
+  .player.pacman {
+	background-color: #ffd700;   /* jaune vif */
+	border-radius: 50%;
+	width: 100%;
+	height: 100%;
+	position: relative;
+	overflow: hidden;
+  }
+  .player.pacman::before {
+	content: '';
+	position: absolute;
+	width: 0;
+	height: 0;
+	border-top: 16px solid transparent;
+	border-bottom: 16px solid transparent;
+	border-left: 16px solid #000;
+	top: 0;
+	left: 50%;
+	transform: translate(-25%, 0);
+  }
+  
+  /* === FANTÔMES ===
+	 Forme arrondie en haut + franges (clip-path) en bas */
+  .player.ghost {
+	width: 100%;
+	height: 100%;
+	border-radius: 50% 50% 0 0;
+	position: relative;
+	background-color: #ff1493;   /* couleur par défaut si non redéfini */
+  }
+  .player.ghost::after {
+	content: '';
+	position: absolute;
+	bottom: 0;
+	left: 0;
+	width: 100%;
+	height: 25%;
+	background-color: inherit;
+	clip-path: polygon(
+	  0% 100%, 20% 60%, 40% 100%,
+	  60% 60%, 80% 100%, 100% 60%, 100% 100%
+	);
+  }
+  
+  /* Pupilles du fantôme (on place deux <div> internes .pupil-left .pupil-right) */
+  .pupil-left,
+  .pupil-right {
+	position: absolute;
+	background-color: #000;
+	border-radius: 50%;
+	width: 15%;
+	height: 15%;
+  }
+  .pupil-left  { top: 30%; left: 30%; }
+  .pupil-right { top: 30%; right: 30%; }
+  
+  /* === Couleurs selon character (MAJUSCULES) === */
+  .player.ghost-I { background-color: #ff0000; }  /* fantôme rouge */
+  .player.ghost-Y { background-color: #00ffff; }  /* fantôme cyan */
+  .player.ghost-B { background-color: #0000ff; }  /* fantôme bleu */
+  .player.ghost-P { background-color: #ff1493; }  /* fantôme rose */
+  .player.ghost-C { background-color: #ffa500; }  /* fantôme orange */
+  
