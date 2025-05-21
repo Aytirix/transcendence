@@ -4,6 +4,8 @@ import Pacman from "../Character/Pacman";
 
 export default class PacmanMap {
 	private grid: TileType[][];
+	public width: number;
+	public height: number;
 	/**
 	 * Map des téléporteurs : position source -> position destination
 	 */
@@ -11,6 +13,9 @@ export default class PacmanMap {
 
 	public constructor(grid: string[]) {
 		this.grid = this.fromNumbers(grid);
+		this.width = 0;
+		for (let row of this.grid) this.width = Math.max(this.width, row.length);
+		this.height = this.grid.length;
 		this.buildTeleportMap();
 	}
 
@@ -63,9 +68,9 @@ export default class PacmanMap {
 	/**
 	 * Teste si on peut marcher sur la tuile (inutile sur les murs et fantom-portal)
 	 */
-	public isWalkable(pos: vector2): boolean {
+	public isWalkable(nameChar: CharacterType, pos: vector2): boolean {
 		const tile = this.getTile(pos);
-		return tile !== null && tile !== TileType.Wall && tile !== TileType.GhostPortalBlock;
+		return tile !== null && tile !== TileType.Wall && ((nameChar == CharacterType.Pacman && tile !== TileType.GhostPortalBlock) || (nameChar != CharacterType.Pacman));
 	}
 
 	/**
@@ -74,26 +79,112 @@ export default class PacmanMap {
 	private buildTeleportMap(): void {
 		const h = this.grid.length;
 		const w = this.grid[0].length;
-		const teleports: vector2[] = [];
+		const teleports: Array<{ pos: vector2, direction: vector2 }> = [];
+		const assignedDestinations = new Set<string>();
 
-		// Collecte toutes les tuiles Teleport
+		// Collecte toutes les tuiles Teleport et détermine leur direction
 		for (let y = 0; y < h; y++) {
 			for (let x = 0; x < w; x++) {
 				if (this.grid[y][x] === TileType.Teleport) {
-					teleports.push({ x, y });
+					// Détermine la direction du téléporteur en vérifiant les murs adjacents
+					const directions = [
+						{ x: 0, y: -1 }, // haut
+						{ x: 0, y: 1 },  // bas
+						{ x: -1, y: 0 }, // gauche
+						{ x: 1, y: 0 }   // droite
+					];
+
+					// Trouve la direction qui n'a pas de mur (le "sens" du téléporteur)
+					const openDirection = directions.find(dir => {
+						const checkPos = { x: x + dir.x, y: y + dir.y };
+						const tile = this.getTile(checkPos);
+						return tile !== null && tile !== TileType.Wall;
+					});
+
+					if (openDirection) {
+						teleports.push({
+							pos: { x, y },
+							direction: openDirection
+						});
+					}
 				}
 			}
 		}
 
-		// On suppose que les paires sont alignées horizontalement ou verticalement
-		teleports.forEach(src => {
-			const pair = teleports.find(dest => {
-				if (dest.x === src.x && Math.abs(dest.y - src.y) > 0) return true;
-				if (dest.y === src.y && Math.abs(dest.x - src.x) > 0) return true;
-				return false;
+		// Traitez les téléporteurs en priorité par ceux qui ont le moins d'options
+		const sortedTeleports = [...teleports].sort((a, b) => {
+			const aOptions = teleports.filter(t =>
+				t.pos.x !== a.pos.x || t.pos.y !== a.pos.y
+			).length;
+			const bOptions = teleports.filter(t =>
+				t.pos.x !== b.pos.x || t.pos.y !== b.pos.y
+			).length;
+			return aOptions - bOptions;
+		});
+
+		// Pour chaque téléporteur, trouve le téléporteur le plus loin aligné
+		sortedTeleports.forEach(src => {
+			// Vérifie si ce téléporteur source est déjà assigné comme destination
+			const srcKey = `${src.pos.x},${src.pos.y}`;
+			if (assignedDestinations.has(srcKey)) return;
+
+			// On ne considère que les téléporteurs ayant une direction compatible
+			const isHorizontal = src.direction.x !== 0;
+			const possibleDestinations = teleports.filter(dest => {
+				// Exclure le téléporteur source
+				if (dest.pos.x === src.pos.x && dest.pos.y === src.pos.y) return false;
+
+				// Exclure les téléporteurs déjà assignés comme destination
+				const destKey = `${dest.pos.x},${dest.pos.y}`;
+				if (assignedDestinations.has(destKey)) return false;
+
+				// Pour les téléporteurs horizontaux, vérifier l'alignement sur l'axe Y
+				if (isHorizontal) {
+					return dest.pos.y === src.pos.y &&
+						// Directions opposées (si src pointe à droite, dest doit pointer à gauche)
+						Math.sign(dest.direction.x) === -Math.sign(src.direction.x);
+				}
+				// Pour les téléporteurs verticaux, vérifier l'alignement sur l'axe X
+				else {
+					return dest.pos.x === src.pos.x &&
+						// Directions opposées (si src pointe en bas, dest doit pointer en haut)
+						Math.sign(dest.direction.y) === -Math.sign(src.direction.y);
+				}
 			});
-			if (pair) {
-				this.teleportMap.set(`${src.x},${src.y}`, pair);
+
+			// Trouver le téléporteur le plus éloigné
+			let farthestPair: vector2 | null = null;
+			let maxDistance = -1;
+
+			for (const dest of possibleDestinations) {
+				const distance = isHorizontal
+					? Math.abs(dest.pos.x - src.pos.x)
+					: Math.abs(dest.pos.y - src.pos.y);
+
+				if (distance > maxDistance) {
+					maxDistance = distance;
+					farthestPair = dest.pos;
+				}
+			}
+
+			// Associer le téléporteur source avec le téléporteur destination le plus éloigné
+			if (farthestPair) {
+				// Connexion aller (source -> destination)
+				this.teleportMap.set(srcKey, farthestPair);
+
+				// Connexion retour (destination -> source)
+				const destKey = `${farthestPair.x},${farthestPair.y}`;
+				this.teleportMap.set(destKey, src.pos);
+
+				// Marquer les deux téléporteurs comme assignés
+				assignedDestinations.add(srcKey);
+				assignedDestinations.add(destKey);
+			}
+		});
+		teleports.forEach(teleport => {
+			const teleportKey = `${teleport.pos.x},${teleport.pos.y}`;
+			if (!this.teleportMap.has(teleportKey)) {
+				this.setTile(teleport.pos, TileType.Wall);
 			}
 		});
 	}
@@ -167,21 +258,6 @@ export default class PacmanMap {
 		// if (direction.y <= 0) tp = { x: tp.x, y: tp.y - 1 };
 		// if (direction.y >= 0) tp = { x: tp.x, y: tp.y + 1 };
 		return tp;
-	}
-
-	/**
-	 * Renvoie les positions voisines (haut, bas, gauche, droite)
-	 */
-	public getNeighbors(pos: vector2): vector2[] {
-		const shifts: vector2[] = [
-			{ x: 0, y: -1 },
-			{ x: 0, y: 1 },
-			{ x: -1, y: 0 },
-			{ x: 1, y: 0 },
-		];
-		return shifts
-			.map(s => ({ x: pos.x + s.x, y: pos.y + s.y }))
-			.filter(p => this.isWalkable(p));
 	}
 
 	/**
