@@ -1,0 +1,93 @@
+@use "sass:math";
+@use "sass:string";
+
+html,
+body {
+	height: 100%;
+	margin: 0;
+}
+
+// Fonction pour générer des ombres multiples simulant les étoiles
+@function multiple-box-shadow($n) {
+	$value: "#{math.random(2000)}px #{math.random(2000)}px #FFF";
+
+	@for $i from 2 through $n {
+		$value: "#{$value}, #{math.random(2000)}px #{math.random(2000)}px #FFF";
+	}
+
+	@return string.unquote($value);
+}
+
+// Génération des étoiles
+$shadows-small: multiple-box-shadow(700);
+$shadows-medium: multiple-box-shadow(200);
+// Pour n'utiliser que le body, nous limitons le nombre de couches à 2.
+// (Pour trois couches, il faudrait introduire un élément supplémentaire.)
+
+body {
+	height: 100%;
+	margin: 0;
+	background: radial-gradient(ellipse at bottom, #1b2735 0%, #090a0f 100%) !important;
+	overflow: hidden;
+	position: relative;
+
+	// Couche de petites étoiles (1px)
+	&::before {
+		content: "";
+		position: absolute;
+		top: 0;
+		left: 0;
+		width: 1px;
+		height: 1px;
+		background: transparent;
+		box-shadow: $shadows-small;
+		animation: animStar 50s linear infinite;
+		z-index: -1;
+	}
+
+	// Couche de moyennes étoiles (2px)
+	&::after {
+		content: "";
+		position: absolute;
+		top: 0;
+		left: 0;
+		width: 2px;
+		height: 2px;
+		background: transparent;
+		box-shadow: $shadows-medium;
+		animation: animStar 100s linear infinite;
+		z-index: -1;
+	}
+
+	// Titre centré
+	#title {
+		position: absolute;
+		top: 50%;
+		left: 0;
+		right: 0;
+		color: #fff;
+		text-align: center;
+		font-family: "Lato", sans-serif;
+		font-weight: 300;
+		font-size: 50px;
+		letter-spacing: 10px;
+		transform: translateY(-50%);
+		padding-left: 10px;
+
+		span {
+			background: linear-gradient(white, #38495a);
+			-webkit-background-clip: text;
+			-webkit-text-fill-color: transparent;
+		}
+	}
+}
+
+@keyframes animStar {
+	from {
+		transform: translateY(0);
+	}
+
+	to {
+		transform: translateY(-2000px);
+	}
+}

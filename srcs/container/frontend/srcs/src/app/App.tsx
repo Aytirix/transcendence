@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import '../App.scss'
+import './assets/styles/App.scss'
 import { useLanguage } from '../contexts/LanguageContext';
 
 function App() {

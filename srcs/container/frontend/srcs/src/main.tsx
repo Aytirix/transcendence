@@ -7,7 +7,8 @@ import AppRouter from './app/AppRouter.tsx';
 import { ToastContainer } from './app/components/Notifications';
 
 import { AuthProvider } from './contexts/AuthContext';
-import './index.css';
+import './app/assets/styles/Star.scss';
+import './app/assets/styles/index.css';
 import { useEffect } from 'react';
 
 function DisableNativeContextMenu({ children }: { children: React.ReactNode }) {

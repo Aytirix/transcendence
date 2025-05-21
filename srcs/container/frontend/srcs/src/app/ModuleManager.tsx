@@ -9,7 +9,7 @@ import {
 	DragStartEvent
 } from '@dnd-kit/core';
 import './assets/styles/ModuleManager.scss';
-import '../App.scss'
+import './assets/styles/App.scss'
 import modulesDataImport from './assets/ListeModules.json';
 
 interface ModuleItem {
