@@ -15,7 +15,7 @@ export interface SafeWebSocketProps {
 	pingInterval?: number; // Délai entre les ping, en ms
 }
 
-export function useSafeWebSocket({ endpoint, onMessage, onStatusChange, reconnectDelay = 3000, maxReconnectAttempts = 5, pingInterval = 50000 }: SafeWebSocketProps): WebSocket | null {
+export function useSafeWebSocket({ endpoint, onMessage, onStatusChange, reconnectDelay = 500, maxReconnectAttempts = 10, pingInterval = 50000 }: SafeWebSocketProps): WebSocket | null {
 	const socketRef = useRef<WebSocket | null>(null);
 	const reconnectTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 	const heartbeatRef = useRef<NodeJS.Timeout | null>(null);
@@ -44,7 +44,6 @@ export function useSafeWebSocket({ endpoint, onMessage, onStatusChange, reconnec
 		socket.onmessage = (evt) => {
 			try {
 				const data = JSON.parse(evt.data);
-				console.log('WS message :', data);
 				if (data.result === 'error' && data.notification) {
 					for (const message of data.notification) {
 						notification.error(message);

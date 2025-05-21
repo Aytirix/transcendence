@@ -7,7 +7,7 @@ import Character from "./Character";
  * Classe principale du moteur de jeu Pac-Man
  */
 export default class Pacman extends Character {
-	private static _speed = 1;
+	private static _speed = 3;
 
 	constructor(player: player, position: vector2, nameChar: CharacterType) {
 		super(player, position, nameChar);

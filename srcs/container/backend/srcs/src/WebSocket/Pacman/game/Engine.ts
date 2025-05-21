@@ -5,7 +5,7 @@ import PacmanMap from './map/Map';
 import Ghost from "./Character/Ghost";
 import Pacman from "./Character/Pacman";
 
-const TILE_SIZE = 32;
+const TILE_SIZE = 50;
 
 /**
  * Classe principale du moteur de jeu Pac-Man
@@ -41,10 +41,10 @@ export default class Engine {
 		);
 
 		// Filtrer les personnages disponibles
-		const availableCharacters = characters.filter(c => !usedCharacters.has(c));
+		let availableCharacters = characters.filter(c => !usedCharacters.has(c));
 
 		players.forEach(p => {
-			// Si cest le premier
+			// Si c'est le premier
 			let spawnIndex;
 			let spawns;
 			let player: Ghost | Pacman;
@@ -53,17 +53,23 @@ export default class Engine {
 				characterType = CharacterType.Pacman;
 				spawns = this.map.getSpawnPositions()[CharacterType.Pacman];
 				spawnIndex = this.players.size % availableCharacters.length;
+				availableCharacters = availableCharacters.filter(c => c !== CharacterType.Pacman);
 			} else {
 				const randomIndex = Math.floor(Math.random() * availableCharacters.length);
-				const characterType = availableCharacters[randomIndex];
+				characterType = availableCharacters[randomIndex];
 
 				spawns = this.map.getSpawnPositions()[characterType];
 				spawnIndex = this.players.size % spawns.length;
+				availableCharacters = availableCharacters.filter(c => c !== characterType);
 			}
+
+			// Conversion grille → pixel en centrant
 			const position = this.gridToPixel(spawns[spawnIndex]);
+			console.log(`Player ${p.username} (${p.id}) spawned at ${position.x}, ${position.y} with character ${characterType}`);
 
 			if (characterType === CharacterType.Pacman) player = new Pacman(p, position, characterType);
 			else player = new Ghost(p, position, characterType);
+			player.nameChar = characterType;
 
 			this.players.set(p.id, player);
 		});
@@ -86,6 +92,27 @@ export default class Engine {
 	public start(): void {
 		this.lastTime = Date.now();
 		this.intervalId = setInterval(() => this.gameLoop(), this.tickRate);
+		const state = {
+			action: 'startGame',
+			data: {
+				players: Array.from(this.players.values()).map(p => (
+					{
+						id: p.player.id,
+						name: p.player.username,
+						character: p.nameChar,
+						position: p.position,
+						score: p.score
+					})),
+				tileSize: TILE_SIZE,
+				grid: this.map.toString(),
+				paused: { paused: this.isPaused, message: this.PauseMessage }
+			}
+		};
+		this.sockets.forEach(ws => {
+			if (ws && ws.readyState === WebSocket.OPEN) {
+				ws.send(JSON.stringify(state));
+			}
+		});
 	}
 
 	/**
@@ -126,8 +153,8 @@ export default class Engine {
 	}
 
 	/**
-	* Vérifie si le jeu est actuellement en pause
-	*/
+	 * Vérifie si le jeu est actuellement en pause
+	 */
 	public isGamePaused(): boolean {
 		return this.isPaused;
 	}
@@ -147,19 +174,20 @@ export default class Engine {
 	}
 
 	/**
-	 * Convertit une position en coordonnées de grille vers des coordonnées en pixels
+	 * Convertit une position en coordonnées de grille vers des coordonnées en pixels (centré)
 	 */
 	private gridToPixel(gridPos: vector2): vector2 {
 		return {
-			x: gridPos.x * TILE_SIZE,
-			y: gridPos.y * TILE_SIZE
+			x: gridPos.x * TILE_SIZE + TILE_SIZE / 2,
+			y: gridPos.y * TILE_SIZE + TILE_SIZE / 2
 		};
 	}
 
 	/**
-	 * Convertit une position en pixels vers des coordonnées de grille
+	 * Convertit une position en pixels (centré) vers des coordonnées en grille
 	 */
 	private pixelToGrid(pixelPos: vector2): vector2 {
+		// Comme pixelPos.x = grid * TILE_SIZE + TILE_SIZE/2, on peut juste faire floor(pixelPos / TILE_SIZE)
 		return {
 			x: Math.floor(pixelPos.x / TILE_SIZE),
 			y: Math.floor(pixelPos.y / TILE_SIZE)
@@ -167,30 +195,96 @@ export default class Engine {
 	}
 
 	private calculateNextPosition(pl: Ghost | Pacman, delta: number): vector2 {
-		const speed = pl.nameChar === CharacterType.Pacman ? Pacman.speed : Ghost.speed;
-
-		const currentGridPos = this.pixelToGrid(pl.position);
-
-		const nextGridPos = {
-			x: currentGridPos.x + pl.nextDirection.x,
-			y: currentGridPos.y + pl.nextDirection.y
-		};
-		const isWalkable = this.map.isWalkable(nextGridPos);
-		if (isWalkable) {
-			pl.direction = pl.nextDirection;
+		if (!pl.direction) {
+			pl.direction = { x: 0, y: 0 };
+			return { ...pl.position };
 		}
 
-		return {
-			x: Math.round(pl.position.x + pl.direction.x * speed * (delta / 16)),
-			y: Math.round(pl.position.y + pl.direction.y * speed * (delta / 16))
-		};
+		const speed = pl.nameChar === CharacterType.Pacman ? Pacman.speed : Ghost.speed;
+		const currentGridPos = this.pixelToGrid(pl.position);
+
+		// Centre exact de la tuile courante
+		const exactCenterX = currentGridPos.x * TILE_SIZE + TILE_SIZE / 2;
+		const exactCenterY = currentGridPos.y * TILE_SIZE + TILE_SIZE / 2;
+		const AlignementTolerance = 1;
+		const isAligned = Math.abs(pl.position.x - exactCenterX) <= AlignementTolerance &&
+			Math.abs(pl.position.y - exactCenterY) <= AlignementTolerance;
+		const directionOpposite = (pl.direction.x !== 0 && pl.nextDirection.x !== 0) || (pl.direction.y !== 0 && pl.nextDirection.y !== 0);
+
+		// Gestion du changement de direction si on est centré
+		if ((isAligned || directionOpposite) && pl.nextDirection && (pl.nextDirection.x !== 0 || pl.nextDirection.y !== 0)) {
+			const nextDirectionGridPos = {
+				x: currentGridPos.x + pl.nextDirection.x,
+				y: currentGridPos.y + pl.nextDirection.y
+			};
+			if (this.map.isWalkable(nextDirectionGridPos)) {
+				pl.direction = { ...pl.nextDirection };
+			}
+		}
+
+		// Calcule la position désirée du centre après déplacement
+		const velocityX = pl.direction.x * speed * (delta / 16);
+		const velocityY = pl.direction.y * speed * (delta / 16);
+		const desiredCenterX = pl.position.x + velocityX;
+		const desiredCenterY = pl.position.y + velocityY;
+
+		let finalCenterX = desiredCenterX;
+		let finalCenterY = desiredCenterY;
+
+		// --- Collision HORIZONTALE via le bord du sprite ---
+		if (pl.direction.x !== 0) {
+			if (pl.direction.x > 0) {
+				// On regarde l'arête droite du sprite après déplacement
+				const rightEdge = desiredCenterX + TILE_SIZE / 2;
+				const gridX_of_rightEdge = Math.floor(rightEdge / TILE_SIZE);
+				// Si la case à droite (même Y) est un mur, on clamp le centre X
+				if (!this.map.isWalkable({ x: gridX_of_rightEdge, y: currentGridPos.y })) {
+					// Centre bloqué juste à gauche du mur = bord de la case courante + demi-tile
+					finalCenterX = currentGridPos.x * TILE_SIZE + TILE_SIZE / 2;
+				}
+			} else {
+				// Vers la gauche → on regarde l'arête gauche du sprite après déplacement
+				const leftEdge = desiredCenterX - TILE_SIZE / 2;
+				const gridX_of_leftEdge = Math.floor(leftEdge / TILE_SIZE);
+				if (!this.map.isWalkable({ x: gridX_of_leftEdge, y: currentGridPos.y })) {
+					// Centre bloqué juste à droite du mur = bord de la case courante - demi-tile
+					finalCenterX = (currentGridPos.x + 1) * TILE_SIZE - TILE_SIZE / 2;
+				}
+			}
+		}
+
+		// --- Collision VERTICALE via le bord du sprite ---
+		if (pl.direction.y !== 0) {
+			if (pl.direction.y > 0) {
+				// Vers le bas = on regarde l'arête inférieure
+				const bottomEdge = desiredCenterY + TILE_SIZE / 2;
+				const gridY_of_bottomEdge = Math.floor(bottomEdge / TILE_SIZE);
+				if (!this.map.isWalkable({ x: currentGridPos.x, y: gridY_of_bottomEdge })) {
+					// Centre bloqué juste au-dessus du mur = bord inférieur de la case courante - demi-tile
+					finalCenterY = currentGridPos.y * TILE_SIZE + TILE_SIZE / 2;
+				}
+			} else {
+				// Vers le haut → on regarde l'arête supérieure
+				const topEdge = desiredCenterY - TILE_SIZE / 2;
+				const gridY_of_topEdge = Math.floor(topEdge / TILE_SIZE);
+				if (!this.map.isWalkable({ x: currentGridPos.x, y: gridY_of_topEdge })) {
+					// Centre bloqué juste en-dessous du mur = bord supérieur de la case courante + demi-tile
+					finalCenterY = (currentGridPos.y + 1) * TILE_SIZE - TILE_SIZE / 2;
+				}
+			}
+		}
+
+		// On renvoie la position du centre (après clamp éventuel)
+		return { x: Math.round(finalCenterX), y: Math.round(finalCenterY) };
 	}
+
+
 
 	private debug(): void {
 		console.log("=== ÉTAT ACTUEL DU JEU (DÉBOGAGE) ===");
 
 		// Obtenir une copie de la grille
-		const mapLines = this.map.toString(false);
+		const mapLines = this.map.toString();
 		const displayMap = [...mapLines];
 
 		// Ajouter les joueurs à la représentation
@@ -217,9 +311,10 @@ export default class Engine {
 		this.players.forEach(player => {
 			const gridPos = this.pixelToGrid(player.position);
 			console.log(`${player.nameChar} (ID: ${player.player.id}):
-				- Position pixel [${player.position.x}, ${player.position.y}]
+				- Position pixel [${player.position.x}, ${player.position.y}] (centré)
 				- Position grille [${gridPos.x}, ${gridPos.y}]
-				- Direction [${player.direction?.x || 0}, ${player.direction?.y || 0}]
+				- Direction      [${player.direction?.x || 0}, ${player.direction?.y || 0}]
+				- DirectionNexyt [${player.nextDirection?.x || 0}, ${player.nextDirection?.y || 0}]
 				- Score: ${player.score}`);
 		});
 
@@ -237,29 +332,33 @@ export default class Engine {
 		this.players.forEach(player => {
 			if (!player.direction) return;
 
-			// Calculer la prochaine position en pixels
-			const nextPos: vector2 = this.calculateNextPosition(player, delta);
+			// Calcule la prochaine position du centre en pixels
+			const nextCenter: vector2 = this.calculateNextPosition(player, delta);
 
-			// Convertir en coordonnées de grille pour vérification
-			const nextGridPos = this.pixelToGrid(nextPos);
+			// On met à jour la position du sprite
+			player.position = nextCenter;
 
-			// Vérifier si la position est marcheable
-			if (this.map.isWalkable(nextGridPos)) {
-				player.position = nextPos;
-			}
-
-			// Vérifier les téléporteurs en coordonnées de grille
+			// Recalcul du gridPos une fois qu'on est bien dans une case valide
 			const gridPos = this.pixelToGrid(player.position);
-			const tp = this.map.getTeleportDestination(gridPos);
-			if (tp) {
-				player.position = this.gridToPixel(tp);
-			}
 
+			// Vérifier les téléporteurs
+			const tp = this.map.getTeleportDestination(player.direction, gridPos);
+			if (tp && !player.teleport) {
+				player.teleport = true;
+				player.position = {
+					x: Math.round(tp.x * TILE_SIZE + TILE_SIZE / 2),
+					y: Math.round(tp.y * TILE_SIZE + TILE_SIZE / 2)
+				};
+			} else if (!tp) player.teleport = false;
+
+			// Si c'est Pac-Man, consommer éventuellement une pastille
 			if (player.nameChar === CharacterType.Pacman) {
 				this.map.consumePelletOrBonus(player, gridPos);
 			}
 		});
-		this.debug();
+
+		// Débogage si besoin
+		// this.debug();
 	}
 
 	/**
@@ -267,9 +366,16 @@ export default class Engine {
 	 */
 	private broadcastState(): void {
 		const state = {
-			action: 'update', 
+			action: 'updateGame',
 			data: {
-				players: Array.from(this.players.values()).map(p => ({ id: p.player.id, position: p.position, score: p.score })),
+				players: Array.from(this.players.values()).map(p => (
+					{
+						id: p.player.id,
+						name: p.player.username,
+						character: p.nameChar,
+						position: p.position,
+						score: p.score
+					})),
 				grid: this.map.toString(),
 				paused: { paused: this.isPaused, message: this.PauseMessage }
 			}

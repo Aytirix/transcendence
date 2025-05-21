@@ -10,6 +10,7 @@ export default class Character {
 	public direction: vector2;
 	public nextDirection: vector2;
 	public score: number;
+	public teleport:boolean;
 
 	constructor(player: player, position: vector2, nameChar: CharacterType) {
 		this.player = player;
@@ -18,6 +19,7 @@ export default class Character {
 		this.position = position;
 		this.nameChar = nameChar;
 		this.score = 0;
+		this.teleport = false;
 	}
 
 	public changeDirection(direction: string): void {

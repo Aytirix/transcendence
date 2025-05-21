@@ -4,6 +4,7 @@ import { useSafeWebSocket } from '../../api/useSafeWebSocket';
 import { state } from '../types/pacmanTypes';
 import { CenteredBox } from './menu/CenteredBox';
 import { useAuth } from '../../contexts/AuthContext';
+import PacmanMap from './theojeutmp/PacmanMap';
 
 function initState(): state {
 	const state: state = {
@@ -13,6 +14,15 @@ function initState(): state {
 		rooms: {
 			active: [],
 			waiting: [],
+		},
+		game: {
+			grid: [],
+			players: [],
+			tileSize: 50,
+			paused: {
+				paused: false,
+				message: '',
+			},
 		},
 	};
 	return state;
@@ -29,6 +39,37 @@ export default function WebSocketPacman() {
 					rooms: {
 						waiting: data.waiting,
 						active: data.active,
+					},
+				}));
+				break;
+			}
+			case 'startGame': {
+				console.log('startGame', data);
+				console.log('grid', data.data.grid);
+				console.log('players', data.data.players);
+				console.log('tileSize', data.data.tileSize);
+				console.log('paused', data.data.paused);
+				setState((prevState: state) => ({
+					...prevState,
+					game: {
+						...prevState.game,
+						players: data.data.players,
+						grid: data.data.grid,
+						tileSize: data.data.tileSize,
+						paused: data.data.paused,
+					},
+				}));
+				console.log('state', state);
+				break;
+			}
+			case 'updateGame': {
+				setState((prevState: state) => ({
+					...prevState,
+					game: {
+						...prevState.game,
+						grid: data.data.grid,
+						players: data.data.players,
+						paused: data.data.paused,
 					},
 				}));
 				break;
@@ -61,7 +102,7 @@ export default function WebSocketPacman() {
 
 	useEffect(() => {
 		window.addEventListener('keydown', handleKeyDown);
-		
+
 		return () => {
 			window.removeEventListener('keydown', handleKeyDown);
 		};
@@ -90,7 +131,11 @@ export default function WebSocketPacman() {
 
 	return (
 		<div className="bg-gray-200 text-white flex flex-col items-center justify-center">
-			<CenteredBox state={state} />
+			{state.game.grid && state.game.grid.length > 0 ? (
+				<PacmanMap state={state} />
+			) : (
+				<CenteredBox state={state} />
+			)}
 		</div>
 	);
 }

@@ -10,7 +10,15 @@ export interface room {
 	numberOfPlayers?: number;
 }
 
+export interface vector2 {
+	x: number;
+	y: number;
+}
+
 export interface player extends User {
+	character?: string;
+	position?: vector2;
+	score?: number;
 	elo?: number;
 }
 
@@ -22,4 +30,13 @@ export interface state {
 		active: room[];
 		waiting: room[];
 	}
+	game: {
+		players: player[];
+		grid: string[];
+		tileSize: number;
+		paused: {
+			paused: boolean;
+			message: string;
+		}
+	};
 }
