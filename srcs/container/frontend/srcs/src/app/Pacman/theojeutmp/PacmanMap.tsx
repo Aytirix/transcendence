@@ -78,18 +78,18 @@ const PacmanMap: React.FC<PacmanMapProps> = ({ state }) => {
 				{/* 2. Superposer les joueurs */}
 				{players.map(player => {
 					const className =
-					player.character === 'P'
-					? 'player pacman'
-					: `player ghost ghost-${player.character}`;
-					
+						player.character === 'P'
+							? 'player pacman'
+							: `player ghost ghost-${player.character}`;
+
 					// On soustrait tileSize/2 pour que (position.x, position.y) soit le centre du <div>
 					const half = tileSize / 2;
-					
+
 					// Default position if undefined
 					const posX = player.position?.x ?? 0;
 					const posY = player.position?.y ?? 0;
 					console.log(player.character, posX, posY);
-					
+
 					return (
 						<div
 							key={player.id}

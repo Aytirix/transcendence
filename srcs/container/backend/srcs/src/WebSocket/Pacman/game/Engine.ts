@@ -358,10 +358,7 @@ export default class Engine {
 			const tp = this.map.getTeleportDestination(player.direction, gridPos);
 			if (tp && !player.teleport) {
 				player.teleport = true;
-				player.position = {
-					x: Math.round(tp.x * TILE_SIZE + TILE_SIZE / 2),
-					y: Math.round(tp.y * TILE_SIZE + TILE_SIZE / 2)
-				};
+				player.position = tp;
 			} else if (!tp) player.teleport = false;
 
 			// Si c'est Pac-Man, consommer éventuellement une pastille
@@ -384,7 +381,7 @@ export default class Engine {
 				players: Array.from(this.players.values()).map(p => (
 					{
 						id: p.player.id,
-						name: p.player.username,
+						username: p.player.username,
 						character: p.nameChar,
 						position: p.position,
 						score: p.score
