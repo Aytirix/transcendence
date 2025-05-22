@@ -454,7 +454,7 @@ export default class Engine {
 					character: p.nameChar,
 					position: p.position,
 					score: p.score,
-					direction: p.direction,
+					direction: p.directionToString(),
 					isFrightened: p instanceof Ghost ? p.isFrightened : false,
 					returnToSpawn: p instanceof Ghost ? p.isReturningToSpawn : false
 				})),
