@@ -47,4 +47,12 @@ export default class Character {
 		this.direction.x = -this.direction.x;
 		this.direction.y = -this.direction.y;
 	}
+
+	public directionToString(): string {
+		if (this.direction.x === 0 && this.direction.y === -1) return 'UP';
+		if (this.direction.x === 0 && this.direction.y === 1) return 'DOWN';
+		if (this.direction.x === -1 && this.direction.y === 0) return 'LEFT';
+		if (this.direction.x === 1 && this.direction.y === 0) return 'RIGHT';
+		return '';
+	}
 }
