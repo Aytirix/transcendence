@@ -355,7 +355,7 @@ export default class Engine {
 			const gridPos = this.pixelToGrid(player.position);
 
 			// Vérifier les téléporteurs
-			const tp = this.map.getTeleportDestination(player.direction, gridPos);
+			const tp = this.map.getTeleportDestination(gridPos);
 			if (tp && !player.teleport) {
 				player.teleport = true;
 				player.position = tp;
