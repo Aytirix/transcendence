@@ -6,6 +6,7 @@ import Ghost from "./Character/Ghost";
 import Pacman from "./Character/Pacman";
 
 export const TILE_SIZE = 50;
+export const PLAYER_SPEED = 3;
 
 /**
  * Classe principale du moteur de jeu Pac-Man
@@ -19,6 +20,12 @@ export default class Engine {
 	private sockets: Map<number, WebSocket> = new Map();
 	private isPaused: boolean = false;
 	private PauseMessage: string = "";
+
+	// Ajout des propriétés pour le mode effrayé
+	private isFrightened: boolean = false;
+	private frightenedEndTime: number = 0;
+	private static FRIGHTENED_DURATION = 8000; // 8 secondes en mode effrayé
+	private static FRIGHTENED_SPEED = 1.5 // Vitesse réduite en mode effrayé
 
 	constructor(rawLayout: string[], initialPlayers: player[], initialPlayerSockets: Map<number, WebSocket>) {
 		this.map = new PacmanMap(rawLayout);
@@ -153,13 +160,6 @@ export default class Engine {
 	}
 
 	/**
-	 * Vérifie si le jeu est actuellement en pause
-	 */
-	public isGamePaused(): boolean {
-		return this.isPaused;
-	}
-
-	/**
 	 * Boucle principale de mise à jour et diffusion de l'état
 	 */
 	private gameLoop(): void {
@@ -170,12 +170,16 @@ export default class Engine {
 		if (!this.isPaused) {
 			let pacmanInstance: Pacman | undefined;
 			this.players.forEach(player => {
-				if (player.nameChar === CharacterType.Pacman) {
-					pacmanInstance = player as Pacman;
-				}
+				if (player.nameChar === CharacterType.Pacman) pacmanInstance = player as Pacman;
 			});
+
+			if (this.isFrightened && Date.now() > this.frightenedEndTime) {
+				this.unsetFrightened();
+			}
+
+			// Mettre à jour le comportement des fantômes
 			this.players.forEach(player => {
-				if (player instanceof Ghost) {
+				if (player instanceof Ghost && now - player.player.updateAt > 2000) {
 					(player as Ghost).updateBehaviour(
 						pacmanInstance,
 						this.players as Map<number, Ghost>
@@ -184,8 +188,8 @@ export default class Engine {
 			}
 			);
 			this.update(delta);
-			this.broadcastState();
 		}
+		this.broadcastState();
 	}
 
 	/**
@@ -215,7 +219,13 @@ export default class Engine {
 			return { ...pl.position };
 		}
 
-		const speed = pl.nameChar === CharacterType.Pacman ? Pacman.speed : Ghost.speed;
+		// Set the appropriate speed based on character type and state
+		let speed = Pacman.speed;
+		if (pl instanceof Ghost) {
+			if (pl.isReturningToSpawn) speed = Ghost._speedRespawn;
+			else speed = pl.isFrightened ? Engine.FRIGHTENED_SPEED : Ghost._speed;
+		}
+
 		const currentGridPos = this.pixelToGrid(pl.position);
 
 		// Centre exact de la tuile courante
@@ -293,6 +303,34 @@ export default class Engine {
 		return { x: Math.round(finalCenterX), y: Math.round(finalCenterY) };
 	}
 
+	/**
+	 * Active le mode frightened (fuite) lorsque Pac-Man mange une super pastille
+	 */
+	public setFrightened(): void {
+		this.isFrightened = true;
+		this.frightenedEndTime = Date.now() + Engine.FRIGHTENED_DURATION;
+		Ghost._speed = Engine.FRIGHTENED_SPEED;
+
+		// Inverser la direction immédiatement (comportement original)
+		for (const player of this.players.values()) {
+			if (player instanceof Ghost) {
+				player.isFrightened = true;
+				player.reverseDirection();
+			}
+		}
+	}
+
+	/**
+	 * Désactive le mode frightened
+	 */
+	public unsetFrightened(): void {
+		this.isFrightened = false;
+		for (const player of this.players.values()) {
+			if (player instanceof Ghost) player.isFrightened = false;
+		}
+		Ghost._speed = PLAYER_SPEED;
+	}
+
 	private debug(): void {
 		console.log("=== ÉTAT ACTUEL DU JEU (DÉBOGAGE) ===");
 
@@ -363,12 +401,44 @@ export default class Engine {
 
 			// Si c'est Pac-Man, consommer éventuellement une pastille
 			if (player.nameChar === CharacterType.Pacman) {
-				this.map.consumePelletOrBonus(player, gridPos);
+				if (this.map.consumePelletOrBonus(player, gridPos) == 50) this.setFrightened();
+				this.checkGhostPacmanCollision(player as Pacman);
 			}
 		});
 
 		// Débogage si besoin
-		this.debug();
+		// this.debug();
+	}
+
+	/**
+	 * Vérifie les collisions entre les fantômes et Pac-Man
+	 * @returns true si un fantôme a mangé Pac-Man
+	 */
+	private checkGhostPacmanCollision(pacman: Pacman): boolean {
+
+		for (const ghost of this.players.values()) {
+			if (ghost instanceof Pacman) continue;
+			// Distance entre les centres
+			const dx = ghost.position.x - pacman.position.x;
+			const dy = ghost.position.y - pacman.position.y;
+			const distance = Math.sqrt(dx * dx + dy * dy);
+
+			if (distance < TILE_SIZE * 0.8) {
+				if (ghost.isFrightened) {
+					// Pac-Man mange le fantôme effrayé
+					console.log(`Pacman a mangé le fantôme ${ghost.nameChar}`);
+					ghost.isFrightened = false;
+					ghost.respawn();
+					pacman.score += 200;
+				} else if (ghost.isReturningToSpawn) {
+					// Fantôme mange Pac-Man
+					ghost.score += 300;
+					// pacman.die();
+					return true;
+				}
+			}
+		}
+		return false;
 	}
 
 	/**
@@ -378,16 +448,22 @@ export default class Engine {
 		const state = {
 			action: 'updateGame',
 			data: {
-				players: Array.from(this.players.values()).map(p => (
-					{
-						id: p.player.id,
-						username: p.player.username,
-						character: p.nameChar,
-						position: p.position,
-						score: p.score
-					})),
+				players: Array.from(this.players.values()).map(p => ({
+					id: p.player.id,
+					username: p.player.username,
+					character: p.nameChar,
+					position: p.position,
+					score: p.score,
+					direction: p.direction,
+					isFrightened: p instanceof Ghost ? p.isFrightened : false,
+					returnToSpawn: p instanceof Ghost ? p.isReturningToSpawn : false
+				})),
 				grid: this.map.toString(),
-				paused: { paused: this.isPaused, message: this.PauseMessage }
+				paused: { paused: this.isPaused, message: this.PauseMessage },
+				frightenedState: {
+					active: this.isFrightened,
+					remainingTime: this.isFrightened ? Math.max(0, this.frightenedEndTime - Date.now()) : 0
+				}
 			}
 		};
 		this.sockets.forEach(ws => {

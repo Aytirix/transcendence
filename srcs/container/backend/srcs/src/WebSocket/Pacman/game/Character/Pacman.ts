@@ -2,12 +2,13 @@ import { player, room, GameState, vector2, CharacterType } from "@Pacman/TypesPa
 import { WebSocket } from 'ws';
 import Character from "./Character";
 
+export const PLAYER_SPEED = 3;
 
 /**
  * Classe principale du moteur de jeu Pac-Man
  */
 export default class Pacman extends Character {
-	private static _speed = 3;
+	private static _speed = PLAYER_SPEED;
 
 	constructor(player: player, position: vector2, nameChar: CharacterType) {
 		super(player, position, nameChar);
