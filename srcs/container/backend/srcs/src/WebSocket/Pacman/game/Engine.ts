@@ -385,28 +385,23 @@ export default class Engine {
 
 			// Calcule la prochaine position du centre en pixels
 			const nextCenter: vector2 = this.calculateNextPosition(player, delta);
-
-			// On met à jour la position du sprite
 			player.position = nextCenter;
 
 			// Recalcul du gridPos une fois qu'on est bien dans une case valide
 			const gridPos = this.pixelToGrid(player.position);
 
-			// Vérifier les téléporteurs
-			const tp = this.map.getTeleportDestination(gridPos);
-			if (tp && !player.teleport) {
-				player.teleport = true;
-				player.position = tp;
-			} else if (!tp) player.teleport = false;
-
 			// Si c'est Pac-Man, consommer éventuellement une pastille
 			if (player.nameChar === CharacterType.Pacman) {
-				if (this.map.consumePelletOrBonus(player, gridPos) == 50) this.setFrightened();
+				// Vérifier les téléporteurs
+				const tp = this.map.getTeleportDestination(gridPos);
+				if (tp && !player.teleport) {
+					player.teleport = true;
+					player.position = tp;
+				} else if (!tp) player.teleport = false;
+				if (this.map.consumePelletOrBonus(player as Pacman, gridPos) == 50) this.setFrightened();
 				this.checkGhostPacmanCollision(player as Pacman);
 			}
 		});
-
-		// Débogage si besoin
 		// this.debug();
 	}
 
@@ -424,19 +419,33 @@ export default class Engine {
 			const distance = Math.sqrt(dx * dx + dy * dy);
 
 			if (distance < TILE_SIZE * 0.8) {
-				if (ghost.isFrightened) {
+				if (ghost.isFrightened && !ghost.isReturningToSpawn) {
 					// Pac-Man mange le fantôme effrayé
 					console.log(`Pacman a mangé le fantôme ${ghost.nameChar}`);
 					ghost.isFrightened = false;
 					ghost.respawn();
 					pacman.score += 200;
-				} else if (ghost.isReturningToSpawn) {
+				} else if (!ghost.isFrightened && !ghost.isReturningToSpawn) {
 					// Fantôme mange Pac-Man
+					console.log(`Le fantôme ${ghost.nameChar} a mangé Pacman`);
+					this.deadPacman(pacman);
 					ghost.score += 300;
-					// pacman.die();
-					return true;
 				}
 			}
+			return false;
+		}
+	}
+
+	private deadPacman(pacman: Pacman): boolean {
+		this.stop();
+		pacman.life -= 1;
+		if (pacman.life <= 0) {
+			return true;
+		}
+
+		if (pacman.life <= 0) {
+			this.stop();
+			return true;
 		}
 		return false;
 	}
@@ -458,6 +467,7 @@ export default class Engine {
 					isFrightened: p instanceof Ghost ? p.isFrightened : false,
 					returnToSpawn: p instanceof Ghost ? p.isReturningToSpawn : false
 				})),
+				pacmanLife: Array.from(this.players.values()).find(p => p instanceof Pacman)?.life,
 				grid: this.map.toString(),
 				paused: { paused: this.isPaused, message: this.PauseMessage },
 				frightenedState: {

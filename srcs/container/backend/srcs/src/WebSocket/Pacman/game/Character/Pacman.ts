@@ -9,6 +9,7 @@ export const PLAYER_SPEED = 3;
  */
 export default class Pacman extends Character {
 	private static _speed = PLAYER_SPEED;
+	public life: number = 3;
 
 	constructor(player: player, position: vector2, nameChar: CharacterType) {
 		super(player, position, nameChar);
@@ -16,4 +17,5 @@ export default class Pacman extends Character {
 
 	public static get speed(): number { return this._speed; }
 	public static set speed(value: number) { this._speed = value; }
+
 }
