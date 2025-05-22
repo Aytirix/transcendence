@@ -250,7 +250,7 @@ export default class PacmanMap {
 	/**
 	 * Si la position est un téléporteur, retourne la destination
 	 */
-	public getTeleportDestination(direction: vector2, pos: vector2): vector2 | null {
+	public getTeleportDestination(pos: vector2): vector2 | null {
 		const key = `${pos.x},${pos.y}`;
 		let tp = this.teleportMap.get(key) || null;
 		if (!tp) return null;
