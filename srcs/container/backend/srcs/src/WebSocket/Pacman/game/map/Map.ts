@@ -194,16 +194,19 @@ export default class PacmanMap {
 	 * Consomme une pastille ou un bonus à la position donnée et retourne les points gagnés
 	 * Retourne 0 si aucune pastille ou bonus n'est présent
 	 */
-	public consumePelletOrBonus(player: Pacman, pos: vector2): void {
+	public consumePelletOrBonus(player: Pacman, pos: vector2): number {
 		const tile = this.getTile(pos);
 
 		if (tile === TileType.Pellet) {
 			this.setTile(pos, TileType.Empty);
 			player.score += 10;
+			return 10;
 		} else if (tile === TileType.Bonus) {
 			this.setTile(pos, TileType.Empty);
 			player.score += 50;
+			return 50;
 		}
+		return 0;
 	}
 
 	/**
