@@ -35,6 +35,7 @@ export interface player {
 	gameId: number;
 	elo: number;
 	room?: room;
+	isSpectator?: boolean;
 }
 
 export enum TileType {

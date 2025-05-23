@@ -190,7 +190,24 @@ class StateManager {
 		this.PlayerRoomWs.delete(playerId);
 	}
 
-	public startGame(game: room): void {
+	public stopGame(game: room): void {
+		if (game) {
+			game.players.forEach((p: player) => {
+				p.gameId = null;
+			});
+			for (const player of game.players) {
+				this.PlayerGame.delete(player.id);
+				this.PlayerGameWs.delete(player.id);
+				this.PlayerRoomWs.delete(player.id);
+				this.PlayerRoom.set(player.id, player);
+				this.PlayerRoomWs.set(player.id, this.PlayerGameWs.get(player.id));
+			}
+			this.RoomManager.removeGame(game.id);
+			this.RoomManager.updateRoomState(game.id, 'finished');
+		}
+	}
+
+	public startGame(room: room): void {
 		const LAYOUT: string[] = [
 			"##############T##############",
 			"#............# #............#",
@@ -224,29 +241,22 @@ class StateManager {
 			"#o.........................o#",
 			"##############T##############",
 		];
-		// const LAYOUT: string[] = [
-		// 	"######",
-		// 	"#BICY#",
-		// 	"#P...#",
-		// 	"######",
-		// ];
-
-		if (game) {
-			game.state = 'active';
-			game.startTime = Date.now();
-			this.RoomManager.updateRoomState(game.id, 'active');
+		if (room) {
+			room.state = 'active';
+			room.startTime = Date.now();
+			this.RoomManager.updateRoomState(room.id, 'active');
 			const playersws = new Map<number, WebSocket>();
-			for (const player of game.players) {
+			for (const player of room.players) {
 				const ws = this.PlayerRoomWs.get(player.id);
 				if (ws) playersws.set(player.id, ws);
 			}
-			game.engine = new Engine(LAYOUT, game.players, playersws);
-			game.engine.start();
-			game.players.forEach((p: player) => {
-				p.gameId = game.id;
+			room.engine = new Engine(LAYOUT, room.players, playersws);
+			room.engine.start();
+			room.players.forEach((p: player) => {
+				p.gameId = room.id;
 			});
 			// enlever les joueurs de la liste des joueurs
-			for (const player of game.players) {
+			for (const player of room.players) {
 				this.PlayerRoom.delete(player.id);
 				this.PlayerGame.set(player.id, player);
 				this.PlayerGameWs.set(player.id, this.PlayerRoomWs.get(player.id));
