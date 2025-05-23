@@ -34,6 +34,7 @@ export interface state {
 		frightenedState: {
 			remainingTime: number;
 		}
+		isSpectator: boolean;
 		players: player[];
 		grid: string[];
 		pacmanLife : number;
