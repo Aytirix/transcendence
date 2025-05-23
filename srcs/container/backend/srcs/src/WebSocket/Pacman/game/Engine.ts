@@ -418,7 +418,8 @@ export default class Engine {
 			const dy = ghost.position.y - pacman.position.y;
 			const distance = Math.sqrt(dx * dx + dy * dy);
 
-			if (distance < TILE_SIZE * 0.8) {
+			console.log(`Distance entre Pacman et ${ghost.nameChar}: ${distance}`);
+			if (distance < TILE_SIZE / 2) {
 				if (ghost.isFrightened && !ghost.isReturningToSpawn) {
 					// Pac-Man mange le fantôme effrayé
 					console.log(`Pacman a mangé le fantôme ${ghost.nameChar}`);
@@ -426,7 +427,6 @@ export default class Engine {
 					ghost.respawn();
 					pacman.score += 200;
 				} else if (!ghost.isFrightened && !ghost.isReturningToSpawn) {
-					// Fantôme mange Pac-Man
 					console.log(`Le fantôme ${ghost.nameChar} a mangé Pacman`);
 					this.deadPacman(pacman);
 					ghost.score += 300;
