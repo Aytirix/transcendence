@@ -5,13 +5,42 @@
   justify-content: center;
   align-items: center;
   height: 100px; /* Hauteur de l'en-tête */
-  background-color: #222; /* Couleur de fond de l'en-tête */
-  color: white; /* Couleur du texte */
+  color: #FFEE00; /* Couleur du texte */
   font-size: 2rem; /* Taille de la police */
   font-family: 'Press Start 2P', cursive; /* Police de caractères */
+
+  animation: neon-pulse 2s infinite alternate;
 }
 
+@keyframes neon-pulse {
+	from {text-shadow: 0 0 10px #FFEE00;}
+	to {text-shadow: 0 0 20px #FFEE00, 0 0 30px #FFEE00, 0 0 40px #FFEE00;}
+}
 
+.life {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  
+  margin: 10px 0;
+  font-family: 'Press Start 2P', cursive;
+  color: #FFEE00;
+}
+
+.heart {
+  font-size: 1.5rem;
+  animation: pulse 1.5s infinite alternate;
+}
+
+.life-text {
+  margin-left: 10px;
+  font-size: 0.9rem;
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); }
+  100% { transform: scale(1.1); }
+}
 
 .pacman-map-wrapper {
 	display: grid;
@@ -38,8 +67,8 @@
 	position: relative;
 	overflow: hidden;
 	display: flex;
-	width: 774px;           /* Taille fixe en pixels */
-  	height: 840px;          /* Taille fixe en pixels */
+	width: 775px;           /* Taille fixe en pixels */
+  	height: 828px;          /* Taille fixe en pixels */
 	  //margin: 0 auto;
 	  border: 5px solid #222;    /* bordure sombre */
 	  border-radius: 20px;      /* coins arrondis */
@@ -233,72 +262,6 @@
 	 SPRITES JOUEURS : PAC‑MAN et FANTÔMES
   ------------------------------------------ */
   
-  /* Conteneur commun à tous les joueurs */
-  
-
-//   .player.pacman {
-// 	position: absolute;
-// 	width: 100%;
-// 	height: 100%;
-//   }
-  
-//   .pacman-body {
-// 	position: absolute;
-// 	width: 100%;
-// 	height: 100%;
-// 	background-color: yellow;
-// 	border-radius: 50%;
-// 	clip-path: polygon(
-// 	  0 0, 
-// 	  100% 0, 
-// 	  100% 100%, 
-// 	  0 100%
-// 	);
-//   }
-//   .pacman-mouth {
-// 	position: absolute;
-// 	width: 100%;
-// 	height: 100%;
-// 	border-radius: 50%;
-// 	background-color: rgb(0, 0, 0);
-// 	clip-path: polygon(
-// 	  50% 50%,
-// 	  100% 25%,
-// 	  100% 75%,
-// 	  50% 50%
-// 	);
-// 	animation: chomp 0.25s linear infinite;
-//   }
-  
-//   .pacman-eye {
-// 	position: absolute;
-// 	top: 20%;
-// 	right: 20%;
-// 	width: 15%;
-// 	height: 15%;
-// 	background-color: black;
-// 	border-radius: 50%;
-// 	z-index: 2;
-//   }
-  
-//   @keyframes chomp {
-// 	0%, 100% {
-// 	  clip-path: polygon(
-// 		50% 50%,
-// 		100% 25%,
-// 		100% 75%,
-// 		50% 50%
-// 	  );
-// 	}
-// 	50% {
-// 	  clip-path: polygon(
-// 		50% 50%,
-// 		100% 0%,
-// 		100% 100%,
-// 		50% 50%
-// 	  );
-// 	}
-//   }
   .player {
 	position: absolute;
 	box-sizing: border-box;
@@ -321,23 +284,41 @@
 	width: 100%;
 	height: 100%;
 	border-radius: 50%;
-	animation: eat 0.4s linear infinite;
-	background: conic-gradient(yellow 55deg, transparent 0 125deg, yellow 0);
-	transform-origin: center;
-}
-  
-
-.pacman-eye {
-	position: absolute;
-	top: 15%;
-	right: 30%;
-	width: 15%;
-	height: 15%;
-	background-color: black;
-	border-radius: 100%;
+	//animation: eat 0.4s linear infinite;
+	/* background: conic-gradient(yellow 55deg, transparent 0 125deg, yellow 0);
+	transform-origin: center; */
 }
 
-  
+/* Corps de Pacman selon la direction */
+.pacman-body-left::after {
+  animation: eat 0.4s linear infinite;
+  background: conic-gradient(yellow 55deg, transparent 0 125deg, yellow 0);
+  transform: rotate(180deg); /* Rotation pour regarder à gauche */
+}
+
+.pacman-body-right::after {
+  animation: eat 0.4s linear infinite;
+  background: conic-gradient(yellow 55deg, transparent 0 125deg, yellow 0);
+}
+
+.pacman-body-up::after {
+  animation: eat 0.4s linear infinite;
+  background: conic-gradient(yellow 55deg, transparent 0 125deg, yellow 0);
+  transform: rotate(270deg); /* Rotation pour regarder en haut */
+}
+
+.pacman-body-down::after {
+  animation: eat 0.4s linear infinite;
+  background: conic-gradient(yellow 55deg, transparent 0 125deg, yellow 0);
+  transform: rotate(90deg); /* Rotation pour regarder en bas */
+}
+
+
+
+@keyframes eat {
+	0%, 50% { background: conic-gradient(yellow 55deg, transparent 0 125deg, yellow 0); }
+	25% { background: conic-gradient(yellow 55deg, yellow 0);}
+  }
   
   /* === FANTÔMES ===
 	 Forme arrondie en haut + franges (clip-path) en bas */
@@ -408,12 +389,6 @@
   
   
 
-
-@keyframes eat {
-	0%, 50% { background: conic-gradient(yellow 55deg, transparent 0 125deg, yellow 0); }
-	25% { background: conic-gradient(yellow 55deg, yellow 0);}
-  }
-
 @keyframes power-pellet {
 	0% {
 		transform: scale(0.8);
@@ -433,10 +408,75 @@
 	from { opacity: 0.5; }
 	to { opacity: 1; }
 }
-  
-  .score {
-	color: white;
-	//margin: 1;
-	font-size: 1rem;
-	font-family: 'Press Start 2P';
-  }
+
+/* Configuration générale des sprites */
+.ghost-sprite {
+  width: 100%;
+  height: 100%;
+  background-repeat: no-repeat;
+  background-size: 400%;  /* 4 fantômes par rangée */
+  position: relative;
+}
+
+/* Animation de base des fantômes */
+@keyframes ghost-animation {
+  0% { background-position-x: 0%; }
+  33% { background-position-x: 33.33%; }
+  66% { background-position-x: 66.66%; }
+  100% { background-position-x: 100%; }
+}
+
+/* Directions pour les fantômes - premier paramètre: couleur/fantôme, second: direction */
+.ghost-sprite {
+  animation: ghost-animation 0.5s steps(2) infinite;
+}
+
+/* Position Y pour
+
+/* Position Y pour les directions (assumant que les rangées sont DOWN, LEFT, RIGHT, UP) */
+.ghost-sprite.direction-right { background-position-y: 0%; }
+.ghost-sprite.direction-left { background-position-y: 33.33%; }
+.ghost-sprite.direction-up { background-position-y: 66.66%; }
+.ghost-sprite.direction-down { background-position-y: 100%; }
+
+/* Position X pour chaque fantôme (assumant les colonnes sont Blinky, Pinky, Inky, Clyde) */
+.ghost-sprite.B-ghost { 
+  background-image: url('../../assets/img/pacman/ghost/blinky-right.gif');
+
+  border: #f77cf0;
+
+	//.left
+}
+.ghost-sprite.P-ghost { 
+  background-image: url('../../assets/img/pacman/SpriteSheetPacman.png');
+  background-position-x: 25%; 
+}
+.ghost-sprite.I-ghost { 
+  background-image: url('/assets/img/pacman/ghost/inky-right.gif');
+  background-position-x: 50%; 
+}
+.C-ghost { 
+  background-image: url('../../assets/img/pacman/SpriteSheetPacman.png');
+  background-position-x: 75%; 
+}
+.ghost-sprite.C-ghost { 
+  background-image: url('../../assets/img/pacman/SpriteSheetPacman.png');
+  background-position-x: 75%; 
+}
+
+/* Fantôme effrayé (bleu) */
+.ghost-sprite.frightened {
+  background-image: url('../../assets/img/pacman/SpriteSheetPacman.png'); 
+  background-position-y: 400%;  /* Ligne pour le mode frightened, ajustez selon votre sprite */
+  animation: ghost-animation 0.3s steps(2) infinite;  /* Plus rapide quand effrayé */
+}
+
+/* Fantôme clignotant (fin du mode frightened) */
+.ghost-sprite.frightened.blinking {
+  animation: ghost-frightened-end 0.2s steps(2) infinite;
+}
+
+@keyframes ghost-frightened-end {
+  0%, 50% { filter: brightness(1); }
+  25%, 75% { filter: brightness(0.6) hue-rotate(60deg); }
+}

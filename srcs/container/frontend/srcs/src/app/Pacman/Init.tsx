@@ -5,6 +5,7 @@ import { state } from '../types/pacmanTypes';
 import { CenteredBox } from './menu/CenteredBox';
 import { useAuth } from '../../contexts/AuthContext';
 import PacmanMap from './theojeutmp/PacmanMap';
+import CreatePacmanMap from './theojeutmp/CreatePacmanMap'; // Import the map editor
 
 function initState(): state {
 	const state: state = {
@@ -17,8 +18,13 @@ function initState(): state {
 		},
 		game: {
 			grid: [],
+			frightenedState: {
+				remainingTime: 0,
+			},
 			players: [],
 			tileSize: 50,
+			isSpectator: false,
+			pacmanLife: 3,
 			paused: {
 				paused: false,
 				message: '',
@@ -30,6 +36,7 @@ function initState(): state {
 
 export default function WebSocketPacman() {
 	const [state, setState] = useState<state>(initState());
+	const [showMapEditor, setShowMapEditor] = useState(false); // Add this state
 
 	const handleMessage = (data: any) => {
 		switch (data.action) {
@@ -94,6 +101,19 @@ export default function WebSocketPacman() {
 		}
 	};
 
+	const handleSaveMap = (mapData: string[]) => {
+		// Here you can implement logic to save the map to your backend
+		// For example, send it to the server via WebSocket
+		if (state.ws && state.ws.readyState === WebSocket.OPEN) {
+			state.ws.send(JSON.stringify({
+				action: 'saveCustomMap',
+				mapData
+			}));
+		}
+
+		setShowMapEditor(false); // Close the editor after saving
+	};
+
 	useEffect(() => {
 		window.addEventListener('keydown', handleKeyDown);
 
@@ -112,6 +132,11 @@ export default function WebSocketPacman() {
 					grid: [],
 					players: [],
 					tileSize: 50,
+					frightenedState: {
+						remainingTime: 0,
+					},
+					isSpectator: false,
+					pacmanLife: 3,
 					paused: {
 						paused: false,
 						message: '',
@@ -143,11 +168,16 @@ export default function WebSocketPacman() {
 
 	return (
 		<div className="bg-gray-200 text-white flex flex-col items-center justify-center">
-			{state.game.grid && state.game.grid.length > 0 ? (
-				<PacmanMap state={state} />
-			) : (
-				<CenteredBox state={state} />
-			)}
+				{showMapEditor ? (
+					<CreatePacmanMap onSave={handleSaveMap} onCancel={() => setShowMapEditor(false)} />
+				) : state.game.grid && state.game.grid.length > 0 ? (
+					<PacmanMap state={state} />
+				) : (
+					<CenteredBox 
+						state={state} 
+						onCreateMap={() => setShowMapEditor(true)} // Pass this prop to CenteredBox
+					/>
+				)}
 		</div>
 	);
 }

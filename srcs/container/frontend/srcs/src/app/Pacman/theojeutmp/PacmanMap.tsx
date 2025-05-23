@@ -2,10 +2,93 @@
 import React, { useState, useEffect } from 'react';
 import './PacmanMap.scss';
 import { state } from '../../types/pacmanTypes';
-import portalImg from '../../assets/img/pacman/portal.gif';	
+import portalImg from '../../assets/img/pacman/portal.gif';
 
-const CONTAINER_SIZE_WIDTH = 824 -50 ; // Doit correspondre à la taille CSS
-const CONTAINER_SIZE_HEIGHT = 880 - 50; // Doit correspondre à la taille CSS
+// Import des GIFs de fantômes
+import ghostBRightGif from '../../assets/img/pacman/ghosts/B-right.gif';
+import ghostBLeftGif from '../../assets/img/pacman/ghosts/B-left.gif';
+import ghostBUpGif from '../../assets/img/pacman/ghosts/B-up.gif';
+import ghostBDownGif from '../../assets/img/pacman/ghosts/B-down.gif';
+
+import ghostPRightGif from '../../assets/img/pacman/ghosts/P-right.gif';
+import ghostPLeftGif from '../../assets/img/pacman/ghosts/P-left.gif';
+import ghostPUpGif from '../../assets/img/pacman/ghosts/P-up.gif';
+import ghostPDownGif from '../../assets/img/pacman/ghosts/P-down.gif';
+
+import ghostIRightGif from '../../assets/img/pacman/ghosts/I-right.gif';
+import ghostILeftGif from '../../assets/img/pacman/ghosts/I-left.gif';
+import ghostIUpGif from '../../assets/img/pacman/ghosts/I-up.gif';
+import ghostIDownGif from '../../assets/img/pacman/ghosts/I-down.gif';
+
+import ghostCRightGif from '../../assets/img/pacman/ghosts/C-right.gif';
+import ghostCLeftGif from '../../assets/img/pacman/ghosts/C-left.gif';
+import ghostCUpGif from '../../assets/img/pacman/ghosts/C-up.gif';
+import ghostCDownGif from '../../assets/img/pacman/ghosts/C-down.gif';
+
+// Import des GIFs/PNGs spéciaux
+import frightenedGif from '../../assets/img/pacman/ghosts/frightened.gif';
+import blinkingGif from '../../assets/img/pacman/ghosts/blinking.gif';
+import eyesRightPng from '../../assets/img/pacman/ghosts/eyes-right.png';
+import eyesLeftPng from '../../assets/img/pacman/ghosts/eyes-left.png';
+import eyesUpPng from '../../assets/img/pacman/ghosts/eyes-up.png';
+import eyesDownPng from '../../assets/img/pacman/ghosts/eyes-down.png';
+
+// Imports de Pacman
+import pacmanRightGif from '../../assets/img/pacman/pacman-right.gif';
+import pacmanLeftGif from '../../assets/img/pacman/pacman-left.gif';
+import pacmanUpGif from '../../assets/img/pacman/pacman-up.gif';
+import pacmanDownGif from '../../assets/img/pacman/pacman-down.gif';
+import pacmanDeathGif from '../../assets/img/pacman/pacman-death.gif';
+import pacmanPng from '../../assets/img/pacman/pacman.png';
+
+// Créer un mapping d'images pour faciliter l'accès
+const ghostImages = {
+  'B': {
+    'right': ghostBRightGif,
+    'left': ghostBLeftGif,
+    'up': ghostBUpGif,
+    'down': ghostBDownGif
+  },
+  'P': {
+    'right': ghostPRightGif,
+    'left': ghostPLeftGif,
+    'up': ghostPUpGif,
+    'down': ghostPDownGif
+  },
+  'I': {
+    'right': ghostIRightGif,
+    'left': ghostILeftGif,
+    'up': ghostIUpGif,
+    'down': ghostIDownGif
+  },
+  'C': {
+    'right': ghostCRightGif,
+    'left': ghostCLeftGif,
+    'up': ghostCUpGif,
+    'down': ghostCDownGif
+  },
+  'eyes': {
+    'right': eyesRightPng,
+    'left': eyesLeftPng,
+    'up': eyesUpPng,
+    'down': eyesDownPng
+  },
+  'frightened': frightenedGif,
+  'blinking': blinkingGif
+};
+
+// Mapping pour les images de Pacman (similaire à ghostImages)
+const pacmanImages = {
+  'right': pacmanRightGif,
+  'left': pacmanLeftGif,
+  'up': pacmanUpGif,
+  'down': pacmanDownGif,
+  'death': pacmanDeathGif,
+  'default': pacmanPng
+};
+
+const CONTAINER_SIZE_WIDTH = 775; // Doit correspondre à la taille CSS
+const CONTAINER_SIZE_HEIGHT = 828 // Doit correspondre à la taille CSS
 
 export interface Player {
 	id: number;
@@ -19,6 +102,7 @@ export interface Player {
 	direction?: 'UP' | 'DOWN' | 'LEFT' | 'RIGHT';
 	returnToSpawn?: boolean; // true si le joueur doit retourner à son spawn
 	isFrightened ?: boolean; // true si le fantôme est effrayé
+	isDying?: boolean; // true si Pacman est en train de mourir
 }
 
 interface PacmanMapProps {
@@ -91,28 +175,15 @@ const PacmanMap: React.FC<PacmanMapProps> = ({ state }) => {
 			default: return 'tile empty';
 		}
 	};
-
-	const ghostColors: Record<string, string> = {
-		B: "#ff0000", // rouge
-		Y: "#ff1493", // rose
-		I: "#0000ff", // bleu
-		C: "#ffa500"  // orange
-	  };
 	  
 
 	return (
 		<>
 			<div className="header">
-				<h3 className="title">test</h3>
+				<h3 className="title">PACMAN</h3>
 			</div>
 			<div className="pacman-map-wrapper">
-				<div className='column-left'>
-					{/* <div className="pacman-map-header">
-						<h3 className="title">Pacman</h3>
-						<h3 className="title">Score</h3>
-						<h3 className="title">Vies</h3>
-						</div> */}
-				</div>
+				<div className='column-left'></div>
 				<div className="pacman-map-container" >
 					{/* 1. Dessiner la grille : un <div> par case */}
 					<div className='pacman-map'
@@ -163,69 +234,102 @@ const PacmanMap: React.FC<PacmanMapProps> = ({ state }) => {
 
 						{/* 2. Superposer les joueurs */}
 						{players.map(player => {
+							// Pour Pacman
+							if (player.character === 'P') {
+								const direction = ((player as any).direction || 'RIGHT').toLowerCase();
+								const isDying = (player as any).isDying; // À ajouter à votre interface Player si nécessaire
+								
+								// Sélection de l'image de Pacman
+								let pacmanImage;
+								if (isDying) {
+									pacmanImage = pacmanImages.death;
+								} else if (direction in pacmanImages) {
+									pacmanImage = pacmanImages[direction as keyof typeof pacmanImages];
+								} else {
+									pacmanImage = pacmanImages.default;
+								}
+								
+								// Position et styles
+								const half = tileSize / 2;
+								const posX = player.position?.x ?? 0;
+								const posY = player.position?.y ?? 0;
+								
+								const baseStyle = {
+									top: posY - half,
+									left: posX - half,
+									width: tileSize,
+									height: tileSize,
+									backgroundImage: `url(${pacmanImage})`,
+									backgroundSize: 'contain',
+									backgroundRepeat: 'no-repeat',
+									backgroundPosition: 'center',
+								} as React.CSSProperties;
+								
+								return (
+									<div
+										key={player.id}
+										className="player pacman"
+										style={baseStyle}
+										title={`${player.username} (${player.score} pts)`}
+									/>
+								);
+							} 
+							// Pour les fantômes
+							else {
+								// Déterminer quel GIF utiliser en fonction du caractère et de la direction
+								const ghostChar = player.character; // 'B', 'P', 'I', 'C'
+								const direction = ((player as any).direction || 'RIGHT').toLowerCase();
+								const isFrightened = (player as any).isFrightened;
+								const isBlinking = isFrightened && (player as any).frightenedRemainingTime < 8;
+								const isReturningToSpawn = (player as any).returnToSpawn === true;
 							
-							const className =
-							player.character === 'P'
-							? 'player pacman'
-							: `player ghost ghost-${player.character}`;
-							
-							// On soustrait tileSize/2 pour que (position.x, position.y) soit le centre du <div>
-							const half = tileSize / 2;
-							
-							// Default position if undefined
-							const posX = player.position?.x ?? 0;
-							const posY = player.position?.y ?? 0;
-							
-							const baseStyle = {
+								// Sélection du GIF approprié
+								// Solution plus simple mais moins sûre au niveau du typage
+								let ghostImage;
+
+								if (isReturningToSpawn) {
+								  ghostImage = ghostImages.eyes[direction as keyof typeof ghostImages.eyes];
+								} else if (isBlinking) {
+								  ghostImage = ghostImages.blinking;
+								} else if (isFrightened) {
+								  ghostImage = ghostImages.frightened;
+								} else {
+								  // Utiliser as any pour contourner la vérification de type
+								  ghostImage = ghostChar && ghostChar in ghostImages 
+								    ? (ghostImages as any)[ghostChar][direction] 
+								    : ghostImages.B.right;
+								}
+								
+								const half = tileSize / 2;
+								const posX = player.position?.x ?? 0;
+								const posY = player.position?.y ?? 0;
+								
+								const baseStyle = {
 								top: posY - half,
 								left: posX - half,
 								width: tileSize,
 								height: tileSize,
-								'--ghost-color': ghostColors[player.character] || 'white'
-							} as React.CSSProperties;
+								backgroundImage: `url(${ghostImage})`,
+								backgroundSize: 'contain',
+								backgroundRepeat: 'no-repeat',
+								backgroundPosition: 'center',
+								} as React.CSSProperties;
+								
+								// Style spécifique pour les fantômes
+								let ghostClass = "player ghost";
+								if (isReturningToSpawn) ghostClass += " returning-to-spawn";
+								if (isFrightened) ghostClass += " frightened";
+								if (isBlinking) ghostClass += " blinking";
 							
-							// Style spécifique pour Pac-Man (rotation)
-							
-							return (
+								return (
 								<div
-								key={player.id}
-								className={className}
-								style={{...baseStyle}}
-								title={`${player.username} (${player.score} pts)`}
-								>
-									{player.character !== 'P' && (
-										<>
-										<div className="ghost-body">
-										<svg viewBox="0 0 56 56" preserveAspectRatio="xMidYMid meet">
-											<polygon points="0 24, 4 24, 4 12, 8 12, 8 8, 12 8, 12 4, 20 4, 20 0, 36 0, 36 4, 44 4, 44 8, 48 8, 48 12, 52 12, 52 24, 56 24, 56 48, 0 48" />
-										</svg>
-
-										</div>
-										<div className="ghost-eye-left">
-											<svg preserveAspectRatio="xMidYMid meet">
-												<polygon points="4 0, 12 0, 12 4, 16 4, 16 16, 12 16, 12 20, 4 20, 4 16, 0 16, 0 4, 4 4" />
-											</svg>
-										</div>
-										<div className="ghost-eye-right">
-											<svg preserveAspectRatio="xMidYMid meet">
-												<polygon points="4 0, 12 0, 12 4, 16 4, 16 16, 12 16, 12 20, 4 20, 4 16, 0 16, 0 4, 4 4" />
-											</svg>
-										</div>
-
-										
-										<div className="pupil-left"></div>
-										<div className="pupil-right"></div>
-										</>
-									)}
-									{player.character === 'P' && (
-										<>
-											<div className="pacman-body"></div>
-											{/* <div className="pacman-mouth"></div> */}
-											<div className="pacman-eye"></div>
-										</>
-									)}	
-								</div>
-							);
+									key={player.id}
+									className={ghostClass}
+									style={baseStyle}
+									title={`${player.username} (${player.score} pts)`}
+								></div>
+								);
+							}
 						})}
 					</div>
 				</div>
@@ -239,8 +343,14 @@ const PacmanMap: React.FC<PacmanMapProps> = ({ state }) => {
 						</h3>
 					))}
 				</div>
-		</div>
-				</>
+			</div>
+			<div className="life">
+				<span className="life-text">Lives : </span>
+				{Array.from({ length: state.game?.pacmanLife || 0 }).map((_, index) => (
+					<span key={index} className="heart">❤️</span>
+				))}
+			</div>
+		</>
 	);
 };
 

@@ -1,0 +1,313 @@
+// src/components/pacman/CreatePacmanMap.scss
+.create-pacman-map {
+	display: flex;
+	flex-direction: column;
+	padding: 20px;
+	color: white;
+	background-color: #111;
+	min-height: 100vh;
+	
+	h2 {
+	  color: #FFEE00;
+	  text-align: center;
+	  font-family: 'Press Start 2P', cursive;
+	  margin-bottom: 20px;
+	}
+	
+	.toolbar {
+	  display: flex;
+	  flex-wrap: wrap;
+	  justify-content: space-between;
+	  margin-bottom: 20px;
+	  
+	  .tool-group {
+		display: flex;
+		gap: 10px;
+		margin-bottom: 10px;
+		
+		button {
+		  background-color: #333;
+		  color: white;
+		  border: 2px solid #0000ff;
+		  border-radius: 5px;
+		  padding: 8px 15px;
+		  font-family: 'Press Start 2P', cursive;
+		  font-size: 0.8rem;
+		  cursor: pointer;
+		  transition: all 0.2s;
+		  
+		  &:hover {
+			background-color: #0000ff;
+		  }
+		}
+	  }
+	  
+	  .tile-selector {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 8px; // Réduit l'espace entre les options
+		
+		.tile-option {
+		  display: flex;
+		  flex-direction: column;
+		  align-items: center;
+		  cursor: pointer;
+		  border: 1px solid transparent; // Bordure plus fine
+		  border-radius: 4px; // Coin moins arrondi
+		  padding: 3px; // Padding réduit
+		  
+		  &.selected {
+			border-color: #FFEE00;
+			background-color: rgba(255, 238, 0, 0.1);
+		  }
+		  
+		  .tile {
+			width: 20px; // Réduit de 30px à 20px
+			height: 20px; // Réduit de 30px à 20px
+			position: relative;
+			
+			&.wall {
+			  background-color: #0000ff;
+			  border-radius: 3px; // Légèrement plus petit
+			}
+			
+			&.empty {
+			  background-color: #111;
+			  border: 1px dashed #444;
+			}
+			
+			&.pellet .dot {
+			  width: 4px; // Réduit de 6px à 4px
+			  height: 4px; // Réduit de 6px à 4px
+			  background-color: #ffb8ae;
+			  border-radius: 50%;
+			  position: absolute;
+			  top: 50%;
+			  left: 50%;
+			  transform: translate(-50%, -50%);
+			}
+			
+			&.power-pellet .big-dot {
+			  width: 8px; // Réduit de 12px à 8px
+			  height: 8px; // Réduit de 12px à 8px
+			  background-color: #ffb8ae;
+			  border-radius: 50%;
+			  position: absolute;
+			  top: 50%;
+			  left: 50%;
+			  transform: translate(-50%, -50%);
+			}
+			
+			&.door .door-line {
+			  width: 80%;
+			  height: 2px;
+			  background-color: #ffd700;
+			  position: absolute;
+			  top: 50%;
+			  left: 50%;
+			  transform: translate(-50%, -50%);
+			}
+			
+			&.tunnel {
+			  background-color: #000;
+			  border: 2px solid #0066ff;
+			  border-radius: 50%;
+			  display: flex;
+			  justify-content: center;
+			  align-items: center;
+			  color: #0066ff;
+			  font-weight: bold;
+			}
+			
+			// Nouveaux styles pour les points de spawn (version réduite)
+			&.spawn {
+			  display: flex;
+			  justify-content: center;
+			  align-items: center;
+			  font-weight: bold;
+			  font-size: 10px; // Taille réduite du texte
+			  border-radius: 50%;
+			  
+			  &.spawn-pacman {
+				background-color: yellow;
+				color: black;
+			  }
+			  
+			  &.spawn-blinky {
+				background-color: red;
+				color: white;
+			  }
+			  
+			  &.spawn-inky {
+				background-color: blue;
+				color: white;
+			  }
+			  
+			  &.spawn-pinky {
+				background-color: pink;
+				color: black;
+			  }
+			  
+			  &.spawn-clyde {
+				background-color: orange;
+				color: black;
+			  }
+			}
+		  }
+		  
+		  span {
+			font-size: 0.6rem; // Texte plus petit
+			margin-top: 2px; // Moins d'espace
+			max-width: 60px; // Limiter la largeur du texte
+			text-align: center;
+			overflow: hidden;
+			white-space: nowrap;
+			text-overflow: ellipsis;
+		  }
+		}
+	  }
+	}
+	
+	.map-editor {
+	  display: flex;
+	  justify-content: center;
+	  margin-bottom: 20px;
+	  
+	  .grid-container {
+		display: flex;
+		flex-direction: column;
+		border: 2px solid #0000ff;
+		
+		.grid-row {
+		  display: flex;
+		}
+		
+		.grid-cell {
+		  border: 1px solid #333;
+		  display: flex;
+		  justify-content: center;
+		  align-items: center;
+		  position: relative;
+		  width: 16px; // Plus petit que la valeur par défaut
+		  height: 16px; // Plus petit que la valeur par défaut
+		  
+		  &.wall {
+			background-color: #0000ff;
+		  }
+		  
+		  &.empty {
+			background-color: #111;
+		  }
+		  
+		  .dot {
+			width: 6px;
+			height: 6px;
+			background-color: #ffb8ae;
+			border-radius: 50%;
+		  }
+		  
+		  .big-dot {
+			width: 12px;
+			height: 12px;
+			background-color: #ffb8ae;
+			border-radius: 50%;
+		  }
+		  
+		  .door-line {
+			width: 80%;
+			height: 2px;
+			background-color: #ffd700;
+			position: absolute;
+		  }
+		  
+		  .spawn-label {
+			font-weight: bold;
+			font-size: 10px; // Texte plus petit
+		  }
+		}
+	  }
+	}
+	
+	.map-preview {
+	  background-color: #222;
+	  padding: 15px;
+	  border-radius: 5px;
+	  
+	  h3 {
+		font-size: 1rem;
+		color: #FFEE00;
+		margin-bottom: 10px;
+	  }
+	  
+	  .map-code {
+		font-family: monospace;
+		background-color: #111;
+		padding: 10px;
+		border-radius: 3px;
+		white-space: pre-wrap;
+		overflow-x: auto;
+		font-size: 12px;
+		line-height: 12px; /* Pour que les lignes soient plus compactes */
+	  }
+	}
+  }
+  
+  /* Styles pour les points de spawn */
+  .spawn {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	font-weight: bold;
+	font-size: 16px;
+	border-radius: 50%;
+	
+	&.spawn-pacman {
+	  background-color: yellow;
+	  color: black;
+	}
+	
+	&.spawn-blinky {
+	  background-color: red;
+	  color: white;
+	}
+	
+	&.spawn-inky {
+	  background-color: blue;
+	  color: white;
+	}
+	
+	&.spawn-pinky {
+	  background-color: pink;
+	  color: black;
+	}
+	
+	&.spawn-clyde {
+	  background-color: orange;
+	  color: black;
+	}
+  }
+  
+  .spawn-label {
+	font-weight: bold;
+	font-size: 16px;
+  }
+  
+  .spawn-counters {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 6px;
+	margin: 6px 0;
+	font-family: monospace;
+	font-size: 0.7rem; // Police plus petite
+	
+	.counter {
+	  padding: 3px 4px;
+	  border-radius: 2px;
+	  background-color: rgba(0, 0, 0, 0.7);
+	}
+  }
+  
+  @keyframes pulse {
+	0% { transform: translate(-50%, -50%) scale(1); }
+	100% { transform: translate(-50%, -50%) scale(1.2); }
+  }
