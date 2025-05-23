@@ -43,9 +43,9 @@ function createTestRoom(player: player, room: room): void {
 		elo: 1000,
 	};
 	if (room.players.length < 5) room.players.push(player2);
-	if (room.players.length < 5) room.players.push(player3);
-	if (room.players.length < 5) room.players.push(player4);
-	if (room.players.length < 5) room.players.push(player5);
+	// if (room.players.length < 5) room.players.push(player3);
+	// if (room.players.length < 5) room.players.push(player4);
+	// if (room.players.length < 5) room.players.push(player5);
 }
 
 (async () => {
