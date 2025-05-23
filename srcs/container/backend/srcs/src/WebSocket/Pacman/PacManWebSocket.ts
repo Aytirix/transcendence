@@ -85,7 +85,6 @@ function handleJoinRoom(ws: WebSocket, player: player, json: any): void {
 }
 
 function handleKickRoom(ws: WebSocket, player: player, json: any): void {
-	if (!player.room) return sendResponse(ws, 'error', 'error', ['Vous n\'êtes pas dans une salle']);
 	if (!json.user_id) return sendResponse(ws, 'error', 'error', ['Veuillez spécifier l\'id de la personne à expulser']);
 	if (player.room.state == 'active') return sendResponse(ws, 'error', 'error', ['La salle est déjà lancée']);
 	if (player.room.owner_id !== player.id) return sendResponse(ws, 'error', 'error', ['Vous n\'êtes pas le propriétaire de la salle']);
@@ -97,13 +96,11 @@ function handleKickRoom(ws: WebSocket, player: player, json: any): void {
 }
 
 function handleLeaveRoom(ws: WebSocket, player: player): void {
-	if (!player.room) return sendResponse(ws, 'error', 'error', ['Vous n\'êtes pas dans une salle']);
 	StateManager.RoomManager.removePlayerFromRoom(player.room, player.id);
 	StateManager.sendRooms();
 }
 
 function handleSetOwnerRoom(ws: WebSocket, player: player, json: any): void {
-	if (!player.room) return sendResponse(ws, 'error', 'error', ['Vous n\'êtes pas dans une salle']);
 	if (!json.user_id) return sendResponse(ws, 'error', 'error', ['Veuillez spécifier l\'id de la personne à promouvoir']);
 	const room = player.room;
 	if (room.state == 'active') return sendResponse(ws, 'error', 'error', ['La salle est déjà lancée']);
@@ -122,7 +119,6 @@ function handleSetOwnerRoom(ws: WebSocket, player: player, json: any): void {
 }
 
 function handleLaunchRoom(ws: WebSocket, player: player): void {
-	if (!player.room) return sendResponse(ws, 'error', 'error', ['Vous n\'êtes pas dans une salle']);
 	if (player.room.state == 'active') return sendResponse(ws, 'error', 'error', ['La salle est déjà lancée']);
 	if (player.room.owner_id !== player.id) return sendResponse(ws, 'error', 'error', ['Vous n\'êtes pas le propriétaire de la salle']);
 	// if (room.players.length < 2) return sendResponse(ws, 'error', 'error', ['Il faut au moins 2 joueurs pour lancer la partie']);
@@ -140,6 +136,22 @@ function handlePlayerMove(ws: WebSocket, player: player, json: any): void {
 	player.room.engine?.getPlayerById(player.id)?.changeDirection(json.direction);
 }
 
+function handleJoinRoomSpectator(ws: WebSocket, player: player, json: any): void {
+	if (!json.room_id) return sendResponse(ws, 'error', 'error', ['Veuillez spécifier un id de salle']);
+	if (player.room) return sendResponse(ws, 'error', 'error', ['Vous êtes déjà dans une salle']);
+	const room = StateManager.RoomManager.getRoomById(json.room_id);
+	if (!room) return sendResponse(ws, 'error', 'error', ['La salle n\'existe pas']);
+	room.engine?.addSpectator(player, ws);
+}
+
+function handleLeaveRoomSpectator(ws: WebSocket, player: player, json: any): void {
+	if (!json.room_id) return sendResponse(ws, 'error', 'error', ['Veuillez spécifier un id de salle']);
+	if (player.room) return sendResponse(ws, 'error', 'error', ['Vous êtes déjà dans une salle']);
+	const room = StateManager.RoomManager.getRoomById(json.room_id);
+	if (!room) return sendResponse(ws, 'error', 'error', ['La salle n\'existe pas']);
+	room.engine?.removeSpectator(player);
+}
+
 async function PacManWebSocket(ws: WebSocket, user: User): Promise<void> {
 	console.log('PacmanWS Connexion de l\'utilisateur:', user?.id);
 
@@ -154,6 +166,7 @@ async function PacManWebSocket(ws: WebSocket, user: User): Promise<void> {
 		gameId: null,
 		elo: 1000,
 		room: room,
+		isSpectator: false,
 	};
 	if (room) {
 		StateManager.RoomManager.updatePlayerInRoom(room, player);
@@ -176,11 +189,23 @@ async function PacManWebSocket(ws: WebSocket, user: User): Promise<void> {
 			return;
 		}
 
-		if (action !== 'ping') player.room = StateManager.RoomManager.getRoomByPlayerId(player.id);
+		if (action === 'ping') {
+			player.updateAt = Date.now();
+			return;
+		}
+
+		if (player.isSpectator && action !== 'leaveSpectator') {
+			sendResponse(ws, 'error', 'error', ['Vous êtes en mode spectateur']);
+			return;
+		}
+
+		if (!player.room && action !== 'createRoom' && action !== 'joinRoom' && action !== 'joinSpectator' && action !== 'leaveSpectator') {
+			sendResponse(ws, 'error', 'error', ['Vous devez être dans une salle']);
+			return;
+		}
+
+		player.room = StateManager.RoomManager.getRoomByPlayerId(player.id);
 		switch (action) {
-			case 'ping':
-				player.updateAt = Date.now();
-				break;
 			case 'createRoom':
 				handleCreateRoom(ws, player, text);
 				break;
@@ -200,7 +225,10 @@ async function PacManWebSocket(ws: WebSocket, user: User): Promise<void> {
 				handleLaunchRoom(ws, player);
 				break;
 			case 'joinSpectator':
-				sendResponse(ws, 'error', 'error', ['Cette fonctionnalité n\'est pas encore disponible']);
+				handleJoinRoomSpectator(ws, player, text);
+				break;
+			case 'leaveSpectator':
+				handleLeaveRoomSpectator(ws, player, text);
 				break;
 			case 'playerMove':
 				handlePlayerMove(ws, player, text);
