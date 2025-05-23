@@ -31,8 +31,13 @@ export interface state {
 		waiting: room[];
 	}
 	game: {
+		frightenedState: {
+			remainingTime: number;
+		}
 		players: player[];
 		grid: string[];
+		pacmanLife : number;
+
 		tileSize: number;
 		paused: {
 			paused: boolean;
