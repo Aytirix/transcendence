@@ -1,5 +1,9 @@
 import { WebSocket } from 'ws';
 
+export interface sessionPayload {
+	userAgent: string;
+}
+
 export interface User {
 	id: number;
 	email?: string;

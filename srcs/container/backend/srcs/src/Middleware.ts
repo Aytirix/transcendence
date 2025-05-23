@@ -1,11 +1,40 @@
 import { FastifyInstance, FastifyReply, FastifyRequest, Session } from 'fastify';
-import { User } from '@types';
+import { sessionPayload, User } from '@types';
 import { IncomingMessage } from 'http';
 import { parse } from 'cookie';
-import { getStore } from '@session';
+import { decodeSessionId, getStore } from '@session';
+
+
+/**
+ * Vérifie les informations de session dans la requête.
+ * 
+ * Cette fonction extrait le cookie de session de la requête, décode l'ID de session
+ * et vérifie si le User-Agent actuel correspond à celui enregistré dans les informations de session.
+ * 
+ * @param request - La requête Fastify à vérifier
+ * @returns `true` si les informations de session sont valides ou si aucune session n'est présente,
+ *          `false` si la session est invalide, expirée ou si le User-Agent ne correspond pas
+ */
+function checkSessionInfo(request: FastifyRequest): boolean {
+
+	// Récupérer le cookie de session
+	const cookies = request.headers.cookie || '';
+	const sessionCookieName = 'sessionId';
+	const sessionCookieRegex = new RegExp(`${sessionCookieName}=([^;]+)`);
+	const match = cookies.match(sessionCookieRegex);
+
+	if (match && match[1]) {
+		const sessionId = match[1];
+		const playload: sessionPayload = {
+			userAgent: request.headers['user-agent'],
+		};
+		if (!decodeSessionId(playload, sessionId)) return false;
+	}
+	return true;
+}
 
 async function isNotAuthenticated(request: FastifyRequest, reply: FastifyReply) {
-	if (request && request.session && request.session.user !== undefined) {
+	if (request && request.session && request.session.user !== undefined && checkSessionInfo(request)) {
 		return reply.status(403).send({
 			message: request.i18n.t('login.alreadyLoggedIn'),
 		});
@@ -13,7 +42,7 @@ async function isNotAuthenticated(request: FastifyRequest, reply: FastifyReply) 
 }
 
 export async function isAuthenticated(request: FastifyRequest, reply: FastifyReply) {
-	if (!request || !request.session || request.session.user === undefined) {
+	if (!request || !request.session || request.session.user === undefined || !checkSessionInfo(request)) {
 		return reply.status(401).send({
 			message: request.i18n.t('login.notLoggedIn'),
 		});
@@ -21,7 +50,7 @@ export async function isAuthenticated(request: FastifyRequest, reply: FastifyRep
 }
 
 export async function isAuth(request: FastifyRequest, reply: FastifyReply) {
-	if (request && request.session && request.session.user !== undefined) {
+	if (request && request.session && request.session.user !== undefined && checkSessionInfo(request)) {
 		const user = request.session.user as User;
 		return reply.status(200).send({
 			isAuthenticated: true,
