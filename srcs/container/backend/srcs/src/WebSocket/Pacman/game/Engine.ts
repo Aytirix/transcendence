@@ -13,6 +13,7 @@ export const PLAYER_SPEED = 3;
  */
 export default class Engine {
 	private players: Map<number, Ghost | Pacman> = new Map();
+	private Spectators: Map<player, WebSocket> = new Map();
 	private map: PacmanMap;
 	private tickRate = 1000 / 60; // 60 FPS
 	private lastTime = Date.now();
@@ -90,6 +91,26 @@ export default class Engine {
 				this.players.set(player.id, existingPlayer);
 				this.sockets.set(player.id, ws);
 			}
+		}
+	}
+
+	/**
+	 * Ajout d'un spectateur au moteur
+	 */
+	public addSpectator(player: player, ws: WebSocket): void {
+		if (this.Spectators.has(player)) {
+			this.Spectators.delete(player);
+		}
+		this.Spectators.set(player, ws);
+	}
+
+	/**
+	 * Supprime un spectateur du moteur
+	 */
+	public removeSpectator(player: player): void {
+		if (this.Spectators.has(player)) {
+			this.Spectators.delete(player);
+			player.isSpectator = false;
 		}
 	}
 
@@ -444,7 +465,6 @@ export default class Engine {
 		}
 
 		if (pacman.life <= 0) {
-			this.stop();
 			return true;
 		}
 		return false;
@@ -469,6 +489,7 @@ export default class Engine {
 				})),
 				pacmanLife: Array.from(this.players.values()).find(p => p instanceof Pacman)?.life,
 				grid: this.map.toString(),
+				isSpectator: false,
 				paused: { paused: this.isPaused, message: this.PauseMessage },
 				frightenedState: {
 					active: this.isFrightened,
@@ -479,6 +500,18 @@ export default class Engine {
 		this.sockets.forEach(ws => {
 			if (ws && ws.readyState === WebSocket.OPEN) {
 				ws.send(JSON.stringify(state));
+			}
+		});
+		this.Spectators.forEach((ws, player) => {
+			player.isSpectator = true;
+			if (ws && ws.readyState === WebSocket.OPEN) {
+				state.data.isSpectator = true;
+				ws.send(JSON.stringify(state));
+			} else {
+				if (Date.now() - player.updateAt > 5000) {
+					this.Spectators.delete(player);
+					player.isSpectator = false;
+				}
 			}
 		});
 	}
