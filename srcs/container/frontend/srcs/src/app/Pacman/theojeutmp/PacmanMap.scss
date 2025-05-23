@@ -1,57 +1,161 @@
 /* src/assets/styles/pacman/PacmanMap.scss */
 
-:root {
-	--yellow-sprite-x: ;
-	--yellow-sprite-y: ;
-	--red-sprite-x: ;
-	--red-sprite-y: ;
-	--pink-sprite-x: ;
-	--pink-sprite-y: ;
-	--blue-sprite-x: ;
-	--blue-sprite-y: ;
-	--orange-sprite-x: ;
-	--orange-sprite-y: ;
-	--yellow-animation-length: 190ms;
-	--red-animation-length: 200ms;
-	--pink-animation-length: 200ms;
-	--blue-animation-length: 200ms;
-	--orange-animation-length: 200ms;
-	}
-
-
-/* Conteneur principal de la carte */
+/* Conteneur principal de l carte */
 .pacman-map-container {
 	position: relative;
 	overflow: hidden;
-	width: 100vw;            /* largeur de la fenêtre */
-	height: 100vh;           /* hauteur de la fenêtre */
 	display: flex;
-	background-color: #000;    /* fond noir */
-	//margin: 0 auto;
-	border: 4px solid #222;    /* bordure sombre */
-	box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+	width: 824px;           /* Taille fixe en pixels */
+  	height: 880px;          /* Taille fixe en pixels */
+	  //margin: 0 auto;
+	  border: 5px solid #222;    /* bordure sombre */
+	  border-radius: 20px;      /* coins arrondis */
+	  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+	  background-color: #000;    /* fond noir */
+	  
   }
+
+.pacman-map {
+	position: absolute;
+	width: 100%;
+	height: 100%;
+	transform-origin: top left;
+}
   
   /* Chaque case de la grille */
   .tile {
 	position: absolute;
-	box-sizing: border-box;
+  box-sizing: border-box;
   }
   
   /* MURS */
   .tile.wall {
-	background-color: #00008b;  /* bleu foncé */
-	border: 2px solid #1e90ff;  /* contour bleu clair */
+	background-color: #06070a; /* Classic Pacman blue */
+//	border: 1px solid #0000ff; /* Bordure bleue */
+}
+
+  /* Wall corner variants */
+.wall-corner-top-left{
+	border-radius: 0 0 30px 0;
+	border-bottom: 4px solid #0000ff;
+	border-right: 4px solid #0000ff;
+	
+}
+.wall-corner-top-right{
+	border-radius: 0 0 0 30px;
+	border-bottom: 4px solid #0000ff;
+	border-left: 4px solid #0000ff;
+}
+.wall-corner-bottom-left{
+	border-radius: 0 30px 0 0;
+	border-top: 4px solid #0000ff;
+	border-right: 4px solid #0000ff;
+}
+.wall-corner-bottom-right{
+	border-radius: 30px 0 0 0;
+	border-top: 4px solid #0000ff;
+	border-left: 4px solid #0000ff;
+}
+.wall-straight-horizontal{
+	border-radius: 0 0 0 0;
+	border-bottom: 4px solid #0000ff;
+	border-top: 4px solid #0000ff;
+}
+.wall-straight-vertical{
+	border-radius: 0 0 0 0;
+	border-left: 4px solid #0000ff;
+	border-right: 4px solid #0000ff;
+}
+
+.wall-t-top{
+	border-radius: 0 0 0 0;
+	border-top: 4px solid #0000ff;
+}
+.wall-t-right{
+	border-radius: 0 0 0 0;
+	border-right: 4px solid #0000ff;
+}
+.wall-t-bottom{
+	border-radius: 0 0 0 0;
+	border-bottom: 4px solid #0000ff;
+}
+.wall-t-left{
+	border-radius: 0 0 0 0;
+	border-left: 4px solid #0000ff;
+}
+.wall-cross {
+	border-radius: 0 0 0 0;
+  /* All walls use the same solid blue color */
+}
+.wall-end-left{
+	border-radius: 30px 0 0 30px;
+	border-left: 4px solid #0000ff;
+	border-top: 4px solid #0000ff;
+	border-bottom: 4px solid #0000ff;
+}
+.wall-end-right{
+	border-radius: 0 30px 30px 0;
+	border-right: 4px solid #0000ff;
+	border-top: 4px solid #0000ff;
+	border-bottom: 4px solid #0000ff;
+}
+.wall-end-top{
+	border-radius: 30px 30px 0 0;
+	border-top: 4px solid #0000ff;
+	border-left: 4px solid #0000ff;
+	border-right: 4px solid #0000ff;
+}
+.wall-end-bottom{
+	border-radius: 0 0 30px 30px;
+	border-bottom: 4px solid #0000ff;
+	border-left: 4px solid #0000ff;
+	border-right: 4px solid #0000ff;
+}
+
+.tile.door .horizontal {
+  width: 102%; /* Largeur relative au parent */
+  height: 9px; /* Hauteur très fine */
+  background-color: #f77cf0; /* Couleur dorée */
+  position: absolute;
+  margin: 0;
+  top: 50%; /* Centré verticalement */
+  left: 50%;
+  transform: translate(-50%, -50%); /* Centrage précis */
+  border-radius: 0; /* Pas d'arrondi */
+}
+.tile.door .vertical {
+	width: 9px; /* Hauteur très fine */
+	height: 102%; /* Largeur relative au parent */
+	background-color: #f77cf0; /* Couleur dorée */
+	position: absolute;
+	top: 50%; /* Centré verticalement */
+	left: 50%;
+	transform: translate(-50%, -50%); /* Centrage précis */
+	border-radius: 0; /* Pas d'arrondi */
   }
+
   
   /* COULOIR VIDE (espace) */
   .tile.empty {
-	background-color: #000;     /* noir */
+	//background-color: #000;     /* noir */
   }
   
   /* TUNNEL (caractère 'T') */
-  .tile.tunnel {
-	background-color: #111;     /* gris très sombre */
+
+
+.tile.tunnel {
+	display: flex;
+	width: 100%;
+	height: 100%;
+	position: absolute;
+  }
+
+  /* PORTAIL (caractère 'P') */
+
+  .tile.gate { // pas de gate implementé
+	background-color: #ffd700;
+	border-top: .7rem solid black;
+	border-bottom: .7rem solid black;
   }
   
   /* PASTILLE NORMALE (caractère '.') */
@@ -62,10 +166,14 @@
 	align-items: center;
   }
   .tile.pellet .dot {
-	width: 6px;
-	height: 6px;
+	width: 8%;
+	height: 8%;
+	background-color: #ffd700; /* Light pink/orange dot */
 	border-radius: 50%;
-	background-color: #ffd700;  /* jaune */
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
   }
   
   /* POWER‑PELLET (caractère 'o') */
@@ -76,20 +184,92 @@
 	align-items: center;
   }
   .tile.power-pellet .big-dot {
-	width: 14px;
-	height: 14px;
+	width: 24%;
+	height: 24%;
+	background-color: #ffd700;
 	border-radius: 50%;
-	background-color: #ff0000;  /* rouge vif */
-  }
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	animation: blink 0.5s infinite alternate;
+
+}
   
   /* -----------------------------------------
 	 SPRITES JOUEURS : PAC‑MAN et FANTÔMES
   ------------------------------------------ */
   
   /* Conteneur commun à tous les joueurs */
+  
+
+//   .player.pacman {
+// 	position: absolute;
+// 	width: 100%;
+// 	height: 100%;
+//   }
+  
+//   .pacman-body {
+// 	position: absolute;
+// 	width: 100%;
+// 	height: 100%;
+// 	background-color: yellow;
+// 	border-radius: 50%;
+// 	clip-path: polygon(
+// 	  0 0, 
+// 	  100% 0, 
+// 	  100% 100%, 
+// 	  0 100%
+// 	);
+//   }
+//   .pacman-mouth {
+// 	position: absolute;
+// 	width: 100%;
+// 	height: 100%;
+// 	border-radius: 50%;
+// 	background-color: rgb(0, 0, 0);
+// 	clip-path: polygon(
+// 	  50% 50%,
+// 	  100% 25%,
+// 	  100% 75%,
+// 	  50% 50%
+// 	);
+// 	animation: chomp 0.25s linear infinite;
+//   }
+  
+//   .pacman-eye {
+// 	position: absolute;
+// 	top: 20%;
+// 	right: 20%;
+// 	width: 15%;
+// 	height: 15%;
+// 	background-color: black;
+// 	border-radius: 50%;
+// 	z-index: 2;
+//   }
+  
+//   @keyframes chomp {
+// 	0%, 100% {
+// 	  clip-path: polygon(
+// 		50% 50%,
+// 		100% 25%,
+// 		100% 75%,
+// 		50% 50%
+// 	  );
+// 	}
+// 	50% {
+// 	  clip-path: polygon(
+// 		50% 50%,
+// 		100% 0%,
+// 		100% 100%,
+// 		50% 50%
+// 	  );
+// 	}
+//   }
   .player {
 	position: absolute;
 	box-sizing: border-box;
+	
 	z-index: 10;                 /* au-dessus des cases */
 	display: flex;
 	justify-content: center;
@@ -98,27 +278,8 @@
   }
   
   /* === PAC‑MAN === */
-/*   .player.pacman {
-	background-color: #ffd700;   */ /* jaune vif */
-/* 	border-radius: 50%;
-	width: 100%;
-	height: 100%;
-	position: relative;
-	overflow: hidden;
-  } */
-/*   .player.pacman::before {
-	content: '';
-	position: absolute;
-	width: 0;
-	height: 0;
-	border-top: 16px solid transparent;
-	border-bottom: 16px solid transparent;
-	border-left: 16px solid #000;
-	top: 0;
-	left: 50%;
-	transform: translate(-25%, 0);
-  } */
-  .player.pacman::after {
+
+.pacman-body::after {
 	content: "";
 	display: block;
 	top: 0;
@@ -129,67 +290,78 @@
 	border-radius: 50%;
 	animation: eat 0.4s linear infinite;
 	background: conic-gradient(yellow 55deg, transparent 0 125deg, yellow 0);
-  }
-
-  	.pacman-eye {
-	position: absolute;
-	width: 10px;
-	height: 10px;
-	border-radius: 50%;
-	top: 20px;
-	right: 40px;
-	background: #29a9db;
+	transform-origin: center;
 }
+  
+
+.pacman-eye {
+	position: absolute;
+	top: 15%;
+	right: 30%;
+	width: 15%;
+	height: 15%;
+	background-color: black;
+	border-radius: 100%;
+}
+
   
   
   /* === FANTÔMES ===
 	 Forme arrondie en haut + franges (clip-path) en bas */
-	 .player.ghost {
+
+	  
+
+	.player.ghost {
 		position: absolute;
 		width: 100%;
 		height: 100%;
-		border-radius: 50% 50% 0 0;
-		background-color: #ff1493;
-		display: flex;
-		justify-content: center;
-		align-items: center;
-		overflow: hidden;
-		box-shadow: inset 0 -5px 0 rgba(0, 0, 0, 0.2); /* subtle inner shadow for depth */
-		
-		/* Eyes container */
-		&::before {
-		  content: '';
-		  position: absolute;
-		  top: 25%;
-		  width: 60%;
-		  height: 20%;
-		  display: flex;
-		  justify-content: space-between;
-		}
+		animation: move 6s linear infinite forwards;
 	  }
 	  
-//   .player.ghost {
-// 	width: 100%;
-// 	height: 100%;
-// 	border-radius: 50% 50% 0 0;
-// 	position: absolute;
-// 	background-color: #ff1493;   /* couleur par défaut si non redéfini */
-//   }
-//   .player.ghost::after {
-// 	content: '';
-// 	position: absolute;
-// 	bottom: 0;
-// 	left: 0;
-// 	width: 100%;
-// 	height: 25%;
-// 	background-color: inherit;
-// 	/* clip-path: polygon(
-// 	  0% 100%, 20% 60%, 40% 100%,
-// 	  60% 60%, 80% 100%, 100% 60%, 100% 100%
-// 	); */
-//   }
-  
-  /* Pupilles du fantôme (on place deux <div> internes .pupil-left .pupil-right) */
+	.ghost-body svg,
+	.ghost-eye-left svg,
+	.ghost-eye-right svg {
+	width: 100%;
+	height: 100%;
+	}
+	  .ghost-body svg polygon {
+		fill: var(--ghost-color);
+	  }
+	  
+	  .ghost-eye-left,
+	  .ghost-eye-right {
+		position: absolute;
+		top: 16px;
+		width: 16px;
+		height: 20px;
+		animation: eyes 6s steps(1) infinite forwards;
+	  }
+	  
+	  .ghost-eye-left {
+		left: 8px;
+	  }
+	  
+	  .ghost-eye-right {
+		right: 8px;
+	  }
+	  
+	  .ghost-eye-left svg polygon,
+	  .ghost-eye-right svg polygon {
+		fill: white;
+	  }
+	
+	  
+	  .ghost-feet {
+		position: absolute;
+		top: 0%;
+		left: 0%;
+		width: 4px;
+		height: 4px;
+		animation: feet 0.4s steps(1) infinite forwards;
+		background: var(--ghost-color);
+	
+	  }
+	
   .pupil-left,
   .pupil-right {
 	position: absolute;
@@ -201,11 +373,6 @@
   .pupil-left  { top: 30%; left: 30%; }
   .pupil-right { top: 30%; right: 30%; }
   
-  /* === Couleurs selon character (MAJUSCULES) === */
-  .player.ghost-B { background-color: #ff0000; }  /* fantôme rouge */
-  .player.ghost-Y { background-color: #ff1493; }  /* fantôme rose */
-  .player.ghost-I { background-color: #0000ff; }  /* fantôme bleu */
-  .player.ghost-C { background-color: #ffa500; }  /* fantôme orange */
   
 
 
@@ -214,934 +381,29 @@
 	25% { background: conic-gradient(yellow 55deg, yellow 0);}
   }
 
+@keyframes power-pellet {
+	0% {
+		transform: scale(0.8);
+		opacity: 1;
+	}
+	50% {
+		transform: scale(1.5);
+		opacity: 0.8;
+	}
+	100% {
+		transform: scale(0.8);
+		opacity: 1;
+	}
+}
 
-@keyframes movePacman {
-	0% { transform: translate(-8vmin, 0) }
-	100% { transform: translate(100vw, 0) }
+@keyframes blink {
+	from { opacity: 0.5; }
+	to { opacity: 1; }
+}
+  
+  .score {
+	color: white;
+	margin: 1;
+	font-size: 1.5rem;
+	font-family: 'Press Start 2P';
   }
-
-
-
-//   :root {
-// 	--yellow-sprite-x: ;
-// 	--yellow-sprite-y: ;
-// 	--red-sprite-x: ;
-// 	--red-sprite-y: ;
-// 	--pink-sprite-x: ;
-// 	--pink-sprite-y: ;
-// 	--blue-sprite-x: ;
-// 	--blue-sprite-y: ;
-// 	--orange-sprite-x: ;
-// 	--orange-sprite-y: ;
-// 	--yellow-animation-length: 190ms;
-// 	--red-animation-length: 200ms;
-// 	--pink-animation-length: 200ms;
-// 	--blue-animation-length: 200ms;
-// 	--orange-animation-length: 200ms;
-//   }
-  
-//   html {
-// 	font-size: 0.625em;
-//   }
-  
-//   @media (max-width: 600px), (max-height: 700px) {
-// 	html {
-// 	  font-size: 0.3125em;
-// 	}
-//   }
-  
-//   body, #game, #info, #lives {
-// 	display: -webkit-box;
-// 	display: -ms-flexbox;
-// 	display: flex;
-//   }
-  
-//   body {
-// 	-webkit-box-sizing: border-box;
-// 			box-sizing: border-box;
-// 	margin: 0;
-// 	background-color: #000000;
-// 	min-height: 100vh;
-// 	-webkit-box-align: center;
-// 		-ms-flex-align: center;
-// 			align-items: center;
-// 	-webkit-box-pack: center;
-// 		-ms-flex-pack: center;
-// 			justify-content: center;
-// 	padding: 1em 0;
-// 	font-family: "joystick", Arial, sans-serif;
-//   }
-  
-//   #game {
-// 	-webkit-box-orient: vertical;
-// 	-webkit-box-direction: normal;
-// 		-ms-flex-direction: column;
-// 			flex-direction: column;
-// 	display: none;
-//   }
-  
-//   #info {
-// 	-webkit-box-sizing: border-box;
-// 			box-sizing: border-box;
-// 	width: 100%;
-// 	-webkit-box-pack: justify;
-// 		-ms-flex-pack: justify;
-// 			justify-content: space-between;
-// 	-webkit-box-align: center;
-// 		-ms-flex-align: center;
-// 			align-items: center;
-// 	padding: 1em 2em;
-//   }
-  
-//   #score {
-// 	color: white;
-// 	margin: 0;
-// 	font-size: 2rem;
-//   }
-  
-//   .live {
-// 	width: 3.2rem;
-// 	height: 2.6rem;
-// 	background-image: url("https://dominikgorczyca.github.io/Pac-Man/sprites.png");
-// 	background-position: -26rem -3.2rem;
-//   }
-  
-//   @media (max-width: 600px), (max-height: 700px) {
-// 	.live {
-// 	  background-image: url(https://dominikgorczyca.github.io/Pac-Man//sprites_small.png);
-// 	}
-//   }
-  
-//   #game-board {
-// 	position: relative;
-// 	overflow: hidden;
-// 	-webkit-box-sizing: border-box;
-// 			box-sizing: border-box;
-// 	width: 56rem;
-// 	height: 62rem;
-// 	display: -ms-grid;
-// 	display: grid;
-// 	-ms-grid-columns: (2rem)[28];
-// 		grid-template-columns: repeat(28, 2rem);
-//   }
-  
-//   /* GAME BOARD GENERAL */
-//   #game-board > * {
-// 	position: relative;
-// 	-webkit-box-sizing: border-box;
-// 			box-sizing: border-box;
-// 	width: 2rem;
-// 	height: 2rem;
-//   }
-  
-//   #start, #game-start {
-// 	position: absolute;
-// 	margin: auto;
-// 	width: 100%;
-// 	top: 54%;
-// 	text-align: center;
-// 	color: yellow;
-// 	font-size: 2.4rem;
-// 	z-index: 1;
-// 	-webkit-user-select: none;
-// 	   -moz-user-select: none;
-// 		-ms-user-select: none;
-// 			user-select: none;
-//   }
-  
-//   /* OBJECTS AND WALLS  */
-//   .wall {
-// 	background-image: url("https://dominikgorczyca.github.io/Pac-Man/map.png");
-// 	z-index: 1;
-//   }
-  
-//   @media (max-width: 600px), (max-height: 700px) {
-// 	.wall {
-// 	  background-image: url("https://dominikgorczyca.github.io/Pac-Man/small_map.png");
-// 	}
-//   }
-  
-//   .blank {
-// 	background-color: black;
-//   }
-  
-//   .wall > * {
-// 	-webkit-box-sizing: border-box;
-// 			box-sizing: border-box;
-// 	background-color: black;
-// 	display: block;
-// 	position: relative;
-// 	width: 1.5rem;
-// 	height: 1.5rem;
-// 	border: .2rem solid #161693;
-// 	border-radius: 80%;
-// 	z-index: 1;
-//   }
-  
-//   .point,
-//   .big-point {
-// 	-webkit-box-sizing: border-box;
-// 			box-sizing: border-box;
-// 	width: 2rem;
-// 	height: 2rem;
-// 	background-color: #ffb897;
-// 	border-radius: 0;
-// 	z-index: 10;
-//   }
-  
-//   .point {
-// 	border: .8rem solid black;
-//   }
-  
-//   .big-point {
-// 	border: .4rem solid black;
-// 	border-radius: 45%;
-// 	background-color: #ffb897;
-//   }
-  
-//   .gate {
-// 	background-color: #ffb897;
-// 	border-top: .7rem solid black;
-// 	border-bottom: .7rem solid black;
-//   }
-  
-//   /* CHARACTERS */
-//   .yellow,
-//   .red,
-//   .pink,
-//   .blue,
-//   .orange,
-//   .points::after {
-// 	-ms-interpolation-mode: nearest-neighbor;
-// 		image-rendering: -webkit-optimize-contrast;
-// 		image-rendering: -moz-crisp-edges;
-// 		image-rendering: -o-pixelated;
-// 		image-rendering: pixelated;
-// 	position: absolute;
-// 	top: -0.4rem;
-// 	left: -0.55rem;
-// 	width: 3rem;
-// 	height: 2.8rem;
-//   }
-  
-//   .points::after {
-// 	background-image: url("https://dominikgorczyca.github.io/Pac-Man/sprites.png");
-// 	background-position: var(--yellow-sprite-x) var(--yellow-sprite-y);
-//   }
-  
-//   .yellow-visible,
-//   .red-visible,
-//   .pink-visible,
-//   .blue-visible,
-//   .orange-visible {
-// 	background-image: url("https://dominikgorczyca.github.io/Pac-Man/sprites.png");
-// 	z-index: 101;
-// 	will-change: transform background-position;
-//   }
-  
-//   @media (max-width: 600px), (max-height: 700px) {
-// 	.points::after,
-// 	.yellow-visible,
-// 	.red-visible,
-// 	.pink-visible,
-// 	.blue-visible,
-// 	.orange-visible {
-// 	  background-image: url("https://dominikgorczyca.github.io/Pac-Man/sprites_small.png");
-// 	}
-//   }
-  
-//   .yellow-visible {
-// 	background-position: var(--yellow-sprite-x) var(--yellow-sprite-y);
-// 	-webkit-transition: -webkit-transform var(--yellow-animation-length) linear;
-// 	transition: -webkit-transform var(--yellow-animation-length) linear;
-// 	transition: transform var(--yellow-animation-length) linear;
-// 	transition: transform var(--yellow-animation-length) linear, -webkit-transform var(--yellow-animation-length) linear;
-// 	z-index: 100;
-//   }
-  
-//   .red-visible {
-// 	background-position: var(--red-sprite-x) var(--red-sprite-y);
-// 	-webkit-transition: -webkit-transform var(--red-animation-length) linear;
-// 	transition: -webkit-transform var(--red-animation-length) linear;
-// 	transition: transform var(--red-animation-length) linear;
-// 	transition: transform var(--red-animation-length) linear, -webkit-transform var(--red-animation-length) linear;
-// 	z-index: 104;
-//   }
-  
-//   .pink-visible {
-// 	background-position: var(--pink-sprite-x) var(--pink-sprite-y);
-// 	-webkit-transition: -webkit-transform var(--pink-animation-length) linear;
-// 	transition: -webkit-transform var(--pink-animation-length) linear;
-// 	transition: transform var(--pink-animation-length) linear;
-// 	transition: transform var(--pink-animation-length) linear, -webkit-transform var(--pink-animation-length) linear;
-// 	z-index: 103;
-//   }
-  
-//   .blue-visible {
-// 	background-position: var(--blue-sprite-x) var(--blue-sprite-y);
-// 	-webkit-transition: -webkit-transform var(--blue-animation-length) linear;
-// 	transition: -webkit-transform var(--blue-animation-length) linear;
-// 	transition: transform var(--blue-animation-length) linear;
-// 	transition: transform var(--blue-animation-length) linear, -webkit-transform var(--blue-animation-length) linear;
-// 	z-index: 102;
-//   }
-  
-//   .orange-visible {
-// 	background-position: var(--orange-sprite-x) var(--orange-sprite-y);
-// 	-webkit-transition: -webkit-transform var(--orange-animation-length) linear;
-// 	transition: -webkit-transform var(--orange-animation-length) linear;
-// 	transition: transform var(--orange-animation-length) linear;
-// 	transition: transform var(--orange-animation-length) linear, -webkit-transform var(--orange-animation-length) linear;
-//   }
-  
-//   /* Animations */
-//   .yellow-animation-move {
-// 	-webkit-animation: var(--yellow-animation-length) forwards steps(1, end) yellow;
-// 			animation: var(--yellow-animation-length) forwards steps(1, end) yellow;
-//   }
-  
-//   .red-animation-move {
-// 	-webkit-animation: var(--red-animation-length) forwards steps(1, end) red;
-// 			animation: var(--red-animation-length) forwards steps(1, end) red;
-//   }
-  
-//   .pink-animation-move {
-// 	-webkit-animation: var(--pink-animation-length) forwards steps(1, end) pink;
-// 			animation: var(--pink-animation-length) forwards steps(1, end) pink;
-// 	z-index: 10000;
-//   }
-  
-//   .blue-animation-move {
-// 	-webkit-animation: var(--blue-animation-length) forwards steps(1, end) blue;
-// 			animation: var(--blue-animation-length) forwards steps(1, end) blue;
-//   }
-  
-//   .orange-animation-move {
-// 	-webkit-animation: var(--orange-animation-length) forwards steps(1, end) orange;
-// 			animation: var(--orange-animation-length) forwards steps(1, end) orange;
-//   }
-  
-//   .red-retreat,
-//   .pink-retreat {
-// 	background-position: -35.2rem -16rem;
-// 	-webkit-animation: 150ms linear forwards redPinkRetreatPosition;
-// 			animation: 150ms linear forwards redPinkRetreatPosition;
-//   }
-  
-//   .blue-retreat {
-// 	-webkit-animation: 250ms linear forwards blueRetreatPosition, forwards steps(1, end) blueRetreatSprite;
-// 			animation: 250ms linear forwards blueRetreatPosition, forwards steps(1, end) blueRetreatSprite;
-//   }
-  
-//   .orange-retreat {
-// 	-webkit-animation: 250ms linear forwards orangeRetreatPosition, forwards steps(1, end) orangeRetreatSprite;
-// 			animation: 250ms linear forwards orangeRetreatPosition, forwards steps(1, end) orangeRetreatSprite;
-//   }
-  
-//   .red-revive {
-// 	-webkit-animation: 600ms forwards linear redRevive, 200ms forwards steps(1, end) red 3;
-// 			animation: 600ms forwards linear redRevive, 200ms forwards steps(1, end) red 3;
-//   }
-  
-//   .pink-revive {
-// 	-webkit-animation: 1000ms forwards linear pinkRevive, 200ms forwards steps(1, end) pink 5;
-// 			animation: 1000ms forwards linear pinkRevive, 200ms forwards steps(1, end) pink 5;
-//   }
-  
-//   .blue-revive {
-// 	-webkit-animation: 5000ms forwards linear blueRevive, 200ms forwards steps(1, end) blue 25;
-// 			animation: 5000ms forwards linear blueRevive, 200ms forwards steps(1, end) blue 25;
-//   }
-  
-//   .orange-revive {
-// 	-webkit-animation: 15000ms forwards linear orangeRevive, 200ms forwards steps(1, end) orange 75;
-// 			animation: 15000ms forwards linear orangeRevive, 200ms forwards steps(1, end) orange 75;
-//   }
-  
-//   .yellow-death-animation {
-// 	-webkit-animation: 1.5s forwards steps(1, end) yellowDeath;
-// 			animation: 1.5s forwards steps(1, end) yellowDeath;
-//   }
-  
-//   .blinking-animation {
-// 	-webkit-animation: 1.5s forwards steps(1, end) blink;
-// 			animation: 1.5s forwards steps(1, end) blink;
-//   }
-  
-//   .blinking-animation > *,
-//   .blinking-animation-corner > * {
-// 	-webkit-animation: 1.5s forwards steps(1, end) blink2;
-// 			animation: 1.5s forwards steps(1, end) blink2;
-//   }
-  
-//   @-webkit-keyframes yellow {
-// 	0%, 70%, 100% {
-// 	  background-position: -3.2rem var(--yellow-sprite-y);
-// 	}
-// 	30% {
-// 	  background-position: 0rem var(--yellow-sprite-y);
-// 	}
-// 	80% {
-// 	  background-position: -6.4rem 0rem;
-// 	}
-//   }
-  
-//   @keyframes yellow {
-// 	0%, 70%, 100% {
-// 	  background-position: -3.2rem var(--yellow-sprite-y);
-// 	}
-// 	30% {
-// 	  background-position: 0rem var(--yellow-sprite-y);
-// 	}
-// 	80% {
-// 	  background-position: -6.4rem 0rem;
-// 	}
-//   }
-  
-//   @-webkit-keyframes red {
-// 	0%, 100% {
-// 	  background-position: var(--red-sprite-x) var(--red-sprite-y);
-// 	}
-// 	50% {
-// 	  background-position: calc(var(--red-sprite-x) - 3.2rem) var(--red-sprite-y);
-// 	}
-//   }
-  
-//   @keyframes red {
-// 	0%, 100% {
-// 	  background-position: var(--red-sprite-x) var(--red-sprite-y);
-// 	}
-// 	50% {
-// 	  background-position: calc(var(--red-sprite-x) - 3.2rem) var(--red-sprite-y);
-// 	}
-//   }
-  
-//   @-webkit-keyframes pink {
-// 	0%, 100% {
-// 	  background-position: var(--pink-sprite-x) var(--pink-sprite-y);
-// 	}
-// 	50% {
-// 	  background-position: calc(var(--pink-sprite-x) - 3.2rem) var(--pink-sprite-y);
-// 	}
-//   }
-  
-//   @keyframes pink {
-// 	0%, 100% {
-// 	  background-position: var(--pink-sprite-x) var(--pink-sprite-y);
-// 	}
-// 	50% {
-// 	  background-position: calc(var(--pink-sprite-x) - 3.2rem) var(--pink-sprite-y);
-// 	}
-//   }
-  
-//   @-webkit-keyframes blue {
-// 	0%, 100% {
-// 	  background-position: var(--blue-sprite-x) var(--blue-sprite-y);
-// 	}
-// 	50% {
-// 	  background-position: calc(var(--blue-sprite-x) - 3.2rem) var(--blue-sprite-y);
-// 	}
-//   }
-  
-//   @keyframes blue {
-// 	0%, 100% {
-// 	  background-position: var(--blue-sprite-x) var(--blue-sprite-y);
-// 	}
-// 	50% {
-// 	  background-position: calc(var(--blue-sprite-x) - 3.2rem) var(--blue-sprite-y);
-// 	}
-//   }
-  
-//   @-webkit-keyframes orange {
-// 	0%, 100% {
-// 	  background-position: var(--orange-sprite-x) var(--orange-sprite-y);
-// 	}
-// 	50% {
-// 	  background-position: calc(var(--orange-sprite-x) - 3.2rem) var(--orange-sprite-y);
-// 	}
-//   }
-  
-//   @keyframes orange {
-// 	0%, 100% {
-// 	  background-position: var(--orange-sprite-x) var(--orange-sprite-y);
-// 	}
-// 	50% {
-// 	  background-position: calc(var(--orange-sprite-x) - 3.2rem) var(--orange-sprite-y);
-// 	}
-//   }
-  
-//   @-webkit-keyframes redPinkRetreatPosition {
-// 	0% {
-// 	  -webkit-transform: translate(-1rem, 0);
-// 			  transform: translate(-1rem, 0);
-// 	}
-// 	33% {
-// 	  -webkit-transform: translate(-1rem, 2rem);
-// 			  transform: translate(-1rem, 2rem);
-// 	}
-// 	66% {
-// 	  -webkit-transform: translate(-1rem, 4rem);
-// 			  transform: translate(-1rem, 4rem);
-// 	}
-// 	100% {
-// 	  -webkit-transform: translate(-1rem, 6rem);
-// 			  transform: translate(-1rem, 6rem);
-// 	}
-//   }
-  
-//   @keyframes redPinkRetreatPosition {
-// 	0% {
-// 	  -webkit-transform: translate(-1rem, 0);
-// 			  transform: translate(-1rem, 0);
-// 	}
-// 	33% {
-// 	  -webkit-transform: translate(-1rem, 2rem);
-// 			  transform: translate(-1rem, 2rem);
-// 	}
-// 	66% {
-// 	  -webkit-transform: translate(-1rem, 4rem);
-// 			  transform: translate(-1rem, 4rem);
-// 	}
-// 	100% {
-// 	  -webkit-transform: translate(-1rem, 6rem);
-// 			  transform: translate(-1rem, 6rem);
-// 	}
-//   }
-  
-//   @-webkit-keyframes blueRetreatPosition {
-// 	0% {
-// 	  -webkit-transform: translate(-1rem, 0);
-// 			  transform: translate(-1rem, 0);
-// 	}
-// 	60% {
-// 	  -webkit-transform: translate(-1rem, 6rem);
-// 			  transform: translate(-1rem, 6rem);
-// 	}
-// 	100% {
-// 	  -webkit-transform: translate(-5rem, 6rem);
-// 			  transform: translate(-5rem, 6rem);
-// 	}
-//   }
-  
-//   @keyframes blueRetreatPosition {
-// 	0% {
-// 	  -webkit-transform: translate(-1rem, 0);
-// 			  transform: translate(-1rem, 0);
-// 	}
-// 	60% {
-// 	  -webkit-transform: translate(-1rem, 6rem);
-// 			  transform: translate(-1rem, 6rem);
-// 	}
-// 	100% {
-// 	  -webkit-transform: translate(-5rem, 6rem);
-// 			  transform: translate(-5rem, 6rem);
-// 	}
-//   }
-  
-//   @-webkit-keyframes orangeRetreatPosition {
-// 	0% {
-// 	  -webkit-transform: translate(-1rem, 0);
-// 			  transform: translate(-1rem, 0);
-// 	}
-// 	60% {
-// 	  -webkit-transform: translate(-1rem, 6rem);
-// 			  transform: translate(-1rem, 6rem);
-// 	}
-// 	100% {
-// 	  -webkit-transform: translate(3rem, 6rem);
-// 			  transform: translate(3rem, 6rem);
-// 	}
-//   }
-  
-//   @keyframes orangeRetreatPosition {
-// 	0% {
-// 	  -webkit-transform: translate(-1rem, 0);
-// 			  transform: translate(-1rem, 0);
-// 	}
-// 	60% {
-// 	  -webkit-transform: translate(-1rem, 6rem);
-// 			  transform: translate(-1rem, 6rem);
-// 	}
-// 	100% {
-// 	  -webkit-transform: translate(3rem, 6rem);
-// 			  transform: translate(3rem, 6rem);
-// 	}
-//   }
-  
-//   @-webkit-keyframes blueRetreatSprite {
-// 	0% {
-// 	  background-position: -35.2rem -16rem;
-// 	}
-// 	60% {
-// 	  background-position: -28.8rem -16rem;
-// 	}
-// 	100% {
-// 	  background-position: -28.8rem -16rem;
-// 	}
-//   }
-  
-//   @keyframes blueRetreatSprite {
-// 	0% {
-// 	  background-position: -35.2rem -16rem;
-// 	}
-// 	60% {
-// 	  background-position: -28.8rem -16rem;
-// 	}
-// 	100% {
-// 	  background-position: -28.8rem -16rem;
-// 	}
-//   }
-  
-//   @-webkit-keyframes orangeRetreatSprite {
-// 	0% {
-// 	  background-position: -35.2rem -16rem;
-// 	}
-// 	60% {
-// 	  background-position: -25.6rem -16rem;
-// 	}
-// 	100% {
-// 	  background-position: -25.6rem -16rem;
-// 	}
-//   }
-  
-//   @keyframes orangeRetreatSprite {
-// 	0% {
-// 	  background-position: -35.2rem -16rem;
-// 	}
-// 	60% {
-// 	  background-position: -25.6rem -16rem;
-// 	}
-// 	100% {
-// 	  background-position: -25.6rem -16rem;
-// 	}
-//   }
-  
-//   @-webkit-keyframes redRevive {
-// 	from {
-// 	  -webkit-transform: translate(-1rem, 0rem);
-// 			  transform: translate(-1rem, 0rem);
-// 	}
-// 	to {
-// 	  -webkit-transform: translate(-1rem, -6rem);
-// 			  transform: translate(-1rem, -6rem);
-// 	}
-//   }
-  
-//   @keyframes redRevive {
-// 	from {
-// 	  -webkit-transform: translate(-1rem, 0rem);
-// 			  transform: translate(-1rem, 0rem);
-// 	}
-// 	to {
-// 	  -webkit-transform: translate(-1rem, -6rem);
-// 			  transform: translate(-1rem, -6rem);
-// 	}
-//   }
-  
-//   @-webkit-keyframes pinkRevive {
-// 	0% {
-// 	  -webkit-transform: translate(-1rem, 0rem);
-// 			  transform: translate(-1rem, 0rem);
-// 	}
-// 	20% {
-// 	  -webkit-transform: translate(-1rem, 2rem);
-// 			  transform: translate(-1rem, 2rem);
-// 	}
-// 	100% {
-// 	  -webkit-transform: translate(-1rem, -6rem);
-// 			  transform: translate(-1rem, -6rem);
-// 	}
-//   }
-  
-//   @keyframes pinkRevive {
-// 	0% {
-// 	  -webkit-transform: translate(-1rem, 0rem);
-// 			  transform: translate(-1rem, 0rem);
-// 	}
-// 	20% {
-// 	  -webkit-transform: translate(-1rem, 2rem);
-// 			  transform: translate(-1rem, 2rem);
-// 	}
-// 	100% {
-// 	  -webkit-transform: translate(-1rem, -6rem);
-// 			  transform: translate(-1rem, -6rem);
-// 	}
-//   }
-  
-//   @-webkit-keyframes blueRevive {
-// 	0%, 80% {
-// 	  -webkit-transform: translate(-1rem, 0rem);
-// 			  transform: translate(-1rem, 0rem);
-// 	}
-// 	4%, 20%, 36%, 52%, 68% {
-// 	  -webkit-transform: translate(-1rem, -2rem);
-// 			  transform: translate(-1rem, -2rem);
-// 	}
-// 	12%, 28%, 44%, 60%, 76% {
-// 	  -webkit-transform: translate(-1rem, 2rem);
-// 			  transform: translate(-1rem, 2rem);
-// 	}
-// 	88% {
-// 	  -webkit-transform: translate(3rem, 0rem);
-// 			  transform: translate(3rem, 0rem);
-// 	}
-// 	100% {
-// 	  -webkit-transform: translate(3rem, -6rem);
-// 			  transform: translate(3rem, -6rem);
-// 	}
-//   }
-  
-//   @keyframes blueRevive {
-// 	0%, 80% {
-// 	  -webkit-transform: translate(-1rem, 0rem);
-// 			  transform: translate(-1rem, 0rem);
-// 	}
-// 	4%, 20%, 36%, 52%, 68% {
-// 	  -webkit-transform: translate(-1rem, -2rem);
-// 			  transform: translate(-1rem, -2rem);
-// 	}
-// 	12%, 28%, 44%, 60%, 76% {
-// 	  -webkit-transform: translate(-1rem, 2rem);
-// 			  transform: translate(-1rem, 2rem);
-// 	}
-// 	88% {
-// 	  -webkit-transform: translate(3rem, 0rem);
-// 			  transform: translate(3rem, 0rem);
-// 	}
-// 	100% {
-// 	  -webkit-transform: translate(3rem, -6rem);
-// 			  transform: translate(3rem, -6rem);
-// 	}
-//   }
-  
-//   @-webkit-keyframes orangeRevive {
-// 	0%, 93.3% {
-// 	  -webkit-transform: translate(-1rem, 0);
-// 			  transform: translate(-1rem, 0);
-// 	}
-// 	1.3%, 6.6%, 12%, 17.3%, 22.6%, 28%, 33.3%, 38.6%, 44%, 49.3%, 54.6%, 60%, 65.3%, 70.6%, 76%, 81.3%, 86.6%, 92% {
-// 	  -webkit-transform: translate(-1rem, -2rem);
-// 			  transform: translate(-1rem, -2rem);
-// 	}
-// 	4%, 9.3%, 14.6%, 20%, 25.3%, 30.6%, 36%, 41.3%, 46.6%, 52%, 57.3%, 62.6%, 68%, 73.3%, 78.6%, 84%, 89.3% {
-// 	  -webkit-transform: translate(-1rem, 2rem);
-// 			  transform: translate(-1rem, 2rem);
-// 	}
-// 	96% {
-// 	  -webkit-transform: translate(-5rem, 0);
-// 			  transform: translate(-5rem, 0);
-// 	}
-// 	100% {
-// 	  -webkit-transform: translate(-5rem, -6rem);
-// 			  transform: translate(-5rem, -6rem);
-// 	}
-//   }
-  
-//   @keyframes orangeRevive {
-// 	0%, 93.3% {
-// 	  -webkit-transform: translate(-1rem, 0);
-// 			  transform: translate(-1rem, 0);
-// 	}
-// 	1.3%, 6.6%, 12%, 17.3%, 22.6%, 28%, 33.3%, 38.6%, 44%, 49.3%, 54.6%, 60%, 65.3%, 70.6%, 76%, 81.3%, 86.6%, 92% {
-// 	  -webkit-transform: translate(-1rem, -2rem);
-// 			  transform: translate(-1rem, -2rem);
-// 	}
-// 	4%, 9.3%, 14.6%, 20%, 25.3%, 30.6%, 36%, 41.3%, 46.6%, 52%, 57.3%, 62.6%, 68%, 73.3%, 78.6%, 84%, 89.3% {
-// 	  -webkit-transform: translate(-1rem, 2rem);
-// 			  transform: translate(-1rem, 2rem);
-// 	}
-// 	96% {
-// 	  -webkit-transform: translate(-5rem, 0);
-// 			  transform: translate(-5rem, 0);
-// 	}
-// 	100% {
-// 	  -webkit-transform: translate(-5rem, -6rem);
-// 			  transform: translate(-5rem, -6rem);
-// 	}
-//   }
-  
-//   @-webkit-keyframes blink {
-// 	0% {
-// 	  background-position-y: -2rem;
-// 	}
-// 	12.5% {
-// 	  background-position-y: 0;
-// 	}
-// 	25% {
-// 	  background-position-y: -2rem;
-// 	}
-// 	37.5% {
-// 	  background-position-y: 0;
-// 	}
-// 	50% {
-// 	  background-position-y: -2rem;
-// 	}
-// 	62.5% {
-// 	  background-position-y: 0;
-// 	}
-// 	75% {
-// 	  background-position-y: -2rem;
-// 	}
-// 	87.5% {
-// 	  background-position-y: 0;
-// 	}
-//   }
-  
-//   @keyframes blink {
-// 	0% {
-// 	  background-position-y: -2rem;
-// 	}
-// 	12.5% {
-// 	  background-position-y: 0;
-// 	}
-// 	25% {
-// 	  background-position-y: -2rem;
-// 	}
-// 	37.5% {
-// 	  background-position-y: 0;
-// 	}
-// 	50% {
-// 	  background-position-y: -2rem;
-// 	}
-// 	62.5% {
-// 	  background-position-y: 0;
-// 	}
-// 	75% {
-// 	  background-position-y: -2rem;
-// 	}
-// 	87.5% {
-// 	  background-position-y: 0;
-// 	}
-//   }
-  
-//   @-webkit-keyframes blink2 {
-// 	0% {
-// 	  background-position-y: -2rem;
-// 	}
-// 	12.5% {
-// 	  background-position-y: 0;
-// 	}
-// 	25% {
-// 	  background-position-y: -2rem;
-// 	}
-// 	37.5% {
-// 	  background-position-y: 0;
-// 	}
-// 	50% {
-// 	  background-position-y: -2rem;
-// 	}
-// 	62.5% {
-// 	  background-position-y: 0;
-// 	}
-// 	75% {
-// 	  background-position-y: -2rem;
-// 	}
-// 	87.5% {
-// 	  background-position-y: 0;
-// 	}
-//   }
-  
-//   @keyframes blink2 {
-// 	0% {
-// 	  background-position-y: -2rem;
-// 	}
-// 	12.5% {
-// 	  background-position-y: 0;
-// 	}
-// 	25% {
-// 	  background-position-y: -2rem;
-// 	}
-// 	37.5% {
-// 	  background-position-y: 0;
-// 	}
-// 	50% {
-// 	  background-position-y: -2rem;
-// 	}
-// 	62.5% {
-// 	  background-position-y: 0;
-// 	}
-// 	75% {
-// 	  background-position-y: -2rem;
-// 	}
-// 	87.5% {
-// 	  background-position-y: 0;
-// 	}
-//   }
-  
-//   @-webkit-keyframes yellowDeath {
-// 	0% {
-// 	  background-position: -9.6rem 0rem;
-// 	}
-// 	9% {
-// 	  background-position: -12.8rem 0rem;
-// 	}
-// 	18% {
-// 	  background-position: -16rem 0rem;
-// 	}
-// 	27% {
-// 	  background-position: -19.2rem 0rem;
-// 	}
-// 	36% {
-// 	  background-position: -22.4rem 0rem;
-// 	}
-// 	45% {
-// 	  background-position: -25.6rem 0rem;
-// 	}
-// 	54% {
-// 	  background-position: -28.8rem 0rem;
-// 	}
-// 	63% {
-// 	  background-position: -32rem 0rem;
-// 	}
-// 	72% {
-// 	  background-position: -35.2rem 0rem;
-// 	}
-// 	81% {
-// 	  background-position: -38.4rem 0rem;
-// 	}
-// 	90% {
-// 	  background-position: -41.6rem -0.64rem;
-// 	}
-// 	100% {
-// 	  visibility: hidden;
-// 	}
-//   }
-  
-//   @keyframes yellowDeath {
-// 	0% {
-// 	  background-position: -9.6rem 0rem;
-// 	}
-// 	9% {
-// 	  background-position: -12.8rem 0rem;
-// 	}
-// 	18% {
-// 	  background-position: -16rem 0rem;
-// 	}
-// 	27% {
-// 	  background-position: -19.2rem 0rem;
-// 	}
-// 	36% {
-// 	  background-position: -22.4rem 0rem;
-// 	}
-// 	45% {
-// 	  background-position: -25.6rem 0rem;
-// 	}
-// 	54% {
-// 	  background-position: -28.8rem 0rem;
-// 	}
-// 	63% {
-// 	  background-position: -32rem 0rem;
-// 	}
-// 	72% {
-// 	  background-position: -35.2rem 0rem;
-// 	}
-// 	81% {
-// 	  background-position: -38.4rem 0rem;
-// 	}
-// 	90% {
-// 	  background-position: -41.6rem -0.64rem;
-// 	}
-// 	100% {
-// 	  visibility: hidden;
-// 	}
-//   }

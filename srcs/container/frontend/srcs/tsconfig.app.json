@@ -26,6 +26,7 @@
 		"paths": {
 			"@i18n": ["./src/i18next/i18next"],
 			"@styles/*": ["./src/app/assets/styles/*"],
+			"@img/*": ["./src/app/assets/img/*"],
 			"@types/*": ["./src/app/types/*"]
 		}
 	},
