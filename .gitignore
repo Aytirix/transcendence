@@ -4,3 +4,4 @@
 **/dist
 srcs/container/backend/srcs/logs
 srcs/build/**
+srcs/container/backend/srcs/sqlite/sessions.sqlite
