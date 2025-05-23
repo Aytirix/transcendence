@@ -1,8 +1,11 @@
-import { FastifyInstance, Session } from 'fastify';
-import fastifySession from '@fastify/session';
+import { FastifyInstance, FastifyRequest, Session } from 'fastify';
+import fastifySession, { FastifySessionOptions } from '@fastify/session';
 import fastifyCookie from '@fastify/cookie';
 import dotenv from 'dotenv';
 import sqlite3 from 'sqlite3';
+import crypto from 'crypto';
+import { encrypt, decrypt } from '@tools';
+import { sessionPayload } from '@types';
 
 dotenv.config();
 
@@ -35,6 +38,7 @@ class CustomSQLiteStore {
 
 	set(sid: string, session: Session, callback: (err?: Error) => void) {
 		const userId = session.user?.id || null;
+		if (!userId) return callback(null);
 		const sess = JSON.stringify(session);
 		const expiration = session.cookie?.expires ? new Date(session.cookie.expires).getTime() : null;
 
@@ -77,17 +81,66 @@ class CustomSQLiteStore {
 }
 
 export async function getStore() {
-	if (!store) {
-		store = new CustomSQLiteStore();
-	}
+	if (!store) store = new CustomSQLiteStore();
 	return store;
 }
 
+/**
+ * Crée un ID de session personnalisé contenant des informations encodées de l'utilisateur
+ * @param userInfo Informations utilisateur à encoder dans l'ID de session
+ * @returns Un ID de session sécurisé contenant les informations encodées
+ */
+export function createSessionId(userInfo: Record<string, any> = {}): string {
+	// Encodage des informations utilisateur en Base64
+	const randomValue = crypto.randomBytes(16).toString('hex');
+
+	const payload = Buffer.from(encrypt(JSON.stringify(userInfo))).toString('base64url');
+
+	// Création d'une signature simple avec HMAC
+	const signature = crypto
+		.createHmac('sha256', process.env.SESSION_SECRET)
+		.update(`${payload}.${randomValue}`)
+		.digest('base64url');
+
+	// Format: payload.timestamp.randomValue.signature
+	return `${signature}.${randomValue}`;
+}
+
+/**
+ * Décode un ID de session pour extraire les informations utilisateur
+ * @param sessionId L'ID de session à décoder
+ * @returns Les informations utilisateur décodées ou null si invalide
+ */
+export function decodeSessionId(playload: sessionPayload, sessionId: string): boolean {
+	try {
+		const [signature, randomValue] = sessionId.split('.');
+
+		const payload = Buffer.from(encrypt(JSON.stringify(playload))).toString('base64url');
+
+		// Vérification de la signature
+		const expectedSignature = crypto
+			.createHmac('sha256', process.env.SESSION_SECRET)
+			.update(`${payload}.${randomValue}`)
+			.digest('base64url');
+
+		if (signature !== expectedSignature) {
+			console.warn('Signature invalide pour l\'ID de session');
+			return null;
+		}
+
+		return true;
+	} catch (error) {
+		console.error('Erreur lors du décodage de l\'ID de session:', error);
+		return false;
+	}
+}
+
 export async function registerSession(app: FastifyInstance) {
-	const SQLiteStore = new CustomSQLiteStore();
 
 	app.register(fastifyCookie);
-	app.register(fastifySession, {
+
+	// Définir les options avec le type correct
+	const sessionOptions: FastifySessionOptions = {
 		secret: process.env.SESSION_SECRET,
 		cookie: {
 			secure: true,
@@ -96,8 +149,16 @@ export async function registerSession(app: FastifyInstance) {
 			sameSite: 'none',
 			path: '/',
 		},
+		idGenerator: (req: FastifyRequest) => {
+			const initialUserInfo: sessionPayload = {
+				userAgent: req.headers['user-agent'],
+			};
+			return createSessionId(initialUserInfo);
+		},
 		store: await getStore(),
-	});
+	};
+
+	app.register(fastifySession, sessionOptions);
 }
 
 export default {

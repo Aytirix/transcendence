@@ -22,6 +22,7 @@ exec-frontend:
 down:
 	$(DOCKER_COMPOSE) -f $(DOCKER_COMPOSE_FILE) down --volumes --remove-orphans --rmi all
 	docker volume prune -f
+	rm -rf ./srcs/container/backend/srcs/logs/*
 
 start:
 	$(DOCKER_COMPOSE) -f $(DOCKER_COMPOSE_FILE) start
