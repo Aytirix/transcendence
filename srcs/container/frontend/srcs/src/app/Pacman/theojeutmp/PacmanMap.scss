@@ -1,12 +1,45 @@
 /* src/assets/styles/pacman/PacmanMap.scss */
 
+.header {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100px; /* Hauteur de l'en-tête */
+  background-color: #222; /* Couleur de fond de l'en-tête */
+  color: white; /* Couleur du texte */
+  font-size: 2rem; /* Taille de la police */
+  font-family: 'Press Start 2P', cursive; /* Police de caractères */
+}
+
+
+
+.pacman-map-wrapper {
+	display: grid;
+  grid-template-columns: 500px 1fr 500px;
+  grid-template-rows: 1fr;
+  gap: 10px 10px;
+}
+
+.column-right {
+	display: flex;
+	//width: 50px;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+}
+.column-left {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+}
 /* Conteneur principal de l carte */
 .pacman-map-container {
 	position: relative;
 	overflow: hidden;
 	display: flex;
-	width: 824px;           /* Taille fixe en pixels */
-  	height: 880px;          /* Taille fixe en pixels */
+	width: 774px;           /* Taille fixe en pixels */
+  	height: 840px;          /* Taille fixe en pixels */
 	  //margin: 0 auto;
 	  border: 5px solid #222;    /* bordure sombre */
 	  border-radius: 20px;      /* coins arrondis */
@@ -403,7 +436,7 @@
   
   .score {
 	color: white;
-	margin: 1;
-	font-size: 1.5rem;
+	//margin: 1;
+	font-size: 1rem;
 	font-family: 'Press Start 2P';
   }
