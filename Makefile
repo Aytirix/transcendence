@@ -8,6 +8,7 @@ dev:
 	NODE_PROJET=dev $(DOCKER_COMPOSE) -f $(DOCKER_COMPOSE_FILE) up --build -d
 
 prod: down
+	mkdir -p ./srcs/build
 	NODE_PROJET=production $(DOCKER_COMPOSE) -f $(DOCKER_COMPOSE_FILE) up --build -d
 
 restart:
@@ -21,8 +22,9 @@ exec-frontend:
 
 down:
 	$(DOCKER_COMPOSE) -f $(DOCKER_COMPOSE_FILE) down --volumes --remove-orphans --rmi all
+	rm -rf ./srcs/build/*
 	docker volume prune -f
-	rm -rf ./srcs/container/backend/srcs/logs/*
+	docker exec -it backend rm -rf ./logs/*
 
 start:
 	$(DOCKER_COMPOSE) -f $(DOCKER_COMPOSE_FILE) start
