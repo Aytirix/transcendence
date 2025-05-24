@@ -5,7 +5,7 @@ import Pacman from "./Pacman";
 import Character from "./Character";
 
 export const TILE_SIZE = 50;
-export const PLAYER_SPEED = 3;
+export const GHOST_SPEED = 2.5;
 
 /**
  * Classe Ghost enrichie avec AI officielle (scatter + chase), et
@@ -14,7 +14,7 @@ export const PLAYER_SPEED = 3;
  * afin qu’ils n’entrent jamais réellement sur la tuile portal (évite le blocage).
  */
 export default class Ghost extends Character {
-	public static _speed = PLAYER_SPEED;
+	public static _speed = GHOST_SPEED;
 	public static _speedRespawn = 5;
 
 	// Référence à la map pour les collisions et pathfinding
@@ -34,7 +34,6 @@ export default class Ghost extends Character {
 	private static PATH_INTERVAL: number = 50;
 
 	public isReturningToSpawn: boolean = false;
-	private spawnTarget: vector2 | null = null;
 
 	constructor(
 		player: player,
@@ -81,17 +80,16 @@ export default class Ghost extends Character {
 			const currentGrid = this.pixelToGrid(this.position);
 
 			// Si arrivé à destination
-			if (currentGrid.x === this.spawnTarget.x && currentGrid.y === this.spawnTarget.y) {
-				this.isFrightened = false;
+			console.log(`[Ghost ${this.nameChar}] retour vers spawn: ${this.position.x},${this.position.y} / ${this.spawnTarget.x},${this.spawnTarget.y}`);
+			if (this.position.x - this.spawnTarget.x <= 2 && this.position.y - this.spawnTarget.y <= 2) {
 				this.isReturningToSpawn = false;
-				this.spawnTarget = null;
 				this.direction = { x: 0, y: 0 };
 				this.nextDirection = { x: 0, y: 0 };
 				return;
 			}
 
 			// Sinon, calculer direction vers spawn
-			const nextDir = this.computeNextDirectionBFS(currentGrid, this.spawnTarget);
+			const nextDir = this.computeNextDirectionBFS(currentGrid, this.pixelToGrid(this.spawnTarget));
 			if (nextDir) {
 				this.nextDirection = nextDir;
 			}
@@ -100,7 +98,6 @@ export default class Ghost extends Character {
 
 		// Si en mode frightened, on utilise une logique de fuite
 		if (this.isFrightened) return this.updateFrightenedBehaviour(pacman);
-
 
 		// Limiter la fréquence de recalcul (pour perf), max un calcul tous les 200 ms
 		const now = Date.now();
@@ -280,12 +277,9 @@ export default class Ghost extends Character {
 				let ny = curr.y + d.y;
 
 				// Hors de la grille ?
-				if (nx < 0 || nx >= width || ny < 0 || ny >= height) {
-					continue;
-				}
-				if (visited[ny][nx]) {
-					continue;
-				}
+				if (nx < 0 || nx >= width || ny < 0 || ny >= height) continue;
+				if (visited[ny][nx]) continue;
+
 				// Si mur, on skip
 				if (!this.map.isWalkable(this.nameChar, { x: nx, y: ny })) {
 					continue;
@@ -326,21 +320,8 @@ export default class Ghost extends Character {
 		};
 	}
 
-	/** Convertit une position pixel (centre du sprite) en coordonnées grille. */
-	private pixelToGrid(pixelPos: vector2): vector2 {
-		return {
-			x: Math.floor(pixelPos.x / TILE_SIZE),
-			y: Math.floor(pixelPos.y / TILE_SIZE),
-		};
-	}
-
 	public respawn(): void {
-		// Récupérer la position de spawn
-		const spawns = this.map.getSpawnPositions()[this.nameChar];
-		if (!spawns || spawns.length === 0) return;
-
-		// Définir l'état de retour et la cible
+		this.isFrightened = false;
 		this.isReturningToSpawn = true;
-		this.spawnTarget = spawns[0];
 	}
 }
