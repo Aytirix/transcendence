@@ -1,7 +1,7 @@
 import { WebSocket } from 'ws';
 import Engine from '../../WebSocket/Pacman/game/Engine';
 
-export type GameState = 'waiting' | 'active' | 'finished';
+export type GameState = 'waiting' | 'active';
 
 export interface room {
 	id: number;

@@ -6,7 +6,8 @@ import Ghost from "./Character/Ghost";
 import Pacman from "./Character/Pacman";
 
 export const TILE_SIZE = 50;
-export const PLAYER_SPEED = 3;
+export const PACMAN_SPEED = 3;
+export const GHOST_SPEED = 2.5;
 
 /**
  * Classe principale du moteur de jeu Pac-Man
@@ -18,12 +19,14 @@ export default class Engine {
 	private tickRate = 1000 / 60; // 60 FPS
 	private lastTime = Date.now();
 	private intervalId: NodeJS.Timeout | null = null;
-	private sockets: Map<number, WebSocket> = new Map();
+	public sockets: Map<number, WebSocket> = new Map();
 	private isPaused: boolean = false;
 	private PauseMessage: string = "";
+	private Finished: boolean = false;
 
 	// Ajout des propriétés pour le mode effrayé
 	private isFrightened: boolean = false;
+	private pacmanKillFrightened: number = 0;
 	private frightenedEndTime: number = 0;
 	private static FRIGHTENED_DURATION = 8000; // 8 secondes en mode effrayé
 	private static FRIGHTENED_SPEED = 1.5 // Vitesse réduite en mode effrayé
@@ -73,7 +76,6 @@ export default class Engine {
 
 			// Conversion grille → pixel en centrant
 			const position = this.gridToPixel(spawns[spawnIndex]);
-			console.log(`Player ${p.username} (${p.id}) spawned at ${position.x}, ${position.y} with character ${characterType}`);
 
 			if (characterType === CharacterType.Pacman) player = new Pacman(p, position, characterType);
 			else player = new Ghost(p, position, characterType, this.map);
@@ -81,6 +83,42 @@ export default class Engine {
 
 			this.players.set(p.id, player);
 		});
+	}
+
+	/**
+	 * Resets the positions of all players (ghosts and Pacman) to their spawn points
+	 * @returns boolean indicating if the reset was successful
+	 */
+	public resetAllPlayerPositions(): boolean {
+		let allResetSuccessful = true;
+
+		this.players.forEach((player, playerId) => {
+			// Get appropriate spawn position based on character type
+			const spawns = this.map.getSpawnPositions()[player.nameChar];
+			if (!spawns || spawns.length === 0) {
+				allResetSuccessful = false;
+				return;
+			}
+
+			// Reset to the first spawn position for this character type
+			const position = this.gridToPixel(spawns[0]);
+			player.position = position;
+
+			// Reset direction
+			player.direction = { x: 0, y: 0 };
+			player.nextDirection = { x: 0, y: 0 };
+
+			// Reset state for ghosts
+			if (player instanceof Ghost) {
+				player.isReturningToSpawn = false;
+				player.isFrightened = false;
+			}
+		});
+
+		// Reset frightened mode
+		this.isFrightened = false;
+
+		return allResetSuccessful;
 	}
 
 	public updatePlayer(player: player, ws: WebSocket): void {
@@ -114,33 +152,32 @@ export default class Engine {
 		}
 	}
 
+	public isFinished(): boolean {
+		return this.Finished;
+	}
+
 	/**
 	 * Démarre la boucle de jeu
 	 */
 	public start(): void {
-		this.lastTime = Date.now();
-		this.intervalId = setInterval(() => this.gameLoop(), this.tickRate);
-		const state = {
-			action: 'startGame',
-			data: {
-				players: Array.from(this.players.values()).map(p => (
-					{
-						id: p.player.id,
-						name: p.player.username,
-						character: p.nameChar,
-						position: p.position,
-						score: p.score
-					})),
-				tileSize: TILE_SIZE,
-				grid: this.map.toString(),
-				paused: { paused: this.isPaused, message: this.PauseMessage }
+		this.isPaused = true;
+		let countdown = 1;
+		this.PauseMessage = `Starting in ${countdown} seconds...`;
+		this.broadcastState();
+		const countdownInterval = setInterval(() => {
+			if (countdown > 0) {
+				this.PauseMessage = `Starting in ${countdown} seconds...`;
+				this.broadcastState();
+			} else {
+				clearInterval(countdownInterval);
+				this.isPaused = false;
+				this.PauseMessage = "";
+				this.lastTime = Date.now();
+				this.intervalId = setInterval(() => this.gameLoop(), this.tickRate);
 			}
-		};
-		this.sockets.forEach(ws => {
-			if (ws && ws.readyState === WebSocket.OPEN) {
-				ws.send(JSON.stringify(state));
-			}
-		});
+			countdown--;
+		}, 1000);
+
 	}
 
 	/**
@@ -200,7 +237,7 @@ export default class Engine {
 
 			// Mettre à jour le comportement des fantômes
 			this.players.forEach(player => {
-				if (player instanceof Ghost && now - player.player.updateAt > 2000) {
+				if (player instanceof Ghost && (now - player.player.updateAt > 2000 || player.isReturningToSpawn)) {
 					(player as Ghost).updateBehaviour(
 						pacmanInstance,
 						this.players as Map<number, Ghost>
@@ -252,7 +289,7 @@ export default class Engine {
 		// Centre exact de la tuile courante
 		const exactCenterX = currentGridPos.x * TILE_SIZE + TILE_SIZE / 2;
 		const exactCenterY = currentGridPos.y * TILE_SIZE + TILE_SIZE / 2;
-		const AlignementTolerance = 1;
+		const AlignementTolerance = 2;
 		const isAligned = Math.abs(pl.position.x - exactCenterX) <= AlignementTolerance &&
 			Math.abs(pl.position.y - exactCenterY) <= AlignementTolerance;
 		const directionOpposite = (pl.direction.x !== 0 && pl.nextDirection.x !== 0) || (pl.direction.y !== 0 && pl.nextDirection.y !== 0);
@@ -268,7 +305,7 @@ export default class Engine {
 			}
 		}
 
-		// Calcule la position désirée du centre après déplacement
+		// Calcule la position désirée du centre après déplacement	
 		const velocityX = pl.direction.x * speed * (delta / 16);
 		const velocityY = pl.direction.y * speed * (delta / 16);
 		const desiredCenterX = pl.position.x + velocityX;
@@ -329,6 +366,7 @@ export default class Engine {
 	 */
 	public setFrightened(): void {
 		this.isFrightened = true;
+		this.pacmanKillFrightened = 0;
 		this.frightenedEndTime = Date.now() + Engine.FRIGHTENED_DURATION;
 		Ghost._speed = Engine.FRIGHTENED_SPEED;
 
@@ -349,7 +387,7 @@ export default class Engine {
 		for (const player of this.players.values()) {
 			if (player instanceof Ghost) player.isFrightened = false;
 		}
-		Ghost._speed = PLAYER_SPEED;
+		Ghost._speed = PACMAN_SPEED;
 	}
 
 	private debug(): void {
@@ -430,7 +468,7 @@ export default class Engine {
 	 * Vérifie les collisions entre les fantômes et Pac-Man
 	 * @returns true si un fantôme a mangé Pac-Man
 	 */
-	private checkGhostPacmanCollision(pacman: Pacman): boolean {
+	private checkGhostPacmanCollision(pacman: Pacman): void {
 
 		for (const ghost of this.players.values()) {
 			if (ghost instanceof Pacman) continue;
@@ -439,35 +477,47 @@ export default class Engine {
 			const dy = ghost.position.y - pacman.position.y;
 			const distance = Math.sqrt(dx * dx + dy * dy);
 
-			console.log(`Distance entre Pacman et ${ghost.nameChar}: ${distance}`);
 			if (distance < TILE_SIZE / 2) {
 				if (ghost.isFrightened && !ghost.isReturningToSpawn) {
-					// Pac-Man mange le fantôme effrayé
-					console.log(`Pacman a mangé le fantôme ${ghost.nameChar}`);
-					ghost.isFrightened = false;
+					this.pacmanKillFrightened += 1;
 					ghost.respawn();
-					pacman.score += 200;
+					pacman.score += 200 * this.pacmanKillFrightened;
+					ghost.score -= 100;
 				} else if (!ghost.isFrightened && !ghost.isReturningToSpawn) {
-					console.log(`Le fantôme ${ghost.nameChar} a mangé Pacman`);
-					this.deadPacman(pacman);
 					ghost.score += 300;
+					this.deadPacman(pacman, ghost);
 				}
 			}
-			return false;
 		}
 	}
 
-	private deadPacman(pacman: Pacman): boolean {
+	private deadPacman(pacman: Pacman, ghost: Ghost): void {
 		this.stop();
 		pacman.life -= 1;
-		if (pacman.life <= 0) {
-			return true;
+		if (pacman.life >= 0) {
+			this.PauseMessage = `You are dead! You have ${pacman.life} lives left.`;
+			this.isPaused = true;
+			this.Finished = false;
+			this.broadcastState();
+			// wait 3 seconds before respawning
+			setTimeout(() => {
+				if (this.resetAllPlayerPositions()) {
+					this.start();
+				} else {
+					this.PauseMessage = "Error: Unable to reset player positions.";
+					this.Finished = true;
+					this.broadcastState();
+				}
+			}, 3000);
+		} else {
+			this.PauseMessage = "Game finished! Pacman is dead.";
+			this.isPaused = true;
+			this.broadcastState();
+			setTimeout(() => {
+				this.stop();
+				this.Finished = true;
+			}, 3000);
 		}
-
-		if (pacman.life <= 0) {
-			return true;
-		}
-		return false;
 	}
 
 	/**
@@ -489,6 +539,7 @@ export default class Engine {
 				})),
 				pacmanLife: Array.from(this.players.values()).find(p => p instanceof Pacman)?.life,
 				grid: this.map.toString(),
+				tileSize: TILE_SIZE,
 				isSpectator: false,
 				paused: { paused: this.isPaused, message: this.PauseMessage },
 				frightenedState: {

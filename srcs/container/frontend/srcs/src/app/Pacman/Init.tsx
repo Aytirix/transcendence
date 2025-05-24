@@ -17,6 +17,7 @@ function initState(): state {
 			waiting: [],
 		},
 		game: {
+			launch: false,
 			grid: [],
 			frightenedState: {
 				remainingTime: 0,
@@ -47,18 +48,15 @@ export default function WebSocketPacman() {
 						waiting: data.waiting,
 						active: data.active,
 					},
-				}));
-				break;
-			}
-			case 'startGame': {
-				setState((prevState: state) => ({
-					...prevState,
 					game: {
 						...prevState.game,
-						players: data.data.players,
-						grid: data.data.grid,
-						tileSize: data.data.tileSize,
-						paused: data.data.paused,
+						launch: false,
+						grid: [],
+						players: [],
+						paused: {
+							paused: false,
+							message: '',
+						},
 					},
 				}));
 				break;
@@ -68,6 +66,7 @@ export default function WebSocketPacman() {
 					...prevState,
 					game: {
 						...prevState.game,
+						launch: true,
 						grid: data.data.grid,
 						players: data.data.players,
 						paused: data.data.paused,
@@ -129,6 +128,7 @@ export default function WebSocketPacman() {
 			rooms: status !== 'Connected' ? { active: [], waiting: [] } : prevState.rooms,
 			game: status !== 'Connected'
 				? {
+					launch: false,
 					grid: [],
 					players: [],
 					tileSize: 50,

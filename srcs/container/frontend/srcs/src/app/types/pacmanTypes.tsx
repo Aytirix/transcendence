@@ -31,6 +31,7 @@ export interface state {
 		waiting: room[];
 	}
 	game: {
+		launch: boolean;
 		frightenedState: {
 			remainingTime: number;
 		}
