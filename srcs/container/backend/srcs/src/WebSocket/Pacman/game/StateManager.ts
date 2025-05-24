@@ -31,7 +31,6 @@ class RoomManager {
 	public joinRoom(player: player, roomId: number): boolean {
 		if (this.PlayerInRoom(player.id)) return false;
 		const game = this.getRoom(roomId);
-		console.log('Player joined room:', game);
 		if (game && game.players.length < 5) {
 			game.players.push(player);
 			this.rooms.set(roomId, game);
@@ -84,7 +83,7 @@ class RoomManager {
 		if (room) {
 			if (room.owner_id === playerId) {
 				const newOwner = room.players.find(player => player.id !== playerId);
-				if (!newOwner) return this.removeGame(room.id);
+				if (!newOwner) return this.removeRoom(room.id);
 				room.owner_id = newOwner.id;
 				room.owner_username = newOwner.username;
 				room.players = room.players.filter(player => player.id !== newOwner.id);
@@ -109,7 +108,7 @@ class RoomManager {
 		}
 	}
 
-	public removeGame(roomId: number): void {
+	public removeRoom(roomId: number): void {
 		this.rooms.delete(roomId);
 	}
 
@@ -117,11 +116,11 @@ class RoomManager {
 		return this.rooms.get(roomId);
 	}
 
-	public getWaitingGames(): room[] {
+	public getWaitingRooms(): room[] {
 		return Array.from(this.rooms.values()).filter(game => game.state === 'waiting');
 	}
 
-	public getActiveGames(): room[] {
+	public getActiveRooms(): room[] {
 		return Array.from(this.rooms.values()).filter(game => game.state === 'active');
 	}
 
@@ -195,15 +194,17 @@ class StateManager {
 			game.players.forEach((p: player) => {
 				p.gameId = null;
 			});
+			const tmp = new Map<number, WebSocket>();
 			for (const player of game.players) {
+				tmp.set(player.id, game.engine?.sockets.get(player.id));
 				this.PlayerGame.delete(player.id);
 				this.PlayerGameWs.delete(player.id);
 				this.PlayerRoomWs.delete(player.id);
 				this.PlayerRoom.set(player.id, player);
 				this.PlayerRoomWs.set(player.id, this.PlayerGameWs.get(player.id));
 			}
-			this.RoomManager.removeGame(game.id);
-			this.RoomManager.updateRoomState(game.id, 'finished');
+			this.sendRooms(tmp);
+			this.RoomManager.removeRoom(game.id);
 		}
 	}
 
@@ -267,7 +268,7 @@ class StateManager {
 
 	public async loopRooms(): Promise<void> {
 		while (true) {
-			const waitingRooms = this.RoomManager.getWaitingGames();
+			const activeRooms = this.RoomManager.getActiveRooms();
 			const now = Date.now();
 
 			for (const player of this.PlayerRoom.values()) {
@@ -277,25 +278,28 @@ class StateManager {
 				}
 			}
 
-			for (const room of waitingRooms) {
-				for (const player of room.players) {
-					if (now - player.updateAt > 10000) {
-						if (room.players.length > 1 && player.id === room.owner_id) {
-							this.RoomManager.setRoomOwner(room.id, room.players[1].id);
-							this.RoomManager.removePlayerFromRoom(room, room.owner_id);
-						} else this.RoomManager.removePlayerFromRoom(room, player.id);
+			for (const room of activeRooms) {
+				if (room.engine) {
+					if (room.engine.isFinished()) {
+						this.stopGame(room);
 					}
 				}
 			}
+
 			await this.sleep(250);
 		}
 	}
 
 	public sendRooms(playerws: Map<number, WebSocket> | null = null): void {
 		playerws = playerws || this.PlayerRoomWs;
-		const waitingGames = this.RoomManager.getWaitingGames();
-		const activeGames = this.RoomManager.getActiveGames();
+		const waitingGames = this.RoomManager.getWaitingRooms();
+		const activeGames = this.RoomManager.getActiveRooms();
 		for (const [id, ws] of playerws) {
+			if (!ws || ws.readyState !== WebSocket.OPEN) {
+				this.PlayerRoomWs.delete(id);
+				this.PlayerRoom.delete(id);
+				continue;
+			}
 			let rooms = {
 				action: 'getrooms',
 				waiting: waitingGames,

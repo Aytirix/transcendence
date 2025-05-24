@@ -76,7 +76,8 @@ export async function getSessionByCookie(request: IncomingMessage): Promise<Sess
 		const rawSessionId = cookies['sessionId'];
 
 		if (!rawSessionId) return null;
-		const sid = rawSessionId.split('.')[0];
+		const parts = rawSessionId.split('.');
+		const sid = parts.length >= 3 ? `${parts[0]}.${parts[1]}` : parts[0];
 
 		const store = await getStore();
 

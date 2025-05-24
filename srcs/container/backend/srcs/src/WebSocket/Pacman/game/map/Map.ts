@@ -71,7 +71,10 @@ export default class PacmanMap {
 	 */
 	public isWalkable(nameChar: CharacterType, pos: vector2): boolean {
 		const tile = this.getTile(pos);
-		return tile !== null && tile !== TileType.Wall && ((nameChar == CharacterType.Pacman && tile !== TileType.GhostPortalBlock) || (nameChar != CharacterType.Pacman));
+		if (tile === null || tile == TileType.Wall) return false;
+		if (nameChar !== CharacterType.Pacman && tile === TileType.Teleport) return false;
+		if (nameChar == CharacterType.Pacman && tile === TileType.GhostPortalBlock) return false;
+		return true;
 	}
 
 	/**
