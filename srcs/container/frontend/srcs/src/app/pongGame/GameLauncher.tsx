@@ -1,34 +1,3 @@
-// import React, { useState } from 'react';
-// import Pong from './client';
-//  // Assurez-vous que ce chemin correspond à votre projet
-
-// const GameLauncher: React.FC = () => {
-//   const [started, setStarted] = useState(false);
-
-//   const startGame = () => {
-//     const audio = new Audio('/sounds/ironSong.mp3');
-//     audio.loop = true;
-//     audio.volume = 0.5;
-//     audio.play().catch((e) => console.warn("Autoplay bloqué :", e));
-//     setStarted(true);
-//   };
-
-//   return (
-//     <div>
-//       {!started ? (
-//         <div style={{ textAlign: 'center', marginTop: '200px' }}>
-//           <h1>Bienvenue dans IRONPONG !</h1>
-//           <button onClick={startGame} style={{ fontSize: '24px', padding: '10px 20px' }}>Lancer le jeu</button>
-//         </div>
-//       ) : (
-//         <Pong />
-//       )}
-//     </div>
-//   );
-// };
-
-// export default GameLauncher;
-
 import React, { useState, useEffect, useRef } from 'react';
 import Pong from './client';
 
