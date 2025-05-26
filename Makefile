@@ -20,17 +20,20 @@ exec-backend:
 exec-frontend:
 	docker exec -it frontend zsh
 
-down:
+down: clearlogs
 	$(DOCKER_COMPOSE) -f $(DOCKER_COMPOSE_FILE) down --volumes --remove-orphans --rmi all
 	rm -rf ./srcs/build/*
 	docker volume prune -f
-	docker exec -it backend rm -rf ./logs/*
 
 start:
 	$(DOCKER_COMPOSE) -f $(DOCKER_COMPOSE_FILE) start
 
 stop:
 	$(DOCKER_COMPOSE) -f $(DOCKER_COMPOSE_FILE) stop
+
+clearlogs:
+	docker exec -it backend rm -rf ./logs || true
+	docker exec -it frontend rm -rf ./logs || true
 
 # log frontend
 lf:
@@ -42,7 +45,7 @@ lb:
 	clear
 	docker exec -it backend pm2 logs api_transcendence
 
-re: down dev
+re: clearlogs down dev
 
 logs:
 	$(DOCKER_COMPOSE) -f $(DOCKER_COMPOSE_FILE) logs -f
