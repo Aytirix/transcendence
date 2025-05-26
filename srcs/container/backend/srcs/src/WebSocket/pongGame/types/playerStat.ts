@@ -12,3 +12,11 @@ export interface playerStat {
 	socket: WebSocket;
 	lastping?: number;
 };
+
+export interface Tournament {
+	listPlayer: Set<playerStat>;
+	size: 4 | 8 | 16 | 32;
+	name: string;
+	winner?: string;
+	isFull: boolean;
+}

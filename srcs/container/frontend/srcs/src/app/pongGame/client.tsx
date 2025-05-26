@@ -252,7 +252,7 @@ export const Pong: React.FC = () => {
 								if (!socket || socket.readyState !== WebSocket.OPEN) return;
 								socket.send(JSON.stringify({
 									type: "Tournament",
-									action: "CREATE",
+									action: "Create",
 									value: {
 										name: tournamentName,
 										size: tournamentSize
