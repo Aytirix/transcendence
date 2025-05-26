@@ -1,9 +1,9 @@
 {
 	"required": "Merci de remplir tous les champs obligatoires.",
 	"errors": {
-		"NoadditionalProperties" : "Aucune propriété supplémentaire n'est autorisée.",
-		"user" : {
-			"noChanges" : "Aucun changement a été détecté."
+		"NoadditionalProperties": "Aucune propriété supplémentaire n'est autorisée.",
+		"user": {
+			"noChanges": "Aucun changement a été détecté."
 		},
 		"email": {
 			"required": "L'adresse e-mail est requise.",
@@ -35,5 +35,55 @@
 	},
 	"user": {
 		"updateSuccess": "Utilisateur mis à jour avec succès."
+	},
+	"pacman": {
+		"error": {
+			"insertMapError": "Erreur lors de l'enregistrement de la map dans la base de données.",
+			"mapNotFound": "Impossible de trouver la map demandée.",
+			"updateMapError": "Erreur lors de la mise à jour de la map dans la base de données.",
+			"deleteMapError": "Erreur lors de la suppression de la map dans la base de données.",
+			"name": {
+				"required": "Un nom pour votre map est requis.",
+				"invalid": "Le nom doit contenir entre 3 et 20 caractères, et ne peut contenir que des lettres, chiffres, espaces, tirets et underscores."
+			},
+			"map": {
+				"required": "Une map est requise."
+			},
+			"is_public": {
+				"required": "La visibilité de la map est requise."
+			}
+		}
+	},
+	"RelationFriends": {
+		"errorSpecifyUserId": "Veuillez spécifier un id d'utilisateur",
+		"userNotExist": "Cet utilisateur n'existe pas",
+		"cannotAddYourself": "Vous ne pouvez pas faire une demande d'ami à vous-même",
+		"alreadyFriends": "Vous êtes déjà amis",
+		"userBlockedYou": "Cet utilisateur vous a bloqué",
+		"youBlockedUser": "Vous avez bloqué cet utilisateur",
+		"friendAlreadySentRequest": "Cet utilisateur vous a déjà envoyé une demande d'ami",
+		"youAlreadySentRequest": "Vous avez déjà envoyé une demande d'ami à cet utilisateur",
+		"sentFriendRequest": "Vous avez envoyé une demande d'ami à {{username}}",
+		"receivedFriendRequest": "{{username}} vous a envoyé une demande d'ami",
+		"errorSendingRequest": "Erreur lors de l'envoi de la demande d'ami",
+		"errorRemoveFriend": "Erreur lors de la suppression de l'ami",
+		"friendRemovedYou": "{{username}} vous a supprimé de ses amis",
+		"youRemovedFriend": "Vous avez supprimé {{username}} de vos amis",
+		"errorAcceptRequest": "Erreur lors de l'acceptation de la demande d'ami",
+		"errorCreatePrivateGroup": "Erreur lors de la création du groupe privé",
+		"acceptedFriendRequestYou": "Vous avez accepté la demande d'ami de {{username}}",
+		"acceptedFriendRequestFriend": "{{username}} a accepté votre demande d'ami",
+		"errorRefuseRequest": "Erreur lors de la suppression de la demande d'ami",
+		"refusedFriendRequestYou": "Vous avez refusé la demande d'ami de {{username}}",
+		"refusedFriendRequestFriend": "{{username}} a refusé votre demande d'ami",
+		"canceledRequestYou": "Vous avez annulé la demande d'ami à {{username}}",
+		"canceledRequestFriend": "{{username}} a annulé la demande d'ami",
+		"errorBlockingUser": "Erreur lors du blocage de {{username}}",
+		"youBlockedUserNotification": "Vous avez bloqué {{username}}",
+		"userBlockedYouNotification": "{{username}} vous a bloqué",
+		"errorUnblockingUser": "Erreur lors de la suppression du blocage de {{username}}",
+		"youUnblockedUserNotification": "Vous avez débloqué {{username}}",
+		"userUnblockedYouNotification": "{{username}} vous a débloqué",
+		"notBlocked": "L'utilisateur {{username}} n'est pas bloqué"
 	}
 }

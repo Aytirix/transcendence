@@ -10,6 +10,7 @@ import chatWebSocket from './chat/wsChat';
 import { User } from '@types';
 import { pongWebSocket } from './pongGame/pongSocketHandler';
 import { PacManWebSocket } from './Pacman/PacManWebSocket';
+import { createi18nObject } from '../hook';
 
 let wss: WebSocketServer | null = null;
 
@@ -32,7 +33,7 @@ async function initWebSocket(server: FastifyInstance) {
 				PacManWebSocket(ws, user);
 				break;
 			default:
-				ws.close(1008 ,JSON.stringify({ action: 'error', result: 'error', notification: ['Erreur : chemin WebSocket non reconnu.'] }));
+				ws.close(1008, JSON.stringify({ action: 'error', result: 'error', notification: ['Erreur : chemin WebSocket non reconnu.'] }));
 				break;
 		}
 	});
@@ -47,6 +48,7 @@ async function initWebSocket(server: FastifyInstance) {
 			}
 
 			wss?.handleUpgrade(request, socket, head, (ws: WebSocket) => {
+				ws.i18n = createi18nObject(session, request.headers);
 				wss?.emit('connection', ws, session.user, request);
 			});
 		} catch (err) {

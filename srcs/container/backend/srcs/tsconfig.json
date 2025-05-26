@@ -18,6 +18,7 @@
 			"@models/*": ["./src/models/*"],
 			"@controllers/*": ["./src/controllers/*"],
 			"@session": ["./src/session"],
+			"@wsPacman/*": ["./src/WebSocket/Pacman/*"],
 		  }
 	},
 	"include": ["src/**/*"],
