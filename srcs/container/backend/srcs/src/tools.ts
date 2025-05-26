@@ -21,8 +21,32 @@ export function mapToObject<T>(map: Map<number, T>): Record<number, T> {
 	return obj;
 }
 
-export function mapToArray<T>(map: Map<number, T>): T[] {
-	return Array.from(map.values());
+export function arrayToObject<T extends object>(data: T | T[]): any {
+	// Fonction pour convertir un objet en objet sérialisable
+	const convertToSerializable = (obj: any): any => {
+		return JSON.parse(JSON.stringify(obj, (key, value) => {
+			if (value instanceof Date) {
+				return value.toISOString();
+			}
+			if (value instanceof Map) {
+				const mapObj: Record<string | number, any> = {};
+				value.forEach((v, k) => {
+					mapObj[String(k)] = v;
+				});
+				return mapObj;
+			}
+			if (value instanceof Set) {
+				return Array.from(value);
+			}
+			return value;
+		}));
+	};
+
+	if (Array.isArray(data)) {
+		return data.map(item => convertToSerializable(item));
+	}
+
+	return convertToSerializable(data);
 }
 
 /**
@@ -62,7 +86,7 @@ export function decrypt(encryptedText: string): string {
 export default {
 	hashPassword,
 	mapToObject,
-	mapToArray,
+	arrayToObject,
 	encrypt,
 	decrypt,
 };

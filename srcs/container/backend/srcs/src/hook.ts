@@ -2,6 +2,21 @@ import { FastifyInstance } from 'fastify';
 import { Logout } from '@controllers/controllerUser';
 import i18n from './i18n';
 
+export function createi18nObject(session: any, headers: any): typeof i18n {
+	let lang = '';
+	if (session && session.user) {
+		lang = session.user.lang;
+	} else if (headers['accept-language']) {
+		lang = headers['accept-language'];
+	}
+	lang = lang.split(',')[0].split('-')[0];
+	lang = lang.toLowerCase().trim();
+	if (lang !== 'fr' && lang !== 'en' && lang !== 'it') {
+		lang = 'fr';
+	}
+	return i18n.cloneInstance({ lng: lang, fallbackLng: 'fr' });
+}
+
 export async function registerHook(app: FastifyInstance) {
 
 	app.setErrorHandler(async (error, request, reply) => {
@@ -27,18 +42,7 @@ export async function registerHook(app: FastifyInstance) {
 	});
 
 	app.addHook('onRequest', async (request, reply) => {
-		let lang = '';
-		if (request.session && request.session.user) {
-			lang = request.session.user.lang;
-		} else if (request.headers['accept-language']) {
-			lang = request.headers['accept-language'];
-		}
-		lang = lang.split(',')[0].split('-')[0];
-		lang = lang.toLowerCase().trim();
-		if (lang !== 'fr' && lang !== 'en' && lang !== 'es') {
-			lang = 'fr';
-		}
-		request.i18n = i18n.cloneInstance({ lng: lang, fallbackLng: 'fr' });
+		request.i18n = createi18nObject(request.session, request.headers);
 	});
 
 	// Si une session n'a aucune information, on la détruit pour ne pas la stocker dans la base de données

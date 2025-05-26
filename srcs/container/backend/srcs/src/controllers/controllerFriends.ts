@@ -131,22 +131,27 @@ export const addFriend = async (ws: WebSocket, user: User, state: State, text: r
 	if (relation) {
 		switch (relation.status) {
 			case 'friend':
-				ws.send(JSON.stringify({ action: 'error', result: 'error', notification: ['Vous êtes déjà amis'] } as reponse));
+				const msg = ws.i18n.t('RelationFriends.alreadyFriend', { username: friend.username });
+				ws.send(JSON.stringify({ action: 'error', result: 'error', notification: [msg] } as reponse));
 				return;
 			case 'blocked':
 				if (relation.target === user.id) {
-					ws.send(JSON.stringify({ action: 'error', result: 'error', notification: ['Cet utilisateur vous a bloqué'] } as reponse));
+					const msg = ws.i18n.t('RelationFriends.userBlockedYou', { username: friend.username });
+					ws.send(JSON.stringify({ action: 'error', result: 'error', notification: [msg] } as reponse));
 				}
 				else if (relation.target === friend.id) {
-					ws.send(JSON.stringify({ action: 'error', result: 'error', notification: ['Vous avez bloqué cet utilisateur'] } as reponse));
+					const msg = ws.i18n.t('RelationFriends.youBlockedUser', { username: friend.username });
+					ws.send(JSON.stringify({ action: 'error', result: 'error', notification: [msg] } as reponse));
 				}
 				return;
 			case 'pending':
 				if (relation.target === user.id) {
-					ws.send(JSON.stringify({ action: 'error', result: 'error', notification: ['Cet utilisateur vous a déjà envoyé une demande d\'ami'] } as reponse));
+					const msg = ws.i18n.t('RelationFriends.friendAlreadySentRequest', { username: friend.username });
+					ws.send(JSON.stringify({ action: 'error', result: 'error', notification: [msg] } as reponse));
 				}
 				else if (relation.target === friend.id) {
-					ws.send(JSON.stringify({ action: 'error', result: 'error', notification: ['Vous avez déjà envoyé une demande d\'ami à cet utilisateur'] } as reponse));
+					const msg = ws.i18n.t('RelationFriends.youAlreadySentRequest', { username: friend.username });
+					ws.send(JSON.stringify({ action: 'error', result: 'error', notification: [msg] } as reponse));
 				}
 				return;
 		}
@@ -171,6 +176,8 @@ export const addFriend = async (ws: WebSocket, user: User, state: State, text: r
 			} as res_add_friend));
 		}
 	}
+
+	const msg = ws.i18n.t('RelationFriends.sentFriendRequest', { username: friend.username });
 	ws.send(JSON.stringify({
 		action: 'add_friend',
 		result: 'ok',
@@ -181,7 +188,7 @@ export const addFriend = async (ws: WebSocket, user: User, state: State, text: r
 			lang: friend.lang,
 			online: friend.online
 		},
-		notification: [`Vous avez envoyé une demande d'ami à ${friend.username}`],
+		notification: [msg],
 	} as res_add_friend));
 }
 

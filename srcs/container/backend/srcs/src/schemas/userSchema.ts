@@ -51,7 +51,7 @@ export const register = {
 			username: { type: 'string', minLength: 3, maxLength: 15, pattern: '^[a-zA-Z0-9]+$' },
 			confirmPassword: { type: 'string', minLength: 3 },
 			// confirmPassword: { type: 'string', minLength: 8, maxLength: 25, pattern: '^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,25}$' },
-			lang: { type: 'string', enum: ['fr', 'en', 'es'] },
+			lang: { type: 'string', enum: ['fr', 'en', 'it'] },
 		},
 		required: [...login.body.required, 'username', 'confirmPassword'],
 		errorMessage: {
@@ -115,7 +115,7 @@ export const isAuth = {
 						id: { type: 'number', minLength: 3, maxLength: 5 },
 						email: { type: 'string', format: 'email' },
 						username: { type: 'string', minLength: 3, maxLength: 15, pattern: '^[a-zA-Z0-9]+$' },
-						lang: { type: 'string', enum: ['fr', 'en', 'es'] },
+						lang: { type: 'string', enum: ['fr', 'en', 'it'] },
 						avatar: { type: 'string', format: 'uri' },
 					},
 				},

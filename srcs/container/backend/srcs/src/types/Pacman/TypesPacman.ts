@@ -60,3 +60,14 @@ export enum CharacterType {
 	Clyde = 'C',
 	Ghost = 'G',
 }
+
+export interface Map {
+	id?: number;
+	user_id: number;
+	name: string;
+	map: TileType[][];
+	is_public: boolean;
+	is_valid: boolean;
+	updated_at?: Date;
+	created_at?: Date;
+}

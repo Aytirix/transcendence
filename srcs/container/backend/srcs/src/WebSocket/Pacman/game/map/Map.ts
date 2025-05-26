@@ -344,4 +344,133 @@ export default class PacmanMap {
 	public getHeight(): number {
 		return this.grid.length;
 	}
+
+
+	/**
+ * Vérifie si la carte est valide selon les règles du jeu
+ * @returns un objet contenant un booléen indiquant si la carte est valide et un tableau d'erreurs
+ */
+	public static validateMap(grid: TileType[][]): { is_valid: boolean, errors: string[] } {
+		const errors: string[] = [];
+
+		// Vérification des dimensions (31 lignes de 29 caractères)
+		if (grid.length !== 31) {
+			errors.push(`La carte doit avoir 31 lignes, actuellement: ${grid.length}`);
+		}
+
+		for (let y = 0; y < grid.length; y++) {
+			if (grid[y].length !== 29) {
+				errors.push(`La ligne ${y} a ${grid[y].length} caractères au lieu de 29`);
+			}
+		}
+
+		// Caractères autorisés et comptage des éléments
+		const validChars = new Set(['#', 'T', 'o', 'B', 'I', 'C', 'Y', 'P', '.', '-', ' ']);
+		let pelletCount = 0;
+		const spawnCounts = {
+			'P': 0, // Pacman
+			'B': 0, // Blinky
+			'I': 0, // Inky
+			'C': 0, // Clyde
+			'Y': 0, // Pinky
+		};
+
+		// Vérification des bordures et comptage des éléments
+		for (let y = 0; y < grid.length; y++) {
+			for (let x = 0; x < grid[y].length; x++) {
+				const tile = grid[y][x];
+
+				// Vérification des caractères autorisés
+				if (!validChars.has(tile)) {
+					errors.push(`Caractère non autorisé '${tile}' à la position (${x},${y})`);
+				}
+
+				// Comptage des pastilles
+				if (tile === TileType.Pellet || tile === TileType.Bonus) {
+					pelletCount++;
+				}
+
+				// Comptage des spawns
+				if ([TileType.SpawnPacman, TileType.SpawnBlinky, TileType.SpawnInky,
+				TileType.SpawnClyde, TileType.SpawnPinky].includes(tile)) {
+					spawnCounts[tile]++;
+				}
+
+				// Vérification des bordures
+				if ((y === 0 || y === grid.length - 1 || x === 0 || x === grid[y].length - 1) &&
+					(tile !== TileType.Wall && tile !== TileType.Teleport)) {
+					errors.push(`La bordure doit être fermée par des murs '#' ou téléporteurs 'T', trouvé '${tile}' à (${x},${y})`);
+				}
+			}
+		}
+
+		// Vérification du nombre minimal de pastilles
+		if (pelletCount < 25) {
+			errors.push(`Il doit y avoir au moins 25 pastilles, actuellement: ${pelletCount}`);
+		}
+
+		let duplicatedSpawns = false;
+		// Vérification des spawns (un seul par entité)
+		for (const [char, count] of Object.entries(spawnCounts)) {
+			if (count === 0) {
+				errors.push(`Aucun spawn trouvé pour ${char}`);
+			} else if (count > 1) {
+				duplicatedSpawns = true;
+				errors.push(`Il doit y avoir exactement 1 spawn pour ${char}, actuellement: ${count}`);
+			}
+		}
+
+		// Vérification que les spawns des fantômes sont correctement entourés
+		if (!duplicatedSpawns) {
+			const ghostSpawns = ['B', 'I', 'C', 'Y'];
+			let hasGhostPortal = false;
+
+			for (let y = 0; y < grid.length; y++) {
+				for (let x = 0; x < grid[y].length; x++) {
+					const tile = grid[y][x];
+
+					if (ghostSpawns.includes(tile)) {
+						// Vérifier les cases adjacentes (haut, bas, gauche, droite)
+						const adjacentPositions = [
+							{ x, y: y - 1 }, // haut
+							{ x, y: y + 1 }, // bas
+							{ x: x - 1, y }, // gauche
+							{ x: x + 1, y }  // droite
+						];
+
+						let isProtected = true;
+						let localHasGhostPortal = false;
+
+						for (const pos of adjacentPositions) {
+							if (pos.y >= 0 && pos.y < grid.length &&
+								pos.x >= 0 && pos.x < grid[pos.y].length) {
+								const adjTile = grid[pos.y][pos.x];
+
+								if (adjTile === TileType.GhostPortalBlock) {
+									localHasGhostPortal = true;
+									hasGhostPortal = true;
+								} else if (adjTile !== TileType.Wall &&
+									!ghostSpawns.includes(adjTile)) {
+									isProtected = false;
+								}
+							}
+						}
+
+						if (!isProtected) {
+							errors.push(`Le spawn du fantôme ${tile} à (${x},${y}) doit être entouré de murs ou d'autres spawns de fantômes`);
+						}
+
+						if (!localHasGhostPortal && !hasGhostPortal) {
+							errors.push(`La zone des fantômes doit avoir une sortie avec des portails fantômes '-'`);
+						}
+					}
+				}
+			}
+		}
+
+		return {
+			is_valid: errors.length === 0,
+			errors: errors
+		}
+	}
 }
