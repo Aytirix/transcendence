@@ -80,26 +80,6 @@ export default function WebSocketPacman() {
 		}
 	};
 
-	const handleKeyDown = (event: KeyboardEvent) => {
-		if (!state.ws || state.ws.readyState !== WebSocket.OPEN) return;
-
-		const keyActions: Record<string, string> = {
-			'ArrowUp': 'UP',
-			'ArrowDown': 'DOWN',
-			'ArrowLeft': 'LEFT',
-			'ArrowRight': 'RIGHT'
-		};
-
-		const direction = keyActions[event.key];
-		if (direction) {
-			state.ws.send(JSON.stringify({
-				action: 'playerMove',
-				direction: direction
-			}));
-			event.preventDefault();
-		}
-	};
-
 	const handleSaveMap = (mapData: string[]) => {
 		// Here you can implement logic to save the map to your backend
 		// For example, send it to the server via WebSocket
@@ -113,13 +93,6 @@ export default function WebSocketPacman() {
 		setShowMapEditor(false); // Close the editor after saving
 	};
 
-	useEffect(() => {
-		window.addEventListener('keydown', handleKeyDown);
-
-		return () => {
-			window.removeEventListener('keydown', handleKeyDown);
-		};
-	}, [state.ws]);
 
 	const resetState = (status: WebSocketStatus) => {
 		setState((prevState) => ({

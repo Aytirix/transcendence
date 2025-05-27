@@ -2,17 +2,30 @@ import { FastifyRequest, FastifyReply } from 'fastify';
 import pacmanModel from '@models/modelPacman';
 import tools from '@tools';
 import { TileType } from "@Pacman/TypesPacman";
-import Map from '@wsPacman/game/map/Map';
+import PacmanMap from '@wsPacman/game/map/Map';
+import { WebSocket } from 'ws'
+import { room, player } from "@Pacman/TypesPacman";
+import StateManager from '@wsPacman/game/StateManager';
 
-export const getAllMapForUser = async (request: FastifyRequest, reply: FastifyReply) => {
-	const maps = await pacmanModel.getAllMapsForUser(request.session.user.id);
-	console.log('maps', tools.arrayToObject(maps));
-	return reply.status(200).send({
-		maps: tools.arrayToObject(maps),
+
+export function sendResponse(ws: WebSocket, action: string, result: string, notification: string | string[], data: any = null): void {
+	ws?.send(JSON.stringify({ action, result, notification, data }));
+}
+
+export const getAllMapForUser = async (ws: WebSocket, user_id: number) => {
+	const maps = await pacmanModel.getAllMapsForUser(user_id);
+	const validMaps = maps.map(map => {
+		const is_valid = PacmanMap.validateMap(map.map).is_valid;
+		return {
+			...map,
+			is_valid: is_valid,
+			errors: is_valid ? [] : PacmanMap.validateMap(map.map).errors,
+		};
 	});
+	sendResponse(ws, 'getAllMapsForUser', 'success', [], { maps: tools.arrayToObject(validMaps) });
 };
 
-export const insertOrUpdateMap = async (request: FastifyRequest, reply: FastifyReply) => {
+export const insertOrUpdateMap = async (ws: WebSocket, user_id: number, request: any) => {
 	const { id, name, map, is_public } = request.body as {
 		id?: number;
 		name: string;
@@ -20,19 +33,21 @@ export const insertOrUpdateMap = async (request: FastifyRequest, reply: FastifyR
 		is_public: boolean;
 	};
 
+	if (!name) return sendResponse(ws, 'insertOrUpdateMap', 'error', [ws.i18n.t('pacman.error.name.required')]);
+	if (!map || !Array.isArray(map) || map.length === 0 || !map[0] || !Array.isArray(map[0])) return sendResponse(ws, 'insertOrUpdateMap', 'error', [ws.i18n.t('pacman.error.map.required')]);
+	if (is_public === undefined) return sendResponse(ws, 'insertOrUpdateMap', 'error', [ws.i18n.t('pacman.error.is_public.required')]);
+	if (name.length < 3 || name.length > 20 || !/^[a-zA-Z0-9 _-]+$/.test(name)) return sendResponse(ws, 'insertOrUpdateMap', 'error', [ws.i18n.t('pacman.error.name.invalid')]);
+	if (map.length < 31 || map.length > 31 || map.some(row => row.length !== 29 || !/^[#ToPBICY\-. ]+$/.test(row.join('')))) return sendResponse(ws, 'insertOrUpdateMap', 'error', [ws.i18n.t('pacman.error.map.invalid')]);
+
 	if (id) {
-		const existingMap = await pacmanModel.getMapForUserById(id, request.session.user.id);
-		if (!existingMap || existingMap.length === 0) {
-			return reply.status(404).send({
-				message: request.i18n.t('errors.pacman.mapNotFound'),
-			});
-		}
+		const existingMap = await pacmanModel.getMapForUserById(id, user_id);
+		if (!existingMap || existingMap.length === 0) return sendResponse(ws, 'insertOrUpdateMap', 'error', [ws.i18n.t('pacman.error.map.required')]);
 	}
 
-	const { is_valid, errors } = Map.validateMap(map);
+	const { is_valid, errors } = PacmanMap.validateMap(map);
 	const infoMap = {
 		id: id || null,
-		user_id: request.session.user.id,
+		user_id: user_id,
 		name: name,
 		map: map,
 		is_public: is_public,
@@ -40,47 +55,180 @@ export const insertOrUpdateMap = async (request: FastifyRequest, reply: FastifyR
 	}
 
 	if (id && !(await pacmanModel.updateMap(infoMap))) {
-		return reply.status(500).send({
-			message: request.i18n.t('errors.pacman.updateMapError'),
-		});
+		return sendResponse(ws, 'insertOrUpdateMap', 'error', [ws.i18n.t('errors.pacman.updateMapError')]);
 	}
 	else if (!(await pacmanModel.insertMap(infoMap))) {
-		return reply.status(500).send({
-			message: request.i18n.t('errors.pacman.insertMapError'),
-		});
+		return sendResponse(ws, 'insertOrUpdateMap', 'error', [ws.i18n.t('errors.pacman.insertMapError')]);
 	}
 
-	return reply.status(200).send({
-		id: infoMap.id,
-		is_valid: is_valid,
-		errors: errors,
-	});
+	sendResponse(ws, 'insertOrUpdateMap', 'success', [], { id: infoMap.id, name: infoMap.name, is_valid: is_valid, errors: errors });
 };
 
-export const deleteMap = async (request: FastifyRequest, reply: FastifyReply) => {
+export const deleteMap = async (ws: WebSocket, user_id: number, request: any) => {
 	const { id } = request.body as { id: number };
 	if (!id) {
-		return reply.status(400).send({
-			message: request.i18n.t('errors.pacman.mapIdRequired'),
-		});
+		sendResponse(ws, 'deleteMap', 'error', [ws.i18n.t('pacman.error.map.idRequired')]);
 	}
 	const existingMap = await pacmanModel.getMapForUserById(id, request.session.user.id);
-	if (!existingMap || existingMap.length === 0) {
-		return reply.status(404).send({
-			message: request.i18n.t('errors.pacman.mapNotFound'),
-		});
-	}
-	if (!(await pacmanModel.deleteMap(id))) {
-		return reply.status(500).send({
-			message: request.i18n.t('errors.pacman.deleteMapError'),
-		});
-	}
-	return reply.status(200).send({
-		message: request.i18n.t('success.pacman.mapDeleted'),
-	});
+	if (!existingMap || existingMap.length === 0) return sendResponse(ws, 'deleteMap', 'error', [ws.i18n.t('pacman.error.map.required')]);
+	if (!(await pacmanModel.deleteMap(id))) return sendResponse(ws, 'deleteMap', 'error', [ws.i18n.t('pacman.error.deleteMapError')]);
+	return sendResponse(ws, 'deleteMap', 'success', [ws.i18n.t('pacman.success.mapDeleted')], { id: id });
 };
 
+export function createTestRoom(player: player, room: room): void {
+	const player2: player = {
+		id: -1,
+		username: 'bot1',
+		avatar: '',
+		lang: 'fr',
+		updateAt: Date.now(),
+		gameId: null,
+		elo: 1000,
+	};
+	const player3: player = {
+		id: -2,
+		username: 'bot2',
+		avatar: '',
+		lang: 'fr',
+		updateAt: Date.now(),
+		gameId: null,
+		elo: 1000,
+	};
+	const player4: player = {
+		id: -3,
+		username: 'bot3',
+		avatar: '',
+		lang: 'fr',
+		updateAt: Date.now(),
+		gameId: null,
+		elo: 1000,
+	};
+	const player5: player = {
+		id: -4,
+		username: 'bot4',
+		avatar: '',
+		lang: 'fr',
+		updateAt: Date.now(),
+		gameId: null,
+		elo: 1000,
+	};
+	if (room.players.length < 5) room.players.push(player2);
+	if (room.players.length < 5) room.players.push(player3);
+	if (room.players.length < 5) room.players.push(player4);
+	if (room.players.length < 5) room.players.push(player5);
+}
+
+export function handleAddUser(ws: WebSocket, player: player): void {
+	StateManager.addPlayer(ws, player);
+	const tmp = new Map<number, WebSocket>();
+	tmp.set(player.id, ws);
+	StateManager.sendRooms(tmp);
+}
+
+export function handleCreateRoom(ws: WebSocket, player: player, json: any): void {
+	if (!json.name) return sendResponse(ws, 'error', 'error', ['Veuillez spécifier un nom de salle']);
+	if (player.room) return sendResponse(ws, 'error', 'error', ['Vous êtes déjà dans une salle']);
+	if (json.name.length < 3 || json.name.length > 15) return sendResponse(ws, 'error', 'error', ['Le nom de la salle doit faire entre 3 et 15 caractères']);
+	if (StateManager.RoomManager.getRoomByName(json.name)) return sendResponse(ws, 'error', 'error', ['Le nom de la salle est déjà utilisé']);
+	const room = StateManager.RoomManager.createRoom(player, json.name);
+	player.room = room;
+	StateManager.sendRooms();
+}
+
+export function handleJoinRoom(ws: WebSocket, player: player, json: any): void {
+	if (!json.room_id) return sendResponse(ws, 'error', 'error', [ws.i18n.t('pacman.id_required')]);
+	if (player.room) return sendResponse(ws, 'error', 'error', [ws.i18n.t('pacman.already_in_room')]);
+	const room = StateManager.RoomManager.getRoomById(json.room_id);
+	if (!room) return sendResponse(ws, 'error', 'error', [ws.i18n.t('pacman.not_found')]);
+	if (room.state == 'active') return sendResponse(ws, 'error', 'error', [ws.i18n.t('pacman.already_active')]);
+	if (room.players.length >= 5) return sendResponse(ws, 'error', 'error', [ws.i18n.t('pacman.room_full')]);
+	if (StateManager.RoomManager.joinRoom(player, json.room_id)) player.room = room;
+	StateManager.sendRooms();
+}
+
+export function handleKickRoom(ws: WebSocket, player: player, json: any): void {
+	if (!json.user_id) return sendResponse(ws, 'error', 'error', [ws.i18n.t('pacman.user_id_required_kick')]);
+	if (player.room.state == 'active') return sendResponse(ws, 'error', 'error', [ws.i18n.t('pacman.already_active')]);
+	if (player.room.owner_id !== player.id) return sendResponse(ws, 'error', 'error', [ws.i18n.t('pacman.not_owner')]);
+	const wsUserKick = StateManager.getPlayerWs(json.user_id);
+	StateManager.RoomManager.removePlayerFromRoom(player.room, json.user_id);
+	sendResponse(wsUserKick, 'setOwner', 'error', [ws.i18n.t('pacman.user_kicked')]);
+	sendResponse(ws, 'setOwner', 'success', [ws.i18n.t('pacman.kick_success')]);
+	StateManager.sendRooms();
+}
+
+export function handleLeaveRoom(ws: WebSocket, player: player): void {
+	StateManager.RoomManager.removePlayerFromRoom(player.room, player.id);
+	StateManager.sendRooms();
+}
+
+export function handleSetOwnerRoom(ws: WebSocket, player: player, json: any): void {
+	if (!json.user_id) return sendResponse(ws, 'error', 'error', [ws.i18n.t('pacman.user_id_required_set_owner')]);
+	const room = player.room;
+	if (room.state == 'active') return sendResponse(ws, 'error', 'error', [ws.i18n.t('pacman.already_active')]);
+	if (room.owner_id !== player.id) return sendResponse(ws, 'error', 'error', [ws.i18n.t('pacman.not_owner')]);
+	const newOwner = room.players.find(p => p.id === json.user_id);
+	if (!newOwner) return sendResponse(ws, 'error', 'error', [ws.i18n.t('pacman.user_not_in_room')]);
+	if (newOwner.id === room.owner_id) return sendResponse(ws, 'error', 'error', [ws.i18n.t('pacman.already_owner')]);
+	room.owner_id = newOwner.id;
+	room.owner_username = newOwner.username;
+	room.players = room.players.filter(p => p.id !== newOwner.id);
+	room.players.unshift(newOwner);
+	const wsNewOwner = StateManager.getPlayerWs(newOwner.id);
+	sendResponse(wsNewOwner, 'setOwner', 'success', [ws.i18n.t('pacman.promoted')]);
+	sendResponse(ws, 'setOwner', 'success', [ws.i18n.t('pacman.promoted_success')]);
+	StateManager.sendRooms();
+}
+
+export function handleLaunchRoom(ws: WebSocket, player: player): void {
+	if (player.room.state == 'active') return sendResponse(ws, 'error', 'error', [ws.i18n.t('pacman.already_active')]);
+	if (player.room.owner_id !== player.id) return sendResponse(ws, 'error', 'error', [ws.i18n.t('pacman.not_owner')]);
+	// if (player.room.players.length < 2) return sendResponse(ws, 'error', 'error', [ws.i18n.t('pacman.too_few_players')]);
+	if (player.room.players.length > 5) return sendResponse(ws, 'error', 'error', [ws.i18n.t('pacman.too_many_players')]);
+	createTestRoom(player, player.room);
+	StateManager.startGame(player.room);
+	StateManager.sendRooms();
+}
+
+export function handlePlayerMove(ws: WebSocket, player: player, json: any): void {
+	if (!json.direction) return sendResponse(ws, 'error', 'error', [ws.i18n.t('pacman.direction_required')]);
+	if (json.direction !== 'UP' && json.direction !== 'DOWN' && json.direction !== 'LEFT' && json.direction !== 'RIGHT')
+		return sendResponse(ws, 'error', 'error', [ws.i18n.t('pacman.invalid_direction')]);
+	if (!player.room) return sendResponse(ws, 'error', 'error', [ws.i18n.t('pacman.not_in_game')]);
+	if (player.room.state != 'active') return sendResponse(ws, 'error', 'error', [ws.i18n.t('pacman.not_started')]);
+	player.room.engine?.getPlayerById(player.id)?.changeDirection(json.direction);
+}
+
+export function handleJoinRoomSpectator(ws: WebSocket, player: player, json: any): void {
+	if (!json.room_id) return sendResponse(ws, 'error', 'error', [ws.i18n.t('pacman.id_required')]);
+	if (player.room) return sendResponse(ws, 'error', 'error', [ws.i18n.t('pacman.already_in_room')]);
+	const room = StateManager.RoomManager.getRoomById(json.room_id);
+	if (!room) return sendResponse(ws, 'error', 'error', [ws.i18n.t('pacman.not_found')]);
+	room.engine?.addSpectator(player, ws);
+}
+
+export function handleLeaveRoomSpectator(ws: WebSocket, player: player, json: any): void {
+	if (!json.room_id) return sendResponse(ws, 'error', 'error', [ws.i18n.t('pacman.id_required')]);
+	if (player.room) return sendResponse(ws, 'error', 'error', [ws.i18n.t('pacman.already_in_room')]);
+	const room = StateManager.RoomManager.getRoomById(json.room_id);
+	if (!room) return sendResponse(ws, 'error', 'error', [ws.i18n.t('pacman.not_found')]);
+	room.engine?.removeSpectator(player);
+}
+
 export default {
+	sendResponse,
 	getAllMapForUser,
 	insertOrUpdateMap,
+	deleteMap,
+	createTestRoom,
+	handleAddUser,
+	handleCreateRoom,
+	handleJoinRoom,
+	handleKickRoom,
+	handleLeaveRoom,
+	handleSetOwnerRoom,
+	handleLaunchRoom,
+	handlePlayerMove,
+	handleJoinRoomSpectator,
+	handleLeaveRoomSpectator,
 };
