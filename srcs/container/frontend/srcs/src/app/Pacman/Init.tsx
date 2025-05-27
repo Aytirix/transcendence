@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react';
 import ApiService from '../../api/ApiService';
 import { useSafeWebSocket, WebSocketStatus } from '../../api/useSafeWebSocket';
-import { state } from '../types/pacmanTypes';
+import { state, PacmanMap } from '../types/pacmanTypes';
 import { CenteredBox } from './menu/CenteredBox';
 import { useAuth } from '../../contexts/AuthContext';
-import PacmanMap from './theojeutmp/PacmanMap';
+import PacmanGame from './theojeutmp/PacmanGame';
 import CreatePacmanMap from './menu/CreatePacmanMap'; // Import the map editor
 
 function initState(): state {
@@ -78,7 +78,7 @@ export default function WebSocketPacman() {
 			case 'getAllMapForUser': {
 				setState((prevState: state) => ({
 					...prevState,
-					maps: data.maps,
+					maps: data.maps || [],
 				}));
 				break;
 			}
@@ -90,15 +90,17 @@ export default function WebSocketPacman() {
 				break;
 			}
 			case 'insertOrUpdateMap': {
-				const updatedMaps = state.maps.filter((map) => map.id !== data.map.id);
-				updatedMaps.push(data.map);
-				setState((prevState: state) => ({
-					...prevState,
-					maps: {
-						...updatedMaps,
-
-					}
-				}));
+				setState((prevState: state) => {
+					// Créer un nouveau tableau avec toutes les cartes sauf celle qui est mise à jour
+					const updatedMaps = prevState.maps.filter((map) => map.id !== data.map.id);
+					// Ajouter la carte mise à jour
+					updatedMaps.push(data.map);
+					
+					return {
+					  ...prevState,
+					  maps: updatedMaps // Assigner directement le tableau
+					};
+				});
 				break;
 			}
 			default:
@@ -106,20 +108,27 @@ export default function WebSocketPacman() {
 				break;
 		}
 	};
+	const handleSaveMap = (mapData: PacmanMap, isAutoSave: boolean = false) => {
+		// Check if it's an auto-save or manual save
+		if (isAutoSave) {
+			console.log('Auto-saving map...', mapData.name);
+		} else {
+			console.log('Manually saving map...', mapData.name);
+		}
 
-	const handleSaveMap = (mapData: string[]) => {
-		// Here you can implement logic to save the map to your backend
-		// For example, send it to the server via WebSocket
+		// Implement logic to save the map to your backend
 		if (state.ws && state.ws.readyState === WebSocket.OPEN) {
 			state.ws.send(JSON.stringify({
 				action: 'insertOrUpdateMap',
-				mapData
+				mapData,
+				isAutoSave,
 			}));
 		}
 
-		setShowMapEditor(false); // Close the editor after saving
+		if (!isAutoSave) {
+			setShowMapEditor(false); // Close the editor after manual saving
+		}
 	};
-
 
 	const resetState = (status: WebSocketStatus) => {
 		setState((prevState) => ({
@@ -169,9 +178,9 @@ export default function WebSocketPacman() {
 	return (
 		<div className="bg-gray-200 text-white flex flex-col items-center justify-center">
 			{showMapEditor ? (
-				<CreatePacmanMap onSave={handleSaveMap} onCancel={() => setShowMapEditor(false)} />
+				<CreatePacmanMap state={state} onSave={handleSaveMap} onCancel={() => setShowMapEditor(false)} />
 			) : state.game.grid && state.game.grid.length > 0 ? (
-				<PacmanMap state={state} />
+				<PacmanGame state={state} />
 			) : (
 				<CenteredBox
 					state={state}

@@ -1,7 +1,7 @@
 // src/components/pacman/ActiveRooms.tsx
 import React from 'react';
 import { state } from '../../types/pacmanTypes';
-import PacmanMap from './PacmanMap';
+import PacmanMap from './PacmanGame';
 import './ActiveRooms.scss';
 
 interface ActiveRoomsProps {
