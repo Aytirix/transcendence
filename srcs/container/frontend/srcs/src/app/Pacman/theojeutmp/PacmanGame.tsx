@@ -1,6 +1,6 @@
-// src/components/pacman/PacmanMap.tsx
+// src/components/pacman/PacmanGame.tsx
 import React, { useState, useEffect } from 'react';
-import './PacmanMap.scss';
+import './PacmanGame.scss';
 import { state } from '../../types/pacmanTypes';
 import portalImg from '../../assets/img/pacman/portal.gif';
 
@@ -105,7 +105,7 @@ export interface Player {
 	isDying?: boolean; // true si Pacman est en train de mourir
 }
 
-interface PacmanMapProps {
+interface PacmanGameProps {
 	state: state;
 }
 
@@ -158,7 +158,7 @@ const PauseMode = ({ state }: { state: state }) => {
 	);
 }
 
-const PacmanMap: React.FC<PacmanMapProps> = ({ state }) => {
+const PacmanGame: React.FC<PacmanGameProps> = ({ state }) => {
 	const { grid, players, tileSize } = state.game;
 
 	const numRows = grid.length;
@@ -219,6 +219,7 @@ const PacmanMap: React.FC<PacmanMapProps> = ({ state }) => {
 		<>
 			<div className="header">
 				<h3 className="title">PACMAN</h3>
+				
 			</div>
 			<PauseMode state={state} />
 			<div className="pacman-map-wrapper">
@@ -378,21 +379,28 @@ const PacmanMap: React.FC<PacmanMapProps> = ({ state }) => {
 				<div className="column-right">
 					{/* <h3 className="score">{players[0]?.username} : {players[0]?.score}</h3>
 					<h3 className="score">{players[1]?.username} : {players[1]?.score}</h3> */}
+					<div className="life">
+						<span className="life-text">Lives : </span>
+						{Array.from({ length: state.game?.pacmanLife || 0 }).map((_, index) => (
+							<span key={index} className="heart">❤️</span>
+						))}
+					</div>
 					{players.slice(0).map((player, index) => (
-						<h3 key={index} className="score">
+						<h3 
+							key={index} 
+							className="score" 
+							style={{
+								color: player.character === 'P' ? 'yellow' : 'inherit',
+								order: player.character === 'P' ? -1 : index
+							}}
+						>
 							{player.username} : {player.score}
 						</h3>
 					))}
 				</div>
 			</div>
-			<div className="life">
-				<span className="life-text">Lives : </span>
-				{Array.from({ length: state.game?.pacmanLife || 0 }).map((_, index) => (
-					<span key={index} className="heart">❤️</span>
-				))}
-			</div>
 		</>
 	);
 };
 
-export default PacmanMap;
+export default PacmanGame;

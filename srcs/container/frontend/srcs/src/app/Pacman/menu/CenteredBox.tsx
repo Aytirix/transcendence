@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import WaitingRooms from './WaitingRooms';
 import ActiveRooms from './ActiveRooms';
 import Rules from './Rules';
+import Maps from './Maps'; // Adjusted the path to point to the correct location
 import Settings from './Settings';
 import Statistics from './Statistics';
 import { state } from '../../types/pacmanTypes';
@@ -14,6 +15,7 @@ const TABS = [
 	{ id: 'WaitingRooms', label: 'Lobby' },
 	{ id: 'ActiveRooms', label: 'En direct' },
 	{ id: 'Rules', label: 'Règles' },
+	{ id: 'Maps', label: 'Carte' },
 	{ id: 'Statistics', label: 'Statistiques' },
 	{ id: 'Settings', label: 'Paramètres' },
 ];
@@ -40,6 +42,7 @@ export const CenteredBox: React.FC<CenteredBoxProps> = ({ state, onCreateMap }) 
 					WaitingRooms: <WaitingRooms state={state} />,
 					ActiveRooms: <ActiveRooms state={state} />,
 					Rules: <Rules />,
+					Maps: <Maps onCreateMap={onCreateMap} state={state} />,
 					Settings: <Settings />,
 					Statistics: <Statistics />,
 				}[currentPage] || <p>Page non trouvée</p>}
@@ -72,14 +75,14 @@ export const CenteredBox: React.FC<CenteredBoxProps> = ({ state, onCreateMap }) 
 				</div>
 			</div>
 			{/* Add a button for creating maps */}
-			{onCreateMap && (
+			{/* {onCreateMap && (
 				<button 
 					className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded mt-4"
 					onClick={onCreateMap}
 				>
 					Create Custom Map
 				</button>
-			)}
+			)} */}
 		</div>
 	)
 };

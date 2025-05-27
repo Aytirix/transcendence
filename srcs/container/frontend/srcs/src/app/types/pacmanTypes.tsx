@@ -26,7 +26,7 @@ export interface state {
 	ws: WebSocket | null;
 	statusws?: WebSocketStatus;
 	player: player | null;
-	maps: Map[];
+	maps: PacmanMap[];
 	rooms: {
 		active: room[];
 		waiting: room[];
@@ -49,7 +49,7 @@ export interface state {
 	};
 }
 
-export interface Map {
+export interface PacmanMap {
 	id?: number;
 	user_id: number;
 	name: string;
