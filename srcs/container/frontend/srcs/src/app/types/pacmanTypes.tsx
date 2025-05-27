@@ -26,6 +26,7 @@ export interface state {
 	ws: WebSocket | null;
 	statusws?: WebSocketStatus;
 	player: player | null;
+	maps: Map[];
 	rooms: {
 		active: room[];
 		waiting: room[];
@@ -38,7 +39,7 @@ export interface state {
 		isSpectator: boolean;
 		players: player[];
 		grid: string[];
-		pacmanLife : number;
+		pacmanLife: number;
 
 		tileSize: number;
 		paused: {
@@ -46,4 +47,16 @@ export interface state {
 			message: string;
 		}
 	};
+}
+
+export interface Map {
+	id?: number;
+	user_id: number;
+	name: string;
+	map: string[][];
+	is_public: boolean;
+	is_valid: boolean;
+	errors: string[];
+	updated_at?: Date;
+	created_at?: Date;
 }

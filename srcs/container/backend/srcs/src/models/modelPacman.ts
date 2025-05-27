@@ -22,6 +22,25 @@ async function getAllMapsForUser(userId: number): Promise<Map[]> {
 	return maps;
 }
 
+async function getMapForUserByName(id: number, name: string): Promise<Map[]> {
+	const query = `SELECT * FROM pacman_map WHERE user_id = ? AND name = ?`;
+	const result: any = await executeReq(query, [id, name]);
+	if (!result || result.length === 0) {
+		return [];
+	}
+	const maps: Map[] = result.map((row: any) => ({
+		id: row.id,
+		user_id: row.user_id,
+		name: row.name,
+		map: JSON.parse(row.map),
+		is_public: row.is_public === 1,
+		is_valid: row.is_valid === 1,
+		created_at: new Date(row.created_at),
+		updated_at: new Date(row.updated_at),
+	}));
+	return maps;
+}
+
 async function getMapForUserById(id: number, userId: number): Promise<Map[]> {
 	const query = `SELECT * FROM pacman_map WHERE id = ? AND user_id = ?`;
 	const result: any = await executeReq(query, [id, userId]);
@@ -105,6 +124,7 @@ async function deleteMap(id: number): Promise<boolean> {
 
 export default {
 	getAllMapsForUser,
+	getMapForUserByName,
 	getMapForUserById,
 	insertMap,
 	updateMap,

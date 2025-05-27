@@ -90,13 +90,13 @@ async function PacManWebSocket(ws: WebSocket, user: User): Promise<void> {
 			case 'playerMove':
 				controllerPacman.handlePlayerMove(ws, player, text);
 				break;
-			case 'getMapForUser':
+			case 'getAllMapForUser':
 				controllerPacman.getAllMapForUser(ws, player.id);
 				break;
 			case 'insertOrUpdateMap':
 				controllerPacman.insertOrUpdateMap(ws, player.id, text);
 				break;
-			case 'insertOrUpdateMap':
+			case 'deleteMap':
 				controllerPacman.deleteMap(ws, player.id, text);
 				break;
 			default:
