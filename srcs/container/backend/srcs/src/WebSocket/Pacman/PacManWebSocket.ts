@@ -36,13 +36,13 @@ async function PacManWebSocket(ws: WebSocket, user: User): Promise<void> {
 		try {
 			text = JSON.parse(message.toString().trim());
 		} catch (e) {
-			controllerPacman.sendResponse(ws, 'error', 'error', ws.i18n('errors.JSONParseError'));
+			controllerPacman.sendResponse(ws, 'error', 'error', ws.i18n.t('errors.JSONParseError'));
 			return;
 		}
 
 		const action = text.action;
 		if (!action) {
-			controllerPacman.sendResponse(ws, 'error', 'error', ws.i18n('pacman.error.actionNotFound'));
+			controllerPacman.sendResponse(ws, 'error', 'error', ws.i18n.t('pacman.error.actionNotFound'));
 			return;
 		}
 
@@ -52,12 +52,12 @@ async function PacManWebSocket(ws: WebSocket, user: User): Promise<void> {
 		}
 
 		if (player.isSpectator && action !== 'leaveSpectator') {
-			controllerPacman.sendResponse(ws, 'error', 'error', ws.i18n('pacman.error.YourModeSpectator'));
+			controllerPacman.sendResponse(ws, 'error', 'error', ws.i18n.t('pacman.error.YourModeSpectator'));
 			return;
 		}
 
-		if (!player.room && action !== 'createRoom' && action !== 'joinRoom' && action !== 'joinSpectator' && action !== 'leaveSpectator') {
-			controllerPacman.sendResponse(ws, 'error', 'error', ws.i18n('pacman.error.mustBeInRoom'));
+		if (!player.room && action !== 'createRoom' && action !== 'joinRoom' && action !== 'joinSpectator' && action !== 'leaveSpectator' && action !== 'getAllMapForUser' && action !== 'insertOrUpdateMap' && action !== 'deleteMap') {
+			controllerPacman.sendResponse(ws, 'error', 'error', ws.i18n.t('pacman.rooms.mustBeInRoom'));
 			return;
 		}
 
@@ -112,7 +112,7 @@ async function PacManWebSocket(ws: WebSocket, user: User): Promise<void> {
 	ws.on('error', (error: Error) => {
 		console.error('PacmanWS Erreur WebSocket:', error);
 		if (ws.readyState === WebSocket.OPEN) {
-			ws.close(1008, JSON.stringify({ action: 'error', result: 'error', notification: ws.i18n('errors.wsError') }));
+			ws.close(1008, JSON.stringify({ action: 'error', result: 'error', notification: ws.i18n.t('errors.wsError') }));
 		}
 	});
 }
