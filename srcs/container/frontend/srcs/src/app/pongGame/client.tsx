@@ -1,5 +1,3 @@
-// ✅ Ajout du mode Solo : player1 (humain via flèches), player2 (IA)
-
 import React, { useEffect, useRef, useState } from 'react';
 
 interface Parse {
@@ -43,9 +41,7 @@ export const Pong: React.FC = () => {
 	const [showTournamentOptions, setShowTournamentOptions] = useState(false);
 	const [tournamentName, setTournamentName] = useState('');
 	const [tournamentSize, setTournamentSize] = useState(4);
-	const [tournamentList, setTournamentList] = useState<{ name: string; id: string; current: number; max: number; }[]>([]);
-
-
+	const [tournamentList, setTournamentList] = useState<{ name: any; id: string; current: number; max: number; }[]>([]);
 
 	const keyPressed = useRef({
 		up_p1: false,
@@ -73,9 +69,18 @@ export const Pong: React.FC = () => {
 				if (json.type === "assign") return setWhoAmI(json.value);
 				if (json.type === "EXIT") return setMode("EXIT");
 				if (json.type === "reset") return setResetView(true);
-				if (json.type === "SameKeyboard" || json.type === "Multi" || json.type === "Solo") return setMode(json.type);
-				setResetView(false);
-				setParsedData(json);
+				if (json.type === "SameKeyboard" || json.type === "Multi" || json.type === "Solo") {
+					setMode(json.type);
+					return;
+				}
+				if (json.type === "Tournament" && json.action === "LIST_RESPONSE") {
+					setTournamentList(json.value);
+					return;
+				}
+				if (json.ball && json.player1 && json.player2) {
+					setResetView(false);
+					setParsedData(json);
+				}
 			} catch {
 				console.log('Message serveur :', str);
 			}
@@ -96,7 +101,7 @@ export const Pong: React.FC = () => {
 		if (!canvas || !ctx) return;
 		ctx.clearRect(0, 0, canvas.width, canvas.height);
 		ctx.closePath();
-		if (parsedData && !resetView) {
+		if (parsedData && parsedData.player1 && parsedData.player2 && parsedData.ball && !resetView) {
 			ctx.fillStyle = 'black';
 			ctx.fillRect(parsedData.player1.pos_x, parsedData.player1.pos_y, parsedData.player1.width, parsedData.player1.height);
 			ctx.fillRect(parsedData.player2.pos_x, parsedData.player2.pos_y, parsedData.player2.width, parsedData.player2.height);
@@ -116,7 +121,6 @@ export const Pong: React.FC = () => {
 				if (e.key === 'w') keyPressed.current.up_p2 = true;
 				if (e.key === 's') keyPressed.current.down_p2 = true;
 			}
-
 		};
 
 		const handleKeyUp = (e: KeyboardEvent) => {
@@ -157,21 +161,6 @@ export const Pong: React.FC = () => {
 		};
 	}, [mode, whoAmI]);
 
-	
-	useEffect(() => {
-		const socket = socketRef.current;
-		if (!socket || socket.readyState !== WebSocket.OPEN) return;
-		socket.addEventListener("message", (event: MessageEvent) => {
-			try {
-				const msg = JSON.parse(event.data);
-				if (msg.type === "Tournament" && msg.action === "LIST_RESPONSE") {
-					setTournamentList(msg.value);
-				}
-			} catch {}
-		});
-	}, []);
-
-
 	useEffect(() => {
 		const interval = setInterval(() => {
 			const socket = socketRef.current;
@@ -194,7 +183,7 @@ export const Pong: React.FC = () => {
 		<div>
 			<canvas ref={canvasRef} width={800} height={600} style={{ border: '2px solid black', display: 'block', margin: '0 auto' }} />
 			{mode === "EXIT" && <div style={{ textAlign: 'center', fontSize: '24px', marginTop: '20px', color: 'red' }}>🎉 Partie terminée !</div>}
-			
+
 			<div style={{ textAlign: 'center', marginTop: '10px' }}>
 				<button onClick={() => sendMode("SameKeyboard")}>Same Keyboard</button>
 				<button onClick={() => sendMode("Solo")}>Solo</button>
@@ -210,26 +199,27 @@ export const Pong: React.FC = () => {
 							<ul style={{ listStyle: 'none', padding: 0 }}>
 								{tournamentList.map((t) => (
 									<li key={t.id} style={{ marginBottom: '10px' }}>
-									{t.name} — {t.current}/{t.max} joueurs
-									<button
-										style={{ marginLeft: '10px' }}
-										onClick={() => {
-											const socket = socketRef.current;
-											if (!socket || socket.readyState !== WebSocket.OPEN) return;
-											socket.send(JSON.stringify({
-												type: "Tournament",
-												action: "JOIN",
-												value: { tournamentId: t.id }
-											}));
-									}}
-									>Rejoindre</button>
-								</li>
-							))}
+										{typeof t.name === 'string' ? t.name : JSON.stringify(t.name)} — {t.current}/{t.max} joueurs
+										<button
+											style={{ marginLeft: '10px' }}
+											onClick={() => {
+												const socket = socketRef.current;
+												if (!socket || socket.readyState !== WebSocket.OPEN) return;
+												socket.send(JSON.stringify({
+													type: "Tournament",
+													action: "JOIN",
+													id: t.id
+												}));
+											}}
+										>
+											Rejoindre
+										</button>
+									</li>
+								))}
 							</ul>
 						)}
 					</div>
 				)}
-
 
 				{showTournamentOptions && (
 					<div style={{ marginTop: '10px' }}>
@@ -250,13 +240,12 @@ export const Pong: React.FC = () => {
 							onClick={() => {
 								const socket = socketRef.current;
 								if (!socket || socket.readyState !== WebSocket.OPEN) return;
+								if (!tournamentName.trim()) return alert("Veuillez entrer un nom de tournoi");
 								socket.send(JSON.stringify({
 									type: "Tournament",
 									action: "Create",
-									value: {
-										name: tournamentName,
-										size: tournamentSize
-									}
+									value: tournamentName,
+									sizeTournament: tournamentSize
 								}));
 								setShowTournamentOptions(false);
 							}}
@@ -266,10 +255,8 @@ export const Pong: React.FC = () => {
 					</div>
 				)}
 			</div>
-
 		</div>
 	);
 };
 
 export default Pong;
-

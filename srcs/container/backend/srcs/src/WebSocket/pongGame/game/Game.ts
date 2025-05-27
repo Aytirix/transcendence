@@ -4,6 +4,8 @@ import { Ball } from "./Ball";
 import { Paddle } from "./Paddle";
 import { join } from "path";
 import { handleCollisionWithPlayer1, handleCollisionWithPlayer2, handleScorePlayer1, handleScorePlayer2 } from "../handlers/handleSolo";
+import { Tournament } from "../types/playerStat";
+import { isOnFinishMatch } from "../handlers/handleTournament";
 
 export class Game {
 	constructor (
@@ -15,7 +17,8 @@ export class Game {
 		private readonly width: number = 800,
 		private readonly height: number = 600,
 		private status: "PLAYING" | "KICKOFF" | "EXIT" = "PLAYING",
-		private jsonWebsocket: string = ""
+		private jsonWebsocket: string = "",
+		private tournament?: Tournament,
 	) {}
 	start(): void{
 		let i: number = 0;
@@ -68,6 +71,11 @@ export class Game {
 				this.player1.getPlayerInfos().socket.send(this.jsonWebsocket);
 				this.player2.getPlayerInfos().socket.send(this.jsonWebsocket);
 			}
+		else if (this.player1.getPlayerInfos().mode === "Tournament"
+			&& this.player2.getPlayerInfos().mode === "Tournament") {
+				this.player1.getPlayerInfos().socket.send(this.jsonWebsocket);
+				this.player2.getPlayerInfos().socket.send(this.jsonWebsocket);
+			}
 		else if (this.player1.getPlayerInfos().mode === "SameKeyboard")
 			this.player1.getPlayerInfos().socket.send(this.jsonWebsocket);
 		else if (this.player1.getPlayerInfos().mode === "Solo") {
@@ -83,6 +91,12 @@ export class Game {
 				handleFinish(this.player1.getPlayerInfos())
 				handleFinish(this.player2.getPlayerInfos())
 				this.resetDisplay("Multi");
+			}
+			else if (this.player1.getPlayerInfos().mode === "Tournament"
+			&& this.player2.getPlayerInfos().mode === "Tournament") {
+				isOnFinishMatch(this.tournament, this.player1.getPlayerInfos(), this.player2.getPlayerInfos());
+				//determiner le finish du tournois en fonction des manche
+				//gerer l actualisation la deco et surtout le exit du tournois 
 			}
 			else if (this.player1.getPlayerInfos().mode === "SameKeyboard") {
 				this.player1.getPlayerInfos().socket.send(JSON.stringify({type: "EXIT"}));
@@ -190,10 +204,18 @@ export class Game {
 	}
 	checkScore(player1: Paddle, player2: Paddle) : boolean {
 		if (player1.getScore() == 21) {
+			if (player1.getPlayerInfos().mode === "Tournament") {
+				player1.getPlayerInfos().resultMatchTournament = "Win";
+				player2.getPlayerInfos().resultMatchTournament = "Loose";
+			}
 			console.log("Winner is player 1")
 			return (true);
 		}
 		else if (player2.getScore() == 21){
+			if (player1.getPlayerInfos().mode === "Tournament") {
+				player2.getPlayerInfos().resultMatchTournament = "Win";
+				player1.getPlayerInfos().resultMatchTournament = "Loose";
+			}
 			console.log("Winner is player 2")
 			return (true);
 		}
@@ -216,4 +238,5 @@ export class Game {
 	getPlayer2() : Paddle {return (this.player2); }
 	setStatus(stat: "PLAYING" | "KICKOFF" | "EXIT") { this.status = stat; }
 	setFramerate(frameRate: number) { this.frameRate = frameRate; }
+	setTournament(tournament: Tournament) { this.tournament = tournament; }
 }

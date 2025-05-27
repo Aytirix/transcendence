@@ -1,9 +1,9 @@
 import { Component } from 'react';
 import { Routes, Route } from 'react-router-dom';
-// import { Pong } from './pongGame/client'
+import { Pong } from './pongGame/client'
 import WebSocketTest from './WebSocketTest';
 import App from './App';
-import GameLauncher from './pongGame/GameLauncher';
+// import GameLauncher from './pongGame/GameLauncher';
 
 // PAGES
 
@@ -19,8 +19,8 @@ class AppRouter extends Component {
 
 				<Route>
 					<Route path="/" element={<App />} />
-					<Route path="/Pong" element={<GameLauncher />} />
-					{/* <Route path="/Pong" element={<Pong />} /> */}
+					{/* <Route path="/Pong" element={<GameLauncher />} /> */}
+					<Route path="/Pong" element={<Pong />} />
 					<Route path="/WebSocketTest" element={<WebSocketTest />} />
 				</Route>
 
