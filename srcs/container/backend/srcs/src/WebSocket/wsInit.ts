@@ -3,7 +3,7 @@ import SQLiteStoreFactory from 'connect-sqlite3';
 import { Socket } from 'net';
 import { IncomingMessage } from 'http';
 import { Server as WebSocketServer, WebSocket } from 'ws';
-import { FastifyInstance } from 'fastify';
+import { FastifyInstance, Session } from 'fastify';
 import fastifyCookie from '@fastify/cookie';
 import Middleware from '@Middleware';
 import chatWebSocket from './chat/wsChat';
@@ -19,18 +19,20 @@ async function initWebSocket(server: FastifyInstance) {
 
 	wss = new WebSocketServer({ noServer: true, perMessageDeflate: false, clientTracking: true });
 
-	wss.on('connection', (ws: WebSocket, user: User, req: IncomingMessage) => {
-		const path = req.url;
+	wss.on('connection', (ws: WebSocket, session: Session, request: IncomingMessage) => {
+		const path = request.url;
+		ws.i18n = createi18nObject(session, request.headers);
+		console.log(`i18n initialized for WebSocket connection: ${ws.i18n.language}`);
 
 		switch (path) {
 			case '/chat':
-				chatWebSocket(ws, user, req);
+				chatWebSocket(ws, session.user);
 				break;
 			case '/pong':
-				pongWebSocket(ws, user);
+				pongWebSocket(ws, session.user);
 				break;
 			case '/Pacman':
-				PacManWebSocket(ws, user);
+				PacManWebSocket(ws, session.user);
 				break;
 			default:
 				ws.close(1008, JSON.stringify({ action: 'error', result: 'error', notification: ['Erreur : chemin WebSocket non reconnu.'] }));
@@ -48,8 +50,7 @@ async function initWebSocket(server: FastifyInstance) {
 			}
 
 			wss?.handleUpgrade(request, socket, head, (ws: WebSocket) => {
-				ws.i18n = createi18nObject(session, request.headers);
-				wss?.emit('connection', ws, session.user, request);
+				wss?.emit('connection', ws, session, request);
 			});
 		} catch (err) {
 			console.error('Erreur lors de la gestion de la connexion WebSocket:', err);
