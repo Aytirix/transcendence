@@ -43,38 +43,38 @@ import pacmanPng from '../../assets/img/pacman/pacman.png';
 
 // Créer un mapping d'images pour faciliter l'accès
 const ghostImages = {
-	'B': {
-		'right': ghostBRightGif,
-		'left': ghostBLeftGif,
-		'up': ghostBUpGif,
-		'down': ghostBDownGif
-	},
-	'P': {
-		'right': ghostPRightGif,
-		'left': ghostPLeftGif,
-		'up': ghostPUpGif,
-		'down': ghostPDownGif
-	},
-	'I': {
-		'right': ghostIRightGif,
-		'left': ghostILeftGif,
-		'up': ghostIUpGif,
-		'down': ghostIDownGif
-	},
-	'C': {
-		'right': ghostCRightGif,
-		'left': ghostCLeftGif,
-		'up': ghostCUpGif,
-		'down': ghostCDownGif
-	},
-	'eyes': {
-		'right': eyesRightPng,
-		'left': eyesLeftPng,
-		'up': eyesUpPng,
-		'down': eyesDownPng
-	},
-	'frightened': frightenedGif,
-	'blinking': blinkingGif
+  'B': {
+    'right': ghostBRightGif,
+    'left': ghostBLeftGif,
+    'up': ghostBUpGif,
+    'down': ghostBDownGif
+  },
+  'Y': {
+    'right': ghostPRightGif,
+    'left': ghostPLeftGif,
+    'up': ghostPUpGif,
+    'down': ghostPDownGif
+  },
+  'I': {
+    'right': ghostIRightGif,
+    'left': ghostILeftGif,
+    'up': ghostIUpGif,
+    'down': ghostIDownGif
+  },
+  'C': {
+    'right': ghostCRightGif,
+    'left': ghostCLeftGif,
+    'up': ghostCUpGif,
+    'down': ghostCDownGif
+  },
+  'eyes': {
+    'right': eyesRightPng,
+    'left': eyesLeftPng,
+    'up': eyesUpPng,
+    'down': eyesDownPng
+  },
+  'frightened': frightenedGif,
+  'blinking': blinkingGif
 };
 
 // Mapping pour les images de Pacman (similaire à ghostImages)
@@ -148,6 +148,16 @@ const getWallType = (rowIndex: number, colIndex: number, grid: string[]): string
 	return 'wall-single'; // Isolated wall piece
 };
 
+const PauseMode = ({ state }: { state: state }) => {
+	const { paused } = state.game.paused;
+
+	return (
+		<div className={`pause-mode ${paused ? 'active' : ''}`}>
+			{paused && <div className="pause-message">{state.game.paused.message}</div>}
+		</div>
+	);
+}
+
 const PacmanMap: React.FC<PacmanMapProps> = ({ state }) => {
 	const { grid, players, tileSize } = state.game;
 
@@ -210,20 +220,23 @@ const PacmanMap: React.FC<PacmanMapProps> = ({ state }) => {
 			<div className="header">
 				<h3 className="title">PACMAN</h3>
 			</div>
+			<PauseMode state={state} />
 			<div className="pacman-map-wrapper">
 				<div className='column-left'></div>
 				<div className="pacman-map-container" >
 					{/* 1. Dessiner la grille : un <div> par case */}
 					<div className='pacman-map'
-						style={{
-							position: 'absolute',
-							top: offsetY,
-							left: offsetX,
-							width: `${mapWidth}px`,
-							height: `${mapHeight}px`,
-							transform: `scale(${scale})`,
-							transformOrigin: 'top left'
-						}}>
+					style={{
+						position: 'absolute',
+						top: offsetY,
+						left: offsetX,
+						width: `${mapWidth}px`,
+						height: `${mapHeight}px`,
+						transform: `scale(${scale})`,
+						transformOrigin: 'top left'
+					}}>
+					{/* 1. Dessiner la grille : un <div> par case */}
+						{/* 1. Dessiner les murs et les portes */}
 						{grid.map((rowString, rowIndex) =>
 							rowString.split('').map((char, colIndex) => {
 								const tileClass = getTileClass(char, rowIndex, colIndex);
@@ -305,6 +318,7 @@ const PacmanMap: React.FC<PacmanMapProps> = ({ state }) => {
 							else {
 								// Déterminer quel GIF utiliser en fonction du caractère et de la direction
 								const ghostChar = player.character; // 'B', 'P', 'I', 'C'
+								console.log('ghostChar', ghostChar);
 								const direction = ((player as any).direction || 'RIGHT').toLowerCase();
 								const isFrightened = (player as any).isFrightened;
 								const isBlinking = isFrightened && (player as any).frightenedRemainingTime < 8;

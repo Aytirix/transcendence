@@ -82,40 +82,6 @@ export const CenteredBox: React.FC<CenteredBoxProps> = ({ state, onCreateMap }) 
 			)}
 		</div>
 	)
-	/* return (
-		<div className="centered-box">
-			<div className="title-container">
-				<h1>PACMAN</h1>
-			</div>
-			
-			<Tab.Group
-				selectedIndex={TABS.findIndex(t => t.id === currentPage)}
-				onChange={i => setCurrentPage(TABS[i].id)}
-				as="div"
-				className="tabs-container"
-			>
-				<Tab.List className="tabs-list">
-					{TABS.map(tab => (
-						<Tab as={React.Fragment} key={tab.id}>
-							{({ selected }) => (
-								<button
-									role="tab"
-									aria-selected={selected}
-									className={`tab-button ${selected ? 'selected' : ''}`}
-								>
-									{tab.label}
-								</button>
-							)}
-						</Tab>
-					))}
-				</Tab.List>
-			</Tab.Group>
-
-			<div className="content-container">
-				{renderContent()}
-			</div>
-		</div>
-	); */
 };
 
 export default CenteredBox;

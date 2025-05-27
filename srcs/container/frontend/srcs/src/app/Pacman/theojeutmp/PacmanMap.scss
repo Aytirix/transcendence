@@ -1,5 +1,19 @@
 /* src/assets/styles/pacman/PacmanMap.scss */
 
+.pause-message {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: rgba(0, 0, 0, 0.8);
+  color: red; /* Couleur du texte */
+  font-size: 1.5rem; /* Taille de la police */
+  font-family: 'Press Start 2P', cursive; /* Police de caractères */
+  padding: 20px;
+  border-radius: 10px;
+  z-index: 1000; /* Assurez-vous que le message est au-dessus des autres éléments */
+}
+
 .header {
   display: flex;
   justify-content: center;
