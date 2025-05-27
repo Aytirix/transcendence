@@ -9,7 +9,7 @@ export const PACMAN_SPEED = 3;
  */
 export default class Pacman extends Character {
 	private static _speed = PACMAN_SPEED;
-	public life: number = 0;
+	public life: number = 3;
 
 	constructor(player: player, position: vector2, nameChar: CharacterType) {
 		super(player, position, nameChar);

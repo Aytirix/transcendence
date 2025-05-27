@@ -161,12 +161,16 @@ export default class Engine {
 	 */
 	public start(): void {
 		this.isPaused = true;
-		let countdown = 1;
+		let countdown = 2;
 		this.PauseMessage = `Starting in ${countdown} seconds...`;
+		countdown--;
 		this.broadcastState();
 		const countdownInterval = setInterval(() => {
-			if (countdown > 0) {
+			if (countdown >= 1) {
 				this.PauseMessage = `Starting in ${countdown} seconds...`;
+				this.broadcastState();
+			} else if (countdown == 0) {
+				this.PauseMessage = "GOOOOOO !";
 				this.broadcastState();
 			} else {
 				clearInterval(countdownInterval);
@@ -485,7 +489,7 @@ export default class Engine {
 					ghost.score -= 100;
 				} else if (!ghost.isFrightened && !ghost.isReturningToSpawn) {
 					ghost.score += 300;
-					this.deadPacman(pacman, ghost);
+					// this.deadPacman(pacman, ghost);
 				}
 			}
 		}

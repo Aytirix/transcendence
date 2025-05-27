@@ -43,38 +43,38 @@ import pacmanPng from '../../assets/img/pacman/pacman.png';
 
 // Créer un mapping d'images pour faciliter l'accès
 const ghostImages = {
-  'B': {
-    'right': ghostBRightGif,
-    'left': ghostBLeftGif,
-    'up': ghostBUpGif,
-    'down': ghostBDownGif
-  },
-  'Y': {
-    'right': ghostPRightGif,
-    'left': ghostPLeftGif,
-    'up': ghostPUpGif,
-    'down': ghostPDownGif
-  },
-  'I': {
-    'right': ghostIRightGif,
-    'left': ghostILeftGif,
-    'up': ghostIUpGif,
-    'down': ghostIDownGif
-  },
-  'C': {
-    'right': ghostCRightGif,
-    'left': ghostCLeftGif,
-    'up': ghostCUpGif,
-    'down': ghostCDownGif
-  },
-  'eyes': {
-    'right': eyesRightPng,
-    'left': eyesLeftPng,
-    'up': eyesUpPng,
-    'down': eyesDownPng
-  },
-  'frightened': frightenedGif,
-  'blinking': blinkingGif
+	'B': {
+		'right': ghostBRightGif,
+		'left': ghostBLeftGif,
+		'up': ghostBUpGif,
+		'down': ghostBDownGif
+	},
+	'Y': {
+		'right': ghostPRightGif,
+		'left': ghostPLeftGif,
+		'up': ghostPUpGif,
+		'down': ghostPDownGif
+	},
+	'I': {
+		'right': ghostIRightGif,
+		'left': ghostILeftGif,
+		'up': ghostIUpGif,
+		'down': ghostIDownGif
+	},
+	'C': {
+		'right': ghostCRightGif,
+		'left': ghostCLeftGif,
+		'up': ghostCUpGif,
+		'down': ghostCDownGif
+	},
+	'eyes': {
+		'right': eyesRightPng,
+		'left': eyesLeftPng,
+		'up': eyesUpPng,
+		'down': eyesDownPng
+	},
+	'frightened': frightenedGif,
+	'blinking': blinkingGif
 };
 
 // Mapping pour les images de Pacman (similaire à ghostImages)
@@ -226,16 +226,16 @@ const PacmanMap: React.FC<PacmanMapProps> = ({ state }) => {
 				<div className="pacman-map-container" >
 					{/* 1. Dessiner la grille : un <div> par case */}
 					<div className='pacman-map'
-					style={{
-						position: 'absolute',
-						top: offsetY,
-						left: offsetX,
-						width: `${mapWidth}px`,
-						height: `${mapHeight}px`,
-						transform: `scale(${scale})`,
-						transformOrigin: 'top left'
-					}}>
-					{/* 1. Dessiner la grille : un <div> par case */}
+						style={{
+							position: 'absolute',
+							top: offsetY,
+							left: offsetX,
+							width: `${mapWidth}px`,
+							height: `${mapHeight}px`,
+							transform: `scale(${scale})`,
+							transformOrigin: 'top left'
+						}}>
+						{/* 1. Dessiner la grille : un <div> par case */}
 						{/* 1. Dessiner les murs et les portes */}
 						{grid.map((rowString, rowIndex) =>
 							rowString.split('').map((char, colIndex) => {
@@ -256,10 +256,10 @@ const PacmanMap: React.FC<PacmanMapProps> = ({ state }) => {
 										{char === '-' && (
 											<div
 												className={`door ${(grid[rowIndex]?.[colIndex - 1] === '#' && grid[rowIndex]?.[colIndex + 1] === '#')
-														? 'horizontal'
-														: (grid[rowIndex - 1]?.[colIndex] === '#' && grid[rowIndex + 1]?.[colIndex] === '#')
-															? 'vertical'
-															: ''
+													? 'horizontal'
+													: (grid[rowIndex - 1]?.[colIndex] === '#' && grid[rowIndex + 1]?.[colIndex] === '#')
+														? 'vertical'
+														: ''
 													}`}
 											/>
 										)}

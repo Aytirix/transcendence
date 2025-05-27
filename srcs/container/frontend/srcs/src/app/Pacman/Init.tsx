@@ -12,6 +12,7 @@ function initState(): state {
 		ws: null,
 		statusws: 'Connecting...',
 		player: useAuth().user,
+		maps: [],
 		rooms: {
 			active: [],
 			waiting: [],
@@ -74,6 +75,32 @@ export default function WebSocketPacman() {
 				}));
 				break;
 			}
+			case 'getAllMapForUser': {
+				setState((prevState: state) => ({
+					...prevState,
+					maps: data.maps,
+				}));
+				break;
+			}
+			case 'deleteMap': {
+				setState((prevState: state) => ({
+					...prevState,
+					maps: prevState.maps.filter((map) => map.id !== data.id),
+				}));
+				break;
+			}
+			case 'insertOrUpdateMap': {
+				const updatedMaps = state.maps.filter((map) => map.id !== data.map.id);
+				updatedMaps.push(data.map);
+				setState((prevState: state) => ({
+					...prevState,
+					maps: {
+						...updatedMaps,
+
+					}
+				}));
+				break;
+			}
 			default:
 				console.log('Unknown action:', data.action);
 				break;
@@ -85,7 +112,7 @@ export default function WebSocketPacman() {
 		// For example, send it to the server via WebSocket
 		if (state.ws && state.ws.readyState === WebSocket.OPEN) {
 			state.ws.send(JSON.stringify({
-				action: 'saveCustomMap',
+				action: 'insertOrUpdateMap',
 				mapData
 			}));
 		}
@@ -141,16 +168,16 @@ export default function WebSocketPacman() {
 
 	return (
 		<div className="bg-gray-200 text-white flex flex-col items-center justify-center">
-				{showMapEditor ? (
-					<CreatePacmanMap onSave={handleSaveMap} onCancel={() => setShowMapEditor(false)} />
-				) : state.game.grid && state.game.grid.length > 0 ? (
-					<PacmanMap state={state} />
-				) : (
-					<CenteredBox 
-						state={state} 
-						onCreateMap={() => setShowMapEditor(true)} // Pass this prop to CenteredBox
-					/>
-				)}
+			{showMapEditor ? (
+				<CreatePacmanMap onSave={handleSaveMap} onCancel={() => setShowMapEditor(false)} />
+			) : state.game.grid && state.game.grid.length > 0 ? (
+				<PacmanMap state={state} />
+			) : (
+				<CenteredBox
+					state={state}
+					onCreateMap={() => setShowMapEditor(true)} // Pass this prop to CenteredBox
+				/>
+			)}
 		</div>
 	);
 }
