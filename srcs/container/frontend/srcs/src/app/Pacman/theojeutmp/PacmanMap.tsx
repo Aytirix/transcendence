@@ -43,48 +43,48 @@ import pacmanPng from '../../assets/img/pacman/pacman.png';
 
 // Créer un mapping d'images pour faciliter l'accès
 const ghostImages = {
-  'B': {
-    'right': ghostBRightGif,
-    'left': ghostBLeftGif,
-    'up': ghostBUpGif,
-    'down': ghostBDownGif
-  },
-  'P': {
-    'right': ghostPRightGif,
-    'left': ghostPLeftGif,
-    'up': ghostPUpGif,
-    'down': ghostPDownGif
-  },
-  'I': {
-    'right': ghostIRightGif,
-    'left': ghostILeftGif,
-    'up': ghostIUpGif,
-    'down': ghostIDownGif
-  },
-  'C': {
-    'right': ghostCRightGif,
-    'left': ghostCLeftGif,
-    'up': ghostCUpGif,
-    'down': ghostCDownGif
-  },
-  'eyes': {
-    'right': eyesRightPng,
-    'left': eyesLeftPng,
-    'up': eyesUpPng,
-    'down': eyesDownPng
-  },
-  'frightened': frightenedGif,
-  'blinking': blinkingGif
+	'B': {
+		'right': ghostBRightGif,
+		'left': ghostBLeftGif,
+		'up': ghostBUpGif,
+		'down': ghostBDownGif
+	},
+	'P': {
+		'right': ghostPRightGif,
+		'left': ghostPLeftGif,
+		'up': ghostPUpGif,
+		'down': ghostPDownGif
+	},
+	'I': {
+		'right': ghostIRightGif,
+		'left': ghostILeftGif,
+		'up': ghostIUpGif,
+		'down': ghostIDownGif
+	},
+	'C': {
+		'right': ghostCRightGif,
+		'left': ghostCLeftGif,
+		'up': ghostCUpGif,
+		'down': ghostCDownGif
+	},
+	'eyes': {
+		'right': eyesRightPng,
+		'left': eyesLeftPng,
+		'up': eyesUpPng,
+		'down': eyesDownPng
+	},
+	'frightened': frightenedGif,
+	'blinking': blinkingGif
 };
 
 // Mapping pour les images de Pacman (similaire à ghostImages)
 const pacmanImages = {
-  'right': pacmanRightGif,
-  'left': pacmanLeftGif,
-  'up': pacmanUpGif,
-  'down': pacmanDownGif,
-  'death': pacmanDeathGif,
-  'default': pacmanPng
+	'right': pacmanRightGif,
+	'left': pacmanLeftGif,
+	'up': pacmanUpGif,
+	'down': pacmanDownGif,
+	'death': pacmanDeathGif,
+	'default': pacmanPng
 };
 
 const CONTAINER_SIZE_WIDTH = 775; // Doit correspondre à la taille CSS
@@ -101,7 +101,7 @@ export interface Player {
 	score: number;
 	direction?: 'UP' | 'DOWN' | 'LEFT' | 'RIGHT';
 	returnToSpawn?: boolean; // true si le joueur doit retourner à son spawn
-	isFrightened ?: boolean; // true si le fantôme est effrayé
+	isFrightened?: boolean; // true si le fantôme est effrayé
 	isDying?: boolean; // true si Pacman est en train de mourir
 }
 
@@ -111,41 +111,41 @@ interface PacmanMapProps {
 
 // Function to determine the type of wall tile based on its neighbors
 const getWallType = (rowIndex: number, colIndex: number, grid: string[]): string => {
-  // Check the 4 adjacent neighbors (top, right, bottom, left)
-  const hasTopWall = rowIndex > 0 && grid[rowIndex-1][colIndex] === '#';
-  const hasRightWall = colIndex < grid[rowIndex].length-1 && grid[rowIndex][colIndex+1] === '#';
-  const hasBottomWall = rowIndex < grid.length-1 && grid[rowIndex+1][colIndex] === '#';
-  const hasLeftWall = colIndex > 0 && grid[rowIndex][colIndex-1] === '#';
-  
-  // Count the number of wall neighbors
-  const wallCount = [hasTopWall, hasRightWall, hasBottomWall, hasLeftWall].filter(Boolean).length;
-  
-  // Determine wall type
-  if (wallCount === 1) {
-    // End pieces
-    if (hasTopWall) return 'wall-end-bottom';
-    if (hasRightWall) return 'wall-end-left';
-    if (hasBottomWall) return 'wall-end-top';
-    if (hasLeftWall) return 'wall-end-right';
-  } else if (wallCount === 2) {
-    // Corner or straight
-    if (hasTopWall && hasRightWall) return 'wall-corner-top-right';
-    if (hasRightWall && hasBottomWall) return 'wall-corner-bottom-right';
-    if (hasBottomWall && hasLeftWall) return 'wall-corner-bottom-left';
-    if (hasLeftWall && hasTopWall) return 'wall-corner-top-left';
-    if (hasTopWall && hasBottomWall) return 'wall-straight-vertical';
-    if (hasLeftWall && hasRightWall) return 'wall-straight-horizontal';
-  } else if (wallCount === 3) {
-    // T-junctions
-    if (!hasTopWall) return 'wall-t-top';
-    if (!hasRightWall) return 'wall-t-right';
-    if (!hasBottomWall) return 'wall-t-bottom';
-    if (!hasLeftWall) return 'wall-t-left';
-  } else if (wallCount === 4) {
-    return 'wall-cross';
-  }
-  
-  return 'wall-single'; // Isolated wall piece
+	// Check the 4 adjacent neighbors (top, right, bottom, left)
+	const hasTopWall = rowIndex > 0 && grid[rowIndex - 1][colIndex] === '#';
+	const hasRightWall = colIndex < grid[rowIndex].length - 1 && grid[rowIndex][colIndex + 1] === '#';
+	const hasBottomWall = rowIndex < grid.length - 1 && grid[rowIndex + 1][colIndex] === '#';
+	const hasLeftWall = colIndex > 0 && grid[rowIndex][colIndex - 1] === '#';
+
+	// Count the number of wall neighbors
+	const wallCount = [hasTopWall, hasRightWall, hasBottomWall, hasLeftWall].filter(Boolean).length;
+
+	// Determine wall type
+	if (wallCount === 1) {
+		// End pieces
+		if (hasTopWall) return 'wall-end-bottom';
+		if (hasRightWall) return 'wall-end-left';
+		if (hasBottomWall) return 'wall-end-top';
+		if (hasLeftWall) return 'wall-end-right';
+	} else if (wallCount === 2) {
+		// Corner or straight
+		if (hasTopWall && hasRightWall) return 'wall-corner-top-right';
+		if (hasRightWall && hasBottomWall) return 'wall-corner-bottom-right';
+		if (hasBottomWall && hasLeftWall) return 'wall-corner-bottom-left';
+		if (hasLeftWall && hasTopWall) return 'wall-corner-top-left';
+		if (hasTopWall && hasBottomWall) return 'wall-straight-vertical';
+		if (hasLeftWall && hasRightWall) return 'wall-straight-horizontal';
+	} else if (wallCount === 3) {
+		// T-junctions
+		if (!hasTopWall) return 'wall-t-top';
+		if (!hasRightWall) return 'wall-t-right';
+		if (!hasBottomWall) return 'wall-t-bottom';
+		if (!hasLeftWall) return 'wall-t-left';
+	} else if (wallCount === 4) {
+		return 'wall-cross';
+	}
+
+	return 'wall-single'; // Isolated wall piece
 };
 
 const PacmanMap: React.FC<PacmanMapProps> = ({ state }) => {
@@ -156,12 +156,40 @@ const PacmanMap: React.FC<PacmanMapProps> = ({ state }) => {
 	const mapWidth = numCols * tileSize;
 	const mapHeight = numRows * tileSize;
 	const scale = Math.min(
-	CONTAINER_SIZE_WIDTH / mapWidth,
-	CONTAINER_SIZE_HEIGHT / mapHeight
+		CONTAINER_SIZE_WIDTH / mapWidth,
+		CONTAINER_SIZE_HEIGHT / mapHeight
 	);
 
 	const offsetX = (CONTAINER_SIZE_WIDTH - mapWidth * scale) / 2;
 	const offsetY = (CONTAINER_SIZE_HEIGHT - mapHeight * scale) / 2;
+
+	const handleKeyDown = (event: KeyboardEvent) => {
+		if (!state.ws || state.ws.readyState !== WebSocket.OPEN) return;
+
+		const keyActions: Record<string, string> = {
+			'ArrowUp': 'UP',
+			'ArrowDown': 'DOWN',
+			'ArrowLeft': 'LEFT',
+			'ArrowRight': 'RIGHT'
+		};
+
+		const direction = keyActions[event.key];
+		if (direction) {
+			state.ws.send(JSON.stringify({
+				action: 'playerMove',
+				direction: direction
+			}));
+			event.preventDefault();
+		}
+	};
+
+	useEffect(() => {
+		window.addEventListener('keydown', handleKeyDown);
+
+		return () => {
+			window.removeEventListener('keydown', handleKeyDown);
+		};
+	}, [state.ws]);
 
 	// Attribue une classe CSS à chaque caractère
 	const getTileClass = (char: string, rowIndex: number, colIndex: number) => {
@@ -175,7 +203,7 @@ const PacmanMap: React.FC<PacmanMapProps> = ({ state }) => {
 			default: return 'tile empty';
 		}
 	};
-	  
+
 
 	return (
 		<>
@@ -187,15 +215,15 @@ const PacmanMap: React.FC<PacmanMapProps> = ({ state }) => {
 				<div className="pacman-map-container" >
 					{/* 1. Dessiner la grille : un <div> par case */}
 					<div className='pacman-map'
-					style={{
-						position: 'absolute',
-						top: offsetY,
-						left: offsetX,
-						width: `${mapWidth}px`,
-						height: `${mapHeight}px`,
-						transform: `scale(${scale})`,
-						transformOrigin: 'top left'
-					}}>
+						style={{
+							position: 'absolute',
+							top: offsetY,
+							left: offsetX,
+							width: `${mapWidth}px`,
+							height: `${mapHeight}px`,
+							transform: `scale(${scale})`,
+							transformOrigin: 'top left'
+						}}>
 						{grid.map((rowString, rowIndex) =>
 							rowString.split('').map((char, colIndex) => {
 								const tileClass = getTileClass(char, rowIndex, colIndex);
@@ -203,24 +231,23 @@ const PacmanMap: React.FC<PacmanMapProps> = ({ state }) => {
 								const leftPx = colIndex * tileSize;
 								return (
 									<div
-									key={`tile-${rowIndex}-${colIndex}`}
-									className={tileClass}
-									style={{
-										top: topPx,
-										left: leftPx,
-										width: tileSize,
-										height: tileSize,
-									}}
+										key={`tile-${rowIndex}-${colIndex}`}
+										className={tileClass}
+										style={{
+											top: topPx,
+											left: leftPx,
+											width: tileSize,
+											height: tileSize,
+										}}
 									>
 										{char === '-' && (
 											<div
-											className={`door ${
-												(grid[rowIndex]?.[colIndex - 1] === '#' && grid[rowIndex]?.[colIndex + 1] === '#')
-												? 'horizontal'
-												: (grid[rowIndex - 1]?.[colIndex] === '#' && grid[rowIndex + 1]?.[colIndex] === '#')
-												? 'vertical'
-												: ''
-											}`}
+												className={`door ${(grid[rowIndex]?.[colIndex - 1] === '#' && grid[rowIndex]?.[colIndex + 1] === '#')
+														? 'horizontal'
+														: (grid[rowIndex - 1]?.[colIndex] === '#' && grid[rowIndex + 1]?.[colIndex] === '#')
+															? 'vertical'
+															: ''
+													}`}
 											/>
 										)}
 										{char === 'T' && <img src={portalImg} alt="portal" className="tunnel" />}
@@ -238,7 +265,7 @@ const PacmanMap: React.FC<PacmanMapProps> = ({ state }) => {
 							if (player.character === 'P') {
 								const direction = ((player as any).direction || 'RIGHT').toLowerCase();
 								const isDying = (player as any).isDying; // À ajouter à votre interface Player si nécessaire
-								
+
 								// Sélection de l'image de Pacman
 								let pacmanImage;
 								if (isDying) {
@@ -248,12 +275,12 @@ const PacmanMap: React.FC<PacmanMapProps> = ({ state }) => {
 								} else {
 									pacmanImage = pacmanImages.default;
 								}
-								
+
 								// Position et styles
 								const half = tileSize / 2;
 								const posX = player.position?.x ?? 0;
 								const posY = player.position?.y ?? 0;
-								
+
 								const baseStyle = {
 									top: posY - half,
 									left: posX - half,
@@ -264,7 +291,7 @@ const PacmanMap: React.FC<PacmanMapProps> = ({ state }) => {
 									backgroundRepeat: 'no-repeat',
 									backgroundPosition: 'center',
 								} as React.CSSProperties;
-								
+
 								return (
 									<div
 										key={player.id}
@@ -273,7 +300,7 @@ const PacmanMap: React.FC<PacmanMapProps> = ({ state }) => {
 										title={`${player.username} (${player.score} pts)`}
 									/>
 								);
-							} 
+							}
 							// Pour les fantômes
 							else {
 								// Déterminer quel GIF utiliser en fonction du caractère et de la direction
@@ -282,52 +309,52 @@ const PacmanMap: React.FC<PacmanMapProps> = ({ state }) => {
 								const isFrightened = (player as any).isFrightened;
 								const isBlinking = isFrightened && (player as any).frightenedRemainingTime < 8;
 								const isReturningToSpawn = (player as any).returnToSpawn === true;
-							
+
 								// Sélection du GIF approprié
 								// Solution plus simple mais moins sûre au niveau du typage
 								let ghostImage;
 
 								if (isReturningToSpawn) {
-								  ghostImage = ghostImages.eyes[direction as keyof typeof ghostImages.eyes];
+									ghostImage = ghostImages.eyes[direction as keyof typeof ghostImages.eyes];
 								} else if (isBlinking) {
-								  ghostImage = ghostImages.blinking;
+									ghostImage = ghostImages.blinking;
 								} else if (isFrightened) {
-								  ghostImage = ghostImages.frightened;
+									ghostImage = ghostImages.frightened;
 								} else {
-								  // Utiliser as any pour contourner la vérification de type
-								  ghostImage = ghostChar && ghostChar in ghostImages 
-								    ? (ghostImages as any)[ghostChar][direction] 
-								    : ghostImages.B.right;
+									// Utiliser as any pour contourner la vérification de type
+									ghostImage = ghostChar && ghostChar in ghostImages
+										? (ghostImages as any)[ghostChar][direction]
+										: ghostImages.B.right;
 								}
-								
+
 								const half = tileSize / 2;
 								const posX = player.position?.x ?? 0;
 								const posY = player.position?.y ?? 0;
-								
+
 								const baseStyle = {
-								top: posY - half,
-								left: posX - half,
-								width: tileSize,
-								height: tileSize,
-								backgroundImage: `url(${ghostImage})`,
-								backgroundSize: 'contain',
-								backgroundRepeat: 'no-repeat',
-								backgroundPosition: 'center',
+									top: posY - half,
+									left: posX - half,
+									width: tileSize,
+									height: tileSize,
+									backgroundImage: `url(${ghostImage})`,
+									backgroundSize: 'contain',
+									backgroundRepeat: 'no-repeat',
+									backgroundPosition: 'center',
 								} as React.CSSProperties;
-								
+
 								// Style spécifique pour les fantômes
 								let ghostClass = "player ghost";
 								if (isReturningToSpawn) ghostClass += " returning-to-spawn";
 								if (isFrightened) ghostClass += " frightened";
 								if (isBlinking) ghostClass += " blinking";
-							
+
 								return (
-								<div
-									key={player.id}
-									className={ghostClass}
-									style={baseStyle}
-									title={`${player.username} (${player.score} pts)`}
-								></div>
+									<div
+										key={player.id}
+										className={ghostClass}
+										style={baseStyle}
+										title={`${player.username} (${player.score} pts)`}
+									></div>
 								);
 							}
 						})}

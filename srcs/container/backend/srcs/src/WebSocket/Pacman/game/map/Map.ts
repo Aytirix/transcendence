@@ -376,13 +376,15 @@ export default class PacmanMap {
 		};
 
 		// Vérification des bordures et comptage des éléments
-		for (let y = 0; y < grid.length; y++) {
+		let error_limit = 5;
+		for (let y = 0; y < grid.length && error_limit; y++) {
 			for (let x = 0; x < grid[y].length; x++) {
 				const tile = grid[y][x];
 
 				// Vérification des caractères autorisés
 				if (!validChars.has(tile)) {
 					errors.push(`Caractère non autorisé '${tile}' à la position (${x},${y})`);
+					error_limit--;
 				}
 
 				// Comptage des pastilles
@@ -400,6 +402,7 @@ export default class PacmanMap {
 				if ((y === 0 || y === grid.length - 1 || x === 0 || x === grid[y].length - 1) &&
 					(tile !== TileType.Wall && tile !== TileType.Teleport)) {
 					errors.push(`La bordure doit être fermée par des murs '#' ou téléporteurs 'T', trouvé '${tile}' à (${x},${y})`);
+					error_limit--;
 				}
 			}
 		}

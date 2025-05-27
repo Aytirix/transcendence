@@ -1,6 +1,8 @@
 {
 	"required": "Merci de remplir tous les champs obligatoires.",
 	"errors": {
+		"wsError": "Erreur WebSocket",
+		"JSONParseError": "Veuillez envoyer une réponse au format JSON.",
 		"NoadditionalProperties": "Aucune propriété supplémentaire n'est autorisée.",
 		"user": {
 			"noChanges": "Aucun changement a été détecté."
@@ -37,6 +39,32 @@
 		"updateSuccess": "Utilisateur mis à jour avec succès."
 	},
 	"pacman": {
+		"name_required": "Veuillez spécifier un nom de salle",
+		"already_in_room": "Vous êtes déjà dans une salle",
+		"name_length": "Le nom de la salle doit faire entre 3 et 15 caractères",
+		"name_taken": "Le nom de la salle est déjà utilisé",
+		"id_required": "Veuillez spécifier un id de salle",
+		"not_found": "La salle n'existe pas",
+		"already_active": "La salle est déjà lancée",
+		"room_full": "La salle est pleine",
+		"user_id_required_kick": "Veuillez spécifier l'id de la personne à expulser",
+		"not_owner": "Vous n'êtes pas le propriétaire de la salle",
+		"user_kicked": "Vous avez été expulsé de la salle",
+		"kick_success": "Le joueur a été expulsé",
+		"user_id_required_set_owner": "Veuillez spécifier l'id de la personne à promouvoir",
+		"user_not_in_room": "Le joueur n'est pas dans la salle",
+		"already_owner": "Le joueur est déjà propriétaire",
+		"promoted": "Vous avez été promu propriétaire",
+		"promoted_success": "Le joueur a été promu propriétaire",
+		"too_many_players": "Il ne peut pas y avoir plus de 5 joueurs",
+		"direction_required": "Veuillez spécifier une direction",
+		"invalid_direction": "La direction doit être UP, DOWN, LEFT ou RIGHT",
+		"not_in_game": "Vous n'êtes pas en game",
+		"not_started": "La game n'est pas lancée",
+		"too_few_players": "Il faut au moins 2 joueurs pour lancer une game",
+		"success": {
+			"mapDeleted": "La map a été supprimée avec succès."
+		},
 		"error": {
 			"insertMapError": "Erreur lors de l'enregistrement de la map dans la base de données.",
 			"mapNotFound": "Impossible de trouver la map demandée.",
@@ -47,11 +75,17 @@
 				"invalid": "Le nom doit contenir entre 3 et 20 caractères, et ne peut contenir que des lettres, chiffres, espaces, tirets et underscores."
 			},
 			"map": {
+				"idRequired": "Un id de map est requis.",
 				"required": "Une map est requise."
 			},
 			"is_public": {
 				"required": "La visibilité de la map est requise."
 			}
+		},
+		"rooms": {
+			"actionNotFound": "Veuillez spécifier une action.",
+			"YourModeSpectator": "Vous êtes en mode spectateur",
+			"mustBeInRoom": "Vous devez être dans une salle"
 		}
 	},
 	"RelationFriends": {

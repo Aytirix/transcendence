@@ -45,6 +45,10 @@ export function useSafeWebSocket({ endpoint, onMessage, onStatusChange, reconnec
 			try {
 				const data = JSON.parse(evt.data);
 				if (data.result === 'error' && data.notification) {
+					if (!Array.isArray(data.notification)) {
+						notification.error(data.notification);
+						return;
+					}
 					for (const message of data.notification) {
 						notification.error(message);
 					}
