@@ -8,7 +8,9 @@ export interface webMsg {
 		| "EXIT" 
 		| "Ping";
 	action?: "Create"
-			| "Join";
+			| "Join"
+			| "Start"
+			| "Display";
 	sizeTournament?: 4
 				| 8
 				| 16
