@@ -10,7 +10,8 @@ export interface webMsg {
 	action?: "Create"
 			| "Join"
 			| "Start"
-			| "Display";
+			| "Display"
+			| "Winner";
 	sizeTournament?: 4
 				| 8
 				| 16
