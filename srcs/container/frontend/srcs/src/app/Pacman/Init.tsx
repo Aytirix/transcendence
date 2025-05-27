@@ -5,7 +5,7 @@ import { state } from '../types/pacmanTypes';
 import { CenteredBox } from './menu/CenteredBox';
 import { useAuth } from '../../contexts/AuthContext';
 import PacmanMap from './theojeutmp/PacmanMap';
-import CreatePacmanMap from './theojeutmp/CreatePacmanMap'; // Import the map editor
+import CreatePacmanMap from './menu/CreatePacmanMap'; // Import the map editor
 
 function initState(): state {
 	const state: state = {
