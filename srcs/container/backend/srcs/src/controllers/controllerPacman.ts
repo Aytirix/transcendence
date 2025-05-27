@@ -75,7 +75,7 @@ export const deleteMap = async (ws: WebSocket, user_id: number, request: any) =>
 	if (!id) {
 		sendResponse(ws, 'deleteMap', 'error', [ws.i18n.t('pacman.error.map.idRequired')]);
 	}
-	const existingMap = await pacmanModel.getMapForUserById(id, request.session.user.id);
+	const existingMap = await pacmanModel.getMapForUserById(id, user_id);
 	if (!existingMap || existingMap.length === 0) return sendResponse(ws, 'deleteMap', 'error', [ws.i18n.t('pacman.error.map.required')]);
 	if (!(await pacmanModel.deleteMap(id))) return sendResponse(ws, 'deleteMap', 'error', [ws.i18n.t('pacman.error.deleteMapError')]);
 	return sendResponse(ws, 'deleteMap', 'success', [ws.i18n.t('pacman.success.mapDeleted')], { id: id });
