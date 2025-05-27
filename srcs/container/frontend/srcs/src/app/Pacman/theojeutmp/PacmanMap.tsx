@@ -49,7 +49,7 @@ const ghostImages = {
     'up': ghostBUpGif,
     'down': ghostBDownGif
   },
-  'P': {
+  'Y': {
     'right': ghostPRightGif,
     'left': ghostPLeftGif,
     'up': ghostPUpGif,
@@ -148,6 +148,16 @@ const getWallType = (rowIndex: number, colIndex: number, grid: string[]): string
   return 'wall-single'; // Isolated wall piece
 };
 
+const PauseMode = ({ state }: { state: state }) => {
+	const { paused } = state.game.paused;
+
+	return (
+		<div className={`pause-mode ${paused ? 'active' : ''}`}>
+			{paused && <div className="pause-message">{state.game.paused.message}</div>}
+		</div>
+	);
+}
+
 const PacmanMap: React.FC<PacmanMapProps> = ({ state }) => {
 	const { grid, players, tileSize } = state.game;
 
@@ -182,6 +192,7 @@ const PacmanMap: React.FC<PacmanMapProps> = ({ state }) => {
 			<div className="header">
 				<h3 className="title">PACMAN</h3>
 			</div>
+			<PauseMode state={state} />
 			<div className="pacman-map-wrapper">
 				<div className='column-left'></div>
 				<div className="pacman-map-container" >
@@ -196,6 +207,8 @@ const PacmanMap: React.FC<PacmanMapProps> = ({ state }) => {
 						transform: `scale(${scale})`,
 						transformOrigin: 'top left'
 					}}>
+					{/* 1. Dessiner la grille : un <div> par case */}
+						{/* 1. Dessiner les murs et les portes */}
 						{grid.map((rowString, rowIndex) =>
 							rowString.split('').map((char, colIndex) => {
 								const tileClass = getTileClass(char, rowIndex, colIndex);
@@ -278,6 +291,7 @@ const PacmanMap: React.FC<PacmanMapProps> = ({ state }) => {
 							else {
 								// Déterminer quel GIF utiliser en fonction du caractère et de la direction
 								const ghostChar = player.character; // 'B', 'P', 'I', 'C'
+								console.log('ghostChar', ghostChar);
 								const direction = ((player as any).direction || 'RIGHT').toLowerCase();
 								const isFrightened = (player as any).isFrightened;
 								const isBlinking = isFrightened && (player as any).frightenedRemainingTime < 8;
