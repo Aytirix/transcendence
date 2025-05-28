@@ -75,10 +75,10 @@ export default function WebSocketPacman() {
 				}));
 				break;
 			}
-			case 'getAllMapForUser': {
+			case 'getAllMapsForUser': {
 				setState((prevState: state) => ({
 					...prevState,
-					maps: data.maps || [],
+					maps: data.data.maps || [],
 				}));
 				break;
 			}
@@ -91,20 +91,38 @@ export default function WebSocketPacman() {
 			}
 			case 'insertOrUpdateMap': {
 				setState((prevState: state) => {
-					// Créer un nouveau tableau avec toutes les cartes sauf celle qui est mise à jour
-					const updatedMaps = prevState.maps.filter((map) => map.id !== data.map.id);
-					// Ajouter la carte mise à jour
-					updatedMaps.push(data.map);
-					
-					return {
-					  ...prevState,
-					  maps: updatedMaps // Assigner directement le tableau
-					};
+					if (data.data.isCreated) {
+						console.log('old maps:', prevState.maps);
+						const newMapIndex = prevState.maps.findIndex(map => !map.id);
+						if (newMapIndex !== -1) {
+							const updatedMaps = [...prevState.maps];
+							updatedMaps[newMapIndex] = data.data.map;
+							console.log('new maps:', updatedMaps);
+							return {
+								...prevState,
+								maps: updatedMaps
+							};
+						}
+					}
+					const mapIndex = prevState.maps.findIndex((map) => map.id === data.data.map.id);
+					if (mapIndex !== -1) {
+						const updatedMaps = [...prevState.maps];
+						updatedMaps[mapIndex] = data.data.map;
+						console.log('Map updated:', data.data.map.name);
+						return {
+							...prevState,
+							maps: updatedMaps
+						};
+					} else {
+						return {
+							...prevState,
+						};
+					}
 				});
 				break;
 			}
 			default:
-				console.log('Unknown action:', data.action);
+				console.log('Unknown action:', data.data.action);
 				break;
 		}
 	};

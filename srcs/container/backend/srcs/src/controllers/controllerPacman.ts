@@ -26,7 +26,9 @@ export const getAllMapForUser = async (ws: WebSocket, user_id: number) => {
 };
 
 export const insertOrUpdateMap = async (ws: WebSocket, user_id: number, request: any) => {
-	const { name, map, is_public } = request as {
+	console.log('insertOrUpdateMap', request);
+	if (!request || !request.mapData) return sendResponse(ws, 'insertOrUpdateMap', 'error', [ws.i18n.t('pacman.error.map.required')]);
+	const { name, map, is_public } = request.mapData as {
 		name: string;
 		map: TileType[][];
 		is_public: boolean;
@@ -37,7 +39,8 @@ export const insertOrUpdateMap = async (ws: WebSocket, user_id: number, request:
 	if (!map || !Array.isArray(map) || map.length === 0 || !map[0] || !Array.isArray(map[0])) return sendResponse(ws, 'insertOrUpdateMap', 'error', [ws.i18n.t('pacman.error.map.required')]);
 	if (is_public === undefined) return sendResponse(ws, 'insertOrUpdateMap', 'error', [ws.i18n.t('pacman.error.is_public.required')]);
 	if (name.length < 3 || name.length > 20 || !/^[a-zA-Z0-9 _-]+$/.test(name)) return sendResponse(ws, 'insertOrUpdateMap', 'error', [ws.i18n.t('pacman.error.name.invalid')]);
-	if (map.length < 31 || map.length > 31 || map.some(row => row.length !== 29 || !/^[#ToPBICY\-. ]+$/.test(row.join('')))) return sendResponse(ws, 'insertOrUpdateMap', 'error', [ws.i18n.t('pacman.error.map.invalid')]);
+	console.log(`Map length: ${map.length}, Map row length: ${map[0].length} - Map some row length: ${map.some(row => row.length)}`);
+	if (map.length < 29 || map.length > 29 || map.some(row => row.length !== 31 || !/^[#ToPBICY\-. ]+$/.test(row.join('')))) return sendResponse(ws, 'insertOrUpdateMap', 'error', [ws.i18n.t('pacman.error.map.invalid')]);
 
 	if (id) {
 		const existingMap = await pacmanModel.getMapForUserById(id, user_id);
@@ -67,13 +70,13 @@ export const insertOrUpdateMap = async (ws: WebSocket, user_id: number, request:
 		return sendResponse(ws, 'insertOrUpdateMap', 'error', [ws.i18n.t('errors.pacman.insertMapError')]);
 	}
 
-	sendResponse(ws, 'insertOrUpdateMap', 'success', [], { map: infoMap });
+	sendResponse(ws, 'insertOrUpdateMap', 'success', [], { map: infoMap, isCreated: !id });
 };
 
 export const deleteMap = async (ws: WebSocket, user_id: number, request: any) => {
 	const { id } = request as { id: number };
 	if (!id) {
-		sendResponse(ws, 'deleteMap', 'error', [ws.i18n.t('pacman.error.map.idRequired')]);
+		sendResponse(ws, 'deleteMap', 'error', [ws.i18n.t('pacman.error.map.required')]);
 	}
 	const existingMap = await pacmanModel.getMapForUserById(id, user_id);
 	if (!existingMap || existingMap.length === 0) return sendResponse(ws, 'deleteMap', 'error', [ws.i18n.t('pacman.error.map.required')]);
