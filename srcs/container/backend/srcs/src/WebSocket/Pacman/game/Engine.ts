@@ -161,23 +161,26 @@ export default class Engine {
 	 */
 	public start(): void {
 		this.isPaused = true;
-		let countdown = 2;
-		this.PauseMessage = `Starting in ${countdown} seconds...`;
+		let countdown = 3;
+		this.PauseMessage = `Starting in ${countdown}`;
 		countdown--;
 		this.broadcastState();
 		const countdownInterval = setInterval(() => {
 			if (countdown >= 1) {
-				this.PauseMessage = `Starting in ${countdown} seconds...`;
+				this.PauseMessage = `Starting in ${countdown}`;
 				this.broadcastState();
 			} else if (countdown == 0) {
 				this.PauseMessage = "GOOOOOO !";
 				this.broadcastState();
 			} else {
 				clearInterval(countdownInterval);
-				this.isPaused = false;
 				this.PauseMessage = "";
-				this.lastTime = Date.now();
-				this.intervalId = setInterval(() => this.gameLoop(), this.tickRate);
+				this.broadcastState();
+				setTimeout(() => {
+					this.isPaused = false;
+					this.lastTime = Date.now();
+					this.intervalId = setInterval(() => this.gameLoop(), this.tickRate);
+				}, 500);
 			}
 			countdown--;
 		}, 1000);
@@ -463,9 +466,36 @@ export default class Engine {
 				} else if (!tp) player.teleport = false;
 				if (this.map.consumePelletOrBonus(player as Pacman, gridPos) == 50) this.setFrightened();
 				this.checkGhostPacmanCollision(player as Pacman);
+				this.checkWinCondition();
 			}
 		});
 		// this.debug();
+	}
+
+
+	/**
+	 * Vérifie si Pac-Man a mangé toutes les pastilles
+	 * @returns true si la partie est terminée (toutes les pastilles mangées)
+	 */
+	private checkWinCondition(): boolean {
+		// Vérifier s'il reste des pastilles sur la carte
+		const consumePelletOrBonus = this.map.countRemainingPellets();
+		if (consumePelletOrBonus === 0) {
+			// Arrêter le jeu
+			this.stop();
+
+			// Afficher un message de victoire
+			this.PauseMessage = "Game finished!\nPacman wins!";
+			this.isPaused = true;
+			this.broadcastState();
+
+			// Après un délai, marquer la partie comme terminée
+			setTimeout(() => {
+				this.Finished = true;
+			}, 10000);
+			return true;
+		}
+		return false;
 	}
 
 	/**
@@ -489,7 +519,7 @@ export default class Engine {
 					ghost.score -= 100;
 				} else if (!ghost.isFrightened && !ghost.isReturningToSpawn) {
 					ghost.score += 300;
-					// this.deadPacman(pacman, ghost);
+					this.deadPacman(pacman, ghost);
 				}
 			}
 		}
@@ -499,11 +529,20 @@ export default class Engine {
 		this.stop();
 		pacman.life -= 1;
 		if (pacman.life >= 0) {
-			this.PauseMessage = `You are dead! You have ${pacman.life} lives left.`;
+			this.PauseMessage = `Pacman is dead!\nLives remaining ${pacman.life}`;
 			this.isPaused = true;
 			this.Finished = false;
 			this.broadcastState();
-			// wait 3 seconds before respawning
+			// wait one second before hiding ghost
+			setTimeout(() => {
+				for (const player of this.players.values()) {
+					if (player instanceof Ghost) {
+						player.position = { x: -100, y: -100 };
+					}
+				}
+				this.broadcastState();
+			}, 1000);
+
 			setTimeout(() => {
 				if (this.resetAllPlayerPositions()) {
 					this.start();
@@ -514,13 +553,13 @@ export default class Engine {
 				}
 			}, 3000);
 		} else {
-			this.PauseMessage = "Game finished! Pacman is dead.";
+			this.PauseMessage = "Game finished! Ghosts win!";
 			this.isPaused = true;
 			this.broadcastState();
 			setTimeout(() => {
 				this.stop();
 				this.Finished = true;
-			}, 3000);
+			}, 10000);
 		}
 	}
 

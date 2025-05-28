@@ -1,3 +1,5 @@
+import notification from '../app/components/Notifications';
+
 class ApiService {
 	private static url = `https://${window.location.hostname}:7000`;
 
@@ -19,17 +21,12 @@ class ApiService {
 
 		try {
 			const response = await fetch(`${this.url}${path}`, config);
-			if (!response.ok) {
-				let errorMessage = response.statusText;
-				try {
-					const json = await response.json();
-					errorMessage = json && json.message ? json : errorMessage;
-					return errorMessage;
-				} catch (error) {
-					console.error('Error parsing JSON:', error);
-				}
+			const resJson = await response.json();
+			if (resJson.message) {
+				if (response.ok) notification.success(resJson.message);
+				else notification.error(resJson.message);
 			}
-			return response.json();
+			return resJson;
 		} catch (error) {
 			console.error('Error during fetch:', error);
 			throw new Error('Network error');

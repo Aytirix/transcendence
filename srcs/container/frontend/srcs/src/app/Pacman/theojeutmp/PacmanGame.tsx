@@ -153,7 +153,7 @@ const PauseMode = ({ state }: { state: state }) => {
 
 	return (
 		<div className={`pause-mode ${paused ? 'active' : ''}`}>
-			{paused && <div className="pause-message">{state.game.paused.message}</div>}
+			{paused && <div className="pause-message" style={{ whiteSpace: 'pre-line' }}>{state.game.paused.message}</div>}
 		</div>
 	);
 }
@@ -219,7 +219,7 @@ const PacmanGame: React.FC<PacmanGameProps> = ({ state }) => {
 		<>
 			<div className="header">
 				<h3 className="title">PACMAN</h3>
-				
+
 			</div>
 			<PauseMode state={state} />
 			<div className="pacman-map-wrapper">
@@ -386,9 +386,9 @@ const PacmanGame: React.FC<PacmanGameProps> = ({ state }) => {
 						))}
 					</div>
 					{players.slice(0).map((player, index) => (
-						<h3 
-							key={index} 
-							className="score" 
+						<h3
+							key={index}
+							className="score"
 							style={{
 								color: player.character === 'P' ? 'yellow' : 'inherit',
 								order: player.character === 'P' ? -1 : index
