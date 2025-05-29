@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-// import './IronManNavBar.css';  // à créer juste après
+import './assets/styles/IronManNavBar.css';
 
 const LANGUAGES = [
   { code: 'fr', label: 'Français' },

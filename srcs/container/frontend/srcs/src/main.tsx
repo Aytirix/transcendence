@@ -9,8 +9,8 @@ import { ToastContainer } from './app/components/Notifications';
 import { AuthProvider } from './contexts/AuthContext';
 // import './app/assets/styles/Star.scss';
 // import './app/assets/styles/index.css';
-import './app/assets/styles/IronManTheme.css';
-import './app/assets/styles/IronManNavBar.css';
+// import './app/assets/styles/IronManTheme.css';
+// import './app/assets/styles/IronManNavBar.css';
 import { useEffect } from 'react';
 
 // function DisableNativeContextMenu({ children }: { children: React.ReactNode }) {
