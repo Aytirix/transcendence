@@ -6,6 +6,16 @@
 	color: #ffffff;
 }
 
+#root {
+	// max-width: 1280px;
+	margin: 0 auto;
+	text-align: center;
+	user-select: none;
+	cursor: default;
+	backdrop-filter: blur(2rem);
+}
+
+
 a {
 	font-weight: 500;
 	color: #646cff;

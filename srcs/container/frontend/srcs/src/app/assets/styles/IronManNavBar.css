@@ -1,0 +1,105 @@
+.ironman-navbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: linear-gradient(90deg, #000000 0, #c20000 100%);
+  color: #ffd700;
+  padding: 0 28px;
+  height: 62px;
+  box-shadow: 0 6px 24px 0 rgba(60,0,0,0.12);
+  font-family: 'Segoe UI', 'Roboto', Arial, sans-serif;
+}
+
+.ironman-navbar-logo {
+  display: flex;
+  align-items: center;
+}
+
+.ironman-navbar-logo svg {
+  margin-right: 12px;
+}
+
+.ironman-navbar-title {
+  font-size: 1.25rem;
+  font-weight: bold;
+  letter-spacing: 1.5px;
+  color: #ffd700;
+  text-shadow: 1px 2px 5px #700;
+}
+
+.ironman-navbar-links {
+  display: flex;
+  gap: 24px;
+}
+
+.ironman-navbar-links a {
+  color: #ffd700;
+  padding: 4px 9px;
+  border-radius: 5px;
+  transition: background 0.2s, color 0.2s;
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 1.08rem;
+}
+
+.ironman-navbar-links a:hover {
+  background: #ffd70022;
+  color: #fff;
+}
+
+.ironman-navbar-lang {
+  position: relative;
+}
+
+.ironman-lang-select {
+  padding: 6px 13px;
+  background: #ffde4e22;
+  border: 1px solid #ffd70088;
+  border-radius: 9px;
+  color: #ffd700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  user-select: none;
+  position: relative;
+  font-weight: 500;
+}
+
+.ironman-lang-select .arrow {
+  margin-left: 8px;
+  font-size: 0.7em;
+  transition: transform 0.2s;
+}
+
+.ironman-lang-select .arrow.open {
+  transform: rotate(-180deg);
+}
+
+.ironman-lang-dropdown {
+  position: absolute;
+  right: 0;
+  background: #fffbe0;
+  margin-top: 5px;
+  min-width: 120px;
+  border-radius: 7px;
+  border: 1px solid #ffd700;
+  box-shadow: 0 3px 16px #5003;
+  z-index: 500;
+  padding: 3px 0;
+}
+
+.ironman-lang-option {
+  padding: 8px 16px;
+  color: #a01212;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: background 0.14s;
+  border-radius: 3px;
+}
+
+.ironman-lang-option:hover,
+.ironman-lang-option.selected {
+  background: #ffe779;
+  color: #c20000;
+  font-weight: bold;
+}
