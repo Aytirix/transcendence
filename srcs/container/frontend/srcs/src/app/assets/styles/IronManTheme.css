@@ -106,14 +106,6 @@ body {
   box-shadow: 0 4px 12px #ffd70099;
 }
 
-
-/* .video{
-  position: absolute;
-  right: 0;
-  bottom: 0;
-  z-index: -1;
-} */
-
 .video {
 height: 100vh;
 width: 100vw;

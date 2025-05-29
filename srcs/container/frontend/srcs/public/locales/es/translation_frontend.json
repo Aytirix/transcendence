@@ -1,3 +1,4 @@
 {
-	"test": "Prueba"
+	"hello": "Hola",
+	"test": "El sitio web actual ofrece una interfaz moderna y adaptable, que permite a cada usuario navegar fácilmente y gestionar su perfil de forma segura. Las funciones básicas están disponibles: registro, inicio de sesión y visualización de información de usuario. El proyecto Transcendence, desarrollado en la escuela 42, se integra en esta plataforma añadiendo una dimensión innovadora e interactiva. Su objetivo principal es crear, directamente en el sitio, un juego de Pong multijugador accesible para todos, con partidas gestionadas en tiempo real gracias a los websockets. También incluye funciones sociales como chat, invitaciones, torneos entre usuarios y gestión personalizada de perfiles. Este proyecto no solo enriquece la experiencia del usuario, sino que también moderniza el sitio fomentando la interacción y la competencia amistosa. Finalmente, Transcendence brinda un entorno ideal para la colaboración y el dominio de las herramientas de desarrollo web, fortaleciendo el espíritu comunitario dentro de la plataforma."
 }
