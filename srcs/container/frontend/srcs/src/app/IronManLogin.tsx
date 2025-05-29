@@ -22,11 +22,6 @@ const IronManLogin: React.FC = () => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  // const handleSubmit = (e: React.FormEvent) => {
-  //   e.preventDefault();
-  //   alert(JSON.stringify(form, null, 2)); // À remplacer par ta logique d'API
-  // };
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
@@ -43,12 +38,6 @@ const IronManLogin: React.FC = () => {
         const data = await resp.json();
         setError(data.message || 'Erreur lors de la connexion.');
       } else {
-        // Gère ici la connexion réussie (stockage de token, redirection...)
-        // Exemple de redirection :
-        console.log("test3");
-        // window.location.href = '/';
-        
-        // navigate('/');
         navigate('/');
       }
       
@@ -76,7 +65,6 @@ const IronManLogin: React.FC = () => {
         <h2 className="ironman-title">Connexion Iron Man</h2>
         <input
           className="ironman-input"
-          // type="email"
           name="email"
           placeholder="E-mail"
           value={form.email}
