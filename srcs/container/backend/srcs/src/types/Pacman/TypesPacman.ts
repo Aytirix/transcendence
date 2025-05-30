@@ -3,6 +3,10 @@ import Engine from '../../WebSocket/Pacman/game/Engine';
 
 export type GameState = 'waiting' | 'active';
 
+export interface room_settings {
+	map: map;
+}
+
 export interface room {
 	id: number;
 	name: string;
@@ -12,6 +16,7 @@ export interface room {
 	numberOfPlayers?: number;
 	state: GameState;
 	startTime?: number;
+	settings: room_settings;
 	engine?: Engine;
 }
 
@@ -61,7 +66,7 @@ export enum CharacterType {
 	Ghost = 'G',
 }
 
-export interface Map {
+export interface map {
 	id?: number;
 	user_id: number;
 	name: string;

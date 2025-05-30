@@ -1,5 +1,5 @@
 // Engine.ts
-import { player, room, GameState, vector2, CharacterType } from "@Pacman/TypesPacman";
+import { player, room, GameState, vector2, CharacterType, room_settings } from "@Pacman/TypesPacman";
 import { WebSocket } from 'ws';
 import PacmanMap from './map/Map';
 import Ghost from "./Character/Ghost";
@@ -16,7 +16,7 @@ export default class Engine {
 	private players: Map<number, Ghost | Pacman> = new Map();
 	private Spectators: Map<player, WebSocket> = new Map();
 	private map: PacmanMap;
-	private tickRate = 1000 / 60; // 60 FPS
+	private tickRate = 1000 / 60;
 	private lastTime = Date.now();
 	private intervalId: NodeJS.Timeout | null = null;
 	public sockets: Map<number, WebSocket> = new Map();
@@ -31,10 +31,10 @@ export default class Engine {
 	private static FRIGHTENED_DURATION = 8000; // 8 secondes en mode effrayé
 	private static FRIGHTENED_SPEED = 1.5 // Vitesse réduite en mode effrayé
 
-	constructor(rawLayout: string[], initialPlayers: player[], initialPlayerSockets: Map<number, WebSocket>) {
-		this.map = new PacmanMap(rawLayout);
+	constructor(room: room, initialPlayerSockets: Map<number, WebSocket>) {
+		this.map = new PacmanMap(room.settings.map.map);
 		this.sockets = initialPlayerSockets;
-		this.addPlayer(initialPlayers);
+		this.addPlayer(room.players);
 	}
 
 	public getPlayerById(id: number): Ghost | Pacman | undefined {
