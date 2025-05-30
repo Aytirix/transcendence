@@ -28,7 +28,7 @@
 
 
 import IronManNavBar from './IronManNavBar'; // adapte le chemin si besoin
-// import './assets/styles/App.scss';
+import './assets/styles/App.scss';
 import { useLanguage } from '../contexts/LanguageContext';
 
 function App() {
@@ -37,8 +37,8 @@ function App() {
     return (
         <div id="root">
             <IronManNavBar language={language} onLanguageChange={setLanguage} />
-            <h1>{t('hello')}</h1>
-			<p>{t('test')}</p>
+            <div class="intro"><h1>{t('hello')}</h1>
+			<p>{t('test')}</p></div>
             {/* Tes autres routes/pages ici */}
         </div>
     )

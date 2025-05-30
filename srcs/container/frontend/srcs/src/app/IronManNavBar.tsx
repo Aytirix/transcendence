@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
+import ApiService from '../api/ApiService';
 import './assets/styles/IronManNavBar.css';
+import { useNavigate } from 'react-router-dom';
 
 const LANGUAGES = [
   { code: 'fr', label: 'Français' },
@@ -16,7 +18,7 @@ interface Props {
 
 const IronManNavBar: React.FC<Props> = ({ language, onLanguageChange }) => {
   const [langOpen, setLangOpen] = useState(false);
-
+  const navigate = useNavigate();
   return (
     <nav className="ironman-navbar">
       <div className="ironman-navbar-logo">
@@ -35,6 +37,9 @@ const IronManNavBar: React.FC<Props> = ({ language, onLanguageChange }) => {
         <Link to="/WebSocketTest">userTest</Link>
         <Link to="/Pong">pong tests</Link>
         <Link to="/ModuleManager">Module Manager</Link>
+      </div>
+      <div className="ironman-navbar-logout" onClick={() => { ApiService.get('/logout') as ApiService; navigate('/login');}}>
+        <span>Logout</span>
       </div>
       <div className="ironman-navbar-lang">
         <div
