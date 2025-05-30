@@ -1,6 +1,7 @@
 import { player, room, GameState } from "@Pacman/TypesPacman";
 import { WebSocket } from 'ws'
 import Engine from "./Engine";
+import defaultMap from "./map/default_map";
 
 class RoomManager {
 	private static instance: RoomManager;
@@ -21,6 +22,9 @@ class RoomManager {
 			name: name,
 			owner_id: player.id,
 			owner_username: player.username,
+			settings: {
+				map: defaultMap
+			},
 			players: [player],
 			state: 'waiting',
 		};
@@ -209,39 +213,6 @@ class StateManager {
 	}
 
 	public startGame(room: room): void {
-		const LAYOUT: string[] = [
-			"##############T##############",
-			"#............# #............#",
-			"#.####.#####.# #.#####.####.#",
-			"#o####.#####.# #.#####.####o#",
-			"#.####.#####.# #.#####.####.#",
-			"#...........................#",
-			"#.####.##.#########.##.####.#",
-			"#.####.##.#########.##.####.#",
-			"#......##....###....##......#",
-			"######.##### ### #####.######",
-			"     #.##### ### #####.#     ",
-			"     #.##     B     ##.#     ",
-			"     #.## ###---### ##.#     ",
-			"######.## # IC Y  # ##.######",
-			"T     .   #       #   .     T",
-			"######.## #       # ##.######",
-			"     #.## ######### ##.#     ",
-			"     #.##           ##.#     ",
-			"     #.## ######### ##.#     ",
-			"######.## ######### ##.######",
-			"#o...........###...........o#",
-			"#.####.#####.###.#####.####.#",
-			"#.####.#####.###.#####.####.#",
-			"#...##.......P.........##...#",
-			"###.##.##.#########.##.##.###",
-			"###.##.##.#########.##.##.###",
-			"#......##....###....##......#",
-			"#.##########.###.##########.#",
-			"#.##########.###.##########.#",
-			"#o.........................o#",
-			"##############T##############",
-		];
 		if (room) {
 			room.state = 'active';
 			room.startTime = Date.now();
@@ -251,7 +222,7 @@ class StateManager {
 				const ws = this.PlayerRoomWs.get(player.id);
 				if (ws) playersws.set(player.id, ws);
 			}
-			room.engine = new Engine(LAYOUT, room.players, playersws);
+			room.engine = new Engine(room, playersws);
 			room.engine.start();
 			room.players.forEach((p: player) => {
 				p.gameId = room.id;
@@ -346,6 +317,7 @@ class StateManager {
 					owner_id: room.owner_id,
 					owner_username: room.owner_username,
 					state: room.state,
+					settings: room.settings,
 					engine: null,
 					players: [],
 				}));
@@ -356,6 +328,7 @@ class StateManager {
 					owner_id: room.owner_id,
 					owner_username: room.owner_username,
 					state: room.state,
+					settings: room.settings,
 					engine: null,
 					players: [],
 				}));
