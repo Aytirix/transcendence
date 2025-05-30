@@ -83,6 +83,9 @@ const IronManLogin: React.FC = () => {
         <button className="ironman-btn" type="submit" disabled={loading}>
           {loading ? "Connexion..." : "Se connecter"}
         </button>
+        <a href="http://localhost:3000/auth/google">
+          <img src="https://developers.google.com/identity/images/btn_google_signin_dark_normal_web.png" alt="Sign in with Google" />
+        </a>
         {error && <div style={{ color: '#c20000', marginTop: '16px', textAlign: 'center' }}>{error}</div>}
         <span className="ironman-switch-link">
           <Link to="/register">Nouveau héros ? Créer un compte</Link>
