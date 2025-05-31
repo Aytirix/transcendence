@@ -9,6 +9,7 @@ import StateManager from '@wsPacman/game/StateManager';
 
 
 export function sendResponse(ws: WebSocket, action: string, result: string, notification: string | string[], data: any = null): void {
+	console.log(`Sending response to action: ${action}, result: ${result}, notification: ${notification}`);
 	ws?.send(JSON.stringify({ action, result, notification, data }));
 }
 
@@ -122,9 +123,9 @@ export function createTestRoom(player: player, room: room): void {
 		elo: 1000,
 	};
 	if (room.players.length < 5) room.players.push(player2);
-	// if (room.players.length < 5) room.players.push(player3);
-	// if (room.players.length < 5) room.players.push(player4);
-	// if (room.players.length < 5) room.players.push(player5);
+	if (room.players.length < 5) room.players.push(player3);
+	if (room.players.length < 5) room.players.push(player4);
+	if (room.players.length < 5) room.players.push(player5);
 }
 
 export function handleAddUser(ws: WebSocket, player: player): void {
@@ -213,7 +214,7 @@ export function handleJoinRoomSpectator(ws: WebSocket, player: player, json: any
 	if (player.room) return sendResponse(ws, 'error', 'error', [ws.i18n.t('pacman.already_in_room')]);
 	const room = StateManager.RoomManager.getRoomById(json.room_id);
 	if (!room) return sendResponse(ws, 'error', 'error', [ws.i18n.t('pacman.not_found')]);
-	room.engine?.addSpectator(player, ws);
+	StateManager.joinRoomSpectator(room, player, ws);
 }
 
 export function handleLeaveRoomSpectator(ws: WebSocket, player: player, json: any): void {
@@ -221,7 +222,7 @@ export function handleLeaveRoomSpectator(ws: WebSocket, player: player, json: an
 	if (player.room) return sendResponse(ws, 'error', 'error', [ws.i18n.t('pacman.already_in_room')]);
 	const room = StateManager.RoomManager.getRoomById(json.room_id);
 	if (!room) return sendResponse(ws, 'error', 'error', [ws.i18n.t('pacman.not_found')]);
-	room.engine?.removeSpectator(player);
+	StateManager.leaveRoomSpectator(room, player);
 }
 
 export default {

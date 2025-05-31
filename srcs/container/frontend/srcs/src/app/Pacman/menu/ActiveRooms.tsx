@@ -26,7 +26,7 @@ const ActiveRooms: React.FC<ActiveRoomsProps> = ({ state }) => {
 								<div key={r.id} className="room-item">
 									<span className="room-name">{r.name}</span>
 									<span className="room-count">
-										{r.players?.length} / 5
+										{r.numberOfPlayers} / 5
 									</span>
 									<button
 										className="join-btn"
