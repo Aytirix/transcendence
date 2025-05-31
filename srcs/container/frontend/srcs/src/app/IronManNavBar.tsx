@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState} from 'react';
 import { Link } from 'react-router-dom';
 import ApiService from '../api/ApiService';
 import './assets/styles/IronManNavBar.css';
@@ -18,17 +18,20 @@ interface Props {
 
 const IronManNavBar: React.FC<Props> = ({ language, onLanguageChange }) => {
   const [langOpen, setLangOpen] = useState(false);
+
   const navigate = useNavigate();
+  console.log("toto");
+  console.log("nav",language, onLanguageChange);
   return (
     <nav className="ironman-navbar">
       <div className="ironman-navbar-logo">
         {/* Petite tête ou logo IronMan */}
         <svg width="36" height="36" viewBox="0 0 54 54">
-          <ellipse cx="27" cy="27" rx="25" ry="25" fill="#c20000" stroke="#ffd700" strokeWidth="2"/>
-          <rect x="15" y="20" width="24" height="18" rx="6" fill="#ffd700"/>
-          <rect x="21" y="31" width="3" height="7" rx="1.5" fill="#c20000"/>
-          <rect x="30" y="31" width="3" height="7" rx="1.5" fill="#c20000"/>
-          <rect x="21" y="24" width="12" height="3" fill="#222"/>
+          <ellipse cx="27" cy="27" rx="25" ry="25" fill="#c20000" stroke="#ffd700" strokeWidth="2" />
+          <rect x="15" y="20" width="24" height="18" rx="6" fill="#ffd700" />
+          <rect x="21" y="31" width="3" height="7" rx="1.5" fill="#c20000" />
+          <rect x="30" y="31" width="3" height="7" rx="1.5" fill="#c20000" />
+          <rect x="21" y="24" width="12" height="3" fill="#222" />
         </svg>
         <span className="ironman-navbar-title">IRON MAN HUB</span>
       </div>
@@ -38,7 +41,7 @@ const IronManNavBar: React.FC<Props> = ({ language, onLanguageChange }) => {
         <Link to="/Pong">pong tests</Link>
         <Link to="/ModuleManager">Module Manager</Link>
       </div>
-      <div className="ironman-navbar-logout" onClick={() => { ApiService.get('/logout') as ApiService; navigate('/login');}}>
+      <div className="ironman-navbar-logout" onClick={() => { ApiService.get('/logout') as ApiService; navigate('/login'); }}>
         <span>Logout</span>
       </div>
       <div className="ironman-navbar-lang">
@@ -49,7 +52,7 @@ const IronManNavBar: React.FC<Props> = ({ language, onLanguageChange }) => {
           onBlur={() => setTimeout(() => setLangOpen(false), 150)}
         >
           <span>
-            {LANGUAGES.find(l => l.code === language)?.label || "Langue"}
+            {LANGUAGES.find(l => l.code === language)?.label || "Laaangue"}
           </span>
           <span className={`arrow ${langOpen ? 'open' : ''}`}>▼</span>
           {langOpen &&

@@ -62,7 +62,7 @@ const IronManLogin: React.FC = () => {
             <rect x="21" y="24" width="12" height="3" fill="#222"/>
           </svg>
         </div>
-        <h2 className="ironman-title">Connexion Iron Man</h2>
+        <h2 className="ironman-title">Connexion</h2>
         <input
           className="ironman-input"
           name="email"
