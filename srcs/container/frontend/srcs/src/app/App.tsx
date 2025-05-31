@@ -30,16 +30,34 @@
 import IronManNavBar from './IronManNavBar'; // adapte le chemin si besoin
 import './assets/styles/App.scss';
 import { useLanguage } from '../contexts/LanguageContext';
+import ApiService from '../api/ApiService';
+import { useEffect, useState } from 'react';
 
 function App() {
-    const { t, setLanguage, language } = useLanguage();
+    const { t, setLanguage , } = useLanguage();
+    const [language, setLangState] = useState(null);
 
+    useEffect(() => {
+        async function readLang() {
+            const lang = await ApiService.get('/isAuth');
+            setLangState(lang.user?.lang);
+            setLanguage(lang.user?.lang);
+        }
+        readLang();
+    }, []);
+
+    if (!language) {
+        return <div>loading...</div>
+    }
+    let language2 = language;
     return (
         <div id="root">
-            <IronManNavBar language={language} onLanguageChange={setLanguage} />
-            <div class="intro"><h1>{t('hello')}</h1>
-			<p>{t('test')}</p></div>
-            {/* Tes autres routes/pages ici */}
+            <IronManNavBar language={language2} onLanguageChange={setLanguage} />
+            <div className="intro" >
+                <h1>{t('hello')}</h1>
+                <p>{t('test')}</p>
+            </div>
+
         </div>
     )
 }
