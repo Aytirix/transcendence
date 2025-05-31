@@ -77,13 +77,9 @@ export default class Ghost extends Character {
 				Math.abs(this.position.x - this.spawnTarget.x) <= 2 &&
 				Math.abs(this.position.y - this.spawnTarget.y) <= 2
 			) {
-				this.direction = { x: 0, y: 0 };
-				this.nextDirection = { x: 0, y: 0 };
 
 				setTimeout(() => {
 					this.isReturningToSpawn = false;
-					this.direction = { x: 0, y: 0 };
-					this.nextDirection = { x: 0, y: 0 };
 				}, 4000);
 				return;
 			}
@@ -274,10 +270,30 @@ export default class Ghost extends Character {
 				queue.push({ x: nx, y: ny });
 			}
 		}
-
 		if (!found) {
+			const oppositeDir = {
+				x: -this.direction.x,
+				y: -this.direction.y
+			};
+
+			const validDirs = dirs.filter(dir => {
+				if (dir.x === oppositeDir.x && dir.y === oppositeDir.y) return false;
+
+				const nx = startGrid.x + dir.x;
+				const ny = startGrid.y + dir.y;
+
+				if (nx < 0 || nx >= width || ny < 0 || ny >= height) return false;
+				if (!this.map.isWalkable(this.nameChar, { x: nx, y: ny })) return false;
+
+				return true;
+			});
+			if (validDirs.length > 0) {
+				const randomIndex = Math.floor(Math.random() * validDirs.length);
+				return validDirs[randomIndex];
+			}
 			return null;
 		}
+
 
 		let step: vector2 = { x: targetGrid.x, y: targetGrid.y };
 		while (true) {
