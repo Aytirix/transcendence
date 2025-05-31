@@ -24,6 +24,7 @@ export default class Engine {
 	private PauseMessage: string = "";
 	private Finished: boolean = false;
 	private trainingIA: boolean = false;
+	private AIMalusTime: number = Date.now();
 	private win: 'pacman' | 'ghosts' | null = null;
 
 	// Ajout des propriétés pour le mode effrayé
@@ -47,6 +48,21 @@ export default class Engine {
 		}
 
 		this.addPlayers(room.players);
+	}
+
+	public sendRewardToAI(playeriId: number, reward: number): void {
+		if (!this.trainingIA) return;
+		const ws = this.sockets.get(playeriId);
+		console.log(`Sending reward ${reward} to AI player ${playeriId} ws: ${ws ? 'connected' : 'disconnected'}`);
+		if (ws && ws.readyState === WebSocket.OPEN) {
+			const message = JSON.stringify({
+				action: 'reward',
+				data: {
+					reward: reward
+				}
+			});
+			ws.send(message);
+		}
 	}
 
 	public getPlayerById(id: number): Ghost | Pacman | undefined {
@@ -193,6 +209,7 @@ export default class Engine {
 				setTimeout(() => {
 					this.isPaused = false;
 					this.lastTime = Date.now();
+					this.AIMalusTime = Date.now();
 					this.intervalId = setInterval(() => this.gameLoop(), this.tickRate);
 				}, 500);
 			}
@@ -263,6 +280,10 @@ export default class Engine {
 						pacmanInstance,
 						this.players as Map<number, Ghost>
 					);
+				}
+				if (this.trainingIA && player instanceof Pacman && now - this.AIMalusTime >= 1000) {
+					this.AIMalusTime = now;
+					this.sendRewardToAI(player.player.id, -1);
 				}
 			}
 			);
@@ -478,14 +499,18 @@ export default class Engine {
 					player.teleport = true;
 					player.position = tp;
 				} else if (!tp) player.teleport = false;
-				if (this.map.consumePelletOrBonus(player as Pacman, gridPos) == 50) this.setFrightened();
+				const reward = this.map.consumePelletOrBonus(player as Pacman, gridPos);
+				if (reward > 0) {
+					player.score += reward;
+					if (reward == 50) this.setFrightened();
+					this.sendRewardToAI(player.player.id, reward);
+				}
 				this.checkGhostPacmanCollision(player as Pacman);
 				this.checkWinCondition();
 			}
 		});
 		// this.debug();
 	}
-
 
 	/**
 	 * Vérifie si Pac-Man a mangé toutes les pastilles
@@ -501,6 +526,8 @@ export default class Engine {
 			// Afficher un message de victoire
 			this.PauseMessage = "Game finished!\nPacman wins!";
 			this.win = 'pacman';
+			const pacmanId = Array.from(this.players.values()).find(p => p instanceof Pacman)?.player.id;
+			this.sendRewardToAI(pacmanId, 500);
 			this.isPaused = true;
 			this.broadcastState();
 
@@ -531,6 +558,7 @@ export default class Engine {
 					this.pacmanKillFrightened += 1;
 					ghost.respawn();
 					pacman.score += 200 * this.pacmanKillFrightened;
+					this.sendRewardToAI(pacman.player.id, 200 * this.pacmanKillFrightened);
 					ghost.score -= 100;
 				} else if (!ghost.isFrightened && !ghost.isReturningToSpawn) {
 					ghost.score += 300;
@@ -544,6 +572,8 @@ export default class Engine {
 		this.stop();
 		pacman.life -= 1;
 		if (pacman.life >= 0) {
+			const pacmanId = Array.from(this.players.values()).find(p => p instanceof Pacman)?.player.id;
+			this.sendRewardToAI(pacmanId, -200);
 			this.PauseMessage = `Pacman is dead!\nLives remaining ${pacman.life}`;
 			this.isPaused = true;
 			this.Finished = false;
@@ -568,6 +598,8 @@ export default class Engine {
 				}
 			}, 3000);
 		} else {
+			const pacmanId = Array.from(this.players.values()).find(p => p instanceof Pacman)?.player.id;
+			this.sendRewardToAI(pacmanId, -500);
 			this.PauseMessage = "Game finished! Ghosts win!";
 			this.isPaused = true;
 			this.win = 'ghosts';
