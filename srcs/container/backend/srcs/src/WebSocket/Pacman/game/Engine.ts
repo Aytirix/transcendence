@@ -23,6 +23,8 @@ export default class Engine {
 	private isPaused: boolean = false;
 	private PauseMessage: string = "";
 	private Finished: boolean = false;
+	private trainingIA: boolean = false;
+	private win: 'pacman' | 'ghosts' | null = null;
 
 	// Ajout des propriétés pour le mode effrayé
 	private isFrightened: boolean = false;
@@ -31,9 +33,11 @@ export default class Engine {
 	private static FRIGHTENED_DURATION = 8000; // 8 secondes en mode effrayé
 	private static FRIGHTENED_SPEED = 1.5 // Vitesse réduite en mode effrayé
 
-	constructor(room: room, initialPlayerSockets: Map<number, WebSocket>) {
+	constructor(room: room, initialPlayerSockets: Map<number, WebSocket>, trainingIA: boolean = false) {
+
 		this.map = new PacmanMap(room.settings.map.map);
 		this.sockets = initialPlayerSockets;
+		this.trainingIA = trainingIA;
 		this.addPlayer(room.players);
 	}
 
@@ -56,11 +60,11 @@ export default class Engine {
 
 		players.forEach(p => {
 			// Si c'est le premier
-			let spawnIndex;
-			let spawns;
+			let spawnIndex = 0;
+			let spawns: vector2[] = [];
 			let player: Ghost | Pacman;
 			let characterType: CharacterType;
-			if (this.players.size === 0) {
+			if (this.trainingIA) {
 				characterType = CharacterType.Pacman;
 				spawns = this.map.getSpawnPositions()[CharacterType.Pacman];
 				spawnIndex = this.players.size % availableCharacters.length;
@@ -183,7 +187,7 @@ export default class Engine {
 				}, 500);
 			}
 			countdown--;
-		}, 1000);
+		}, this.trainingIA ? 10 : 1000);
 
 	}
 
@@ -486,13 +490,14 @@ export default class Engine {
 
 			// Afficher un message de victoire
 			this.PauseMessage = "Game finished!\nPacman wins!";
+			this.win = 'pacman';
 			this.isPaused = true;
 			this.broadcastState();
 
 			// Après un délai, marquer la partie comme terminée
 			setTimeout(() => {
 				this.Finished = true;
-			}, 10000);
+			}, this.trainingIA ? 100 : 10000);
 			return true;
 		}
 		return false;
@@ -541,7 +546,7 @@ export default class Engine {
 					}
 				}
 				this.broadcastState();
-			}, 1000);
+			}, this.trainingIA ? 100 : 1000);
 
 			setTimeout(() => {
 				if (this.resetAllPlayerPositions()) {
@@ -555,11 +560,12 @@ export default class Engine {
 		} else {
 			this.PauseMessage = "Game finished! Ghosts win!";
 			this.isPaused = true;
+			this.win = 'ghosts';
 			this.broadcastState();
 			setTimeout(() => {
 				this.stop();
 				this.Finished = true;
-			}, 10000);
+			}, this.trainingIA ? 100 : 10000);
 		}
 	}
 
@@ -584,6 +590,7 @@ export default class Engine {
 				grid: this.map.toString(),
 				tileSize: TILE_SIZE,
 				isSpectator: false,
+				win: this.win,
 				paused: { paused: this.isPaused, message: this.PauseMessage },
 				frightenedState: {
 					active: this.isFrightened,
