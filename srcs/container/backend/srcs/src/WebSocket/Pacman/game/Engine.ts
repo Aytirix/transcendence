@@ -33,12 +33,20 @@ export default class Engine {
 	private static FRIGHTENED_DURATION = 8000; // 8 secondes en mode effrayé
 	private static FRIGHTENED_SPEED = 1.5 // Vitesse réduite en mode effrayé
 
-	constructor(room: room, initialPlayerSockets: Map<number, WebSocket>, trainingIA: boolean = false) {
+	constructor(room: room, initialPlayerSockets: Map<number, WebSocket>) {
 
 		this.map = new PacmanMap(room.settings.map.map);
 		this.sockets = initialPlayerSockets;
-		this.trainingIA = trainingIA;
-		this.addPlayer(room.players);
+
+		// Vérifier si un joueur est une IA pour le mode entraînement
+		for (const player of room.players) {
+			if (player.username === 'PacmanAI') {
+				this.trainingIA = true;
+				break;
+			}
+		}
+
+		this.addPlayers(room.players);
 	}
 
 	public getPlayerById(id: number): Ghost | Pacman | undefined {
@@ -48,23 +56,25 @@ export default class Engine {
 	/**
 	 * Ajout d'un joueur au moteur
 	 */
-	public addPlayer(players: player[]): void {
+	private addPlayers(players: player[]): void {
 		// Déterminer les personnages disponibles: Pacman et fantômes
 		const characters = [CharacterType.Pacman, CharacterType.Blinky, CharacterType.Inky, CharacterType.Pinky, CharacterType.Clyde];
 		const usedCharacters = new Set<string>(
 			Array.from(this.players.values()).map(p => p.nameChar)
 		);
 
+		// Si c'est le mode entraînement, on force PacmanAI à être Pacman
+		if (this.trainingIA) usedCharacters.add(CharacterType.Pacman);
+
 		// Filtrer les personnages disponibles
 		let availableCharacters = characters.filter(c => !usedCharacters.has(c));
 
 		players.forEach(p => {
-			// Si c'est le premier
 			let spawnIndex = 0;
 			let spawns: vector2[] = [];
 			let player: Ghost | Pacman;
 			let characterType: CharacterType;
-			if (this.trainingIA) {
+			if (this.trainingIA && p.username === 'PacmanAI') {
 				characterType = CharacterType.Pacman;
 				spawns = this.map.getSpawnPositions()[CharacterType.Pacman];
 				spawnIndex = this.players.size % availableCharacters.length;
@@ -586,6 +596,7 @@ export default class Engine {
 					isFrightened: p instanceof Ghost ? p.isFrightened : false,
 					returnToSpawn: p instanceof Ghost ? p.isReturningToSpawn : false
 				})),
+				numberOfPlayers: this.players.size,
 				pacmanLife: Array.from(this.players.values()).find(p => p instanceof Pacman)?.life,
 				grid: this.map.toString(),
 				tileSize: TILE_SIZE,

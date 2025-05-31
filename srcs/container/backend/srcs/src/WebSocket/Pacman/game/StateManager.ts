@@ -52,15 +52,6 @@ class RoomManager {
 		return false;
 	}
 
-	public addPlayerToRoom(roomId: number, player: player): void {
-		if (this.PlayerInRoom(player.id)) return;
-		const game = this.getRoom(roomId);
-		if (game && game.players.length < 5) {
-			game.players.push(player);
-			this.rooms.set(roomId, game);
-		}
-	}
-
 	public updatePlayerInRoom(room: room, player: player): void {
 		if (room) {
 			const index = room.players.findIndex(p => p.id === player.id);
@@ -180,11 +171,40 @@ class StateManager {
 
 	public addPlayer(ws: WebSocket, player: player): void {
 		this.PlayerRoom.set(player.id, player);
-		this.PlayerRoomWs.set(player.id, ws);
+		if (ws) this.PlayerRoomWs.set(player.id, ws);
 	}
 
 	public getPlayerWs(playerId: number): WebSocket | undefined {
 		return this.PlayerRoomWs.get(playerId);
+	}
+
+	public joinRoomSpectator(room: room, player: player, playerws: WebSocket): void {
+		if (this.RoomManager.PlayerInRoom(player.id)) return;
+		if (room) {
+			player.isSpectator = true;
+			room.players.push(player);
+			room.engine?.addSpectator(player, playerws);
+			this.PlayerGame.set(player.id, player);
+			this.PlayerGameWs.set(player.id, playerws);
+			this.PlayerRoomWs.delete(player.id);
+			this.PlayerRoom.set(player.id, player);
+			this.RoomManager.updatePlayerInRoom(room, player);
+		}
+	}
+
+	public leaveRoomSpectator(room: room, player: player): void {
+		room.players = room.players.filter(player => player.id !== player.id);
+		room.engine?.removeSpectator(player);
+		const ws = this.PlayerGameWs.get(player.id);
+		this.PlayerGame.delete(player.id);
+		this.PlayerGameWs.delete(player.id);
+		this.PlayerRoomWs.set(player.id, this.PlayerGameWs.get(player.id));
+		this.PlayerRoom.set(player.id, player);
+		this.RoomManager.updatePlayerInRoom(room, player);
+		const tmp = new Map<number, WebSocket>();
+		tmp.set(player.id, ws);
+		console.log(`Leaving spectator mode for player ${player.username} (${player.id})`);
+		this.sendRooms(tmp);
 	}
 
 	public removePlayer(playerId: number): void {
@@ -195,20 +215,18 @@ class StateManager {
 
 	public stopGame(game: room): void {
 		if (game) {
-			game.players.forEach((p: player) => {
-				p.gameId = null;
-			});
 			const tmp = new Map<number, WebSocket>();
 			for (const player of game.players) {
-				tmp.set(player.id, game.engine?.sockets.get(player.id));
+				player.gameId = null;
+				const ws = this.PlayerGameWs.get(player.id);
 				this.PlayerGame.delete(player.id);
 				this.PlayerGameWs.delete(player.id);
-				this.PlayerRoomWs.delete(player.id);
 				this.PlayerRoom.set(player.id, player);
 				this.PlayerRoomWs.set(player.id, this.PlayerGameWs.get(player.id));
+				tmp.set(player.id, ws);
 			}
-			this.sendRooms(tmp);
 			this.RoomManager.removeRoom(game.id);
+			this.sendRooms(tmp);
 		}
 	}
 
@@ -222,6 +240,7 @@ class StateManager {
 				const ws = this.PlayerRoomWs.get(player.id);
 				if (ws) playersws.set(player.id, ws);
 			}
+
 			room.engine = new Engine(room, playersws);
 			room.engine.start();
 			room.players.forEach((p: player) => {

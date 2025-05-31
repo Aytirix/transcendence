@@ -22,7 +22,7 @@ async function initWebSocket(server: FastifyInstance) {
 	wss.on('connection', (ws: WebSocket, session: Session, request: IncomingMessage) => {
 		const path = request.url;
 		ws.i18n = createi18nObject(session, request.headers);
-		console.log(`i18n initialized for WebSocket connection: ${ws.i18n.language}`);
+		console.log(`i18n initialized for WebSocket connection: ${ws.i18n.language} user: ${session.user?.username}`);
 
 		switch (path) {
 			case '/chat':
