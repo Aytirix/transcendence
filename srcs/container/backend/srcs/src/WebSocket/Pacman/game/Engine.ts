@@ -24,7 +24,6 @@ export default class Engine {
 	private PauseMessage: string = "";
 	private Finished: boolean = false;
 	private trainingIA: boolean = false;
-	private AIMalusTime: number = Date.now();
 	private win: 'pacman' | 'ghosts' | null = null;
 
 	// Ajout des propriétés pour le mode effrayé
@@ -53,7 +52,6 @@ export default class Engine {
 	public sendRewardToAI(playeriId: number, reward: number): void {
 		if (!this.trainingIA) return;
 		const ws = this.sockets.get(playeriId);
-		console.log(`Sending reward ${reward} to AI player ${playeriId} ws: ${ws ? 'connected' : 'disconnected'}`);
 		if (ws && ws.readyState === WebSocket.OPEN) {
 			const message = JSON.stringify({
 				action: 'reward',
@@ -209,7 +207,6 @@ export default class Engine {
 				setTimeout(() => {
 					this.isPaused = false;
 					this.lastTime = Date.now();
-					this.AIMalusTime = Date.now();
 					this.intervalId = setInterval(() => this.gameLoop(), this.tickRate);
 				}, 500);
 			}
@@ -281,10 +278,7 @@ export default class Engine {
 						this.players as Map<number, Ghost>
 					);
 				}
-				if (this.trainingIA && player instanceof Pacman && now - this.AIMalusTime >= 1000) {
-					this.AIMalusTime = now;
-					this.sendRewardToAI(player.player.id, -1);
-				}
+				if (this.trainingIA && player instanceof Pacman) this.sendRewardToAI(player.player.id, -0.017);
 			}
 			);
 			this.update(delta);
