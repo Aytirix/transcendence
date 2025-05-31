@@ -41,7 +41,7 @@ const WaitingRooms: React.FC<WaitingRoomsProps> = ({ state }) => {
 	};
 
 	const handleSetOwner = (userId: number) => {
-		state.ws?.send(JSON.stringify({ action: 'setOwner',user_id: userId }));
+		state.ws?.send(JSON.stringify({ action: 'setOwner', user_id: userId }));
 	};
 
 	const handleLeave = () => {
