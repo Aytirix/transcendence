@@ -34,7 +34,7 @@ export const insertOrUpdateMap = async (ws: WebSocket, user_id: number, request:
 		map: TileType[][];
 		is_public: boolean;
 	};
-	const id = request.id ? parseInt(request.id, 10) : null;
+	const id = request.mapData.id ? parseInt(request.mapData.id, 10) : null;
 
 	if (!name) return sendResponse(ws, 'insertOrUpdateMap', 'error', [ws.i18n.t('pacman.error.name.required')]);
 	if (!map || !Array.isArray(map) || map.length === 0 || !map[0] || !Array.isArray(map[0])) return sendResponse(ws, 'insertOrUpdateMap', 'error', [ws.i18n.t('pacman.error.map.required')]);
