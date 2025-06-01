@@ -319,10 +319,10 @@ const PacmanGame: React.FC<PacmanGameProps> = ({ state }) => {
 							else {
 								// Déterminer quel GIF utiliser en fonction du caractère et de la direction
 								const ghostChar = player.character; // 'B', 'P', 'I', 'C'
-								console.log('ghostChar', ghostChar);
+								//console.log('ghostChar', ghostChar);
 								const direction = ((player as any).direction || 'RIGHT').toLowerCase();
 								const isFrightened = (player as any).isFrightened;
-								const isBlinking = isFrightened && (player as any).frightenedRemainingTime < 8;
+								const isBlinking = isFrightened && (player as any).frightenedRemainingTime <= 8;
 								const isReturningToSpawn = (player as any).returnToSpawn === true;
 
 								// Sélection du GIF approprié
@@ -377,14 +377,20 @@ const PacmanGame: React.FC<PacmanGameProps> = ({ state }) => {
 				</div>
 				{/* 3. Afficher les scores */}
 				<div className="column-right">
-					{/* <h3 className="score">{players[0]?.username} : {players[0]?.score}</h3>
-					<h3 className="score">{players[1]?.username} : {players[1]?.score}</h3> */}
 					<div className="life">
 						<span className="life-text">Lives : </span>
-						{Array.from({ length: state.game?.pacmanLife || 0 }).map((_, index) => (
-							<span key={index} className="heart">❤️</span>
-						))}
+						
+						{/* Affichage des vies restantes de Pacman */}
+
+						{/* {Array.from({ length: state.game?.pacmanLife || 0 }).map((_, index) => {
+							// Vous pouvez placer votre console.log ici
+							console.log('Vie restante:', index + 1);
+							// Puis retourner l'élément JSX
+							return <span key={index} className="heart">❤️</span>;
+						})} */}
 					</div>
+					
+					{/* Scores des joueurs */}
 					{players.slice(0).map((player, index) => (
 						<h3
 							key={index}
@@ -397,6 +403,47 @@ const PacmanGame: React.FC<PacmanGameProps> = ({ state }) => {
 							{player.username} : {player.score}
 						</h3>
 					))}
+					
+					{/* Console de débogage */}
+					<div className="debug-console">
+						<h4>Debug Info:</h4>
+						<div className="debug-item">
+							<span className="debug-label">Vies restantes:</span>
+							<span className="debug-value">{state.game?.pacmanLife || 0}</span>
+						</div>
+						<div className="debug-item">
+							<span className="debug-label">Statut effrayé:</span>
+							<span className="debug-value">
+								{state.game?.frightenedState?.remainingTime 
+									? `${Math.round(state.game.frightenedState.remainingTime)}s` 
+									: "Inactif"}
+							</span>
+						</div>
+						<div className="debug-item">
+							<span className="debug-label">Joueurs:</span>
+							<span className="debug-value">{players.length}</span>
+						</div>
+						<div className="debug-item">
+							<span className="debug-label">Taille grille:</span>
+							<span className="debug-value">
+								{grid.length > 0 ? `${grid.length}×${grid[0].length}` : "N/A"}
+							</span>
+						</div>
+					</div>
+					
+					{/* Bouton Quitter */}
+					<button 
+						className="quit-button"
+						onClick={() => {
+							if (state.ws && state.ws.readyState === WebSocket.OPEN) {
+								state.ws.send(JSON.stringify({
+									action: 'quitGame'
+								}));
+							}
+						}}
+					>
+						Quitter la partie
+					</button>
 				</div>
 			</div>
 		</>
