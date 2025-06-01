@@ -5,7 +5,7 @@ import { LanguageProvider } from './contexts/LanguageContext.tsx';
 import { BrowserRouter } from 'react-router-dom';
 import AppRouter from './app/AppRouter.tsx';
 import { ToastContainer } from './app/components/Notifications';
-
+import IronManNavBar from './app/IronManNavBar';
 import { AuthProvider } from './contexts/AuthContext';
 // import './app/assets/styles/Star.scss';
 // import './app/assets/styles/index.css';
@@ -32,6 +32,7 @@ createRoot(document.getElementById('root')!).render(
 			<BrowserRouter>
 				<LanguageProvider>
 					<AuthProvider>
+						<IronManNavBar />
 						<AppRouter />
 					</AuthProvider>
 				</LanguageProvider>
