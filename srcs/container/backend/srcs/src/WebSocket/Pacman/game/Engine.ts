@@ -23,7 +23,7 @@ export default class Engine {
 	private isPaused: boolean = false;
 	private PauseMessage: string = "";
 	private Finished: boolean = false;
-	private trainingIA: boolean = false;
+	private trainingAI: boolean = false;
 	private win: 'pacman' | 'ghosts' | null = null;
 
 	// Ajout des propriétés pour le mode effrayé
@@ -41,7 +41,7 @@ export default class Engine {
 		// Vérifier si un joueur est une IA pour le mode entraînement
 		for (const player of room.players) {
 			if (player.username === 'PacmanAI') {
-				this.trainingIA = true;
+				this.trainingAI = true;
 				break;
 			}
 		}
@@ -50,7 +50,7 @@ export default class Engine {
 	}
 
 	public sendRewardToAI(playeriId: number, reward: number): void {
-		if (!this.trainingIA) return;
+		if (!this.trainingAI) return;
 		const ws = this.sockets.get(playeriId);
 		if (ws && ws.readyState === WebSocket.OPEN) {
 			const message = JSON.stringify({
@@ -78,7 +78,7 @@ export default class Engine {
 		);
 
 		// Si c'est le mode entraînement, on force PacmanAI à être Pacman
-		if (this.trainingIA) usedCharacters.add(CharacterType.Pacman);
+		if (this.trainingAI) usedCharacters.add(CharacterType.Pacman);
 
 		// Filtrer les personnages disponibles
 		let availableCharacters = characters.filter(c => !usedCharacters.has(c));
@@ -88,7 +88,7 @@ export default class Engine {
 			let spawns: vector2[] = [];
 			let player: Ghost | Pacman;
 			let characterType: CharacterType;
-			if (this.trainingIA && p.username === 'PacmanAI') {
+			if (this.trainingAI && p.username === 'PacmanAI') {
 				characterType = CharacterType.Pacman;
 				spawns = this.map.getSpawnPositions()[CharacterType.Pacman];
 				spawnIndex = this.players.size % availableCharacters.length;
@@ -211,7 +211,7 @@ export default class Engine {
 				}, 500);
 			}
 			countdown--;
-		}, this.trainingIA ? 10 : 1000);
+		}, this.trainingAI ? 10 : 1000);
 
 	}
 
@@ -278,7 +278,7 @@ export default class Engine {
 						this.players as Map<number, Ghost>
 					);
 				}
-				if (this.trainingIA && player instanceof Pacman) this.sendRewardToAI(player.player.id, -0.017);
+				if (this.trainingAI && player instanceof Pacman) this.sendRewardToAI(player.player.id, -0.017);
 			}
 			);
 			this.update(delta);
@@ -528,7 +528,7 @@ export default class Engine {
 			// Après un délai, marquer la partie comme terminée
 			setTimeout(() => {
 				this.Finished = true;
-			}, this.trainingIA ? 100 : 10000);
+			}, this.trainingAI ? 10 : 10000);
 			return true;
 		}
 		return false;
@@ -580,7 +580,7 @@ export default class Engine {
 					}
 				}
 				this.broadcastState();
-			}, this.trainingIA ? 100 : 1000);
+			}, this.trainingAI ? 10 : 1000);
 
 			setTimeout(() => {
 				if (this.resetAllPlayerPositions()) {
@@ -601,7 +601,7 @@ export default class Engine {
 			setTimeout(() => {
 				this.stop();
 				this.Finished = true;
-			}, this.trainingIA ? 100 : 10000);
+			}, this.trainingAI ? 10 : 10000);
 		}
 	}
 
@@ -609,24 +609,79 @@ export default class Engine {
 	 * Envoie l'état du jeu à tous les clients
 	 */
 	private broadcastState(): void {
+		if (this.trainingAI) this.broadcastStateAI();
+		if ((this.trainingAI && this.Spectators.size > 0) || !this.trainingAI) {
+			const state = {
+				action: 'updateGame',
+				data: {
+					players: Array.from(this.players.values()).map(p => ({
+						id: p.player.id,
+						username: p.player.username,
+						character: p.nameChar,
+						position: p.position,
+						positionGrid: this.pixelToGrid(p.position),
+						score: p.score,
+						direction: p.directionToString(),
+						isFrightened: p instanceof Ghost ? p.isFrightened : false,
+						returnToSpawn: p instanceof Ghost ? p.isReturningToSpawn : false
+					})),
+					numberOfPlayers: this.players.size,
+					pacmanLife: Array.from(this.players.values()).find(p => p instanceof Pacman)?.life,
+					grid: this.map.toString(),
+					tileSize: TILE_SIZE,
+					isSpectator: false,
+					win: this.win,
+					paused: { paused: this.isPaused, message: this.PauseMessage },
+					frightenedState: {
+						active: this.isFrightened,
+						remainingTime: this.isFrightened ? Math.max(0, this.frightenedEndTime - Date.now()) : 0
+					}
+				}
+			};
+			if (!this.trainingAI) {
+				this.sockets.forEach(ws => {
+					if (ws && ws.readyState === WebSocket.OPEN) {
+						ws.send(JSON.stringify(state));
+					}
+				});
+			}
+			this.Spectators.forEach((ws, player) => {
+				player.isSpectator = true;
+				if (ws && ws.readyState === WebSocket.OPEN) {
+					state.data.isSpectator = true;
+					ws.send(JSON.stringify(state));
+				} else {
+					if (Date.now() - player.updateAt > 5000) {
+						this.Spectators.delete(player);
+						player.isSpectator = false;
+					}
+				}
+			});
+		}
+	}
+
+	/**
+	 * Envoie l'état du jeu à tous les clients
+	 */
+	private broadcastStateAI(): void {
+		const pacmanPlayer = Array.from(this.players.values()).find(p => p instanceof Pacman);
+		const ghostPlayers = Array.from(this.players.values()).filter(p => p instanceof Ghost);
+
 		const state = {
 			action: 'updateGame',
 			data: {
-				players: Array.from(this.players.values()).map(p => ({
-					id: p.player.id,
-					username: p.player.username,
-					character: p.nameChar,
-					position: p.position,
-					score: p.score,
-					direction: p.directionToString(),
-					isFrightened: p instanceof Ghost ? p.isFrightened : false,
-					returnToSpawn: p instanceof Ghost ? p.isReturningToSpawn : false
+				pacman: pacmanPlayer ? {
+					positionGrid: this.pixelToGrid(pacmanPlayer.position),
+					score: pacmanPlayer.score,
+					direction: pacmanPlayer.directionToString()
+				} : null,
+				ghosts: ghostPlayers.map(g => ({
+					positionGrid: this.pixelToGrid(g.position),
+					score: g.score,
+					isFrightened: g.isFrightened,
+					returnToSpawn: g.isReturningToSpawn
 				})),
-				numberOfPlayers: this.players.size,
-				pacmanLife: Array.from(this.players.values()).find(p => p instanceof Pacman)?.life,
 				grid: this.map.toString(),
-				tileSize: TILE_SIZE,
-				isSpectator: false,
 				win: this.win,
 				paused: { paused: this.isPaused, message: this.PauseMessage },
 				frightenedState: {
@@ -638,18 +693,6 @@ export default class Engine {
 		this.sockets.forEach(ws => {
 			if (ws && ws.readyState === WebSocket.OPEN) {
 				ws.send(JSON.stringify(state));
-			}
-		});
-		this.Spectators.forEach((ws, player) => {
-			player.isSpectator = true;
-			if (ws && ws.readyState === WebSocket.OPEN) {
-				state.data.isSpectator = true;
-				ws.send(JSON.stringify(state));
-			} else {
-				if (Date.now() - player.updateAt > 5000) {
-					this.Spectators.delete(player);
-					player.isSpectator = false;
-				}
 			}
 		});
 	}

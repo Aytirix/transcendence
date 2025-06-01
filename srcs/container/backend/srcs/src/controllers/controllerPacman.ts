@@ -44,9 +44,7 @@ export const insertOrUpdateMap = async (ws: WebSocket, user_id: number, request:
 	if (map.length < 29 || map.length > 29 || map.some(row => row.length !== 31 || !/^[#ToPBICY\-. ]+$/.test(row.join('')))) return sendResponse(ws, 'insertOrUpdateMap', 'error', [ws.i18n.t('pacman.error.map.invalid')]);
 
 	if (id) {
-		console.log(`id map: ${id} - user_id: ${user_id}`);
 		const existingMap = await pacmanModel.getMapForUserById(id, user_id);
-		console.log('existingMap', existingMap);
 		if (!existingMap || existingMap.length === 0) return sendResponse(ws, 'insertOrUpdateMap', 'error', [ws.i18n.t('pacman.error.map.required')]);
 	} else {
 		const existingMaps = await pacmanModel.getMapForUserByName(user_id, name);
@@ -54,7 +52,7 @@ export const insertOrUpdateMap = async (ws: WebSocket, user_id: number, request:
 			return sendResponse(ws, 'insertOrUpdateMap', 'error', [ws.i18n.t('pacman.error.map.nameAlreadyExists')]);
 		}
 	}
-	
+
 	const { is_valid, errors } = PacmanMap.validateMap(map);
 	const infoMap = {
 		id: id || null,
@@ -66,7 +64,7 @@ export const insertOrUpdateMap = async (ws: WebSocket, user_id: number, request:
 		errors: errors,
 		isCreated: false,
 	}
-	
+
 	if (id && !(await pacmanModel.updateMap(infoMap))) {
 		console.log('Map updated:', infoMap);
 		return sendResponse(ws, 'insertOrUpdateMap', 'error', [ws.i18n.t('errors.pacman.updateMapError')]);
