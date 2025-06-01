@@ -27,14 +27,14 @@ export const getAllMapForUser = async (ws: WebSocket, user_id: number) => {
 };
 
 export const insertOrUpdateMap = async (ws: WebSocket, user_id: number, request: any) => {
-	console.log('insertOrUpdateMap', request);
 	if (!request || !request.mapData) return sendResponse(ws, 'insertOrUpdateMap', 'error', [ws.i18n.t('pacman.error.map.required')]);
 	const { name, map, is_public } = request.mapData as {
 		name: string;
 		map: TileType[][];
 		is_public: boolean;
 	};
-	const id = request.mapData.id ? parseInt(request.mapData.id, 10) : null;
+	const id = request.mapData.id;
+	console.log(`id map: ${id}`);
 
 	if (!name) return sendResponse(ws, 'insertOrUpdateMap', 'error', [ws.i18n.t('pacman.error.name.required')]);
 	if (!map || !Array.isArray(map) || map.length === 0 || !map[0] || !Array.isArray(map[0])) return sendResponse(ws, 'insertOrUpdateMap', 'error', [ws.i18n.t('pacman.error.map.required')]);
@@ -44,7 +44,9 @@ export const insertOrUpdateMap = async (ws: WebSocket, user_id: number, request:
 	if (map.length < 29 || map.length > 29 || map.some(row => row.length !== 31 || !/^[#ToPBICY\-. ]+$/.test(row.join('')))) return sendResponse(ws, 'insertOrUpdateMap', 'error', [ws.i18n.t('pacman.error.map.invalid')]);
 
 	if (id) {
+		console.log(`id map: ${id} - user_id: ${user_id}`);
 		const existingMap = await pacmanModel.getMapForUserById(id, user_id);
+		console.log('existingMap', existingMap);
 		if (!existingMap || existingMap.length === 0) return sendResponse(ws, 'insertOrUpdateMap', 'error', [ws.i18n.t('pacman.error.map.required')]);
 	} else {
 		const existingMaps = await pacmanModel.getMapForUserByName(user_id, name);
@@ -66,11 +68,12 @@ export const insertOrUpdateMap = async (ws: WebSocket, user_id: number, request:
 	}
 	
 	if (id && !(await pacmanModel.updateMap(infoMap))) {
-
+		console.log('Map updated:', infoMap);
 		return sendResponse(ws, 'insertOrUpdateMap', 'error', [ws.i18n.t('errors.pacman.updateMapError')]);
 	}
-	else if (!(await pacmanModel.insertMap(infoMap))) {
+	else if (!id && !(await pacmanModel.insertMap(infoMap))) {
 		infoMap.isCreated = true;
+		console.log('Map inserted:', infoMap);
 		return sendResponse(ws, 'insertOrUpdateMap', 'error', [ws.i18n.t('errors.pacman.insertMapError')]);
 	}
 

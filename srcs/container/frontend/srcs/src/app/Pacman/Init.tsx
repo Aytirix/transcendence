@@ -91,9 +91,10 @@ export default function WebSocketPacman() {
 			}
 			case 'insertOrUpdateMap': {
 				setState((prevState: state) => {
+					console.log('old maps:', prevState.maps);
+					console.log('old maps :', data.data.map);
 					if (data.data.isCreated) {
-						console.log('old maps:', prevState.maps);
-						const newMapIndex = prevState.maps.findIndex(map => !map.id);
+						const newMapIndex = prevState.maps.findIndex(map => data.data.map.id === map.id);
 						if (newMapIndex !== -1) {
 							const updatedMaps = [...prevState.maps];
 							updatedMaps[newMapIndex] = data.data.map;
@@ -104,7 +105,7 @@ export default function WebSocketPacman() {
 							};
 						}
 					}
-					const mapIndex = prevState.maps.findIndex((map) => map.id === data.data.map.id);
+					const mapIndex = prevState.maps.findIndex((map) => map.name === data.data.map.name);
 					if (mapIndex !== -1) {
 						const updatedMaps = [...prevState.maps];
 						updatedMaps[mapIndex] = data.data.map;
@@ -128,6 +129,8 @@ export default function WebSocketPacman() {
 	};
 	const handleSaveMap = (mapData: PacmanMap, isAutoSave: boolean = false) => {
 		// Check if it's an auto-save or manual save
+		console.log('handleSaveMap state :', state.maps);
+		console.log('handleSaveMap mapData:', mapData);
 		if (isAutoSave) {
 			console.log('Auto-saving map...', mapData.name);
 		} else {
@@ -143,7 +146,9 @@ export default function WebSocketPacman() {
 			}));
 		}
 
-		if (!isAutoSave) {
+		// Update the state with the new map data
+
+		if (!isAutoSave && mapData.is_valid) {
 			setShowMapEditor(false); // Close the editor after manual saving
 		}
 	};
