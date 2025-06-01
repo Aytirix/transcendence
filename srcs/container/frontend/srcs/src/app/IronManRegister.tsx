@@ -44,6 +44,7 @@ const IronManRegister: React.FC = () => {
     // const {...toSend } = form;
 
     try {
+      console.log("form",form);
       const resp = await ApiService.post('/register', form) as ApiService;
 
       if (!resp.ok) {

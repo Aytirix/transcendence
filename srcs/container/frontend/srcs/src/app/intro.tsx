@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 
 function intro() {
     const { t, i18n } = useTranslation();
-
+    // console.log("speudo", speudo);
     useEffect(() => {
         async function readLang() {
             const res = await ApiService.get('/isAuth');
