@@ -52,7 +52,7 @@ export const insertOrUpdateMap = async (ws: WebSocket, user_id: number, request:
 			return sendResponse(ws, 'insertOrUpdateMap', 'error', [ws.i18n.t('pacman.error.map.nameAlreadyExists')]);
 		}
 	}
-
+	
 	const { is_valid, errors } = PacmanMap.validateMap(map);
 	const infoMap = {
 		id: id || null,
@@ -62,12 +62,15 @@ export const insertOrUpdateMap = async (ws: WebSocket, user_id: number, request:
 		is_public: is_public,
 		is_valid: is_valid,
 		errors: errors,
+		isCreated: false,
 	}
-
+	
 	if (id && !(await pacmanModel.updateMap(infoMap))) {
+
 		return sendResponse(ws, 'insertOrUpdateMap', 'error', [ws.i18n.t('errors.pacman.updateMapError')]);
 	}
 	else if (!(await pacmanModel.insertMap(infoMap))) {
+		infoMap.isCreated = true;
 		return sendResponse(ws, 'insertOrUpdateMap', 'error', [ws.i18n.t('errors.pacman.insertMapError')]);
 	}
 
