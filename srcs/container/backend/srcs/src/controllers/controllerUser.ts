@@ -1,11 +1,21 @@
 import { FastifyRequest, FastifyReply } from 'fastify';
 import userModel from '@models/modelUser';
 import i18n from '@i18n';
+import { IdentityPoolClient, OAuth2Client } from 'google-auth-library';
+
+const Auth2Client = new OAuth2Client('client_secret_235494829152-rogrpto31jsvp0ml7qp16ncuvge7msmv.apps.googleusercontent.com.json');
 
 export const Login = async (request: FastifyRequest, reply: FastifyReply) => {
 	const { email, password } = request.body as { email: string; password: string };
 
 	const user = await userModel.Login(email, password);
+
+
+	if (user === false) {
+		return reply.status(401).send({
+			message: request.i18n.t('login.passwordNotSet'),
+		});
+	}
 
 	if (user === null) {
 		return reply.status(401).send({
@@ -58,6 +68,7 @@ export const UpdateUser = async (request: FastifyRequest, reply: FastifyReply) =
 		password: string | null;
 		confirmPassword: string | null;
 		lang: string | null;
+		avatar: string | null;
 	};
 
 	const email = body.email || null;
@@ -65,8 +76,9 @@ export const UpdateUser = async (request: FastifyRequest, reply: FastifyReply) =
 	const password = body.password || null;
 	const confirmPassword = body.confirmPassword || null;
 	const lang = body.lang || null;
+	const avatar = body.avatar || null;
 
-	if (!email && !username && !password && !confirmPassword && !lang) {
+	if (!email && !username && !password && !confirmPassword && !lang && !avatar) {
 		return reply.status(400).send({
 			message: request.i18n.t('errors.user.noChanges'),
 		});
@@ -96,7 +108,7 @@ export const UpdateUser = async (request: FastifyRequest, reply: FastifyReply) =
 		request.i18n.changeLanguage(lang);
 	}
 
-	await userModel.UpdateUser(user.id.toString(), email, username, password, lang);
+	await userModel.UpdateUser(user.id.toString(), email, username, password, lang, avatar);
 	request.session.user = {
 		...user,
 		email: email || user.email,
@@ -117,9 +129,107 @@ export const Logout = async (request: FastifyRequest, reply: FastifyReply, msg: 
 	}
 };
 
+export async function authGoogleCallback(request: FastifyRequest, reply: FastifyReply) {
+	const { jwt } = request.body as { jwt: string };
+	try {
+		const ticket = await Auth2Client.verifyIdToken({
+			idToken: jwt,
+			audience: 'client_secret_235494829152-rogrpto31jsvp0ml7qp16ncuvge7msmv.apps.googleusercontent.com.json',
+		});
+		const payload = ticket.getPayload();
+		if (!payload) {
+			return reply.status(401).send({
+				isAuthenticated: false,
+				user: null,
+				message: request.i18n.t('login.invalidJwt'),
+			});
+		}
+
+		if (!payload['sub'] || !payload['email']) {
+			return reply.status(401).send({
+				isAuthenticated: false,
+				user: null,
+				message: request.i18n.t('login.missingPayloadData'),
+			});
+		}
+
+		let user = await userModel.getUserByGoogleToken(payload['sub']);
+		if (user) {
+			request.session.user = user;
+			return reply.status(200).send({
+				isAuthenticated: true,
+				user: {
+					id: user.id,
+					email: user.email,
+					username: user.username,
+					lang: user.lang,
+					avatar: user.avatar || null,
+				},
+			});
+		}
+
+		user = {
+			id: 0,
+			email: payload['email'],
+			username: payload['name'].replace(/[^a-zA-Z0-9]/g, '').toLowerCase().slice(0, 10) || payload['email'].split('@')[0].toLowerCase().slice(0, 10),
+			lang: 'fr',
+			avatar: payload['picture'] || null,
+		};
+
+		let addnum = 0;
+		let maxAttempts: number = 100;
+		while (maxAttempts-- > 0) {
+			if (await userModel.usernameAlreadyExists(user.username)) {
+				user.username += Math.floor(Math.random() * 10);
+				addnum++;
+				if (user.username.length > 15) {
+					user.username = user.username.slice(0, 15 - addnum.toString().length);
+				}
+			}
+			else break;
+		}
+		if (maxAttempts <= 0) {
+			return reply.status(500).send({
+				isAuthenticated: false,
+				user: null,
+				message: request.i18n.t('login.usernameGenerationFailed'),
+			});
+		}
+
+		const userExist = await userModel.getUserByEmail(payload['email']);
+		if (userExist) {
+			user.id = userExist.id;
+			await userModel.addRelationGoogleToken(userExist.id, payload['sub']);
+		} else {
+			user = await userModel.Register(user.email, user.username, null, user.lang);
+			await userModel.addRelationGoogleToken(user.id, payload['sub']);
+		}
+
+		request.session.user = user;
+		return reply.status(200).send({
+			isAuthenticated: true,
+			user: {
+				id: user.id,
+				email: user.email,
+				username: user.username,
+				lang: user.lang,
+				avatar: user.avatar || null,
+			},
+		});
+	} catch (error) {
+		console.error('Google authentication error:', error);
+		return reply.status(401).send({
+			isAuthenticated: false,
+			user: null,
+			message: request.i18n.t('login.googleAuthFailed'),
+		});
+	}
+}
+
 export default {
 	Login,
 	Register,
 	UpdateUser,
 	Logout,
+	authGoogleCallback,
 };

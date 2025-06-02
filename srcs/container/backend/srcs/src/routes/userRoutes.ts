@@ -32,4 +32,9 @@ export default async (fastify: FastifyInstance) => {
 		handler: Middleware.isAuth,
 	});
 
+	fastify.post('/auth/google/callback', {
+		schema: userSchema.authGoogleCallback,
+		handler: userController.authGoogleCallback,
+	});
+
 };
