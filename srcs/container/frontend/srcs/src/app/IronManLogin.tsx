@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import ApiService from '../api/ApiService';
 import './assets/styles/IronManTheme.css';
 import { useNavigate } from 'react-router-dom';
+import GoogleLoginButton from './components/GoogleLoginButton';
 // import { User } from '../app/types/userTypes';
 
 interface LoginSchema {
@@ -83,11 +84,12 @@ const IronManLogin: React.FC = () => {
         <button className="ironman-btn" type="submit" disabled={loading}>
           {loading ? "Connexion..." : "Se connecter"}
         </button>
-        <a href="http://localhost:3000/auth/google">
+        {/* <a href="http://localhost:3000/auth/google">
           <img src="https://developers.google.com/identity/images/btn_google_signin_dark_normal_web.png" alt="Sign in with Google" />
-        </a>
+        </a> */}
         {error && <div style={{ color: '#c20000', marginTop: '16px', textAlign: 'center' }}>{error}</div>}
         <span className="ironman-switch-link">
+          <GoogleLoginButton />
           <Link to="/register">Nouveau héros ? Créer un compte</Link>
         </span>
       </form>
