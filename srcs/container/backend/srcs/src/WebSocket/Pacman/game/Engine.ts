@@ -1,5 +1,5 @@
 // Engine.ts
-import { player, room, GameState, vector2, CharacterType } from "@Pacman/TypesPacman";
+import { player, room, GameState, vector2, CharacterType, room_settings } from "@Pacman/TypesPacman";
 import { WebSocket } from 'ws';
 import PacmanMap from './map/Map';
 import Ghost from "./Character/Ghost";
@@ -16,13 +16,15 @@ export default class Engine {
 	private players: Map<number, Ghost | Pacman> = new Map();
 	private Spectators: Map<player, WebSocket> = new Map();
 	private map: PacmanMap;
-	private tickRate = 1000 / 60; // 60 FPS
+	private tickRate = 1000 / 60;
 	private lastTime = Date.now();
 	private intervalId: NodeJS.Timeout | null = null;
 	public sockets: Map<number, WebSocket> = new Map();
 	private isPaused: boolean = false;
 	private PauseMessage: string = "";
 	private Finished: boolean = false;
+	private trainingAI: boolean = false;
+	private win: 'pacman' | 'ghosts' | null = null;
 
 	// Ajout des propriétés pour le mode effrayé
 	private isFrightened: boolean = false;
@@ -31,10 +33,34 @@ export default class Engine {
 	private static FRIGHTENED_DURATION = 8000; // 8 secondes en mode effrayé
 	private static FRIGHTENED_SPEED = 1.5 // Vitesse réduite en mode effrayé
 
-	constructor(rawLayout: string[], initialPlayers: player[], initialPlayerSockets: Map<number, WebSocket>) {
-		this.map = new PacmanMap(rawLayout);
+	constructor(room: room, initialPlayerSockets: Map<number, WebSocket>) {
+
+		this.map = new PacmanMap(room.settings.map.map);
 		this.sockets = initialPlayerSockets;
-		this.addPlayer(initialPlayers);
+
+		// Vérifier si un joueur est une IA pour le mode entraînement
+		for (const player of room.players) {
+			if (player.username === 'PacmanAI') {
+				this.trainingAI = true;
+				break;
+			}
+		}
+
+		this.addPlayers(room.players);
+	}
+
+	public sendRewardToAI(playeriId: number, reward: number): void {
+		if (!this.trainingAI) return;
+		const ws = this.sockets.get(playeriId);
+		if (ws && ws.readyState === WebSocket.OPEN) {
+			const message = JSON.stringify({
+				action: 'reward',
+				data: {
+					reward: reward
+				}
+			});
+			ws.send(message);
+		}
 	}
 
 	public getPlayerById(id: number): Ghost | Pacman | undefined {
@@ -44,23 +70,25 @@ export default class Engine {
 	/**
 	 * Ajout d'un joueur au moteur
 	 */
-	public addPlayer(players: player[]): void {
+	private addPlayers(players: player[]): void {
 		// Déterminer les personnages disponibles: Pacman et fantômes
 		const characters = [CharacterType.Pacman, CharacterType.Blinky, CharacterType.Inky, CharacterType.Pinky, CharacterType.Clyde];
 		const usedCharacters = new Set<string>(
 			Array.from(this.players.values()).map(p => p.nameChar)
 		);
 
+		// Si c'est le mode entraînement, on force PacmanAI à être Pacman
+		if (this.trainingAI) usedCharacters.add(CharacterType.Pacman);
+
 		// Filtrer les personnages disponibles
 		let availableCharacters = characters.filter(c => !usedCharacters.has(c));
 
 		players.forEach(p => {
-			// Si c'est le premier
-			let spawnIndex;
-			let spawns;
+			let spawnIndex = 0;
+			let spawns: vector2[] = [];
 			let player: Ghost | Pacman;
 			let characterType: CharacterType;
-			if (this.players.size === 0) {
+			if (this.trainingAI && p.username === 'PacmanAI') {
 				characterType = CharacterType.Pacman;
 				spawns = this.map.getSpawnPositions()[CharacterType.Pacman];
 				spawnIndex = this.players.size % availableCharacters.length;
@@ -183,7 +211,7 @@ export default class Engine {
 				}, 500);
 			}
 			countdown--;
-		}, 1000);
+		}, this.trainingAI ? 10 : 1000);
 
 	}
 
@@ -250,6 +278,7 @@ export default class Engine {
 						this.players as Map<number, Ghost>
 					);
 				}
+				if (this.trainingAI && player instanceof Pacman) this.sendRewardToAI(player.player.id, -0.017);
 			}
 			);
 			this.update(delta);
@@ -464,14 +493,18 @@ export default class Engine {
 					player.teleport = true;
 					player.position = tp;
 				} else if (!tp) player.teleport = false;
-				if (this.map.consumePelletOrBonus(player as Pacman, gridPos) == 50) this.setFrightened();
+				const reward = this.map.consumePelletOrBonus(player as Pacman, gridPos);
+				if (reward > 0) {
+					player.score += reward;
+					if (reward == 50) this.setFrightened();
+					this.sendRewardToAI(player.player.id, reward);
+				}
 				this.checkGhostPacmanCollision(player as Pacman);
 				this.checkWinCondition();
 			}
 		});
 		// this.debug();
 	}
-
 
 	/**
 	 * Vérifie si Pac-Man a mangé toutes les pastilles
@@ -486,13 +519,16 @@ export default class Engine {
 
 			// Afficher un message de victoire
 			this.PauseMessage = "Game finished!\nPacman wins!";
+			this.win = 'pacman';
+			const pacmanId = Array.from(this.players.values()).find(p => p instanceof Pacman)?.player.id;
+			this.sendRewardToAI(pacmanId, 500);
 			this.isPaused = true;
 			this.broadcastState();
 
 			// Après un délai, marquer la partie comme terminée
 			setTimeout(() => {
 				this.Finished = true;
-			}, 10000);
+			}, this.trainingAI ? 10 : 10000);
 			return true;
 		}
 		return false;
@@ -516,6 +552,7 @@ export default class Engine {
 					this.pacmanKillFrightened += 1;
 					ghost.respawn();
 					pacman.score += 200 * this.pacmanKillFrightened;
+					this.sendRewardToAI(pacman.player.id, 200 * this.pacmanKillFrightened);
 					ghost.score -= 100;
 				} else if (!ghost.isFrightened && !ghost.isReturningToSpawn) {
 					ghost.score += 300;
@@ -529,6 +566,8 @@ export default class Engine {
 		this.stop();
 		pacman.life -= 1;
 		if (pacman.life >= 0) {
+			const pacmanId = Array.from(this.players.values()).find(p => p instanceof Pacman)?.player.id;
+			this.sendRewardToAI(pacmanId, -200);
 			this.PauseMessage = `Pacman is dead!\nLives remaining ${pacman.life}`;
 			this.isPaused = true;
 			this.Finished = false;
@@ -541,7 +580,7 @@ export default class Engine {
 					}
 				}
 				this.broadcastState();
-			}, 1000);
+			}, this.trainingAI ? 10 : 1000);
 
 			setTimeout(() => {
 				if (this.resetAllPlayerPositions()) {
@@ -553,13 +592,16 @@ export default class Engine {
 				}
 			}, 3000);
 		} else {
+			const pacmanId = Array.from(this.players.values()).find(p => p instanceof Pacman)?.player.id;
+			this.sendRewardToAI(pacmanId, -500);
 			this.PauseMessage = "Game finished! Ghosts win!";
 			this.isPaused = true;
+			this.win = 'ghosts';
 			this.broadcastState();
 			setTimeout(() => {
 				this.stop();
 				this.Finished = true;
-			}, 10000);
+			}, this.trainingAI ? 10 : 10000);
 		}
 	}
 
@@ -567,23 +609,80 @@ export default class Engine {
 	 * Envoie l'état du jeu à tous les clients
 	 */
 	private broadcastState(): void {
+		if (this.trainingAI) this.broadcastStateAI();
+		if ((this.trainingAI && this.Spectators.size > 0) || !this.trainingAI) {
+			const state = {
+				action: 'updateGame',
+				data: {
+					players: Array.from(this.players.values()).map(p => ({
+						id: p.player.id,
+						username: p.player.username,
+						character: p.nameChar,
+						position: p.position,
+						positionGrid: this.pixelToGrid(p.position),
+						score: p.score,
+						direction: p.directionToString(),
+						isFrightened: p instanceof Ghost ? p.isFrightened : false,
+						returnToSpawn: p instanceof Ghost ? p.isReturningToSpawn : false
+					})),
+					numberOfPlayers: this.players.size,
+					pacmanLife: Array.from(this.players.values()).find(p => p instanceof Pacman)?.life,
+					grid: this.map.toString(),
+					tileSize: TILE_SIZE,
+					isSpectator: false,
+					win: this.win,
+					paused: { paused: this.isPaused, message: this.PauseMessage },
+					frightenedState: {
+						active: this.isFrightened,
+						remainingTime: this.isFrightened ? Math.max(0, this.frightenedEndTime - Date.now()) : 0
+					}
+				}
+			};
+			if (!this.trainingAI) {
+				this.sockets.forEach(ws => {
+					if (ws && ws.readyState === WebSocket.OPEN) {
+						ws.send(JSON.stringify(state));
+					}
+				});
+			}
+			this.Spectators.forEach((ws, player) => {
+				player.isSpectator = true;
+				if (ws && ws.readyState === WebSocket.OPEN) {
+					state.data.isSpectator = true;
+					ws.send(JSON.stringify(state));
+				} else {
+					if (Date.now() - player.updateAt > 5000) {
+						this.Spectators.delete(player);
+						player.isSpectator = false;
+					}
+				}
+			});
+		}
+	}
+
+	/**
+	 * Envoie l'état du jeu à tous les clients
+	 */
+	private broadcastStateAI(): void {
+		const pacmanPlayer = Array.from(this.players.values()).find(p => p instanceof Pacman);
+		const ghostPlayers = Array.from(this.players.values()).filter(p => p instanceof Ghost);
+
 		const state = {
 			action: 'updateGame',
 			data: {
-				players: Array.from(this.players.values()).map(p => ({
-					id: p.player.id,
-					username: p.player.username,
-					character: p.nameChar,
-					position: p.position,
-					score: p.score,
-					direction: p.directionToString(),
-					isFrightened: p instanceof Ghost ? p.isFrightened : false,
-					returnToSpawn: p instanceof Ghost ? p.isReturningToSpawn : false
+				pacman: pacmanPlayer ? {
+					positionGrid: this.pixelToGrid(pacmanPlayer.position),
+					score: pacmanPlayer.score,
+					direction: pacmanPlayer.directionToString()
+				} : null,
+				ghosts: ghostPlayers.map(g => ({
+					positionGrid: this.pixelToGrid(g.position),
+					score: g.score,
+					isFrightened: g.isFrightened,
+					returnToSpawn: g.isReturningToSpawn
 				})),
-				pacmanLife: Array.from(this.players.values()).find(p => p instanceof Pacman)?.life,
 				grid: this.map.toString(),
-				tileSize: TILE_SIZE,
-				isSpectator: false,
+				win: this.win,
 				paused: { paused: this.isPaused, message: this.PauseMessage },
 				frightenedState: {
 					active: this.isFrightened,
@@ -594,18 +693,6 @@ export default class Engine {
 		this.sockets.forEach(ws => {
 			if (ws && ws.readyState === WebSocket.OPEN) {
 				ws.send(JSON.stringify(state));
-			}
-		});
-		this.Spectators.forEach((ws, player) => {
-			player.isSpectator = true;
-			if (ws && ws.readyState === WebSocket.OPEN) {
-				state.data.isSpectator = true;
-				ws.send(JSON.stringify(state));
-			} else {
-				if (Date.now() - player.updateAt > 5000) {
-					this.Spectators.delete(player);
-					player.isSpectator = false;
-				}
 			}
 		});
 	}

@@ -1,15 +1,15 @@
 import { User, Friends, Group } from '@types';
 import executeReq from '@models/database';
-import { Map } from '@Pacman/TypesPacman';
+import { map } from '@Pacman/TypesPacman';
 import { WebSocketServer, WebSocket } from 'ws';
 
-async function getAllMapsForUser(userId: number): Promise<Map[]> {
+async function getAllMapsForUser(userId: number): Promise<map[]> {
 	const query = `SELECT * FROM pacman_map WHERE user_id = ? ORDER BY updated_at DESC`;
 	const result: any = await executeReq(query, [userId]);
 	if (!result || result.length === 0) {
 		return [];
 	}
-	const maps: Map[] = result.map((row: any) => ({
+	const maps: map[] = result.map((row: any) => ({
 		id: row.id,
 		user_id: row.user_id,
 		name: row.name,
@@ -22,13 +22,13 @@ async function getAllMapsForUser(userId: number): Promise<Map[]> {
 	return maps;
 }
 
-async function getMapForUserByName(id: number, name: string): Promise<Map[]> {
+async function getMapForUserByName(id: number, name: string): Promise<map[]> {
 	const query = `SELECT * FROM pacman_map WHERE user_id = ? AND name = ?`;
 	const result: any = await executeReq(query, [id, name]);
 	if (!result || result.length === 0) {
 		return [];
 	}
-	const maps: Map[] = result.map((row: any) => ({
+	const maps: map[] = result.map((row: any) => ({
 		id: row.id,
 		user_id: row.user_id,
 		name: row.name,
@@ -41,13 +41,13 @@ async function getMapForUserByName(id: number, name: string): Promise<Map[]> {
 	return maps;
 }
 
-async function getMapForUserById(id: number, userId: number): Promise<Map[]> {
+async function getMapForUserById(id: number, userId: number): Promise<map[]> {
 	const query = `SELECT * FROM pacman_map WHERE id = ? AND user_id = ?`;
 	const result: any = await executeReq(query, [id, userId]);
 	if (!result || result.length === 0) {
 		return [];
 	}
-	const maps: Map[] = result.map((row: any) => ({
+	const maps: map[] = result.map((row: any) => ({
 		id: row.id,
 		user_id: row.user_id,
 		name: row.name,
@@ -60,7 +60,7 @@ async function getMapForUserById(id: number, userId: number): Promise<Map[]> {
 	return maps;
 }
 
-async function insertMap(map: Map): Promise<boolean> {
+async function insertMap(map: map): Promise<boolean> {
 	const query = `
         INSERT INTO pacman_map (user_id, name, map, is_public, is_valid) 
         VALUES (?, ?, ?, ?, ?)
@@ -87,7 +87,7 @@ async function insertMap(map: Map): Promise<boolean> {
 	return true;
 }
 
-async function updateMap(map: Map): Promise<boolean> {
+async function updateMap(map: map): Promise<boolean> {
 	const query = `
 		UPDATE pacman_map 
 		SET name = ?, 

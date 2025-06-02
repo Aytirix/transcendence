@@ -12,7 +12,7 @@ export default class Pacman extends Character {
 	public life: number = 3;
 
 	constructor(player: player, position: vector2, nameChar: CharacterType) {
-		super(player, position, nameChar);
+		super(player, position, position, nameChar);
 	}
 
 	public static get speed(): number { return this._speed; }
