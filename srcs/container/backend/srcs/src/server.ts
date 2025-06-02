@@ -58,9 +58,8 @@ app.register(fastifyHelmet, {
 });
 
 app.register(fastifyCors, {
-	origin: (origin, cb) => {
-		return cb(null, true);
-	},
+	origin: (origin, cb) => cb(null, true),
+	methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
 	credentials: true,
 });
 
