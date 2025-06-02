@@ -219,6 +219,7 @@ class StateManager {
 			for (const player of game.players) {
 				player.gameId = null;
 				const ws = this.PlayerGameWs.get(player.id);
+				player.room = null;
 				this.PlayerGame.delete(player.id);
 				this.PlayerGameWs.delete(player.id);
 				this.PlayerRoom.set(player.id, player);
