@@ -79,6 +79,7 @@ body {
   color: #ffd700;
   margin-top: 20px;
   text-align: center;
+  justify-self: center;
   text-decoration: underline dotted;
   cursor: pointer;
   font-size: 0.97em;

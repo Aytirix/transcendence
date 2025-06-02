@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import './assets/styles/IronManTheme.css';
 import ApiService from '../api/ApiService';
 import { useNavigate } from 'react-router-dom';
+import GoogleLoginButton from './components/GoogleLoginButton';
 
 interface RegisterSchema {
   email: string;
@@ -129,6 +130,7 @@ const IronManRegister: React.FC = () => {
         {error && <div style={{ color: '#c20000', marginTop: '16px', textAlign: 'center' }}>{error}</div>}
         {success && <div style={{ color: '#52ff52', marginTop: '16px', textAlign: 'center' }}>{success}</div>}
         <span className="ironman-switch-link">
+                  <GoogleLoginButton/>
           <Link to="/login">Déjà membre ? Se connecter</Link>
         </span>
       </form>
