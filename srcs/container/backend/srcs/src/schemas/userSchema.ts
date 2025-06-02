@@ -81,6 +81,7 @@ export const update = {
 			...register.body.properties,
 			avatar: { type: 'string', format: 'uri', nullable: true },
 		},
+		required: [],
 		errorMessage: {
 			properties: {
 				...register.body.errorMessage.properties,
