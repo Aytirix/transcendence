@@ -23,8 +23,14 @@ class ApiService {
 			const response = await fetch(`${this.url}${path}`, config);
 			const resJson = await response.json();
 			if (resJson.message) {
-				if (response.ok) notification.success(resJson.message);
-				else notification.error(resJson.message);
+				if (response.ok) {
+					notification.success(resJson.message);
+					resJson.ok = true;
+				}
+				else {
+					resJson.ok = false;
+					notification.error(resJson.message);
+				}
 			}
 			return resJson;
 		} catch (error) {

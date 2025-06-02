@@ -1,26 +1,34 @@
-import { Link } from 'react-router-dom';
-import './assets/styles/App.scss'
-import { useLanguage } from '../contexts/LanguageContext';
+// import IronManNavBar from './IronManNavBar';
+import Intro from './intro';
+import './assets/styles/App.scss';
+import ApiService from '../api/ApiService';
+import { useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 
-function App() {
-	const { t, setLanguage } = useLanguage();
 
-	return (
-		<>
-			<nav className="flex flex-col gap-4">
-				<Link to="/Pacman">Pacman</Link>
-				<Link to="/WebSocketTest">userTest</Link>
-				<Link to="/Pong">pong tests</Link>
-				<Link to="/ModuleManager">Module Manager</Link>
-			</nav>
-			<div>
-				<button onClick={() => setLanguage('fr')}>Français</button>
-				<button onClick={() => setLanguage('en')}>English</button>
-				<button onClick={() => setLanguage('es')}>Español</button>
-			</div>
-			<h1>{t('test')}</h1>
-		</>
-	)
+
+
+async function readLang(i18n:any) {
+    const res = await ApiService.get('/isAuth');
+    const lang = res.user?.lang || 'fr';
+    i18n.changeLanguage(lang);
+    const user2 = res.user2?.username;
+    console.log("USER",user2);
+    return user2;
 }
 
-export default App
+function App() {
+    const { i18n } = useTranslation();
+    // let user: string;
+    useEffect(() => {readLang(i18n);}, [i18n]);
+    // console.log("USERs",user);
+    return (
+        <div id="root">
+            <Intro />
+        </div>
+    );
+}
+
+export default App;
+
+

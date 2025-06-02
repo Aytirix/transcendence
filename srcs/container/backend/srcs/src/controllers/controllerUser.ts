@@ -3,7 +3,7 @@ import userModel from '@models/modelUser';
 import i18n from '@i18n';
 import { IdentityPoolClient, OAuth2Client } from 'google-auth-library';
 
-const Auth2Client = new OAuth2Client('client_secret_235494829152-rogrpto31jsvp0ml7qp16ncuvge7msmv.apps.googleusercontent.com.json');
+const Auth2Client = new OAuth2Client('235494829152-rogrpto31jsvp0ml7qp16ncuvge7msmv.apps.googleusercontent.com');
 
 export const Login = async (request: FastifyRequest, reply: FastifyReply) => {
 	const { email, password } = request.body as { email: string; password: string };
@@ -132,9 +132,10 @@ export const Logout = async (request: FastifyRequest, reply: FastifyReply, msg: 
 export async function authGoogleCallback(request: FastifyRequest, reply: FastifyReply) {
 	const { jwt } = request.body as { jwt: string };
 	try {
+		console.log(`JWT ; ${jwt}`);
 		const ticket = await Auth2Client.verifyIdToken({
 			idToken: jwt,
-			audience: 'client_secret_235494829152-rogrpto31jsvp0ml7qp16ncuvge7msmv.apps.googleusercontent.com.json',
+			audience: '235494829152-rogrpto31jsvp0ml7qp16ncuvge7msmv.apps.googleusercontent.com',
 		});
 		const payload = ticket.getPayload();
 		if (!payload) {

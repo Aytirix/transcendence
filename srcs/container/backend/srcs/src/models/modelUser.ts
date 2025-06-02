@@ -30,7 +30,11 @@ export const Login = async (email: string, password: string): Promise<User | nul
 };
 
 export const Register = async (email: string, username: string, password: string, lang: string): Promise<User> => {
-	const hashedPassword = await tools.hashPassword(password);
+	let hashedPassword = null;
+	if (password)
+	{
+		hashedPassword = await tools.hashPassword(password);
+	}
 	const result: any = await executeReq(
 		'INSERT INTO users (email, username, password, lang) VALUES (?, ?, ?, ?)',
 		[email, username, hashedPassword, lang],
