@@ -1,0 +1,111 @@
+.profile-container {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255,255,255,0.5);
+  position: relative;
+  top: 0;
+  left: 0;
+  z-index: 10;
+}
+
+.profile-card {
+  background: #fff;
+  border-radius: 20px;
+  padding: 40px 32px 28px 32px;
+  box-shadow: 0 4px 32px rgba(0,0,0,0.10);
+  max-width: 400px;
+  min-width: 315px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.profile-title {
+  margin-bottom: 24px;
+  color: #444;
+}
+
+.avatar-options {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.avatar-img {
+  width: 54px;
+  height: 54px;
+  border-radius: 50%;
+  border: 2.5px solid #ccc;
+  object-fit: cover;
+  cursor: pointer;
+  transition: border 0.23s, box-shadow 0.23s;
+}
+.avatar-img.selected {
+  border: 2.5px solid #3498db;
+  box-shadow: 0 0 0 3px #bbdeff;
+}
+
+.custom-avatar-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #e1e8ed;
+  color: #666;
+  border-radius: 50%;
+  width: 54px; height: 54px;
+  cursor: pointer;
+  font-size: 1.3em;
+  border: 2px dashed #bbb;
+  transition: border 0.23s;
+}
+.custom-avatar-btn:hover {
+  border: 2px solid #2980b9;
+}
+
+.profile-input {
+  margin: 10px 0;
+  padding: 12px;
+  width: 100%;
+  border: 1.3px solid #ccc;
+  border-radius: 8px;
+  font-size: 1em;
+  background: #fafcff;
+  transition: border .2s;
+}
+.profile-input:focus {
+  border: 1.3px solid #3498db;
+  outline: none;
+}
+
+.profile-btn {
+  margin-top: 18px;
+  background: #3498db;
+  border: none;
+  color: #fff;
+  font-weight: bold;
+  font-size: 1.06em;
+  border-radius: 10px;
+  padding: 10px 0;
+  width: 100%;
+  cursor: pointer;
+  transition: background 0.18s;
+}
+.profile-btn:hover:enabled {
+  background: #217dbb;
+}
+
+.profile-error {
+  color: #c0392b;
+  margin-top: 14px;
+  text-align: center;
+}
+.profile-success {
+  color: #2ecc71;
+  margin-top: 14px;
+  text-align: center;
+}

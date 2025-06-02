@@ -28,6 +28,9 @@
 		}
 	},
 	"login": {
+		"googleAuthFailed": "L'authentication avec google a echouer, merci de ressayer plus tard...",
+		"invalidJwt": "Le JWT pour la connexion google est invalide",
+		"missingPayloadData": "Le Playload est manquant",
 		"passwordNotSet": "Veuillez vous connecter avec Google et définir un mot de passe pour utiliser cette fonctionnalité.",
 		"usernameGenerationFailed": "Échec de la génération du nom d'utilisateur.",
 		"failed": "L'adresse e-mail ou le mot de passe est incorrect.",
