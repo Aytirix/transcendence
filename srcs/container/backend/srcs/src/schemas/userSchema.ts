@@ -143,7 +143,7 @@ export const authGoogleCallback = {
 		properties: {
 			jwt: { type: 'string', minLength: 1 },
 		},
-		required: ['JWT'],
+		required: ['jwt'],
 	},
 	response: {
 		200: {
@@ -163,6 +163,8 @@ export const authGoogleCallback = {
 				},
 			},
 			required: ['isAuthenticated', 'user'],
+			additionalProperties: true,
+
 		},
 		401: {
 			description: 'Authentification Google échouée',
@@ -172,6 +174,7 @@ export const authGoogleCallback = {
 				user: { type: 'null', const: null },
 			},
 			required: ['isAuthenticated', 'user'],
+			additionalProperties: true,
 		},
 	},
 };
