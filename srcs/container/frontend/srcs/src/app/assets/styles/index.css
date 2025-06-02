@@ -6,15 +6,13 @@
 	color: #ffffff;
 }
 
-/* #root {
-	// max-width: 1280px;
-	margin: 0 auto;
+#root {
+	margin: 0;
 	text-align: center;
 	user-select: none;
 	cursor: default;
 	backdrop-filter: blur(2rem);
-} */
-
+}
 
 a {
 	font-weight: 500;
