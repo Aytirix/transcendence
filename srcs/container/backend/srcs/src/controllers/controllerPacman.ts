@@ -211,6 +211,7 @@ export function handlePlayerMove(ws: WebSocket, player: player, json: any): void
 	if (!player.room) return sendResponse(ws, 'error', 'error', [ws.i18n.t('pacman.not_in_game')]);
 	if (player.room.state != 'active') return sendResponse(ws, 'error', 'error', [ws.i18n.t('pacman.not_started')]);
 	player.room.engine?.getPlayerById(player.id)?.changeDirection(json.direction);
+	if (player.room.engine?.trainingAI) player.room.engine.resume();
 }
 
 export function handleJoinRoomSpectator(ws: WebSocket, player: player, json: any): void {

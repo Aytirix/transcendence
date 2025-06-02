@@ -23,8 +23,9 @@ export default class Engine {
 	private isPaused: boolean = false;
 	private PauseMessage: string = "";
 	private Finished: boolean = false;
-	private trainingAI: boolean = false;
+	public trainingAI: boolean = false;
 	private win: 'pacman' | 'ghosts' | null = null;
+	private reward: number = 0;
 
 	// Ajout des propriétés pour le mode effrayé
 	private isFrightened: boolean = false;
@@ -47,20 +48,6 @@ export default class Engine {
 		}
 
 		this.addPlayers(room.players);
-	}
-
-	public sendRewardToAI(playeriId: number, reward: number): void {
-		if (!this.trainingAI) return;
-		const ws = this.sockets.get(playeriId);
-		if (ws && ws.readyState === WebSocket.OPEN) {
-			const message = JSON.stringify({
-				action: 'reward',
-				data: {
-					reward: reward
-				}
-			});
-			ws.send(message);
-		}
 	}
 
 	public getPlayerById(id: number): Ghost | Pacman | undefined {
@@ -88,7 +75,7 @@ export default class Engine {
 			let spawns: vector2[] = [];
 			let player: Ghost | Pacman;
 			let characterType: CharacterType;
-			if (this.trainingAI && p.username === 'PacmanAI') {
+			if ((this.trainingAI && p.username === 'PacmanAI') || p.username === 'user1') {
 				characterType = CharacterType.Pacman;
 				spawns = this.map.getSpawnPositions()[CharacterType.Pacman];
 				spawnIndex = this.players.size % availableCharacters.length;
@@ -188,9 +175,9 @@ export default class Engine {
 	 * Démarre la boucle de jeu
 	 */
 	public start(): void {
-		this.isPaused = true;
+		this.stop();
 		let countdown = 3;
-		this.PauseMessage = `Starting in ${countdown}`;
+		this.pause(`Starting in ${countdown}`);
 		countdown--;
 		this.broadcastState();
 		const countdownInterval = setInterval(() => {
@@ -205,10 +192,10 @@ export default class Engine {
 				this.PauseMessage = "";
 				this.broadcastState();
 				setTimeout(() => {
-					this.isPaused = false;
+					this.resume();
 					this.lastTime = Date.now();
 					this.intervalId = setInterval(() => this.gameLoop(), this.tickRate);
-				}, 500);
+				}, this.trainingAI ? 10 : 500);
 			}
 			countdown--;
 		}, this.trainingAI ? 10 : 1000);
@@ -230,9 +217,6 @@ export default class Engine {
 	 * @returns true si le jeu a été mis en pause, false s'il était déjà en pause
 	 */
 	public pause(msg: string): boolean {
-		if (this.isPaused || !this.intervalId) {
-			return false;
-		}
 		this.isPaused = true;
 		this.PauseMessage = msg;
 		return true;
@@ -243,12 +227,8 @@ export default class Engine {
 	 * @returns true si le jeu a repris, false s'il n'était pas en pause
 	 */
 	public resume(): boolean {
-		if (!this.isPaused || !this.intervalId) {
-			return false;
-		}
-
 		this.isPaused = false;
-		this.lastTime = Date.now(); // Réinitialiser le temps pour éviter les sauts
+		this.lastTime = Date.now();
 		return true;
 	}
 
@@ -260,6 +240,7 @@ export default class Engine {
 		const delta = now - this.lastTime;
 		this.lastTime = now;
 
+		this.reward = 0;
 		if (!this.isPaused) {
 			let pacmanInstance: Pacman | undefined;
 			this.players.forEach(player => {
@@ -278,12 +259,13 @@ export default class Engine {
 						this.players as Map<number, Ghost>
 					);
 				}
-				if (this.trainingAI && player instanceof Pacman) this.sendRewardToAI(player.player.id, -0.017);
+				if (this.trainingAI && player instanceof Pacman) this.reward += -0.017;
 			}
 			);
 			this.update(delta);
 		}
 		this.broadcastState();
+		if (this.trainingAI) this.isPaused = true;
 	}
 
 	/**
@@ -497,7 +479,7 @@ export default class Engine {
 				if (reward > 0) {
 					player.score += reward;
 					if (reward == 50) this.setFrightened();
-					this.sendRewardToAI(player.player.id, reward);
+					this.reward += reward;
 				}
 				this.checkGhostPacmanCollision(player as Pacman);
 				this.checkWinCondition();
@@ -518,11 +500,10 @@ export default class Engine {
 			this.stop();
 
 			// Afficher un message de victoire
-			this.PauseMessage = "Game finished!\nPacman wins!";
 			this.win = 'pacman';
 			const pacmanId = Array.from(this.players.values()).find(p => p instanceof Pacman)?.player.id;
-			this.sendRewardToAI(pacmanId, 500);
-			this.isPaused = true;
+			this.reward += 500;
+			this.pause("Game finished!\nPacman wins!");
 			this.broadcastState();
 
 			// Après un délai, marquer la partie comme terminée
@@ -552,7 +533,7 @@ export default class Engine {
 					this.pacmanKillFrightened += 1;
 					ghost.respawn();
 					pacman.score += 200 * this.pacmanKillFrightened;
-					this.sendRewardToAI(pacman.player.id, 200 * this.pacmanKillFrightened);
+					this.reward += 200 * this.pacmanKillFrightened;
 					ghost.score -= 100;
 				} else if (!ghost.isFrightened && !ghost.isReturningToSpawn) {
 					ghost.score += 300;
@@ -567,9 +548,8 @@ export default class Engine {
 		pacman.life -= 1;
 		if (pacman.life >= 0) {
 			const pacmanId = Array.from(this.players.values()).find(p => p instanceof Pacman)?.player.id;
-			this.sendRewardToAI(pacmanId, -200);
-			this.PauseMessage = `Pacman is dead!\nLives remaining ${pacman.life}`;
-			this.isPaused = true;
+			this.reward += -200;
+			this.pause(`Pacman is dead!\nLives remaining ${pacman.life}`);
 			this.Finished = false;
 			this.broadcastState();
 			// wait one second before hiding ghost
@@ -593,9 +573,8 @@ export default class Engine {
 			}, 3000);
 		} else {
 			const pacmanId = Array.from(this.players.values()).find(p => p instanceof Pacman)?.player.id;
-			this.sendRewardToAI(pacmanId, -500);
-			this.PauseMessage = "Game finished! Ghosts win!";
-			this.isPaused = true;
+			this.reward += -500;
+			this.pause("Game finished! Ghosts win!");
 			this.win = 'ghosts';
 			this.broadcastState();
 			setTimeout(() => {
@@ -666,7 +645,6 @@ export default class Engine {
 	private broadcastStateAI(): void {
 		const pacmanPlayer = Array.from(this.players.values()).find(p => p instanceof Pacman);
 		const ghostPlayers = Array.from(this.players.values()).filter(p => p instanceof Ghost);
-
 		const state = {
 			action: 'updateGame',
 			data: {
@@ -683,6 +661,7 @@ export default class Engine {
 				})),
 				grid: this.map.toString(),
 				win: this.win,
+				reward: this.reward,
 				paused: { paused: this.isPaused, message: this.PauseMessage },
 				frightenedState: {
 					active: this.isFrightened,

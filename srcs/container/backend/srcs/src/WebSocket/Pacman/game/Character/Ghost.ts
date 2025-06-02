@@ -238,10 +238,19 @@ export default class Ghost extends Character {
 			Array(width).fill(null)
 		);
 
-		const queue: vector2[] = [];
-		visited[startGrid.y][startGrid.x] = true;
-		queue.push({ x: startGrid.x, y: startGrid.y });
+		// Définir la direction opposée (demi-tour) à éviter
+		const oppositeDir = {
+			x: -this.direction.x,
+			y: -this.direction.y
+		};
 
+		// Vérifier si la direction actuelle est bloquée
+		const forwardX = startGrid.x + this.direction.x;
+		const forwardY = startGrid.y + this.direction.y;
+		const isForwardBlocked = forwardX < 0 || forwardX >= width || forwardY < 0 || forwardY >= height ||
+			!this.map.isWalkable(this.nameChar, { x: forwardX, y: forwardY });
+
+		// Déterminer toutes les directions possibles à partir de la position actuelle
 		const dirs: vector2[] = [
 			{ x: 0, y: -1 },
 			{ x: -1, y: 0 },
@@ -249,13 +258,48 @@ export default class Ghost extends Character {
 			{ x: 1, y: 0 },
 		];
 
+		// Filtrer les directions possibles sans compter le demi-tour (sauf si direction actuelle bloquée)
+		const validInitialDirs = dirs.filter(dir => {
+			// Si c'est un demi-tour et que la direction actuelle n'est pas bloquée, l'exclure
+			if (dir.x === oppositeDir.x && dir.y === oppositeDir.y && !isForwardBlocked) {
+				return false;
+			}
+
+			const nx = startGrid.x + dir.x;
+			const ny = startGrid.y + dir.y;
+
+			if (nx < 0 || nx >= width || ny < 0 || ny >= height) return false;
+			if (!this.map.isWalkable(this.nameChar, { x: nx, y: ny })) return false;
+
+			return true;
+		});
+
+		// Si aucune direction valide, retourner null
+		if (validInitialDirs.length === 0) {
+			return null;
+		}
+
+		const queue: vector2[] = [];
+		visited[startGrid.y][startGrid.x] = true;
+		queue.push({ x: startGrid.x, y: startGrid.y });
+
 		let found = false;
 
 		while (queue.length > 0 && !found) {
 			const curr = queue.shift()!;
+			
+			// Pour les positions autres que la position initiale, explorer toutes les directions
 			for (const d of dirs) {
 				let nx = curr.x + d.x;
 				let ny = curr.y + d.y;
+				
+				// Si nous sommes à la position initiale, ne pas considérer le demi-tour
+				// sauf si la direction actuelle est bloquée
+				if (curr.x === startGrid.x && curr.y === startGrid.y && 
+					d.x === oppositeDir.x && d.y === oppositeDir.y && !isForwardBlocked) {
+					continue;
+				}
+				
 				if (nx < 0 || nx >= width || ny < 0 || ny >= height) continue;
 				if (visited[ny][nx]) continue;
 				if (!this.map.isWalkable(this.nameChar, { x: nx, y: ny })) continue;
@@ -270,31 +314,14 @@ export default class Ghost extends Character {
 				queue.push({ x: nx, y: ny });
 			}
 		}
+
+		// Si le chemin n'a pas été trouvé, choisir aléatoirement parmi les directions valides
 		if (!found) {
-			const oppositeDir = {
-				x: -this.direction.x,
-				y: -this.direction.y
-			};
-
-			const validDirs = dirs.filter(dir => {
-				if (dir.x === oppositeDir.x && dir.y === oppositeDir.y) return false;
-
-				const nx = startGrid.x + dir.x;
-				const ny = startGrid.y + dir.y;
-
-				if (nx < 0 || nx >= width || ny < 0 || ny >= height) return false;
-				if (!this.map.isWalkable(this.nameChar, { x: nx, y: ny })) return false;
-
-				return true;
-			});
-			if (validDirs.length > 0) {
-				const randomIndex = Math.floor(Math.random() * validDirs.length);
-				return validDirs[randomIndex];
-			}
-			return null;
+			const randomIndex = Math.floor(Math.random() * validInitialDirs.length);
+			return validInitialDirs[randomIndex];
 		}
 
-
+		// Reconstituer le chemin en remontant depuis la cible
 		let step: vector2 = { x: targetGrid.x, y: targetGrid.y };
 		while (true) {
 			const p = prev[step.y][step.x];
