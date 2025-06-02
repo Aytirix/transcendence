@@ -4,12 +4,12 @@ import IronManNavBar from './IronManNavBar';
 import './assets/styles/UserProfile.css';
 
 interface ProfileForm {
-  email: string;
-  password: string;
-  username: string;
-  confirmPassword: string;
-  lang:  string;
-  avatar: string;
+  email?: string;
+  password?: string;
+  username?: string;
+  confirmPassword?: string;
+  lang?: string;
+  avatar?: string;
 }
 const defaultAvatars = [
   'src/app/assets/avatars/avatar1.png',
@@ -64,25 +64,19 @@ const UserProfile: React.FC = () => {
 
     try {
       let resp;
-
-      // Gestion de l'upload d'avatar custom :
-      if (form.avatar === 'custom' && customAvatarFile) {
-        const data = new FormData();
-        data.append('username', form.username);
-        data.append('email', form.email);
-        data.append('password', form.password);
-        data.append('confirmPassword', form.confirmPassword);
-        data.append('lang', form.lang);
-        data.append('avatar', customAvatarFile);
-
-        // À adapter selon ta route backend
-        resp = await ApiService.post('/update-user', form) as ApiService;
-      } else {
-        // Avatar sélectionné par défaut
-        const payload = { ...form };
-        // On transmet le chemin d'avatar par défaut sélectionné
-        resp = await ApiService.put('/update-user', payload) as ApiService;
-      }
+      
+      const tab = { ...form };
+      if (tab.email === '') delete tab.email;
+      if (tab.username === '') delete tab.username;
+      if (tab.lang === '') delete tab.lang;
+      if (tab.password === '') delete tab.password;
+      if (tab.confirmPassword === '') delete tab.confirmPassword;
+      // if (form.avatar === 'custom' && customAvatarFile) {
+          // tab.avatar = customAvatarFile
+      // } else {
+      // }
+      delete tab.avatar;
+      resp = await ApiService.put('/update-user', tab) as ApiService;
 
       if (!resp.ok) {
         const data = await resp.json();
@@ -135,7 +129,6 @@ const UserProfile: React.FC = () => {
           placeholder="Pseudo"
           value={form.username}
           onChange={handleChange}
-          required
         />
         <input
           className="profile-input"
@@ -144,7 +137,6 @@ const UserProfile: React.FC = () => {
           placeholder="E-mail"
           value={form.email}
           onChange={handleChange}
-          required
         />
         <input
           className="profile-input"
@@ -167,7 +159,6 @@ const UserProfile: React.FC = () => {
           name="lang"
           value={form.lang}
           onChange={handleChange}
-          required
         >
           <option value="">Langue...</option>
           <option value="fr">Français</option>
