@@ -6,6 +6,7 @@ import { CenteredBox } from './menu/CenteredBox';
 import { useAuth } from '../../contexts/AuthContext';
 import PacmanGame from './theojeutmp/PacmanGame';
 import CreatePacmanMap from './menu/CreatePacmanMap'; // Import the map editor
+import '../assets/styles/Star.scss';
 
 function initState(): state {
 	const state: state = {
@@ -199,17 +200,25 @@ export default function WebSocketPacman() {
 	}, [websocket]);
 
 	return (
-		<div className="bg-gray-200 text-white flex flex-col items-center justify-center">
-			{showMapEditor ? (
-				<CreatePacmanMap state={state} onSave={handleSaveMap} onCancel={() => setShowMapEditor(false)} />
-			) : state.game.grid && state.game.grid.length > 0 ? (
-				<PacmanGame state={state} />
-			) : (
-				<CenteredBox
-					state={state}
-					onCreateMap={() => setShowMapEditor(true)} // Pass this prop to CenteredBox
-				/>
-			)}
+		<div id="PacmanStars">
+			<div className="star-background">
+				<div id="stars-bright"></div>
+				<div id="shooting-stars">
+					<span></span><span></span><span></span><span></span><span></span>
+				</div>
+			</div>
+			<div className="bg-gray-200 text-white flex flex-col items-center justify-center">
+				{showMapEditor ? (
+					<CreatePacmanMap state={state} onSave={handleSaveMap} onCancel={() => setShowMapEditor(false)} />
+				) : state.game.grid && state.game.grid.length > 0 ? (
+					<PacmanGame state={state} />
+				) : (
+					<CenteredBox
+						state={state}
+						onCreateMap={() => setShowMapEditor(true)} // Pass this prop to CenteredBox
+					/>
+				)}
+			</div>
 		</div>
 	);
 }
