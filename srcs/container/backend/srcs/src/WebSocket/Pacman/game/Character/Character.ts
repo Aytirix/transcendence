@@ -15,7 +15,7 @@ export default class Character {
 	public teleport: boolean;
 	public spawnTarget: vector2 | null = null;
 
-	constructor(player: player, position: vector2, nameChar: CharacterType) {
+	constructor(player: player, position: vector2, spawnTarget: vector2, nameChar: CharacterType) {
 		this.player = player;
 		this.direction = { x: 0, y: 0 };
 		this.nextDirection = { x: 0, y: 0 };
@@ -23,7 +23,7 @@ export default class Character {
 		this.nameChar = nameChar;
 		this.score = 0;
 		this.teleport = false;
-		this.spawnTarget = { ...position };
+		this.spawnTarget = spawnTarget;
 	}
 
 	public changeDirection(direction: string): void {
@@ -43,7 +43,6 @@ export default class Character {
 					directionVector = { x: 1, y: 0 };
 					break;
 			}
-			console.log('nextDirection', directionVector);
 			if (directionVector) this.nextDirection = directionVector;
 		}
 	}

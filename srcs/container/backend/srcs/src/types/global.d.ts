@@ -16,14 +16,8 @@ declare module 'fastify' {
 	}
 }
 
-declare module 'fastify' {
-	interface FastifyRequest {
-		i18n: i18next.i18n;
-		session: SessionData;
-	}
-}
 declare module 'ws' {
 	interface WebSocket {
-	  i18n?: any;
+		i18n?: any;
 	}
-  }
+}
