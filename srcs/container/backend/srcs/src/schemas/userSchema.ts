@@ -79,6 +79,7 @@ export const update = {
 	body: {
 		properties: {
 			...register.body.properties,
+			avatar: { type: 'string', format: 'uri', nullable: true },
 		},
 		errorMessage: {
 			properties: {
@@ -134,10 +135,52 @@ export const isAuth = {
 	},
 }
 
+export const authGoogleCallback = {
+	description: 'Callback pour l\'authentification Google. Utilisé après la redirection de Google.',
+	tags: ['Authentification'],
+	body: {
+		type: 'object',
+		properties: {
+			jwt: { type: 'string', minLength: 1 },
+		},
+		required: ['JWT'],
+	},
+	response: {
+		200: {
+			description: 'Authentification Google réussie',
+			type: 'object',
+			properties: {
+				isAuthenticated: { type: 'boolean', const: true },
+				user: {
+					type: 'object',
+					properties: {
+						id: { type: 'number', minLength: 3, maxLength: 5 },
+						email: { type: 'string', format: 'email' },
+						username: { type: 'string', minLength: 3, maxLength: 15, pattern: '^[a-zA-Z0-9]+$' },
+						lang: { type: 'string', enum: ['fr', 'en', 'it'] },
+						avatar: { type: 'string', format: 'uri' },
+					},
+				},
+			},
+			required: ['isAuthenticated', 'user'],
+		},
+		401: {
+			description: 'Authentification Google échouée',
+			type: 'object',
+			properties: {
+				isAuthenticated: { type: 'boolean', const: false },
+				user: { type: 'null', const: null },
+			},
+			required: ['isAuthenticated', 'user'],
+		},
+	},
+};
+
 export default {
 	login,
 	register,
 	update,
 	logout,
 	isAuth,
+	authGoogleCallback
 };
