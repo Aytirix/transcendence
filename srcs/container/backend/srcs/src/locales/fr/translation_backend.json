@@ -28,6 +28,8 @@
 		}
 	},
 	"login": {
+		"passwordNotSet": "Veuillez vous connecter avec Google et définir un mot de passe pour utiliser cette fonctionnalité.",
+		"usernameGenerationFailed": "Échec de la génération du nom d'utilisateur.",
 		"failed": "L'adresse e-mail ou le mot de passe est incorrect.",
 		"success": "Vous êtes maintenant connecté.",
 		"alreadyLoggedIn": "Vous êtes déjà connecté.",
