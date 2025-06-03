@@ -13,6 +13,7 @@ import { PacManWebSocket } from './Pacman/PacManWebSocket';
 import { createi18nObject } from '../hook';
 
 let wss: WebSocketServer | null = null;
+let userConnected: string[] = [];
 
 async function initWebSocket(server: FastifyInstance) {
 	if (wss) return;
@@ -38,7 +39,20 @@ async function initWebSocket(server: FastifyInstance) {
 				ws.close(1008, JSON.stringify({ action: 'error', result: 'error', notification: ['Erreur : chemin WebSocket non reconnu.'] }));
 				break;
 		}
+
+		ws.on('close', () => {
+			const userIndex = userConnected.indexOf(`${path}_${session.user.id}`);
+			if (userIndex !== -1) userConnected.splice(userIndex, 1);
+			else console.warn(`User not found in connected users list: ${session.user.id}`);
+		});
+
+		ws.on('error', (error: Error) => {
+			const userIndex = userConnected.indexOf(`${path}_${session.user.id}`);
+			if (userIndex !== -1) userConnected.splice(userIndex, 1);
+			else console.warn(`User not found in connected users list: ${session.user.id}`);
+		});
 	});
+
 
 	server.server.on('upgrade', async (request: IncomingMessage, socket: Socket, head: Buffer) => {
 		try {
@@ -48,6 +62,14 @@ async function initWebSocket(server: FastifyInstance) {
 				socket.destroy();
 				return;
 			}
+
+			if (userConnected.includes(`${request.url}_${session.user.id}`)) {
+				socket.write('HTTP/1.1 409 Conflict\r\n\r\n');
+				socket.destroy();
+				return;
+			}
+
+			userConnected.push(`${request.url}_${session.user.id}`);
 
 			wss?.handleUpgrade(request, socket, head, (ws: WebSocket) => {
 				wss?.emit('connection', ws, session, request);
