@@ -14,7 +14,7 @@ export const GHOST_SPEED = 2.5;
  */
 export default class Engine {
 	private players: Map<number, Ghost | Pacman> = new Map();
-	private Spectators: Map<player, WebSocket> = new Map();
+	public Spectators: Map<player, WebSocket> = new Map();
 	private map: PacmanMap;
 	private tickRate = 1000 / 60;
 	private lastTime = Date.now();
@@ -24,6 +24,7 @@ export default class Engine {
 	private PauseMessage: string = "";
 	private Finished: boolean = false;
 	public trainingAI: boolean = false;
+	private trainingLastPause = Date.now() - 10000; // Pour éviter de bloquer l'IA au démarrage
 	private win: 'pacman' | 'ghosts' | null = null;
 	private reward: number = 0;
 
@@ -98,6 +99,57 @@ export default class Engine {
 
 			this.players.set(p.id, player);
 		});
+	}
+
+	public removePlayer(playerId: number): void {
+		if (this.players.has(playerId)) {
+
+			const allPlayerIds = Array.from(this.players.keys());
+			const minId = Math.min(...allPlayerIds, 0);
+			const botPlayer: player = {
+				id: minId - 1,
+				username: 'bot' + Math.abs(minId - 1),
+				updateAt: Date.now(),
+				avatar: '',
+				lang: 'en',
+				elo: 1000,
+				gameId: this.players.get(playerId)?.player.gameId,
+				isSpectator: false,
+				room: this.players.get(playerId)?.player.room,
+			};
+
+			if (this.players.get(playerId)?.nameChar === CharacterType.Pacman) {
+				this.pause("Pacman left, resetting all players to spawn positions");
+				this.resetAllPlayerPositions();
+				// prendre un joueur fantôme au hasard pour le remplacer
+				const ghostPlayers = Array.from(this.players.values()).filter(p => p instanceof Ghost);
+				if (ghostPlayers.length > 0) {
+					const randomGhost = ghostPlayers[Math.floor(Math.random() * ghostPlayers.length)];
+
+					const botGhost = new Ghost(botPlayer, randomGhost.position, randomGhost.nameChar, this.map);
+					this.players.set(botPlayer.id, botGhost);
+					const pacmanPlayer = new Pacman(randomGhost.player, randomGhost.position, CharacterType.Pacman);
+					this.players.set(pacmanPlayer.player.id, pacmanPlayer);
+				}
+				this.players.delete(playerId);
+				this.sockets.delete(playerId);
+			}
+			else {
+				const botGhost = new Ghost(botPlayer, this.players.get(playerId).position, this.players.get(playerId).nameChar, this.map);
+				this.players.delete(playerId);
+				this.sockets.delete(playerId);
+			}
+		}
+
+		if (this.players.size === 0 || Array.from(this.players.keys()).every(id => id < 0)) {
+			this.stop();
+			this.Finished = true;
+			return;
+		}
+
+		for (const player of this.players.values()) {
+			console.log(`Player ${player.player.username} (${player.nameChar}) is at position ${JSON.stringify(player.position)}`);
+		}
 	}
 
 	/**
@@ -176,6 +228,16 @@ export default class Engine {
 	 */
 	public start(): void {
 		this.stop();
+
+		if (this.trainingAI) {
+			this.isPaused = false;
+			this.PauseMessage = "";
+			this.lastTime = Date.now();
+			this.broadcastState();
+			this.intervalId = setInterval(() => this.gameLoop(), this.tickRate);
+			return;
+		}
+
 		let countdown = 3;
 		this.pause(`Starting in ${countdown}`);
 		countdown--;
@@ -195,11 +257,10 @@ export default class Engine {
 					this.resume();
 					this.lastTime = Date.now();
 					this.intervalId = setInterval(() => this.gameLoop(), this.tickRate);
-				}, this.trainingAI ? 10 : 500);
+				}, 500);
 			}
 			countdown--;
-		}, this.trainingAI ? 10 : 1000);
-
+		}, 1000);
 	}
 
 	/**
@@ -229,6 +290,7 @@ export default class Engine {
 	public resume(): boolean {
 		this.isPaused = false;
 		this.lastTime = Date.now();
+		this.trainingLastPause = Date.now();
 		return true;
 	}
 
@@ -265,7 +327,6 @@ export default class Engine {
 			this.update(delta);
 		}
 		this.broadcastState();
-		if (this.trainingAI) this.isPaused = true;
 	}
 
 	/**
@@ -550,7 +611,6 @@ export default class Engine {
 			const pacmanId = Array.from(this.players.values()).find(p => p instanceof Pacman)?.player.id;
 			this.reward += -200;
 			this.pause(`Pacman is dead!\nLives remaining ${pacman.life}`);
-			this.Finished = false;
 			this.broadcastState();
 			// wait one second before hiding ghost
 			setTimeout(() => {
@@ -577,10 +637,14 @@ export default class Engine {
 			this.pause("Game finished! Ghosts win!");
 			this.win = 'ghosts';
 			this.broadcastState();
+			if (this.trainingAI) {
+				this.Finished = true;
+				return;
+			}
 			setTimeout(() => {
 				this.stop();
 				this.Finished = true;
-			}, this.trainingAI ? 10 : 10000);
+			}, 10000);
 		}
 	}
 
@@ -643,6 +707,13 @@ export default class Engine {
 	 * Envoie l'état du jeu à tous les clients
 	 */
 	private broadcastStateAI(): void {
+		const diff = Date.now() - this.trainingLastPause;
+		if (this.win == null || this.Finished) {
+			if (this.trainingAI && (diff <= 250 || this.isPaused || this.Finished)) {
+				return;
+			}
+		}
+
 		const pacmanPlayer = Array.from(this.players.values()).find(p => p instanceof Pacman);
 		const ghostPlayers = Array.from(this.players.values()).filter(p => p instanceof Ghost);
 		const state = {
@@ -674,5 +745,8 @@ export default class Engine {
 				ws.send(JSON.stringify(state));
 			}
 		});
+		if (this.win != null) this.Finished = true;
+		this.win = null;
+		this.pause('');
 	}
 }

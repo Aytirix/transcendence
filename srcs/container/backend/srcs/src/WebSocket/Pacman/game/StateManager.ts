@@ -86,6 +86,7 @@ class RoomManager {
 			}
 			room.players = room.players.filter(player => player.id !== playerId);
 			this.rooms.set(room.id, room);
+			room.engine?.removePlayer(playerId);
 		}
 	}
 
@@ -213,6 +214,14 @@ class StateManager {
 		this.PlayerRoomWs.delete(playerId);
 	}
 
+	public removePlayerGame(player: player, ws: WebSocket): void {
+		this.RoomManager.removePlayerFromAllRoom(player.id);
+		this.PlayerRoom.set(player.id, player);
+		this.PlayerRoomWs.set(player.id, ws);
+		this.PlayerGame.delete(player.id);
+		this.PlayerGameWs.delete(player.id);
+	}
+
 	public stopGame(game: room): void {
 		if (game) {
 			const tmp = new Map<number, WebSocket>();
@@ -225,6 +234,16 @@ class StateManager {
 				this.PlayerRoom.set(player.id, player);
 				this.PlayerRoomWs.set(player.id, this.PlayerGameWs.get(player.id));
 				tmp.set(player.id, ws);
+			}
+			for (const [spectator, ws] of game.engine?.Spectators || []) {
+				this.PlayerGame.delete(spectator.id);
+				this.PlayerGameWs.delete(spectator.id);
+				this.PlayerRoom.set(spectator.id, spectator);
+				this.PlayerRoomWs.set(spectator.id, ws);
+				spectator.gameId = null;
+				spectator.room = null;
+				spectator.isSpectator = false;
+				tmp.set(spectator.id, ws);
 			}
 			this.RoomManager.removeRoom(game.id);
 			this.sendRooms(tmp);
@@ -266,6 +285,7 @@ class StateManager {
 				if (now - player.updateAt > 10000) {
 					this.RoomManager.removePlayerFromAllRoom(player.id);
 					this.removePlayer(player.id);
+					this.sendRooms();
 				}
 			}
 
@@ -273,6 +293,7 @@ class StateManager {
 				if (room.engine) {
 					if (room.engine.isFinished()) {
 						this.stopGame(room);
+						this.sendRooms();
 					}
 				}
 			}
