@@ -172,7 +172,7 @@ export function handleKickRoom(ws: WebSocket, player: player, json: any): void {
 }
 
 export function handleLeaveRoom(ws: WebSocket, player: player): void {
-	StateManager.RoomManager.removePlayerFromRoom(player.room, player.id);
+	StateManager.removePlayerGame(player, ws);
 	StateManager.sendRooms();
 }
 

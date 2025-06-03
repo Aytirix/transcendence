@@ -437,7 +437,7 @@ const PacmanGame: React.FC<PacmanGameProps> = ({ state }) => {
 						onClick={() => {
 							if (state.ws && state.ws.readyState === WebSocket.OPEN) {
 								state.ws.send(JSON.stringify({
-									action: 'quitGame'
+									action: 'leaveRoom'
 								}));
 							}
 						}}

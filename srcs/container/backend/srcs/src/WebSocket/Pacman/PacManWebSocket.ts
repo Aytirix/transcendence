@@ -52,7 +52,7 @@ async function PacManWebSocket(ws: WebSocket, user: User): Promise<void> {
 		}
 
 		if (player.isSpectator && action !== 'leaveSpectator') {
-			controllerPacman.sendResponse(ws, 'error', 'error', ws.i18n.t('pacman.error.YourModeSpectator'));
+			controllerPacman.sendResponse(ws, 'error', 'error', ws.i18n.t('pacman.rooms.YourModeSpectator'));
 			return;
 		}
 
