@@ -17,13 +17,14 @@ class RoomManager {
 
 	public createRoom(player: player, name: string): room {
 		if (this.PlayerInRoom(player.id)) return;
+		console.log(`map: ${JSON.stringify(defaultMap)}`);
 		const room: room = {
 			id: Date.now() + Math.floor(Math.random() * 1000),
 			name: name,
 			owner_id: player.id,
 			owner_username: player.username,
 			settings: {
-				map: defaultMap
+				map: JSON.parse(JSON.stringify(defaultMap))
 			},
 			players: [player],
 			state: 'waiting',

@@ -1,5 +1,6 @@
-import React, { useState, ChangeEvent } from 'react';
+import React, { useState, ChangeEvent, useEffect } from 'react';
 import ApiService from '../api/ApiService';
+import {useAuth} from '../contexts/AuthContext';
 import IronManNavBar from './IronManNavBar';
 import './assets/styles/UserProfile.css';
 
@@ -32,6 +33,19 @@ const UserProfile: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+
+
+  useEffect(() => {
+    // Ce code sera exécuté à chaque montage du composant
+    console.log("Le composant est monté !");
+  const toto = useAuth()
+  console.log("TOTOTOTOT", toto);
+  form.username = toto?.user?.username;
+  form.email = toto.user?.email
+  }, []);
+
+
+
 
   const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -126,7 +140,7 @@ const UserProfile: React.FC = () => {
           className="profile-input"
           type="text"
           name="username"
-          placeholder="Pseudo"
+          // placeholder={toto?.user?.username || "Pseudo"}
           value={form.username}
           onChange={handleChange}
         />
@@ -134,7 +148,7 @@ const UserProfile: React.FC = () => {
           className="profile-input"
           type="email"
           name="email"
-          placeholder="E-mail"
+          // placeholder={toto?.user?.email || "E-mail"}
           value={form.email}
           onChange={handleChange}
         />

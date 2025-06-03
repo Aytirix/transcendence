@@ -71,3 +71,5 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 		</IsAuthenticated.Provider>
 	);
 };
+
+// export const useAuth = () => useContext(IsAuthenticated);
