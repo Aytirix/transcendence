@@ -42,7 +42,7 @@ export default class Engine {
 
 		// Vérifier si un joueur est une IA pour le mode entraînement
 		for (const player of room.players) {
-			if (player.username === 'PacmanAI') {
+			if (player.username.startsWith('PacmanAI')) {
 				this.trainingAI = true;
 				break;
 			}
