@@ -17,7 +17,6 @@ class RoomManager {
 
 	public createRoom(player: player, name: string): room {
 		if (this.PlayerInRoom(player.id)) return;
-		console.log(`map: ${JSON.stringify(defaultMap)}`);
 		const room: room = {
 			id: Date.now() + Math.floor(Math.random() * 1000),
 			name: name,
@@ -133,9 +132,14 @@ class RoomManager {
 	public getRoomByPlayerId(playerId: number): room | undefined {
 		for (const game of this.rooms.values()) {
 			if (game.players.some(player => player.id === playerId)) {
+				if (playerId == 20) console.log(`Player with ID ${playerId} is in room ${game.id}`);
+				return game;
+			} else if (game.engine && Array.from(game.engine.Spectators.keys()).some(spectator => spectator.id === playerId)) {
+				if (playerId == 20) console.log(`Player with ID ${playerId} is a spectator in room ${game.id}`);
 				return game;
 			}
 		}
+		if (playerId == 20) console.error(`No room found for player with ID ${playerId}`);
 		return undefined;
 	}
 
@@ -152,10 +156,10 @@ class RoomManager {
 
 class StateManager {
 	private static instance: StateManager;
-	private PlayerRoom: Map<number, player> = new Map();
-	private PlayerRoomWs: Map<number, WebSocket> = new Map();
-	private PlayerGame: Map<number, player> = new Map();
-	private PlayerGameWs: Map<number, WebSocket> = new Map();
+	public PlayerRoom: Map<number, player> = new Map();
+	public PlayerRoomWs: Map<number, WebSocket> = new Map();
+	public PlayerGame: Map<number, player> = new Map();
+	public PlayerGameWs: Map<number, WebSocket> = new Map();
 	public RoomManager: RoomManager = RoomManager.getInstance();
 
 	private constructor() { }
@@ -184,7 +188,7 @@ class StateManager {
 		if (this.RoomManager.PlayerInRoom(player.id)) return;
 		if (room) {
 			player.isSpectator = true;
-			room.players.push(player);
+			player.room = room;
 			room.engine?.addSpectator(player, playerws);
 			this.PlayerGame.set(player.id, player);
 			this.PlayerGameWs.set(player.id, playerws);
@@ -194,21 +198,6 @@ class StateManager {
 		}
 	}
 
-	public leaveRoomSpectator(room: room, player: player): void {
-		room.players = room.players.filter(player => player.id !== player.id);
-		room.engine?.removeSpectator(player);
-		const ws = this.PlayerGameWs.get(player.id);
-		this.PlayerGame.delete(player.id);
-		this.PlayerGameWs.delete(player.id);
-		this.PlayerRoomWs.set(player.id, this.PlayerGameWs.get(player.id));
-		this.PlayerRoom.set(player.id, player);
-		this.RoomManager.updatePlayerInRoom(room, player);
-		const tmp = new Map<number, WebSocket>();
-		tmp.set(player.id, ws);
-		console.log(`Leaving spectator mode for player ${player.username} (${player.id})`);
-		this.sendRooms(tmp);
-	}
-
 	public removePlayer(playerId: number): void {
 		this.PlayerRoom.delete(playerId);
 		this.RoomManager.removePlayerFromAllRoom(playerId);
@@ -216,6 +205,7 @@ class StateManager {
 	}
 
 	public removePlayerGame(player: player, ws: WebSocket): void {
+		player.room.engine?.removeSpectator(player);
 		this.RoomManager.removePlayerFromAllRoom(player.id);
 		this.PlayerRoom.set(player.id, player);
 		this.PlayerRoomWs.set(player.id, ws);

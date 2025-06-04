@@ -34,7 +34,6 @@ export const insertOrUpdateMap = async (ws: WebSocket, user_id: number, request:
 		is_public: boolean;
 	};
 	const id = request.mapData.id;
-	console.log(`id map: ${id}`);
 
 	if (!name) return sendResponse(ws, 'insertOrUpdateMap', 'error', [ws.i18n.t('pacman.error.name.required')]);
 	if (!map || !Array.isArray(map) || map.length === 0 || !map[0] || !Array.isArray(map[0])) return sendResponse(ws, 'insertOrUpdateMap', 'error', [ws.i18n.t('pacman.error.map.required')]);
@@ -133,6 +132,17 @@ export function createTestRoom(player: player, room: room): void {
 }
 
 export function handleAddUser(ws: WebSocket, player: player): void {
+
+	const room = StateManager.RoomManager.getRoomByPlayerId(player.id);
+	if (room) {
+		player.room = room;
+		StateManager.PlayerGame.set(player.id, player);
+		StateManager.PlayerGameWs.set(player.id, ws);
+		StateManager.PlayerRoom.delete(player.id);
+		StateManager.PlayerRoomWs.delete(player.id);
+		room.engine?.updatePlayer(player, ws);
+		return;
+	}
 	StateManager.addPlayer(ws, player);
 	const tmp = new Map<number, WebSocket>();
 	tmp.set(player.id, ws);
@@ -222,14 +232,6 @@ export function handleJoinRoomSpectator(ws: WebSocket, player: player, json: any
 	StateManager.joinRoomSpectator(room, player, ws);
 }
 
-export function handleLeaveRoomSpectator(ws: WebSocket, player: player, json: any): void {
-	if (!json.room_id) return sendResponse(ws, 'error', 'error', [ws.i18n.t('pacman.id_required')]);
-	if (player.room) return sendResponse(ws, 'error', 'error', [ws.i18n.t('pacman.already_in_room')]);
-	const room = StateManager.RoomManager.getRoomById(json.room_id);
-	if (!room) return sendResponse(ws, 'error', 'error', [ws.i18n.t('pacman.not_found')]);
-	StateManager.leaveRoomSpectator(room, player);
-}
-
 export default {
 	sendResponse,
 	getAllMapForUser,
@@ -244,6 +246,5 @@ export default {
 	handleSetOwnerRoom,
 	handleLaunchRoom,
 	handlePlayerMove,
-	handleJoinRoomSpectator,
-	handleLeaveRoomSpectator,
+	handleJoinRoomSpectator
 };

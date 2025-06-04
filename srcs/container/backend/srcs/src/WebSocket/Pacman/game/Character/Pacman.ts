@@ -17,4 +17,5 @@ export default class Pacman extends Character {
 
 	public static get speed(): number { return this._speed; }
 	public static set speed(value: number) { this._speed = value; }
+
 }

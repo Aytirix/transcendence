@@ -18,7 +18,7 @@ export async function setupSwagger(app: FastifyInstance) {
 						description: 'Serveur de développement',
 					},
 					{
-						url: 'https://c4r1p3:7000/',
+						url: 'https://c4r2p1:7000/',
 						description: 'Serveur de développement',
 					}
 				],

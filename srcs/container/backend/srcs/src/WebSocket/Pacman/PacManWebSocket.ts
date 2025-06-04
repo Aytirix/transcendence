@@ -51,7 +51,7 @@ async function PacManWebSocket(ws: WebSocket, user: User): Promise<void> {
 			return;
 		}
 
-		if (player.isSpectator && action !== 'leaveSpectator') {
+		if (player.isSpectator && action !== 'leaveRoom') {
 			controllerPacman.sendResponse(ws, 'error', 'error', ws.i18n.t('pacman.rooms.YourModeSpectator'));
 			return;
 		}
@@ -83,9 +83,6 @@ async function PacManWebSocket(ws: WebSocket, user: User): Promise<void> {
 				break;
 			case 'joinSpectator':
 				controllerPacman.handleJoinRoomSpectator(ws, player, text);
-				break;
-			case 'leaveSpectator':
-				controllerPacman.handleLeaveRoomSpectator(ws, player, text);
 				break;
 			case 'playerMove':
 				controllerPacman.handlePlayerMove(ws, player, text);
