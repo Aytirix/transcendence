@@ -120,9 +120,8 @@ export default class Engine {
 
 			if (this.players.get(playerId)?.nameChar === CharacterType.Pacman) {
 				this.pause("Pacman left, resetting all players to spawn positions");
-				this.resetAllPlayerPositions();
 				// prendre un joueur fantôme au hasard pour le remplacer
-				const ghostPlayers = Array.from(this.players.values()).filter(p => p instanceof Ghost);
+				const ghostPlayers = Array.from(this.players.values()).filter(p => p instanceof Ghost && p.player.id > 0);
 				if (ghostPlayers.length > 0) {
 					const randomGhost = ghostPlayers[Math.floor(Math.random() * ghostPlayers.length)];
 
@@ -133,11 +132,21 @@ export default class Engine {
 				}
 				this.players.delete(playerId);
 				this.sockets.delete(playerId);
+				this.resetAllPlayerPositions();
+				if (this.players.size === 0 || Array.from(this.players.keys()).every(id => id < 0)) {
+					this.stop();
+					this.Finished = true;
+					return;
+				}
+				setTimeout(() => {
+					this.start();
+				}, 2000);
 			}
 			else {
 				const botGhost = new Ghost(botPlayer, this.players.get(playerId).position, this.players.get(playerId).nameChar, this.map);
 				this.players.delete(playerId);
 				this.sockets.delete(playerId);
+				this.players.set(botPlayer.id, botGhost);
 			}
 		}
 
@@ -145,10 +154,6 @@ export default class Engine {
 			this.stop();
 			this.Finished = true;
 			return;
-		}
-
-		for (const player of this.players.values()) {
-			console.log(`Player ${player.player.username} (${player.nameChar}) is at position ${JSON.stringify(player.position)}`);
 		}
 	}
 
@@ -189,12 +194,25 @@ export default class Engine {
 	}
 
 	public updatePlayer(player: player, ws: WebSocket): void {
+		console.log(`Updating player ${player.id} in engine`);
 		if (this.players.has(player.id)) {
+			console.log(`Player ${player.id} already exists in engine, updating...`);
 			const existingPlayer = this.players.get(player.id);
 			if (existingPlayer) {
 				existingPlayer.player = player;
 				this.players.set(player.id, existingPlayer);
 				this.sockets.set(player.id, ws);
+			}
+		} else {
+			for (const [spectatorPlayer, spectatorWs] of this.Spectators) {
+				if (spectatorPlayer.id === player.id) {
+					console.log(`Player ${player.id} found in spectators, updating...`);
+					this.Spectators.delete(spectatorPlayer);
+					this.Spectators.set(player, ws);
+					this.Spectators.set(player, ws);
+					player.isSpectator = true;
+					break;
+				}
 			}
 		}
 	}
@@ -267,6 +285,8 @@ export default class Engine {
 	 * Arrête la boucle de jeu
 	 */
 	public stop(): void {
+		this.isPaused = true;
+		this.PauseMessage = "Game stopped";
 		if (this.intervalId) {
 			clearInterval(this.intervalId);
 			this.intervalId = null;
@@ -302,31 +322,39 @@ export default class Engine {
 		const delta = now - this.lastTime;
 		this.lastTime = now;
 
-		this.reward = 0;
-		if (!this.isPaused) {
-			let pacmanInstance: Pacman | undefined;
-			this.players.forEach(player => {
-				if (player.nameChar === CharacterType.Pacman) pacmanInstance = player as Pacman;
-			});
+		try {
+			this.reward = 0;
+			if (!this.isPaused) {
+				let pacmanInstance: Pacman | undefined;
+				this.players.forEach(player => {
+					if (player.nameChar === CharacterType.Pacman) pacmanInstance = player as Pacman;
+				});
 
-			if (this.isFrightened && Date.now() > this.frightenedEndTime) {
-				this.unsetFrightened();
-			}
-
-			// Mettre à jour le comportement des fantômes
-			this.players.forEach(player => {
-				if (player instanceof Ghost && (now - player.player.updateAt > 2000 || player.isReturningToSpawn)) {
-					(player as Ghost).updateBehaviour(
-						pacmanInstance,
-						this.players as Map<number, Ghost>
-					);
+				if (this.isFrightened && Date.now() > this.frightenedEndTime) {
+					this.unsetFrightened();
 				}
-				if (this.trainingAI && player instanceof Pacman) this.reward += -0.017;
+
+				// Mettre à jour le comportement des fantômes
+				this.players.forEach(player => {
+					if (player instanceof Ghost && (now - player.player.updateAt > 2000 || player.isReturningToSpawn)) {
+						(player as Ghost).updateBehaviour(
+							pacmanInstance,
+							this.players as Map<number, Ghost>
+						);
+					}
+					if (this.trainingAI && player instanceof Pacman) this.reward += -0.017;
+				}
+				);
+				this.update(delta);
 			}
-			);
-			this.update(delta);
+			this.broadcastState();
+		} catch (error) {
+			console.error("Error in game loop:", error);
+			this.PauseMessage = "";
+			this.stop();
+			this.Finished = true;
+			this.broadcastState();
 		}
-		this.broadcastState();
 	}
 
 	/**
@@ -570,7 +598,7 @@ export default class Engine {
 			// Après un délai, marquer la partie comme terminée
 			setTimeout(() => {
 				this.Finished = true;
-			}, this.trainingAI ? 10 : 10000);
+			}, this.trainingAI ? 10 : 5000);
 			return true;
 		}
 		return false;
@@ -644,8 +672,40 @@ export default class Engine {
 			setTimeout(() => {
 				this.stop();
 				this.Finished = true;
-			}, 10000);
+			}, 5000);
 		}
+	}
+
+	/**
+	 * Trouve tous les fantômes à moins de 10 cases du Pacman
+	 * @returns Array des fantômes proches avec leur distance au Pacman
+	 */
+	public findGhostsNearPacman(): Array<{ ghost: Ghost, distance: number }> {
+		const pacmanPlayer = Array.from(this.players.values()).find(p => p instanceof Pacman) as Pacman;
+		if (!pacmanPlayer) return [];
+
+		const pacmanGridPos = this.pixelToGrid(pacmanPlayer.position);
+		const nearbyGhosts: Array<{ ghost: Ghost, distance: number }> = [];
+
+		this.players.forEach(player => {
+			if (player instanceof Ghost) {
+				const ghostGridPos = this.pixelToGrid(player.position);
+
+				// Calcul de la distance de Manhattan (cases)
+				const distance = Math.abs(ghostGridPos.x - pacmanGridPos.x) +
+					Math.abs(ghostGridPos.y - pacmanGridPos.y);
+
+				if (distance <= 20) {
+					nearbyGhosts.push({
+						ghost: player,
+						distance: distance
+					});
+				}
+			}
+		});
+
+		// Trier par distance croissante
+		return nearbyGhosts.sort((a, b) => a.distance - b.distance);
 	}
 
 	/**
@@ -653,54 +713,52 @@ export default class Engine {
 	 */
 	private broadcastState(): void {
 		if (this.trainingAI) this.broadcastStateAI();
-		if ((this.trainingAI && this.Spectators.size > 0) || !this.trainingAI) {
-			const state = {
-				action: 'updateGame',
-				data: {
-					players: Array.from(this.players.values()).map(p => ({
-						id: p.player.id,
-						username: p.player.username,
-						character: p.nameChar,
-						position: p.position,
-						positionGrid: this.pixelToGrid(p.position),
-						score: p.score,
-						direction: p.directionToString(),
-						isFrightened: p instanceof Ghost ? p.isFrightened : false,
-						returnToSpawn: p instanceof Ghost ? p.isReturningToSpawn : false
-					})),
-					numberOfPlayers: this.players.size,
-					pacmanLife: Array.from(this.players.values()).find(p => p instanceof Pacman)?.life,
-					grid: this.map.toString(),
-					tileSize: TILE_SIZE,
-					isSpectator: false,
-					win: this.win,
-					paused: { paused: this.isPaused, message: this.PauseMessage },
-					frightenedState: {
-						active: this.isFrightened,
-						remainingTime: this.isFrightened ? Math.max(0, this.frightenedEndTime - Date.now()) : 0
-					}
+		const state = {
+			action: 'updateGame',
+			data: {
+				players: Array.from(this.players.values()).map(p => ({
+					id: p.player.id,
+					username: p.player.username,
+					character: p.nameChar,
+					position: p.position,
+					positionGrid: this.pixelToGrid(p.position),
+					score: p.score,
+					direction: p.directionToString(),
+					isFrightened: p instanceof Ghost ? p.isFrightened : false,
+					returnToSpawn: p instanceof Ghost ? p.isReturningToSpawn : false
+				})),
+				numberOfPlayers: this.players.size,
+				pacmanLife: Array.from(this.players.values()).find(p => p instanceof Pacman)?.life,
+				grid: this.map.toString(),
+				tileSize: TILE_SIZE,
+				isSpectator: false,
+				win: this.win,
+				paused: { paused: this.isPaused, message: this.PauseMessage },
+				frightenedState: {
+					active: this.isFrightened,
+					remainingTime: this.isFrightened ? Math.max(0, this.frightenedEndTime - Date.now()) : 0
 				}
-			};
-			if (!this.trainingAI) {
-				this.sockets.forEach(ws => {
-					if (ws && ws.readyState === WebSocket.OPEN) {
-						ws.send(JSON.stringify(state));
-					}
-				});
 			}
-			this.Spectators.forEach((ws, player) => {
-				player.isSpectator = true;
+		};
+		if (!this.trainingAI) {
+			this.sockets.forEach(ws => {
 				if (ws && ws.readyState === WebSocket.OPEN) {
-					state.data.isSpectator = true;
 					ws.send(JSON.stringify(state));
-				} else {
-					if (Date.now() - player.updateAt > 5000) {
-						this.Spectators.delete(player);
-						player.isSpectator = false;
-					}
 				}
 			});
 		}
+		this.Spectators.forEach((ws, player) => {
+			player.isSpectator = true;
+			if (ws && ws.readyState === WebSocket.OPEN) {
+				state.data.isSpectator = true;
+				ws.send(JSON.stringify(state));
+			} else {
+				if (Date.now() - player.updateAt > 5000) {
+					this.Spectators.delete(player);
+					player.isSpectator = false;
+				}
+			}
+		});
 	}
 
 	/**
@@ -708,14 +766,14 @@ export default class Engine {
 	 */
 	private broadcastStateAI(): void {
 		const diff = Date.now() - this.trainingLastPause;
-		if (this.win == null || this.Finished) {
-			if (this.trainingAI && (diff <= 250 || this.isPaused || this.Finished)) {
+		if ((this.win == null || this.Finished) && diff < 2000) {
+			if (this.trainingAI && (diff <= 100 || this.isPaused || this.Finished)) {
 				return;
 			}
 		}
 
 		const pacmanPlayer = Array.from(this.players.values()).find(p => p instanceof Pacman);
-		const ghostPlayers = Array.from(this.players.values()).filter(p => p instanceof Ghost);
+		const ghostPlayers = this.findGhostsNearPacman();
 		const state = {
 			action: 'updateGame',
 			data: {
@@ -725,10 +783,11 @@ export default class Engine {
 					direction: pacmanPlayer.directionToString()
 				} : null,
 				ghosts: ghostPlayers.map(g => ({
-					positionGrid: this.pixelToGrid(g.position),
-					score: g.score,
-					isFrightened: g.isFrightened,
-					returnToSpawn: g.isReturningToSpawn
+					positionGrid: this.pixelToGrid(g.ghost.position),
+					score: g.ghost.score,
+					isFrightened: g.ghost.isFrightened,
+					returnToSpawn: g.ghost.isReturningToSpawn,
+					distanceToPacman: g.distance,
 				})),
 				grid: this.map.toString(),
 				win: this.win,
