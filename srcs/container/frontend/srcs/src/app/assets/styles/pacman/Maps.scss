@@ -35,3 +35,123 @@
 		}
 	}
 }
+
+.delete-btn {
+  padding: 4px 8px;
+  background-color: rgba(255, 0, 0, 0.1);
+  color: #ff3333;
+  border: 1px solid #ff3333;
+  border-radius: 4px;
+  font-size: 0.85em;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  transition: all 0.2s ease;
+  
+  &:hover {
+    background-color: rgba(255, 0, 0, 0.2);
+    transform: scale(1.05);
+  }
+  
+  &:active {
+    transform: scale(0.98);
+  }
+  
+  .icon {
+    margin-right: 5px;
+  }
+}
+
+.map-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px;
+  margin-bottom: 8px;
+  background-color: rgba(0, 0, 0, 0.2);
+  border-radius: 6px;
+  transition: all 0.2s;
+  
+  &:hover {
+    background-color: rgba(0, 0, 0, 0.3);
+  }
+  
+  .map-info {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    
+    .map-name {
+      font-weight: bold;
+      font-size: 1.1em;
+      color: #eee;
+    }
+    
+    .map-status {
+      font-size: 0.85em;
+      color: #aaa;
+    }
+    
+    .map-validity {
+      font-size: 0.85em;
+      padding: 2px 6px;
+      border-radius: 3px;
+      
+      &.valid {
+        background-color: rgba(0, 128, 0, 0.2);
+        color: #5f5;
+      }
+      
+      &.invalid {
+        background-color: rgba(128, 0, 0, 0.2);
+        color: #f55;
+      }
+    }
+  }
+  
+  .map-actions {
+    display: flex;
+    gap: 8px;
+    
+    button {
+      display: flex;
+      align-items: center;
+      padding: 5px 10px;
+      border-radius: 4px;
+      border: none;
+      cursor: pointer;
+      font-size: 0.9em;
+      
+      &.delete-btn {
+        background-color: rgba(255, 0, 0, 0.2);
+        color: #f99;
+        
+        &:hover {
+          background-color: rgba(255, 0, 0, 0.4);
+        }
+      }
+      
+      &.edit-btn {
+        background-color: rgba(0, 128, 255, 0.2);
+        color: #9cf;
+        
+        &:hover {
+          background-color: rgba(0, 128, 255, 0.4);
+        }
+      }
+      
+      &.play-btn {
+        background-color: rgba(0, 255, 0, 0.2);
+        color: #9f9;
+        
+        &:hover {
+          background-color: rgba(0, 255, 0, 0.4);
+        }
+      }
+      
+      .icon {
+        margin-right: 5px;
+      }
+    }
+  }
+}

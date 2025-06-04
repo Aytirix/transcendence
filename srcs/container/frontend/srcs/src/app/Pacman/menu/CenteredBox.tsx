@@ -7,7 +7,7 @@ import Rules from './Rules';
 import Maps from './Maps'; // Adjusted the path to point to the correct location
 import Settings from './Settings';
 import Statistics from './Statistics';
-import { state } from '../../types/pacmanTypes';
+import { state, PacmanMap } from '../../types/pacmanTypes';
 // import '@styles/pacman/CenteredBox.scss';
 import '../../assets/styles/pacman/CenteredBox.scss';
 
@@ -23,32 +23,11 @@ const TABS = [
 interface CenteredBoxProps {
 	state: state;
 	onCreateMap?: () => void;
+	onEditMap?: (map: PacmanMap) => void; // Ajouter cette prop
 }
 
-export const CenteredBox: React.FC<CenteredBoxProps> = ({ state, onCreateMap }) => {
+export const CenteredBox: React.FC<CenteredBoxProps> = ({ state, onCreateMap, onEditMap }) => {
 	const [currentPage, setCurrentPage] = useState<string>('WaitingRooms');
-
-	const renderContent = () => (
-		<AnimatePresence mode="wait">
-			<motion.div
-				key={currentPage}
-				initial={{ opacity: 0, y: 10 }}
-				animate={{ opacity: 1, y: 0 }}
-				exit={{ opacity: 0, y: 10 }}
-				transition={{ duration: 0.3 }}
-				className="content-wrapper"
-			>
-				{{
-					WaitingRooms: <WaitingRooms state={state} />,
-					ActiveRooms: <ActiveRooms state={state} />,
-					Rules: <Rules />,
-					Maps: <Maps onCreateMap={onCreateMap} state={state} />,
-					Settings: <Settings />,
-					Statistics: <Statistics />,
-				}[currentPage] || <p>Page non trouvée</p>}
-			</motion.div>
-		</AnimatePresence>
-	);
 
 	return (
 		<div className="centered-box">
@@ -71,7 +50,25 @@ export const CenteredBox: React.FC<CenteredBoxProps> = ({ state, onCreateMap }) 
 				</div>
 				{/* Colonne droite - Contenu */}
 				<div className='content-column'>
-					{renderContent()}
+					<AnimatePresence mode="wait">
+						<motion.div
+							key={currentPage}
+							initial={{ opacity: 0, y: 10 }}
+							animate={{ opacity: 1, y: 0 }}
+							exit={{ opacity: 0, y: 10 }}
+							transition={{ duration: 0.3 }}
+							className="content-wrapper"
+						>
+							{{
+								WaitingRooms: <WaitingRooms state={state} />,
+								ActiveRooms: <ActiveRooms state={state} />,
+								Rules: <Rules />,
+								Maps: <Maps onCreateMap={onCreateMap} onEditMap={onEditMap} state={state} />,
+								Settings: <Settings />,
+								Statistics: <Statistics />,
+							}[currentPage] || <p>Page non trouvée</p>}
+						</motion.div>
+					</AnimatePresence>
 				</div>
 			</div>
 			{/* Add a button for creating maps */}

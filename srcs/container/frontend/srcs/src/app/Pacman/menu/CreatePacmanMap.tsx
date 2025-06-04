@@ -9,21 +9,31 @@ interface CreatePacmanMapProps {
 	onSave?:  (mapData: PacmanMap, isAutoSave : boolean) => void;
 	onCancel: () => void;
 	initialMap?: string[];
+	editingMap?: Partial<PacmanMap>;
 }
 
 
-const CreatePacmanMap: React.FC<CreatePacmanMapProps> = ({ onSave, initialMap, onCancel, state }) => {
+const CreatePacmanMap: React.FC<CreatePacmanMapProps> = ({ state, onSave, onCancel, initialMap, editingMap }) => {
 	const DEFAULT_ROWS = 29;
 	const DEFAULT_COLS = 31;
 	const DEFAULT_TILE_SIZE = 15;
 
 	// État pourn stocker la grille de la carte
-	const [grid, setGrid] = useState<string[]>(initialMap || Array(DEFAULT_ROWS).fill(' '.repeat(DEFAULT_COLS)));
+	const [grid, setGrid] = useState<string[]>(
+		initialMap || Array(DEFAULT_ROWS).fill(' '.repeat(DEFAULT_COLS))
+	  );
 
 	// État pour le nom de la carte avec valeur initiale
-	const [mapName, setMapName] = useState<string>('');
+	const [mapName, setMapName] = useState<string>(editingMap?.name || 'Carte sans titre');
+	// Vérifier si une carte initiale est fournie et mettre à jour le nom
 	// Nom temporaire pour l'édition (ne sera pasa utilisé pour les auto-sauvegardes)
-	const [id, setId] = useState<number | undefined>(undefined);
+	const [id, setId] = useState<number | undefined>(editingMap?.id);
+	if (id === undefined && initialMap) {
+		const existingMap = state?.maps?.find(map => map.name === mapName);
+		if (existingMap) {
+			setId(existingMap.id);
+		}
+	}
 	const [nameModified, setNameModified] = useState<boolean>(false);
 	// Utiliser useEffect pour mettre à jour le nom dem la carte si un conflit est détecté
 
@@ -37,11 +47,38 @@ const CreatePacmanMap: React.FC<CreatePacmanMapProps> = ({ onSave, initialMap, o
 	const [rows] = useState<number>(initialMap?.length || DEFAULT_ROWS);
 	const [cols] = useState<number>(initialMap?.[0]?.length || DEFAULT_COLS);
 
+	// Utiliser useEffect pour traiter initialMap au premier rendu
+	useEffect(() => {
+		if (initialMap && initialMap.length > 0) {
+			setGrid(initialMap);
+			
+			// Si editingMap est fourni, mettre à jour les états
+			if (editingMap) {
+				setMapName(editingMap.name || 'Carte sans titre');
+				setId(editingMap.id);
+			}
+		}
+	}, [initialMap, editingMap]);
 
-	  
+	// useEffect pour l'auto-sauvegarde
+	useEffect(() => {
+		if (!gridModified && !nameModified) return;
+
+		const autoSaveTimeout = setTimeout(() => {
+			const mapData = prepareMapData();
+			onSave?.(mapData, true); // Auto-save
+			setGridModified(false);
+			
+			// Ne pas réinitialiser nameModified ici si vous voulez conserver
+			// les modifications de nom jusqu'à la sauvegarde manuelle
+		}, 1500);
+		
+		return () => clearTimeout(autoSaveTimeout);
+	}, [gridModified, nameModified, grid, mapName, id, state?.player?.id]);
+
 	// Mettre à jour la grille lors du changement de dimensions
 
-	const prepareMapData = (): PacmanMap => {
+	/* const prepareMapData = (): PacmanMap => {
 		// Identifier l'ID de la carte si elle existe déjà
 		// Construire l'objet PacmanMap
 		// save state 
@@ -69,7 +106,7 @@ const CreatePacmanMap: React.FC<CreatePacmanMapProps> = ({ onSave, initialMap, o
 		}
 		let tempId
 		if (id === undefined) {
-			/* setId(state?.maps?.findIndex((map) => map.id === mapName?.id); // Mettre à jour l'ID si la carte existe déjà */
+	
 			tempId = state?.maps?.find(map => map.name === mapName)?.id;
 			setId(tempId); // Trouver l'ID de la carte par son nom
 			console.log('ID de la carte trouvée:', state?.maps?.find(map => map.name === mapName)?.id);
@@ -88,22 +125,34 @@ const CreatePacmanMap: React.FC<CreatePacmanMapProps> = ({ onSave, initialMap, o
 			is_valid: true,
 			errors: [],
 		  };
+	}; */
+
+	const prepareMapData = (): PacmanMap => {
+		// Identifier l'ID de la carte si elle existe déjà
+		let currentId = id;
+		
+		// Si l'ID n'est pas défini, chercher s'il existe déjà une carte avec ce nom
+		if (currentId === undefined) {
+			const existingMap = state?.maps?.find(map => map.name === mapName);
+			if (existingMap) {
+				currentId = existingMap.id;
+				// Mettre à jour l'état local pour refléter l'ID trouvé
+				setId(currentId);
+			}
+		}
+		
+		// Construire et retourner l'objet PacmanMap sans modifier state.maps
+		return {
+			id: currentId, // ID existant ou undefined pour nouvelle carte
+			user_id: state?.player?.id || 0,
+			name: mapName,
+			map: grid.map(row => row.split('')),
+			is_public: false,
+			is_valid: true, // La validation se fera côté serveur
+			errors: [],
+		};
 	};
 	
-	useEffect(() => {
-		if (!gridModified && !nameModified) return;
-
-		const autoSaveTimeout = setTimeout(() => {
-			
-			// Maintenant préparer les données avec le nom mis à jour
-			const mapData = prepareMapData();
-			onSave?.(mapData, true);
-			setGridModified(false);
-		  }, 1500); // 1.5 secondes après la dernière modification
-		  
-		  return () => clearTimeout(autoSaveTimeout);
-	}, [gridModified, nameModified, grid, state?.player?.id]);
-		
 	// Fonction pour gérer le changement de nom de la carte
 	const handleNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
 		setMapName(event.target.value);

@@ -39,7 +39,30 @@ function initState(): state {
 
 export default function WebSocketPacman() {
 	const [state, setState] = useState<state>(initState());
-	const [showMapEditor, setShowMapEditor] = useState(false); // Add this state
+	const [showMapEditor, setShowMapEditor] = useState(false);
+	const [editingMapData, setEditingMapData] = useState<Partial<PacmanMap> | null>(null);
+	const [initialMapData, setInitialMapData] = useState<string[] | null>(null);
+
+	const handleEditMap = (map: PacmanMap) => {
+		const fullMap = state.maps.find(m => m.id === map.id);
+
+		if (!fullMap) {
+			console.error('Carte non trouvée:', map.id);
+			return;
+		}
+
+		const initialMapData = fullMap.map.map(row => row.join(''));
+
+		setEditingMapData({
+			id: fullMap.id,
+			name: fullMap.name,
+			is_public: fullMap.is_public,
+			is_valid: fullMap.is_valid,
+			errors: fullMap.errors || []
+		});
+		setInitialMapData(initialMapData);
+		setShowMapEditor(true);
+	};
 
 	const handleMessage = (data: any) => {
 		switch (data.action) {
@@ -129,7 +152,6 @@ export default function WebSocketPacman() {
 		}
 	};
 	const handleSaveMap = (mapData: PacmanMap, isAutoSave: boolean = false) => {
-		// Check if it's an auto-save or manual save
 		console.log('handleSaveMap state :', state.maps);
 		console.log('handleSaveMap mapData:', mapData);
 		if (isAutoSave) {
@@ -138,7 +160,6 @@ export default function WebSocketPacman() {
 			console.log('Manually saving map...', mapData.name);
 		}
 
-		// Implement logic to save the map to your backend
 		if (state.ws && state.ws.readyState === WebSocket.OPEN) {
 			state.ws.send(JSON.stringify({
 				action: 'insertOrUpdateMap',
@@ -147,10 +168,8 @@ export default function WebSocketPacman() {
 			}));
 		}
 
-		// Update the state with the new map data
-
 		if (!isAutoSave && mapData.is_valid) {
-			setShowMapEditor(false); // Close the editor after manual saving
+			setShowMapEditor(false);
 		}
 	};
 
@@ -209,13 +228,24 @@ export default function WebSocketPacman() {
 			</div>
 			<div className="bg-gray-200 text-white flex flex-col items-center justify-center">
 				{showMapEditor ? (
-					<CreatePacmanMap state={state} onSave={handleSaveMap} onCancel={() => setShowMapEditor(false)} />
+					<CreatePacmanMap 
+					state={state} 
+					onSave={handleSaveMap} 
+					onCancel={() => {
+					  setShowMapEditor(false);
+					  setEditingMapData(null);
+					  setInitialMapData(null);
+					}}
+					initialMap={initialMapData || undefined}
+					editingMap={editingMapData || undefined}
+				  />
 				) : state.game.grid && state.game.grid.length > 0 ? (
 					<PacmanGame state={state} />
 				) : (
 					<CenteredBox
 						state={state}
-						onCreateMap={() => setShowMapEditor(true)} // Pass this prop to CenteredBox
+						onCreateMap={() => setShowMapEditor(true)}
+						onEditMap={handleEditMap}
 					/>
 				)}
 			</div>
