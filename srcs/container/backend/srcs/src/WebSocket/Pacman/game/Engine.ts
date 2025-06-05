@@ -76,7 +76,7 @@ export default class Engine {
 			let spawns: vector2[] = [];
 			let player: Ghost | Pacman;
 			let characterType: CharacterType;
-			if ((this.trainingAI && p.username === 'PacmanAI') || p.username === 'user1') {
+			if ((this.trainingAI && p.username.startsWith('PacmanAI')) || p.username === 'user1') {
 				characterType = CharacterType.Pacman;
 				spawns = this.map.getSpawnPositions()[CharacterType.Pacman];
 				spawnIndex = this.players.size % availableCharacters.length;
@@ -119,7 +119,7 @@ export default class Engine {
 			};
 
 			if (this.players.get(playerId)?.nameChar === CharacterType.Pacman) {
-				this.pause("Pacman left, resetting all players to spawn positions");
+				this.stop("Pacman left, resetting all players to spawn positions");
 				// prendre un joueur fantôme au hasard pour le remplacer
 				const ghostPlayers = Array.from(this.players.values()).filter(p => p instanceof Ghost && p.player.id > 0);
 				if (ghostPlayers.length > 0) {
@@ -134,7 +134,7 @@ export default class Engine {
 				this.sockets.delete(playerId);
 				this.resetAllPlayerPositions();
 				if (this.players.size === 0 || Array.from(this.players.keys()).every(id => id < 0)) {
-					this.stop();
+					this.stop('No players left, stopping the game');
 					this.Finished = true;
 					return;
 				}
@@ -151,7 +151,7 @@ export default class Engine {
 		}
 
 		if (this.players.size === 0 || Array.from(this.players.keys()).every(id => id < 0)) {
-			this.stop();
+			this.stop('No players left, stopping the game');
 			this.Finished = true;
 			return;
 		}
@@ -194,9 +194,7 @@ export default class Engine {
 	}
 
 	public updatePlayer(player: player, ws: WebSocket): void {
-		console.log(`Updating player ${player.id} in engine`);
 		if (this.players.has(player.id)) {
-			console.log(`Player ${player.id} already exists in engine, updating...`);
 			const existingPlayer = this.players.get(player.id);
 			if (existingPlayer) {
 				existingPlayer.player = player;
@@ -206,7 +204,6 @@ export default class Engine {
 		} else {
 			for (const [spectatorPlayer, spectatorWs] of this.Spectators) {
 				if (spectatorPlayer.id === player.id) {
-					console.log(`Player ${player.id} found in spectators, updating...`);
 					this.Spectators.delete(spectatorPlayer);
 					this.Spectators.set(player, ws);
 					this.Spectators.set(player, ws);
@@ -248,45 +245,54 @@ export default class Engine {
 		this.stop();
 
 		if (this.trainingAI) {
-			this.isPaused = false;
-			this.PauseMessage = "";
-			this.lastTime = Date.now();
-			this.broadcastState();
-			this.intervalId = setInterval(() => this.gameLoop(), this.tickRate);
+			this.resume();
+			setTimeout(() => {
+				this.broadcastState();
+				if (this.isFinished()) return;
+				this.intervalId = setInterval(() => this.gameLoop(), this.tickRate);
+			}, 100);
 			return;
 		}
 
-		let countdown = 3;
-		this.pause(`Starting in ${countdown}`);
-		countdown--;
-		this.broadcastState();
-		const countdownInterval = setInterval(() => {
-			if (countdown >= 1) {
-				this.PauseMessage = `Starting in ${countdown}`;
-				this.broadcastState();
-			} else if (countdown == 0) {
-				this.PauseMessage = "GOOOOOO !";
-				this.broadcastState();
-			} else {
-				clearInterval(countdownInterval);
-				this.PauseMessage = "";
-				this.broadcastState();
-				setTimeout(() => {
-					this.resume();
-					this.lastTime = Date.now();
-					this.intervalId = setInterval(() => this.gameLoop(), this.tickRate);
-				}, 500);
-			}
+		try {
+			let countdown = 3;
+			this.pause(`Starting in ${countdown}`);
 			countdown--;
-		}, 1000);
+			this.broadcastState();
+			const countdownInterval = setInterval(() => {
+				if (countdown >= 1) {
+					this.PauseMessage = `Starting in ${countdown}`;
+					this.broadcastState();
+				} else if (countdown == 0) {
+					this.PauseMessage = "GOOOOOO !";
+					this.broadcastState();
+				} else {
+					clearInterval(countdownInterval);
+					this.resume();
+					this.broadcastState();
+					setTimeout(() => {
+						this.resume();
+						this.lastTime = Date.now();
+						if (this.isFinished()) return;
+						this.intervalId = setInterval(() => this.gameLoop(), this.tickRate);
+					}, 500);
+				}
+				countdown--;
+			}, 1000);
+		} catch (error) {
+			console.error("Error starting game loop:", error);
+			this.stop("Error starting game loop");
+			this.Finished = true;
+			this.broadcastState();
+		}
 	}
 
 	/**
 	 * Arrête la boucle de jeu
 	 */
-	public stop(): void {
+	public stop(message: string = "Game stopped"): void {
 		this.isPaused = true;
-		this.PauseMessage = "Game stopped";
+		this.PauseMessage = message;
 		if (this.intervalId) {
 			clearInterval(this.intervalId);
 			this.intervalId = null;
@@ -310,6 +316,7 @@ export default class Engine {
 	public resume(): boolean {
 		this.isPaused = false;
 		this.lastTime = Date.now();
+		this.PauseMessage = "";
 		this.trainingLastPause = Date.now();
 		return true;
 	}
@@ -350,8 +357,7 @@ export default class Engine {
 			this.broadcastState();
 		} catch (error) {
 			console.error("Error in game loop:", error);
-			this.PauseMessage = "";
-			this.stop();
+			this.stop('');
 			this.Finished = true;
 			this.broadcastState();
 		}
@@ -658,7 +664,7 @@ export default class Engine {
 					this.Finished = true;
 					this.broadcastState();
 				}
-			}, 3000);
+			}, this.trainingAI ? 10 : 2000);
 		} else {
 			const pacmanId = Array.from(this.players.values()).find(p => p instanceof Pacman)?.player.id;
 			this.reward += -500;
@@ -670,7 +676,7 @@ export default class Engine {
 				return;
 			}
 			setTimeout(() => {
-				this.stop();
+				this.stop('Game finished! Ghosts win!');
 				this.Finished = true;
 			}, 5000);
 		}
@@ -771,6 +777,10 @@ export default class Engine {
 				return;
 			}
 		}
+		if (diff > 2000 && this.isPaused) {
+			this.resume();
+			this.trainingLastPause = Date.now();
+		}
 
 		const pacmanPlayer = Array.from(this.players.values()).find(p => p instanceof Pacman);
 		const ghostPlayers = this.findGhostsNearPacman();
@@ -799,11 +809,18 @@ export default class Engine {
 				}
 			}
 		};
-		this.sockets.forEach(ws => {
+		if (pacmanPlayer) {
+			const ws = this.sockets.get(pacmanPlayer.player.id);
 			if (ws && ws.readyState === WebSocket.OPEN) {
+				console.log(`Broadcasting state to AI pause: ${this.isPaused}, finished: ${this.Finished} diff: ${diff}ms`);
 				ws.send(JSON.stringify(state));
+			} else {
+				console.warn(`WebSocket is not open for player ID ${pacmanPlayer.player.id}, removing from sockets.`);
+				this.sockets.delete(pacmanPlayer.player.id);
+				this.stop(`WebSocket closed for player ID ${pacmanPlayer.player.id}, stopping the game.`);
+				this.Finished = true;
 			}
-		});
+		}
 		if (this.win != null) this.Finished = true;
 		this.win = null;
 		this.pause('');

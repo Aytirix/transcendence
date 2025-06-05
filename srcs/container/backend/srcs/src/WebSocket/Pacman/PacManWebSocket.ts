@@ -56,12 +56,13 @@ async function PacManWebSocket(ws: WebSocket, user: User): Promise<void> {
 			return;
 		}
 
+		player.room = StateManager.RoomManager.getRoomByPlayerId(player.id);
+
 		if (!player.room && action !== 'createRoom' && action !== 'joinRoom' && action !== 'joinSpectator' && action !== 'leaveSpectator' && action !== 'getAllMapForUser' && action !== 'insertOrUpdateMap' && action !== 'deleteMap') {
 			controllerPacman.sendResponse(ws, 'error', 'error', ws.i18n.t('pacman.rooms.mustBeInRoom'));
 			return;
 		}
 
-		player.room = StateManager.RoomManager.getRoomByPlayerId(player.id);
 		switch (action) {
 			case 'createRoom':
 				controllerPacman.handleCreateRoom(ws, player, text);

@@ -13,7 +13,7 @@ import { PacManWebSocket } from './Pacman/PacManWebSocket';
 import { createi18nObject } from '../hook';
 
 let wss: WebSocketServer | null = null;
-let userConnected: string[] = [];
+let userConnected: Map<string, WebSocket> = new Map<string, WebSocket>();
 
 async function initWebSocket(server: FastifyInstance) {
 	if (wss) return;
@@ -40,14 +40,14 @@ async function initWebSocket(server: FastifyInstance) {
 		}
 
 		ws.on('close', () => {
-			const userIndex = userConnected.indexOf(`${path}_${session.user.id}`);
-			if (userIndex !== -1) userConnected.splice(userIndex, 1);
+			const userKey = `${path}_${session.user.id}`;
+			if (userConnected.has(userKey)) userConnected.delete(userKey);
 			else console.warn(`User not found in connected users list: ${session.user.id}`);
 		});
 
 		ws.on('error', (error: Error) => {
-			const userIndex = userConnected.indexOf(`${path}_${session.user.id}`);
-			if (userIndex !== -1) userConnected.splice(userIndex, 1);
+			const userKey = `${path}_${session.user.id}`;
+			if (userConnected.has(userKey)) userConnected.delete(userKey);
 			else console.warn(`User not found in connected users list: ${session.user.id}`);
 		});
 	});
@@ -62,15 +62,19 @@ async function initWebSocket(server: FastifyInstance) {
 				return;
 			}
 
-			if (userConnected.includes(`${request.url}_${session.user.id}`)) {
+			const userKey = `${request.url}_${session.user.id}`;
+			const existingSocket = userConnected.get(userKey);
+			if (existingSocket && existingSocket.readyState === WebSocket.OPEN) {
+				console.warn(`User already connected: ${session.user.id}`);
 				socket.write('HTTP/1.1 409 Conflict\r\n\r\n');
 				socket.destroy();
 				return;
+			} else if (existingSocket) {
+				userConnected.delete(userKey);
 			}
 
-			userConnected.push(`${request.url}_${session.user.id}`);
-
 			wss?.handleUpgrade(request, socket, head, (ws: WebSocket) => {
+				userConnected.set(userKey, ws);
 				wss?.emit('connection', ws, session, request);
 			});
 		} catch (err) {
