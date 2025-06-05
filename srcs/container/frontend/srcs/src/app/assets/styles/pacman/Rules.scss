@@ -1,8 +1,24 @@
 .rules {
-	max-width: 800px;
-	padding: 0 2rem;
+	max-width: 600px;
 	margin: 0 auto;
 
+	.rules-title {
+		text-align: center;
+		margin: 0 0 15px 0;
+		padding-top: 10px;
+		position: relative;
+		top: 0;
+		font-size: 1.5rem;
+		color: #e5e7eb;
+		font-family: 'Press Start 2P', cursive;
+	}
+
+	.rules-description {
+		color: #9ca3af;
+		font-size: 1rem;
+		margin-bottom: 1.2rem;
+		text-align: left;
+	}
 
 	.rules-content {
 		background-color: #1f2937;
@@ -19,19 +35,33 @@
 		&::-webkit-scrollbar {
 			width: 8px;
 		}
-
 		&::-webkit-scrollbar-track {
 			background: rgba(0, 0, 0, 0.1);
 			border-radius: 4px;
 		}
-
 		&::-webkit-scrollbar-thumb {
 			background: rgba(0, 0, 0, 0.3);
 			border-radius: 4px;
-
 			&:hover {
 				background: rgba(0, 0, 0, 0.5);
 			}
 		}
+		p {
+			color: #9ca3af;
+			margin: 0.7rem 0;
+		}
+		ul {
+			color: #e5e7eb;
+			margin: 0.7rem 0 0.7rem 1.2rem;
+			padding: 0;
+			list-style: disc;
+			font-size: 1rem;
+		}
+	}
+}
+
+@media (max-width: 700px) {
+	.rules {
+		padding: 0.7rem 0.3rem;
 	}
 }

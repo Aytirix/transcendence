@@ -87,19 +87,28 @@ return (
 				<li key={map.id || Math.random()} className="map-item">
 					<div className="map-info">
 					<span className="map-name">{map.name}</span>
-						<span>
-							<button
-								className="toggle-public-btn"
-								onClick={(e) => {
+					<span>
+						<label className="switch">
+							<input
+								type="checkbox"
+								checked={map.is_public}
+								onChange={(e) => {
 									e.stopPropagation();
 									toggleMapPublic(map);
 								}}
-							>
-								<span className="text">
-									{map.is_public ? 'Privé' : 'Public'}
-								</span>
-							</button>
+								aria-checked={map.is_public}
+								title={map.is_public ? 'Rendre privé' : 'Rendre public'}
+								tabIndex={0}
+							/>
+							<span className="slider round"></span>
+						</label>
+						<span className="switch-label" style={{marginLeft: 8, color: map.is_public ? "#ffd700" : "#aaa"}}>
+							{map.is_public ? 'Public' : 'Privé'}
 						</span>
+					</span>
+					<span className={`map-validity ${map.is_valid ? 'valid' : 'invalid'}`}>
+						{map.is_valid ? 'Valide' : 'Invalide'}
+					</span>
 					</div>
 					<div className="map-actions">
 					{map.id !== undefined && (
