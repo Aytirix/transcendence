@@ -9,11 +9,36 @@ interface WaitingRoomsProps {
 
 const WaitingRooms: React.FC<WaitingRoomsProps> = ({ state }) => {
 	const [roomName, setRoomName] = React.useState('');
+	const [selectedMap, setSelectedMap] = React.useState('classic');
 	const MAX_ROOM_NAME_LENGTH = 15;
+
+	// Default maps
+	const DEFAULT_MAPS = [
+		{ value: 'classic', label: 'Classique' },
+	];
+
+	// User-created maps from state.maps
+	const userMaps = (state.maps || []).map(map => ({
+		value: map.id ? String(map.id) : map.name,
+		label: map.name,
+		isCustom: true,
+	}));
+
+	// Combine default and user maps
+	const MAPS = [
+		...DEFAULT_MAPS,
+		...(userMaps.length > 0 ? [{ value: '', label: '--- Mes cartes ---', disabled: true }] : []),
+		...userMaps,
+	];
 
 	const handleCreateRoom = () => {
 		if (roomName.trim() && roomName.length <= MAX_ROOM_NAME_LENGTH) {
-			state.ws?.send(JSON.stringify({ action: 'createRoom', name: roomName }));
+			// Send map id if custom, else map name
+			const selected = MAPS.find(m => m.value === selectedMap);
+			const mapPayload = userMaps.some(m => m.value === selectedMap)
+				? { map_id: Number(selectedMap) }
+				: { map: selectedMap };
+			state.ws?.send(JSON.stringify({ action: 'createRoom', name: roomName, ...mapPayload }));
 		}
 	};
 
@@ -52,6 +77,16 @@ const WaitingRooms: React.FC<WaitingRoomsProps> = ({ state }) => {
 		state.ws?.send(JSON.stringify({ action: 'launchRoom' }));
 	};
 
+	const handleMapChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+		setSelectedMap(e.target.value);
+	};
+
+	const handleChangeRoomMap = (mapValue: string) => {
+		const isCustom = userMaps.some(m => m.value === mapValue);
+		const payload = isCustom ? { map_id: Number(mapValue) } : { map: mapValue };
+		state.ws?.send(JSON.stringify({ action: 'setRoomMap', ...payload }));
+	};
+
 	// Vérifier si l'utilisateur est déjà dans une salle d'attente
 	const currentRoom = state.rooms.waiting.find(r =>
 		r.players?.some(p => p.id === state.player?.id)
@@ -78,6 +113,19 @@ const WaitingRooms: React.FC<WaitingRoomsProps> = ({ state }) => {
 							onKeyDown={handleKeyDown}
 							maxLength={MAX_ROOM_NAME_LENGTH}
 						/>
+						{/* <select value={selectedMap} onChange={handleMapChange}>
+							{MAPS.map(map =>
+								map.disabled ? (
+									<option key={map.label} disabled>
+										{map.label}
+									</option>
+								) : (
+									<option key={map.value} value={map.value}>
+										{map.label}
+									</option>
+								)
+							)}
+						</select> */}
 						<button onClick={handleCreateRoom}>Créer une salle</button>
 					</div>
 					{state.rooms.waiting.length === 0 ? (
@@ -105,6 +153,43 @@ const WaitingRooms: React.FC<WaitingRoomsProps> = ({ state }) => {
 				// Affichage de la salle actuelle
 				<div className="current-room">
 					<h2 className="room-title">{currentRoom.name}</h2>
+					<div className="room-map">
+						{isOwner ? (
+							<select
+								value={
+									currentRoom.map_id
+										? String(currentRoom.map_id)
+										: currentRoom.map || selectedMap
+								}
+								onChange={e => handleChangeRoomMap(e.target.value)}
+							>
+								{MAPS.map(map =>
+									map.disabled ? (
+										<option key={map.label} disabled>
+											{map.label}
+										</option>
+									) : (
+										<option key={map.value} value={map.value}>
+											{map.label}
+										</option>
+									)
+								)}
+							</select>
+						) : (
+							<span>
+								Carte :{' '}
+								{
+									MAPS.find(
+										m =>
+											m.value ===
+												(currentRoom.map_id
+													? String(currentRoom.map_id)
+													: currentRoom.map || selectedMap)
+									)?.label || 'Classique'
+								}
+							</span>
+						)}
+					</div>
 
 					<div className="players-list">
 						{Array.from({ length: 5 }).map((_, idx) => {

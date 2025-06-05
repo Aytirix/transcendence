@@ -101,6 +101,9 @@ export interface Player {
 	score: number;
 	direction?: 'UP' | 'DOWN' | 'LEFT' | 'RIGHT';
 	returnToSpawn?: boolean; // true si le joueur doit retourner à son spawn
+	frightenedState?: {
+		remainingTime: number; // Temps restant pour l'état effrayé
+	};
 	isFrightened?: boolean; // true si le fantôme est effrayé
 	isDying?: boolean; // true si Pacman est en train de mourir
 }
@@ -413,6 +416,14 @@ const PacmanGame: React.FC<PacmanGameProps> = ({ state }) => {
 						</div>
 						<div className="debug-item">
 							<span className="debug-label">Statut effrayé:</span>
+							<span className="debug-value">
+								{state.game?.frightenedState 
+									? "Oui" 
+									: "Non"}
+							</span>
+						</div>
+						<div className="debug-item">
+							<span className="debug-label">Temps restant:</span>
 							<span className="debug-value">
 								{state.game?.frightenedState?.remainingTime 
 									? `${Math.round(state.game.frightenedState.remainingTime)}s` 
