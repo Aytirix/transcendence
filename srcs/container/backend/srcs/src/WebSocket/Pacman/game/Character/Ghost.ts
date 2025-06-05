@@ -287,19 +287,19 @@ export default class Ghost extends Character {
 
 		while (queue.length > 0 && !found) {
 			const curr = queue.shift()!;
-			
+
 			// Pour les positions autres que la position initiale, explorer toutes les directions
 			for (const d of dirs) {
 				let nx = curr.x + d.x;
 				let ny = curr.y + d.y;
-				
+
 				// Si nous sommes à la position initiale, ne pas considérer le demi-tour
 				// sauf si la direction actuelle est bloquée
-				if (curr.x === startGrid.x && curr.y === startGrid.y && 
+				if (curr.x === startGrid.x && curr.y === startGrid.y &&
 					d.x === oppositeDir.x && d.y === oppositeDir.y && !isForwardBlocked) {
 					continue;
 				}
-				
+
 				if (nx < 0 || nx >= width || ny < 0 || ny >= height) continue;
 				if (visited[ny][nx]) continue;
 				if (!this.map.isWalkable(this.nameChar, { x: nx, y: ny })) continue;

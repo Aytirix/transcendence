@@ -132,14 +132,11 @@ class RoomManager {
 	public getRoomByPlayerId(playerId: number): room | undefined {
 		for (const game of this.rooms.values()) {
 			if (game.players.some(player => player.id === playerId)) {
-				if (playerId == 20) console.log(`Player with ID ${playerId} is in room ${game.id}`);
 				return game;
 			} else if (game.engine && Array.from(game.engine.Spectators.keys()).some(spectator => spectator.id === playerId)) {
-				if (playerId == 20) console.log(`Player with ID ${playerId} is a spectator in room ${game.id}`);
 				return game;
 			}
 		}
-		if (playerId == 20) console.error(`No room found for player with ID ${playerId}`);
 		return undefined;
 	}
 
@@ -199,8 +196,8 @@ class StateManager {
 	}
 
 	public removePlayer(playerId: number): void {
-		this.PlayerRoom.delete(playerId);
 		this.RoomManager.removePlayerFromAllRoom(playerId);
+		this.PlayerRoom.delete(playerId);
 		this.PlayerRoomWs.delete(playerId);
 	}
 
@@ -217,7 +214,6 @@ class StateManager {
 		if (game) {
 			const tmp = new Map<number, WebSocket>();
 			for (const player of game.players) {
-				player.gameId = null;
 				const ws = this.PlayerGameWs.get(player.id);
 				player.room = null;
 				this.PlayerGame.delete(player.id);
@@ -238,6 +234,7 @@ class StateManager {
 			}
 			this.RoomManager.removeRoom(game.id);
 			this.sendRooms(tmp);
+			delete game.engine;
 		}
 	}
 
@@ -270,6 +267,7 @@ class StateManager {
 	public async loopRooms(): Promise<void> {
 		while (true) {
 			const activeRooms = this.RoomManager.getActiveRooms();
+
 			const now = Date.now();
 
 			for (const player of this.PlayerRoom.values()) {
@@ -282,10 +280,29 @@ class StateManager {
 
 			for (const room of activeRooms) {
 				if (room.engine) {
-					if (room.engine.isFinished()) {
+					const socketOnlineGame = Array.from(room.engine.sockets.values())
+						.filter(ws => ws.readyState === WebSocket.OPEN)
+						.map(ws => ws.readyState === WebSocket.OPEN);
+					if (socketOnlineGame.length === 0) {
 						this.stopGame(room);
 						this.sendRooms();
 					}
+					else if (room.engine.isFinished()) {
+						this.stopGame(room);
+						this.sendRooms();
+					}
+				}
+			}
+
+			for (const player of this.PlayerGame.values()) {
+				if (player.room === null || player.room?.state !== 'active' || player.room.engine === null || player.room.engine.isFinished()) {
+					player.isSpectator = false;
+					player.room = null;
+					this.PlayerRoom.set(player.id, player);
+					this.PlayerRoomWs.set(player.id, this.PlayerGameWs.get(player.id));
+					this.PlayerGame.delete(player.id);
+					this.PlayerGameWs.delete(player.id);
+					const ws = this.PlayerRoomWs.get(player.id);
 				}
 			}
 
