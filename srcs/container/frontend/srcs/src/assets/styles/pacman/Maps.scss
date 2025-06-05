@@ -1,0 +1,31 @@
+```scss
+.toggle-public-btn {
+  background: #f3f4f6;
+  color: #222;
+  border: 1px solid #bbb;
+  border-radius: 4px;
+  padding: 4px 12px;
+  margin-left: 8px;
+  cursor: pointer;
+  font-size: 0.95em;
+  transition: background 0.2s, color 0.2s, border 0.2s;
+
+  &:hover {
+    background: #2563eb;
+    color: #fff;
+    border: 1px solid #2563eb;
+  }
+
+  .text {
+    margin-left: 4px;
+  }
+}
+
+// Optional: style for public/private state
+.map-validity.valid .toggle-public-btn {
+  border-color: #22c55e;
+}
+.map-validity.invalid .toggle-public-btn {
+  border-color: #ef4444;
+}
+```

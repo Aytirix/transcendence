@@ -388,6 +388,8 @@
 	  padding: 8px 12px;
 	  margin-bottom: 10px;
 	  border-radius: 0 4px 4px 0;
+	  overflow-y: auto;
+	  max-height: 200px;
 	  
 	  .error-header {
 		font-weight: bold;
@@ -397,22 +399,23 @@
 	  
 	  .error-list {
 		margin-bottom: 8px;
-	  }
-	  
-	  .error-item {
+
+	}
+	
+	.error-item {
 		padding: 3px 0;
 		color: #ff6666;
 		
 		&.spawn-error {
-		  color: #ff9900;
+			color: #ff9900;
 		}
 		
 		&.pellet-error {
-		  color: #ff66cc;
+			color: #ff66cc;
 		}
-	  }
-	  
-	  .error-tip {
+	}
+	
+	.error-tip {
 		background-color: rgba(255, 255, 255, 0.1);
 		padding: 6px 10px;
 		border-radius: 4px;
@@ -422,9 +425,27 @@
 		border-left: 3px solid #3399ff;
 		
 		strong {
-		  color: #66ccff;
+			color: #66ccff;
 		}
-	  }
+	}
+	&::-webkit-scrollbar {
+		width: 8px;
+		}
+
+		&::-webkit-scrollbar-track {
+			background: rgba(0, 0, 0, 0.1);
+			border-radius: 4px;
+		}
+
+		&::-webkit-scrollbar-thumb {
+			background: rgba(0, 0, 0, 0.3);
+			border-radius: 4px;
+
+			&:hover {
+				background: rgba(0, 0, 0, 0.5);
+			}
+		}
+	 
 	}
   }
   
