@@ -151,6 +151,7 @@ export function handleAddUser(ws: WebSocket, player: player): void {
 
 export function handleCreateRoom(ws: WebSocket, player: player, json: any): void {
 	if (!json.name) return sendResponse(ws, 'error', 'error', ['Veuillez spécifier un nom de salle']);
+	StateManager.sendRooms();
 	if (player.room) return sendResponse(ws, 'error', 'error', ['Vous êtes déjà dans une salle']);
 	if (json.name.length < 3 || json.name.length > 15) return sendResponse(ws, 'error', 'error', ['Le nom de la salle doit faire entre 3 et 15 caractères']);
 	if (StateManager.RoomManager.getRoomByName(json.name)) return sendResponse(ws, 'error', 'error', ['Le nom de la salle est déjà utilisé']);
