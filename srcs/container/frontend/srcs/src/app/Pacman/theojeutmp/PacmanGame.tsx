@@ -87,8 +87,8 @@ const pacmanImages = {
 	'default': pacmanPng
 };
 
-const CONTAINER_SIZE_WIDTH = 775; // Doit correspondre à la taille CSS
-const CONTAINER_SIZE_HEIGHT = 828 // Doit correspondre à la taille CSS
+const CONTAINER_SIZE_WIDTH = 700; // Doit correspondre à la taille CSS
+const CONTAINER_SIZE_HEIGHT = 750 // Doit correspondre à la taille CSS
 
 export interface Player {
 	id: number;
@@ -101,10 +101,8 @@ export interface Player {
 	score: number;
 	direction?: 'UP' | 'DOWN' | 'LEFT' | 'RIGHT';
 	returnToSpawn?: boolean; // true si le joueur doit retourner à son spawn
-	frightenedState?: {
-		remainingTime: number; // Temps restant pour l'état effrayé
-	};
 	isFrightened?: boolean; // true si le fantôme est effrayé
+	remainingTime?: number; // Temps restant pour l'état effrayé
 	isDying?: boolean; // true si Pacman est en train de mourir
 }
 
@@ -221,7 +219,7 @@ const PacmanGame: React.FC<PacmanGameProps> = ({ state }) => {
 	return (
 		<>
 			<div className="header">
-				<h3 className="title">PACMAN</h3>
+				<h3 className="title">PAC-MAN</h3>
 
 			</div>
 			<PauseMode state={state} />
@@ -325,7 +323,7 @@ const PacmanGame: React.FC<PacmanGameProps> = ({ state }) => {
 								//console.log('ghostChar', ghostChar);
 								const direction = ((player as any).direction || 'RIGHT').toLowerCase();
 								const isFrightened = (player as any).isFrightened;
-								const isBlinking = isFrightened && (player as any).frightenedRemainingTime <= 8;
+								const isBlinking = isFrightened && (player as any).remainingTime <= 8;
 								const isReturningToSpawn = (player as any).returnToSpawn === true;
 
 								// Sélection du GIF approprié
@@ -416,14 +414,6 @@ const PacmanGame: React.FC<PacmanGameProps> = ({ state }) => {
 						</div>
 						<div className="debug-item">
 							<span className="debug-label">Statut effrayé:</span>
-							<span className="debug-value">
-								{state.game?.frightenedState 
-									? "Oui" 
-									: "Non"}
-							</span>
-						</div>
-						<div className="debug-item">
-							<span className="debug-label">Temps restant:</span>
 							<span className="debug-value">
 								{state.game?.frightenedState?.remainingTime 
 									? `${Math.round(state.game.frightenedState.remainingTime)}s` 
