@@ -1,10 +1,56 @@
 .maps {
-	max-width: 800px;
-	padding: 0 2rem;
+	max-width: 600px;
 	margin: 0 auto;
 
+	.maps-title {
+		text-align: center;
+		margin: 0 0 15px 0;
+		padding-top: 10px;
+		position: relative;
+		top: 0;
+		font-size: 1.5rem;
+		color: #e5e7eb;
+		font-family: 'Press Start 2P', cursive;
+	}
 
-	.maps-content {
+	.maps-description {
+		color: #9ca3af;
+		font-size: 1rem;
+		margin-bottom: 1.2rem;
+		text-align: left;
+	}
+
+	.map-editor-placeholder {
+		background-color: #1f2937;
+		border: 2px solid #374151;
+		border-radius: 0.75rem;
+		padding-bottom: 1.5rem;
+		margin-bottom: 1.5rem;
+		box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+
+		h3 {
+			color: #3b82f6;
+			font-size: 1.1rem;
+			margin-bottom: 0.7rem;
+			font-family: 'Press Start 2P', cursive;
+		}
+		button {
+			padding: 0.5rem 1rem;
+			background-color: #2563eb;
+			border: none;
+			border-radius: 0.5rem;
+			color: white;
+			font-size: 1rem;
+			cursor: pointer;
+			transition: background 0.2s;
+			margin-top: 0.5rem;
+			&:hover {
+				background-color: #1e40af;
+			}
+		}
+	}
+
+	.maps-list {
 		background-color: #1f2937;
 		border: 2px solid #374151;
 		border-radius: 0.75rem;
@@ -19,150 +65,153 @@
 		&::-webkit-scrollbar {
 			width: 8px;
 		}
-
 		&::-webkit-scrollbar-track {
 			background: rgba(0, 0, 0, 0.1);
 			border-radius: 4px;
 		}
-
 		&::-webkit-scrollbar-thumb {
 			background: rgba(0, 0, 0, 0.3);
 			border-radius: 4px;
-
 			&:hover {
 				background: rgba(0, 0, 0, 0.5);
 			}
 		}
+
+		ul {
+			list-style: none;
+			padding: 0;
+			margin: 0;
+		}
+		.map-item {
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+			padding: 12px 0;
+			border-bottom: 1px solid #374151;
+			&:last-child {
+				border-bottom: none;
+			}
+			.map-info {
+				display: flex;
+				flex-direction: column;
+				gap: 4px;
+				.map-name {
+					font-weight: bold;
+					font-size: 1.1em;
+					color: #eee;
+				}
+				.map-status {
+					font-size: 0.85em;
+					color: #aaa;
+				}
+				.map-validity {
+					font-size: 0.85em;
+					padding: 2px 6px;
+					border-radius: 3px;
+					&.valid {
+						background-color: rgba(0, 128, 0, 0.2);
+						color: #5f5;
+					}
+					&.invalid {
+						background-color: rgba(128, 0, 0, 0.2);
+						color: #f55;
+					}
+				}
+			}
+			.map-actions {
+				display: flex;
+				gap: 8px;
+				button {
+					display: flex;
+					align-items: center;
+					padding: 5px 10px;
+					border-radius: 4px;
+					border: none;
+					cursor: pointer;
+					font-size: 0.9em;
+					.icon {
+						margin-right: 5px;
+					}
+					&.delete-btn {
+						background-color: rgba(255, 0, 0, 0.2);
+						color: #f99;
+						&:hover {
+							background-color: rgba(255, 0, 0, 0.4);
+						}
+					}
+					&.edit-btn {
+						background-color: rgba(0, 128, 255, 0.2);
+						color: #9cf;
+						&:hover {
+							background-color: rgba(0, 128, 255, 0.4);
+						}
+					}
+				}
+			}
+		}
+		p {
+			color: #9ca3af;
+			text-align: center;
+			margin: 1rem 0 0 0;
+		}
 	}
 }
 
-.delete-btn {
-  padding: 4px 8px;
-  background-color: rgba(255, 0, 0, 0.1);
-  color: #ff3333;
-  border: 1px solid #ff3333;
-  border-radius: 4px;
-  font-size: 0.85em;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  transition: all 0.2s ease;
-  
-  &:hover {
-    background-color: rgba(255, 0, 0, 0.2);
-    transform: scale(1.05);
-  }
-  
-  &:active {
-    transform: scale(0.98);
-  }
-  
-  .icon {
-    margin-right: 5px;
-  }
-}
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 48px;
+  height: 24px;
 
-.map-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 12px;
-  margin-bottom: 8px;
-  background-color: rgba(0, 0, 0, 0.2);
-  border-radius: 6px;
-  transition: all 0.2s;
-  
-  &:hover {
-    background-color: rgba(0, 0, 0, 0.3);
-  }
-  
-  .map-info {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-    
-    .map-name {
-      font-weight: bold;
-      font-size: 1.1em;
-      color: #eee;
-    }
-    
-    .map-status {
-      font-size: 0.85em;
-      color: #aaa;
-    }
-    
-    .map-validity {
-      font-size: 0.85em;
-      padding: 2px 6px;
-      border-radius: 3px;
-      
-      &.valid {
-        background-color: rgba(0, 128, 0, 0.2);
-        color: #5f5;
-      }
-      
-      &.invalid {
-        background-color: rgba(128, 0, 0, 0.2);
-        color: #f55;
-      }
-    }
-  }
-  
-  .map-actions {
-  display: flex;
-  gap: 8px;
+  input {
+    opacity: 0;
+    width: 0;
+    height: 0;
 
-  button {
-    display: flex;
-    align-items: center;
-    padding: 5px 10px;
-    border-radius: 4px;
-    border: none;
+    &:focus + .slider {
+      box-shadow: 0 0 1px #2196f3;
+    }
+
+    &:checked + .slider {
+      background-color: #ffd700;
+    }
+
+    &:checked + .slider:before {
+      transform: translateX(24px);
+    }
+  }
+
+  .slider {
+    position: absolute;
     cursor: pointer;
-    font-size: 0.9em;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    transition: 0.4s;
+    border-radius: 24px;
 
-    &.delete-btn {
-      background-color: rgba(255, 0, 0, 0.2);
-      color: #f99;
-
-      &:hover {
-        background-color: rgba(255, 0, 0, 0.4);
-      }
+    &.round:before {
+      border-radius: 50%;
     }
 
-    &.edit-btn {
-      background-color: rgba(0, 128, 255, 0.2);
-      color: #9cf;
-
-      &:hover {
-        background-color: rgba(0, 128, 255, 0.4);
-      }
-    }
-
-    &.play-btn {
-      background-color: rgba(0, 255, 0, 0.2);
-      color: #9f9;
-
-      &:hover {
-        background-color: rgba(0, 255, 0, 0.4);
-      }
-    }
-
-    &.toggle-public-btn {
-      background-color: rgba(255, 215, 0, 0.15);
-      color: #ffd700;
-      border: 1px solid #ffd700;
-
-      &:hover {
-        background-color: rgba(255, 215, 0, 0.3);
-        color: #fffbe7;
-      }
-    }
-
-    .icon {
-      margin-right: 5px;
+    &:before {
+      position: absolute;
+      content: "";
+      height: 18px;
+      width: 18px;
+      left: 3px;
+      bottom: 3px;
+      background-color: white;
+      transition: 0.4s;
     }
   }
 }
+
+
+@media (max-width: 700px) {
+	.maps {
+		padding: 0.7rem 0.3rem;
+	}
 }

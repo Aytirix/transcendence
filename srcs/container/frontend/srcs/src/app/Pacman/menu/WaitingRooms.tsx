@@ -38,7 +38,7 @@ const WaitingRooms: React.FC<WaitingRoomsProps> = ({ state }) => {
 			const mapPayload = userMaps.some(m => m.value === selectedMap)
 				? { map_id: Number(selectedMap) }
 				: { map: selectedMap };
-			state.ws?.send(JSON.stringify({ action: 'createRoom', name: roomName, ...mapPayload }));
+			state.ws?.send(JSON.stringify({ action: 'createRoom', name: roomName, map: selectedMap, ...mapPayload }));
 		}
 	};
 
@@ -155,7 +155,7 @@ const WaitingRooms: React.FC<WaitingRoomsProps> = ({ state }) => {
 					<h2 className="room-title">{currentRoom.name}</h2>
 					<div className="room-map">
 						{isOwner ? (
-							<select
+							<select className='map-select'
 								value={
 									currentRoom.map_id
 										? String(currentRoom.map_id)

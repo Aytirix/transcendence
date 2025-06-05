@@ -5,8 +5,8 @@ import WaitingRooms from './WaitingRooms';
 import ActiveRooms from './ActiveRooms';
 import Rules from './Rules';
 import Maps from './Maps'; // Adjusted the path to point to the correct location
-import Settings from './Settings';
-import Statistics from './Statistics';
+/* import Settings from './Settings'; */
+/* import Statistics from './Statistics'; */
 import { state, PacmanMap } from '../../types/pacmanTypes';
 // import '@styles/pacman/CenteredBox.scss';
 import '../../assets/styles/pacman/CenteredBox.scss';
@@ -16,8 +16,8 @@ const TABS = [
 	{ id: 'ActiveRooms', label: 'En direct' },
 	{ id: 'Rules', label: 'Règles' },
 	{ id: 'Maps', label: 'Carte' },
-	{ id: 'Statistics', label: 'Statistiques' },
-	{ id: 'Settings', label: 'Paramètres' },
+	/* { id: 'Statistics', label: 'Statistiques' }, */
+	/* { id: 'Settings', label: 'Paramètres' }, */
 ];
 
 interface CenteredBoxProps {
@@ -64,8 +64,8 @@ export const CenteredBox: React.FC<CenteredBoxProps> = ({ state, onCreateMap, on
 								ActiveRooms: <ActiveRooms state={state} />,
 								Rules: <Rules />,
 								Maps: <Maps onCreateMap={onCreateMap} onEditMap={onEditMap} state={state} />,
-								Settings: <Settings />,
-								Statistics: <Statistics />,
+								/* Settings: <Settings />, */
+								/* Statistics: <Statistics />, */
 							}[currentPage] || <p>Page non trouvée</p>}
 						</motion.div>
 					</AnimatePresence>
