@@ -597,7 +597,7 @@ export default class Engine {
 			// Afficher un message de victoire
 			this.win = 'pacman';
 			const pacmanId = Array.from(this.players.values()).find(p => p instanceof Pacman)?.player.id;
-			this.reward += 500;
+			this.reward += 50000;
 			this.pause("Game finished!\nPacman wins!");
 			this.broadcastState();
 
@@ -812,12 +812,12 @@ export default class Engine {
 		if (pacmanPlayer) {
 			const ws = this.sockets.get(pacmanPlayer.player.id);
 			if (ws && ws.readyState === WebSocket.OPEN) {
-				console.log(`Broadcasting state to AI pause: ${this.isPaused}, finished: ${this.Finished} diff: ${diff}ms`);
+				// console.log(`Broadcasting state to AI pause: ${this.isPaused}, finished: ${this.Finished} diff: ${diff}ms`);
 				ws.send(JSON.stringify(state));
 			} else {
-				console.warn(`WebSocket is not open for player ID ${pacmanPlayer.player.id}, removing from sockets.`);
+				// console.warn(`WebSocket is not open for player ID ${pacmanPlayer.player.id}, removing from sockets.`);
 				this.sockets.delete(pacmanPlayer.player.id);
-				this.stop(`WebSocket closed for player ID ${pacmanPlayer.player.id}, stopping the game.`);
+				// this.stop(`WebSocket closed for player ID ${pacmanPlayer.player.id}, stopping the game.`);
 				this.Finished = true;
 			}
 		}
