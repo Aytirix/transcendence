@@ -67,7 +67,7 @@ const IronManLogin: React.FC = () => {
         <input
           className="ironman-input"
           name="email"
-          placeholder="E-mail"
+          placeholder="  E-mail"
           value={form.email}
           onChange={handleChange}
           required
@@ -76,7 +76,7 @@ const IronManLogin: React.FC = () => {
           className="ironman-input"
           type="password"
           name="password"
-          placeholder="Mot de passe"
+          placeholder="  Mot de passe"
           value={form.password}
           onChange={handleChange}
           required
