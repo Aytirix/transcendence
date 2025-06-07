@@ -30,12 +30,19 @@ const CreatePacmanMap: React.FC<CreatePacmanMapProps> = ({ state, onSave, onCanc
 	// Vérifier si une carte initiale est fournie et mettre à jour le nom
 	// Nom temporaire pour l'édition (ne sera pasa utilisé pour les auto-sauvegardes)
 	const [id, setId] = useState<number | undefined>(editingMap?.id);
-	if (id === undefined && initialMap) {
-		const existingMap = state?.maps?.find(map => map.name === mapName);
-		if (existingMap) {
-			setId(existingMap.id);
-		}
-	}
+	// Remove anti-pattern: do not call setId in render body
+	// Instead, useEffect to sync id if needed
+	useEffect(() => {
+	  if (id === undefined && initialMap && mapName) {
+	    const existingMap = state?.maps?.find(map => map.name === mapName);
+	    if (existingMap) {
+	      setId(existingMap.id);
+	    }
+	  } else if (editingMap?.id !== undefined && editingMap?.id !== id) {
+	    setId(editingMap.id);
+	  }
+	}, [id, initialMap, mapName, state?.maps, editingMap?.id]);
+
 	const [nameModified, setNameModified] = useState<boolean>(false);
 	
 	const [gridModified, setGridModified] = useState<boolean>(false);
@@ -55,7 +62,7 @@ const CreatePacmanMap: React.FC<CreatePacmanMapProps> = ({ state, onSave, onCanc
 			
 			// Si editingMap est fourni, mettre à jour les états
 			if (editingMap) {
-				setMapName(editingMap.name || 'Carte sans titre');
+				setMapName(editingMap.name || '');
 				setId(editingMap.id);
 			}
 		}
@@ -63,10 +70,16 @@ const CreatePacmanMap: React.FC<CreatePacmanMapProps> = ({ state, onSave, onCanc
 
 	// useEffect pour l'auto-sauvegarde
 	useEffect(() => {
-		if (!gridModified && !nameModified) return;
+		if (!gridModified && !nameModified)return;
+		if (!mapName) {
+			//alert('Veuillez entrer un nom pour la carte.');
+			return;
+		}
 
 		const mapData = prepareMapData();
 		onSave?.(mapData, true); // Auto-save
+		setId(mapData.id); // Mettre à jour l'ID si nécessaire
+		console.log('Auto-sauvegarde de la carte:', mapData);
 		setGridModified(false);
 		setNameModified(false);
 	}, [gridModified, nameModified, grid, mapName, id, state?.player?.id]);
@@ -111,16 +124,18 @@ const CreatePacmanMap: React.FC<CreatePacmanMapProps> = ({ state, onSave, onCanc
 			}
 		}
 		let tempId
-		if (id === undefined) {
-	
-			tempId = state?.maps?.find(map => map.name === mapName)?.id;
-			setId(tempId); // Trouver l'ID de la carte par son nom
-			console.log('ID de la carte trouvée:', state?.maps?.find(map => map.name === mapName)?.id);
-			console.log('ID de la nouvelle carte:', id);
-			console.log('ID de la carte:', state?.maps);
-		}
-		else {
+		if (id !== undefined) {
 			tempId = id; // Conserver l'ID de la carte existante
+		}
+		else if (mapName && state?.maps) {
+			// Si l'ID n'est pas défini, chercher par nom
+			tempId = state?.maps?.find(map => map.name === mapName)?.id;
+			if (tempId !== undefined) {
+				setId(tempId); // Mettre à jour l'ID si trouvé
+				console.log('ID de la carte trouvée:', tempId);
+			} else {
+				console.log('Aucune carte trouvée avec le nom:', mapName);
+			}
 		}
 		return {
 			id: tempId, // ID existant ou undefined pour nouvelle carte
@@ -132,33 +147,6 @@ const CreatePacmanMap: React.FC<CreatePacmanMapProps> = ({ state, onSave, onCanc
 			errors: [],
 		  };
 	};
-/* 
-	const prepareMapData = (): PacmanMap => {
-		// Identifier l'ID de la carte si elle existe déjà
-		let currentId = id;
-		
-		// Si l'ID n'est pas défini, chercher s'il existe déjà une carte avec ce nom
-		if (currentId === undefined) {
-			const existingMap = state?.maps?.find(map => map.name === mapName);
-			if (existingMap) {
-				currentId = existingMap.id;
-				// Mettre à jour l'état local pour refléter l'ID trouvé
-				setId(currentId);
-			}
-		}
-		
-		// Construire et retourner l'objet PacmanMap sans modifier state.maps
-		return {
-			id: currentId, // ID existant ou undefined pour nouvelle carte
-			user_id: state?.player?.id || 0,
-			name: mapName,
-			map: grid.map(row => row.split('')),
-			is_public: false,
-			is_valid: true, // La validation se fera côté serveur
-			errors: [],
-		};
-	};
-	 */
 	// Fonction pour gérer le changement de nom de la carte
 	const handleNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
 		setMapName(event.target.value);
@@ -227,7 +215,10 @@ const CreatePacmanMap: React.FC<CreatePacmanMapProps> = ({ state, onSave, onCanc
 	// Fonction pour sauvegarder la carte manuellement
 	const saveMap = () => {
 		// Vérifier que le nom de la carte est défini
-		
+		if (!mapName){
+			//alert('Veuillez entrer un nom pour la carte.');
+			return;
+		}
 		setMapName(mapName.trim());
 		setNameModified(false);
 		
@@ -256,50 +247,50 @@ const CreatePacmanMap: React.FC<CreatePacmanMapProps> = ({ state, onSave, onCanc
 
 		setGrid(newGrid);
 	};
-
+// Add state for modal input
+	const [tempMapName, setTempMapName] = useState<string>("");
 	// Utility to update tunnel pairing CSS
-	const updateTunnelPairing = (gridToCheck: string[]) => {
-		const tunnelPositions: Array<{ row: number; col: number }> = [];
-		for (let i = 0; i < rows; i++) {
-			for (let j = 0; j < cols; j++) {
-				if (gridToCheck[i][j] === 'T') {
-					tunnelPositions.push({ row: i, col: j });
-				}
-			}
-		}
-		tunnelPositions.forEach(({ row, col }) => {
-			let hasPair = false;
-			// Check same row
-			for (let k = 0; k < cols; k++) {
-				if (k !== col && gridToCheck[row][k] === 'T') {
-					hasPair = true;
-					break;
-				}
-			}
-			// Check same column if not already paired
-			if (!hasPair) {
-				for (let k = 0; k < rows; k++) {
-					if (k !== row && gridToCheck[k][col] === 'T') {
-						hasPair = true;
-						break;
-					}
-				}
-			}
-			const cellId = `cell-${row}-${col}`;
-			const cellElem = document.getElementById(cellId);
-			if (cellElem) {
-				cellElem.classList.toggle('tunnel-paired', hasPair);
-				cellElem.classList.toggle('tunnel-unpaired', !hasPair);
-			}
-		});
-	};
 
 	// Optionally, also update tunnel pairing after grid changes from other sources
 
 	return (
 		<div className="create-pacman-map">
 			<h2>Créer une carte Pacman</h2>
-			<div className="map-name">
+			{/* Replace the map name input with a modal if mapName is empty */}
+			{!mapName && (
+			<div className="modal-overlay">
+				<div className="modal-content">
+				<h3>Nom de la carte</h3>
+				<form onSubmit={e => {
+					e.preventDefault();
+					const name = tempMapName.trim();
+					const nameExists = state?.maps?.some(map => map.name === name);
+					if (name && !nameExists) {
+					setMapName(name);
+					setNameModified(true);
+					}
+				}}>
+					<input
+					type="text"
+					value={tempMapName}
+					onChange={e => setTempMapName(e.target.value)}
+					placeholder="Entrez le nom de la carte"
+					autoFocus
+					/>
+					{tempMapName.trim() && state?.maps?.some(map => map.name === tempMapName.trim()) && (
+					<div className='error_name' style={{ color: 'red', fontSize: 15, marginBottom: 8 }}>
+						Ce nom existe déjà. Choisissez un autre nom.
+					</div>
+					)}
+					<br />
+					<button type="submit"
+					disabled={!tempMapName.trim() || state?.maps?.some(map => map.name === tempMapName.trim())}
+					>Valider</button>
+				</form>
+				</div>
+			</div>
+			)}
+			<div className="map-name" style={{ filter: !mapName ? 'blur(2px)' : undefined, pointerEvents: !mapName ? 'none' : undefined }}>
 				<label htmlFor="mapName">Nom de la carte:</label>
 				<input
 					type="text"
@@ -307,6 +298,7 @@ const CreatePacmanMap: React.FC<CreatePacmanMapProps> = ({ state, onSave, onCanc
 					value={mapName}
 					onChange={handleNameChange}
 					placeholder="Nom de la carte"
+					disabled={!mapName}
 				/>
 			</div>
 
