@@ -3,6 +3,8 @@ import React, { useState, useEffect } from 'react';
 import '../../assets/styles/pacman/CreatePacmanMap.scss';
 import { state, PacmanMap } from '../../types/pacmanTypes';
 import { set } from 'date-fns';
+// Importez le nouveau composant Editor
+import Editor, { isSpawnPoint, getSpawnColor, getCellClass } from './CreateMap/Editor.tsx';
 
 interface CreatePacmanMapProps {
 	state: state;
@@ -24,7 +26,7 @@ const CreatePacmanMap: React.FC<CreatePacmanMapProps> = ({ state, onSave, onCanc
 	  );
 
 	// État pour le nom de la carte avec valeur initiale
-	const [mapName, setMapName] = useState<string>(editingMap?.name || 'Carte sans titre');
+	const [mapName, setMapName] = useState<string>(editingMap?.name || '');
 	// Vérifier si une carte initiale est fournie et mettre à jour le nom
 	// Nom temporaire pour l'édition (ne sera pasa utilisé pour les auto-sauvegardes)
 	const [id, setId] = useState<number | undefined>(editingMap?.id);
@@ -35,11 +37,10 @@ const CreatePacmanMap: React.FC<CreatePacmanMapProps> = ({ state, onSave, onCanc
 		}
 	}
 	const [nameModified, setNameModified] = useState<boolean>(false);
-	// Utiliser useEffect pour mettre à jour le nom dem la carte si un conflit est détecté
-
-	// État pour suivre si la grille a été modifiée 
+	
 	const [gridModified, setGridModified] = useState<boolean>(false);
 
+	const [isDrawing, setIsDrawing] = useState<boolean>(false);
 	// État pour le type de cellule sélectionné à placer
 	const [selectedTile, setSelectedTile] = useState<string>('#'); // Mur par défaut
 
@@ -64,26 +65,31 @@ const CreatePacmanMap: React.FC<CreatePacmanMapProps> = ({ state, onSave, onCanc
 	useEffect(() => {
 		if (!gridModified && !nameModified) return;
 
-		const autoSaveTimeout = setTimeout(() => {
-			const mapData = prepareMapData();
-			onSave?.(mapData, true); // Auto-save
-			setGridModified(false);
-			
-			// Ne pas réinitialiser nameModified ici si vous voulez conserver
-			// les modifications de nom jusqu'à la sauvegarde manuelle
-		}, 1500);
-		
-		return () => clearTimeout(autoSaveTimeout);
+		const mapData = prepareMapData();
+		onSave?.(mapData, true); // Auto-save
+		setGridModified(false);
+		setNameModified(false);
 	}, [gridModified, nameModified, grid, mapName, id, state?.player?.id]);
 
 	// Mettre à jour la grille lors du changement de dimensions
 
-	/* const prepareMapData = (): PacmanMap => {
+	const prepareMapData = (): PacmanMap => {
 		// Identifier l'ID de la carte si elle existe déjà
 		// Construire l'objet PacmanMap
 		// save state 
 		if (state?.maps) {
-			const existingMapIndex = state.maps.findIndex(map => map.name === mapName);
+			let existingMapIndex;
+			if (id !== undefined) {
+				// Si l'ID est défini, mettre à jour la carte existante
+				existingMapIndex = state.maps.findIndex(map => map.id === id);
+			} else if (mapName) {
+				// Si l'ID n'est pas défini, chercher par nom
+				existingMapIndex = state.maps.findIndex(map => map.name === mapName);
+			}
+			else {
+				// Si ni l'ID ni le nom ne sont définis 
+				existingMapIndex = -1; // Aucune carte existante à mettre à jour
+			}
 			if (existingMapIndex !== -1) {
 				state.maps[existingMapIndex] = {
 					...state.maps[existingMapIndex],
@@ -125,8 +131,8 @@ const CreatePacmanMap: React.FC<CreatePacmanMapProps> = ({ state, onSave, onCanc
 			is_valid: true,
 			errors: [],
 		  };
-	}; */
-
+	};
+/* 
 	const prepareMapData = (): PacmanMap => {
 		// Identifier l'ID de la carte si elle existe déjà
 		let currentId = id;
@@ -152,24 +158,69 @@ const CreatePacmanMap: React.FC<CreatePacmanMapProps> = ({ state, onSave, onCanc
 			errors: [],
 		};
 	};
-	
+	 */
 	// Fonction pour gérer le changement de nom de la carte
 	const handleNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
 		setMapName(event.target.value);
 		setNameModified(true); // Marquer le nom comme modifié
 	  };
 
+	
+	
+
+	useEffect(() => {
+		const handleMouseDown = () => {
+		  setIsDrawing(true);
+		};
+		
+		const handleMouseUp = () => {
+		  setIsDrawing(false);
+		};
+		
+		// Ajouter les écouteurs d'événements
+		document.addEventListener('mousedown', handleMouseDown);
+		document.addEventListener('mouseup', handleMouseUp);
+		
+		// Nettoyer les écouteurs d'événements
+		return () => {
+		  document.removeEventListener('mousedown', handleMouseDown);
+		  document.removeEventListener('mouseup', handleMouseUp);
+		};
+	}, []);
+	
 	// Fonction pour mettre à jour une cellule de la grille
 	const handleCellClick = (rowIndex: number, colIndex: number) => {
 		const newGrid = [...grid];
 		const rowChars = newGrid[rowIndex].split('');
 		rowChars[colIndex] = selectedTile;
 		newGrid[rowIndex] = rowChars.join('');
+		if (selectedTile === 'P' || selectedTile === 'B' || selectedTile === 'I' || selectedTile === 'Y' || selectedTile === 'C') {
+			// Vérifier s'il y a déjà un point de spawn pour le même type
+			const spawnChar = selectedTile;
+			for (let i = 0; i < rows; i++) {
+				for (let j = 0; j < cols; j++) {
+					if (i !== rowIndex || j !== colIndex) { // Ne pas vérifier la cellule actuelle
+						if (newGrid[i][j] === spawnChar) {
+							newGrid[i] = newGrid[i].substring(0, j) + ' ' + newGrid[i].substring(j + 1);
+						}
+					}
+				}
+			}
+		}
+		// pour les tunnel il doivent etre en paire et les deux doivent etre en face à face
 		setGrid(newGrid);
 		setGridModified(true); // Marquer la grille comme modifiée
+		// Update tunnel pairing after grid change
+		//updateTunnelPairing(newGrid);
 	};
 
-	
+	const handleCellEnter = (rowIndex: number, colIndex: number) => {
+		// Vérifier si le dessin est actif
+		if (isDrawing) {
+		  // Appliquer le même comportement que pour un clic
+		  handleCellClick(rowIndex, colIndex);
+		}
+	  };
 	
 
 	// Fonction pour sauvegarder la carte
@@ -206,17 +257,44 @@ const CreatePacmanMap: React.FC<CreatePacmanMapProps> = ({ state, onSave, onCanc
 		setGrid(newGrid);
 	};
 
-	// Obtenir la couleur pour chaque type de spawn
-	const getSpawnColor = (char: string): string => {
-		switch (char) {
-			case 'P': return 'yellow';
-			case 'B': return 'red';
-			case 'I': return 'blue';
-			case 'Y': return 'pink';
-			case 'C': return 'orange';
-			default: return 'transparent';
+	// Utility to update tunnel pairing CSS
+	const updateTunnelPairing = (gridToCheck: string[]) => {
+		const tunnelPositions: Array<{ row: number; col: number }> = [];
+		for (let i = 0; i < rows; i++) {
+			for (let j = 0; j < cols; j++) {
+				if (gridToCheck[i][j] === 'T') {
+					tunnelPositions.push({ row: i, col: j });
+				}
+			}
 		}
+		tunnelPositions.forEach(({ row, col }) => {
+			let hasPair = false;
+			// Check same row
+			for (let k = 0; k < cols; k++) {
+				if (k !== col && gridToCheck[row][k] === 'T') {
+					hasPair = true;
+					break;
+				}
+			}
+			// Check same column if not already paired
+			if (!hasPair) {
+				for (let k = 0; k < rows; k++) {
+					if (k !== row && gridToCheck[k][col] === 'T') {
+						hasPair = true;
+						break;
+					}
+				}
+			}
+			const cellId = `cell-${row}-${col}`;
+			const cellElem = document.getElementById(cellId);
+			if (cellElem) {
+				cellElem.classList.toggle('tunnel-paired', hasPair);
+				cellElem.classList.toggle('tunnel-unpaired', !hasPair);
+			}
+		});
 	};
+
+	// Optionally, also update tunnel pairing after grid changes from other sources
 
 	return (
 		<div className="create-pacman-map">
@@ -345,32 +423,19 @@ const CreatePacmanMap: React.FC<CreatePacmanMapProps> = ({ state, onSave, onCanc
 						</div>
 					</div>
 
-					<div className="map-editor">
-						<div className="grid-container">
-							{grid.map((row, rowIndex) => (
-								<div key={`row-${rowIndex}`} className="grid-row">
-									{row.split('').map((cell, colIndex) => (
-										<div
-											key={`cell-${rowIndex}-${colIndex}`}
-											className={`grid-cell ${getCellClass(cell)}`}
-											style={{
-												width: DEFAULT_TILE_SIZE,
-												height: DEFAULT_TILE_SIZE,
-												...(isSpawnPoint(cell) ? { backgroundColor: getSpawnColor(cell) } : {})
-											}}
-											onClick={() => {handleCellClick(rowIndex, colIndex); onSave?.(prepareMapData(), true);}}
-										>
-											{cell === '.' && <div className="dot" />}
-											{cell === 'o' && <div className="big-dot" />}
-											{cell === '-' && <div className="door-line" />}
-											{cell === 'T' && <span>T</span>}
-											{isSpawnPoint(cell) && <span className="spawn-label">{cell}</span>}
-										</div>
-									))}
-								</div>
-							))}
-						</div>
-					</div>
+					{/* Utiliser le nouveau composant Editor */}
+					<Editor
+						grid={grid}
+						DEFAULT_TILE_SIZE={DEFAULT_TILE_SIZE}
+						isSpawnPoint={isSpawnPoint}
+						getSpawnColor={getSpawnColor}
+						getCellClass={getCellClass}
+						handleCellClick={(rowIndex, colIndex) => {
+							handleCellClick(rowIndex, colIndex);
+							setGridModified(true);
+						}}
+						handleCellEnter={handleCellEnter}
+					/>
 				</div>
 				<div className='right-panel'>
 					{/* Right Panel - Preview */}
@@ -404,28 +469,5 @@ const CreatePacmanMap: React.FC<CreatePacmanMapProps> = ({ state, onSave, onCanc
 	);
 };
 
-
-// Fonction pour déterminer si un caractère est un point de spawn
-const isSpawnPoint = (char: string): boolean => {
-	return ['P', 'B', 'I', 'Y', 'C'].includes(char);
-};
-
-// Fonction pour déterminer la classe CSS de chaque cellule
-const getCellClass = (char: string): string => {
-	switch (char) {
-		case '#': return 'wall';
-		case '.': return 'pellet';
-		case 'o': return 'power-pellet';
-		case '-': return 'door';
-		case 'T': return 'tunnel';
-		case ' ': return 'empty';
-		case 'P': return 'spawn spawn-pacman';
-		case 'B': return 'spawn spawn-blinky';
-		case 'I': return 'spawn spawn-inky';
-		case 'Y': return 'spawn spawn-pinky';
-		case 'C': return 'spawn spawn-clyde';
-		default: return 'empty';
-	}
-};
 
 export default CreatePacmanMap;

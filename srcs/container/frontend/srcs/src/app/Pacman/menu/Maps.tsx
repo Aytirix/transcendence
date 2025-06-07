@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import '../../assets/styles/pacman/Maps.scss';
 import { state, PacmanMap } from '../../types/pacmanTypes';
+import { set } from 'date-fns';
 
 interface MapsProps {
 onCreateMap?: () => void;
@@ -14,11 +15,12 @@ const deleteMap = (map: { id: number }) => {
 	if (state.ws && state.ws.readyState === WebSocket.OPEN) {
 	state.ws.send(
 		JSON.stringify({
-		action: 'deleteMap',
-		id: map.id,
-		})
-	);
+			action: 'deleteMap',
+			id: map.id,
+			})
+		);
 	}
+	setTimeout(fetchMaps, 200); // Recharger les cartes après la suppression
 };
 const fetchMaps = () => {
 	if (state.ws && state.ws.readyState === WebSocket.OPEN) {
@@ -31,17 +33,17 @@ const fetchMaps = () => {
 };
 
 const toggleMapPublic = (map: PacmanMap) => {
-    if (state.ws && state.ws.readyState === WebSocket.OPEN && map.id !== undefined) {
-        state.ws.send(
-            JSON.stringify({
-                action: 'insertOrUpdateMap',
-                mapData: {
+	if (state.ws && state.ws.readyState === WebSocket.OPEN && map.id !== undefined) {
+		state.ws.send(
+			JSON.stringify({
+				action: 'insertOrUpdateMap',
+				mapData: {
 					...map,
 					is_public: !map.is_public, // Inverser la visibilité
 				},
-            })
-        );
-    }
+			})
+		);
+	}
 };
 
 useEffect(() => {

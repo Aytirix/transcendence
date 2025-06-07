@@ -93,6 +93,17 @@
 	&.wall {
 	  background-color: #0000ff;
 	}
+
+	&.tunnel {
+	  border: 0.6px solid #0066ff;
+		border-radius: 50%;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		color: #0066ff;
+		font-weight: bold;
+		font-size: 10px;
+	}
   
 	&.empty {
 	  background-color: #111;
@@ -258,6 +269,7 @@
 			color: #0066ff;
 			font-weight: bold;
 			font-size: 12px;
+			
 		  }
   
 		  // Spawn points
@@ -455,3 +467,19 @@
 	50% { transform: translate(-50%, -50%) scale(1.1); }
 	100% { transform: translate(-50%, -50%) scale(1); }
   }
+
+// Tunnel pairing visual feedback
+.tunnel-paired {
+  box-shadow: 0 0 8px 2px #00ff99, 0 0 0 2px #00ff99 inset;
+  border-color: #00ff99 !important;
+  background-color: #003322 !important;
+  transition: box-shadow 0.2s, border-color 0.2s, background-color 0.2s;
+}
+
+.tunnel-unpaired {
+  box-shadow: 0 0 8px 2px #ff3333, 0 0 0 2px #ff3333 inset;
+  border-color: #ff3333 !important;
+  background-color: #330000 !important;
+  transition: box-shadow 0.2s, border-color 0.2s, background-color 0.2s;
+}
+
