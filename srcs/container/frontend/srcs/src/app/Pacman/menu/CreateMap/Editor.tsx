@@ -17,6 +17,30 @@ export const getSpawnColor = (char: string): string => {
   }
 };
 
+export const pairsTunnel = (
+  rowIndex: number,
+  colIndex: number,
+  grid: string[]
+): [number, number][] => {
+  const cols = grid[0]?.length || 0;
+  const rows = grid.length;
+
+  // Chercher un autre tunnel sur la même ligne
+  for (let j = 0; j < cols; j++) {
+    if (j !== colIndex && grid[rowIndex][j] === 'T') {
+      return [[rowIndex, j]]; // Priorité à la ligne
+    }
+  }
+  // Sinon, chercher un autre tunnel sur la même colonne
+  for (let i = 0; i < rows; i++) {
+    if (i !== rowIndex && grid[i][colIndex] === 'T') {
+      return [[i, colIndex]];
+    }
+  }
+  // Aucun pair trouvé
+  return [];
+};
+
 export const getCellClass = (char: string): string => {
   switch (char) {
     case '#': return 'wall';
@@ -74,9 +98,13 @@ const Editor: React.FC<EditorProps> = ({
                 {cell === 'o' && <div className="big-dot" />}
                 {cell === '-' && <div className="door-line" />}
                 {cell === 'T' && (
-                  <div className="tunnel-content">
-                    <span className="tunnel-icon">↔️</span>
-                  </div>
+				<div className={`tunnel-content ${
+					pairsTunnel(rowIndex, colIndex, grid).length === 1
+					? 'tunnel-paired'
+					: 'tunnel-unpaired'
+				}`}>
+					T
+				</div>
                 )}
                 {isSpawnPoint(cell) && <span className="spawn-label">{cell}</span>}
               </div>

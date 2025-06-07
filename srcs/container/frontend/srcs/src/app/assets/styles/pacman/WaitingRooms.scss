@@ -347,5 +347,38 @@
 			}
 		}
 	}
-	
+	.room-map {
+		margin: 1rem 0;
+		margin-top: 0;
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+
+		select {
+			padding: 0.4rem 1rem;
+			border-radius: 0.5rem;
+			border: 2px solid #374151;
+			background-color: #111827;
+			color: #e5e7eb;
+			font-size: 1rem;
+			transition: border 0.2s;
+
+			&:focus {
+				border: 2px solid #2563eb;
+				outline: none;
+			}
+
+			option[disabled] {
+				color: #888;
+				font-style: italic;
+				background: #18181b;
+			}
+		}
+
+		span {
+			font-size: 1.1rem;
+			font-weight: 500;
+			color: #e5e7eb;
+		}
+	}
 }

@@ -10,6 +10,7 @@ interface WaitingRoomsProps {
 const WaitingRooms: React.FC<WaitingRoomsProps> = ({ state }) => {
 	const [roomName, setRoomName] = React.useState('');
 	const [selectedMap, setSelectedMap] = React.useState('classic');
+	const [mapSearch, setMapSearch] = React.useState('');
 	const MAX_ROOM_NAME_LENGTH = 15;
 
 	// Default maps
