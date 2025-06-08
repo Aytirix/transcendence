@@ -25,6 +25,8 @@ const ChatPage: React.FC = () => {
   const [friends] = useState<Friend[]>(MOCKED_FRIENDS);
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
+  const [inputSearch, setInputSearch] = useState("");
+  
   const [wsStatus, setWsStatus] = useState<WebSocketStatus>("Connecting...");
 
   const socket = useSafeWebSocket({
@@ -66,9 +68,11 @@ const ChatPage: React.FC = () => {
   useEffect(() => {
     if (!socket || !selectedFriend) return;
     socket.send(JSON.stringify({
-      action: "loadMoreMessage",
-      to: selectedFriend.id,
-      count: 20,
+      
+  "action": "loadMoreMessage",
+  "group_id": 38,
+  "firstMessageId": 0
+
     }));
     setMessages([]);
     console.log("api url", socket.onmessage?.toString());
@@ -76,19 +80,19 @@ const ChatPage: React.FC = () => {
 
   const sendMessage = () => {
     if (!input.trim() || !selectedFriend || !socket || wsStatus !== "Connected") return;
-    // const payload = {
-    //   action: "new_message",
-    //   from: CURRENT_USER.id,
-    //   to: selectedFriend.id,
-    //   content: input,
-    // };
-    // {
     const payload = {
-
-      "action": "accept_friend",
-      "user_id": 50
+  "action": "new_message",
+  "group_id": 38,
+  "message": input,
 
     };
+    // {
+    // const payload = {
+
+    //   "action": "accept_friend",
+    //   "user_id": 50
+
+    // };
     console.log("Envoi du message au serveur :", payload);
     socket.send(JSON.stringify(payload));
     console.log("Envoi du message au serveur :", JSON.stringify(payload));
@@ -96,11 +100,35 @@ const ChatPage: React.FC = () => {
     // console.log("retour", socket.onmessage);
   };
 
+    const sendSearch = () => {
+    if (!inputSearch.trim() || !selectedFriend || !socket || wsStatus !== "Connected") return;
+    const payload = {
+
+  "action": "search_user",
+  "name": inputSearch,
+  "group_id": null
+
+
+    };
+    // {
+    // const payload = {
+
+    //   "action": "accept_friend",
+    //   "user_id": 50
+
+    // };
+    console.log("Envoi du message au serveur :", payload);
+    socket.send(JSON.stringify(payload));
+    console.log("Envoi du message au serveur :", JSON.stringify(payload));
+    setInputSearch("");
+    // console.log("retour", socket.onmessage);
+  };
+
   return (
     <div className="flex h-screen">
       {/* Friend Menu */}
       <aside className="w-64 bg-gray-100 border-r flex flex-col">
-        <label className="input">
+        <label className="input" >
           <svg className="h-[1em] opacity-50" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
             <g
               strokeLinejoin="round"
@@ -113,7 +141,8 @@ const ChatPage: React.FC = () => {
               <path d="m21 21-4.3-4.3"></path>
             </g>
           </svg>
-          <input type="search" className="grow" placeholder="Search friends" />
+          <input type="search" className="grow" placeholder="Search friends" value={inputSearch} onChange={(e) => setInputSearch(e.target.value)}
+              onKeyDown={e => e.key === "Enter" && sendSearch()}/>
         </label>
         <div className="p-4 font-bold text-xl">Amis</div>
         <div className="flex-1 overflow-auto">
