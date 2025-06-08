@@ -94,6 +94,11 @@ export class Game {
 			}
 			else if (this.player1.getPlayerInfos().mode === "Tournament"
 			&& this.player2.getPlayerInfos().mode === "Tournament") {
+				this.player1.getPlayerInfos().socket.send(JSON.stringify({type: "EXIT"}));
+				this.player2.getPlayerInfos().socket.send(JSON.stringify({type: "EXIT"}));
+				handleFinish(this.player1.getPlayerInfos())
+				handleFinish(this.player2.getPlayerInfos())
+				this.resetDisplay("Tournament");
 				isOnFinishMatch(this.tournament, this.player1.getPlayerInfos(), this.player2.getPlayerInfos());
 				//determiner le finish du tournois en fonction des manche
 				//gerer l actualisation la deco et surtout le exit du tournois 
@@ -118,6 +123,16 @@ export class Game {
 				handleFinish(this.player1.getPlayerInfos());
 				handleFinish(this.player2.getPlayerInfos());
 				this.resetDisplay("Multi");
+			}
+			else if (this.player1.getPlayerInfos().mode === "Tournament"
+			&& this.player2.getPlayerInfos().mode === "Tournament") {
+				this.player1.getPlayerInfos().socket.send(JSON.stringify({type: "EXIT"}));
+				this.player2.getPlayerInfos().socket.send(JSON.stringify({type: "EXIT"}));
+				//checker lequel fait exit pour donner gagnant l adversaire si cest un exit avant la fin du match 
+				handleFinish(this.player1.getPlayerInfos())
+				handleFinish(this.player2.getPlayerInfos())
+				this.resetDisplay("Tournament");
+				isOnFinishMatch(this.tournament, this.player1.getPlayerInfos(), this.player2.getPlayerInfos());
 			}
 			else if (this.player1.getPlayerInfos().mode === "SameKeyboard") {
 				this.player1.getPlayerInfos().socket.send(JSON.stringify({type: "EXIT"}));
@@ -230,6 +245,10 @@ export class Game {
 		}
 		else if (msg === "Solo")
 			this.player1.getPlayerInfos().socket.send(JSON.stringify({ type: "reset" }));
+		else if (msg === "Tournament") {
+			this.player1.getPlayerInfos().socket.send(JSON.stringify({ type: "reset" }));
+			this.player2.getPlayerInfos().socket.send(JSON.stringify({ type: "reset" }));
+		}
 	}
 	getJsonWebsocket() { return (this.jsonWebsocket); } 
 	getStatus() : string { return (this.status); }
