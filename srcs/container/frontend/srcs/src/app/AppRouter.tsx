@@ -11,6 +11,7 @@ import App from './App';
 import IronManProfile from './IronManProfile';
 import IronManLogin from './IronManLogin';
 import IronManRegister from './IronManRegister';
+import ChatPage from './ChatPage';
 
 // PAGES
 
@@ -28,6 +29,7 @@ class AppRouter extends Component {
 					<Route path="/" element={<App />} />
 					<Route path="/profile" element={<IronManProfile />} />
 					<Route path="/login" element={<IronManLogin />} />
+					<Route path="/chat" element={<ChatPage />} />
 					<Route path="/register" element={<IronManRegister />} />
 					<Route path="/pong" element={<Pong />} />
 					<Route path="/Pacman" element={<WebSocketPacman />} />
