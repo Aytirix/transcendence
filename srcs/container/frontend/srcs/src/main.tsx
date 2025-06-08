@@ -11,21 +11,22 @@ import './app/assets/styles/index.css';
 // import './app/assets/styles/IronManTheme.css';
 // import './app/assets/styles/IronManNavBar.css';
 import { useEffect } from 'react';
+import SingletonGuard from './app/components/SingleWindowGuard.tsx';
 
-// function DisableNativeContextMenu({ children }: { children: React.ReactNode }) {
-// 	useEffect(() => {
-// 		const handler = (e: MouseEvent) => {
-// 			e.preventDefault(); // bloque le menu natif
-// 		};
-// 		window.addEventListener('contextmenu', handler);
-// 		return () => window.removeEventListener('contextmenu', handler);
-// 	}, []);
+function DisableNativeContextMenu({ children }: { children: React.ReactNode }) {
+	useEffect(() => {
+		const handler = (e: MouseEvent) => {
+			e.preventDefault();
+		};
+		window.addEventListener('contextmenu', handler);
+		return () => window.removeEventListener('contextmenu', handler);
+	}, []);
 
-// 	return <>{children}</>;
-// }
+	return <>{children}</>;
+}
 
 createRoot(document.getElementById('root')!).render(
-	// <DisableNativeContextMenu>
+	<DisableNativeContextMenu>
 	<SingletonGuard>
 			<ToastContainer />
 			<BrowserRouter>
@@ -37,5 +38,5 @@ createRoot(document.getElementById('root')!).render(
 				</LanguageProvider>
 			</BrowserRouter>
 	</SingletonGuard>
-	// </DisableNativeContextMenu>
+	</DisableNativeContextMenu>
 );
