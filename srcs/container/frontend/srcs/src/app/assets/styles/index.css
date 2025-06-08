@@ -1,12 +1,8 @@
 /* @tailwind base;
 @tailwind components;
 @tailwind utilities; */
+
 @import "tailwindcss";
 @plugin "daisyui" {
     themes: light --default, cupcake;
-}
-
-.input-a {
-    padding: 0px;
-    padding-inline: 0px;
 }

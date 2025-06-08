@@ -118,13 +118,13 @@ const IronManNavBar: React.FC = () => {
         //     </div>
         //   </div>
         // </nav>
-        <div className="bg-base-300 shadow-sm flex">
+        <div className="navbar bg-base-300 shadow-sm">
           <div className="navbar-start">
             <div role="button" className="btn btn-ghost btn-circle avatar" onClick={async () => {navigate('/'); }}>
               <div className=" rounded-full">
                 <img
                   alt="logo"
-                  src="src/app/assets/avatars/ironman.svg" />
+                  src="avatars/ironman.svg" />
               </div>
             </div>
           </div>
@@ -139,12 +139,12 @@ const IronManNavBar: React.FC = () => {
                 <div className="w-10 rounded-full">
                   <img
                     alt="Avatar"
-                    src="src/app/assets/avatars/avatar1.png" />
+                    src="avatars/avatar1.png" />
                 </div>
               </div>
               <ul
                 tabIndex={0}
-                className="menu menu-sm dropdown-content bg-base-300 rounded-box z-1 mt-3 w-20 p-2 shadow">
+                className="menu menu-sm dropdown-content bg-base-300 rounded-box z-1 mt-3 w-30 p-2 shadow">
                 <li>
                   <a className="justify-between" onClick={() => navigate('/profile')}>{t('profile')}</a>
                 </li>

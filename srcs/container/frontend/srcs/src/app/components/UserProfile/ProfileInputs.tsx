@@ -10,34 +10,34 @@ interface ProfileInputsProps {
 const ProfileInputs: React.FC<ProfileInputsProps> = ({ form, handleChange, user }) => (
   <>
     <input
-      className="input input-a"
+      className="input"
       type="text"
       name="username"
-      placeholder={form?.username || "  Pseudo"}
+      placeholder={form?.username || "Pseudo"}
       value={form.username || user?.username}
       onChange={handleChange}
     />
     <input
-      className="input input-a"
+      className="input"
       type="email"
       name="email"
-      placeholder={form?.email || "  E-mail"}
+      placeholder={form?.email || "E-mail"}
       value={form.email}
       onChange={handleChange}
     />
     <input
-      className="input input-a"
+      className="input"
       type="password"
       name="password"
-      placeholder="  Ancien mot de passe"
+      placeholder="Ancien mot de passe"
       value={form.password}
       onChange={handleChange}
     />
     <input
-      className="input input-a"
+      className="input"
       type="password"
       name="confirmPassword"
-      placeholder="  Nouveau mot de passe"
+      placeholder="Nouveau mot de passe"
       value={form.confirmPassword}
       onChange={handleChange}
     />

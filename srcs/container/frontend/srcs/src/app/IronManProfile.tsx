@@ -7,10 +7,10 @@ import ProfileInputs from './components/UserProfile/ProfileInputs';
 // import UserProfileFeedback from './UserProfile/UserProfileFeedback';
 
 const defaultAvatars = [
-  'src/app/assets/avatars/avatar1.png',
-  'src/app/assets/avatars/avatar2.png',
-  'src/app/assets/avatars/avatar3.png',
-  'src/app/assets/avatars/avatar4.png',
+  'avatars/avatar1.png',
+  'avatars/avatar2.png',
+  'avatars/avatar3.png',
+  'avatars/avatar4.png',
 ];
 
 export interface ProfileForm {
@@ -90,7 +90,7 @@ const UserProfile: React.FC = () => {
   return (
     <div className="min-h-screen flex items-center justify-center">
       <form className="profile-card" onSubmit={handleSubmit}>
-        <fieldset className="fieldset bg-base-200 border-base-300 rounded-box w-xs border p-4">
+        <fieldset className="fieldset bg-base-200 border-base-300 rounded-box w-xl border p-4">
           <legend className="fieldset-legend">Modifier mon profil</legend>
           
           <AvatarSelector

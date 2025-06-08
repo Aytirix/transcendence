@@ -16,13 +16,13 @@ const AvatarSelector: React.FC<AvatarSelectorProps> = ({
   <div className="avatar-group">
     {defaultAvatars.map((avatar, idx) => (
       <div className="avatar" key={avatar}>
-      <div className=" h-20  w-20 rounded-full" >
-        <img
-          src={avatar}
-          alt={`Avatar ${idx + 1}`}
-          onClick={() => handleAvatarSelect(avatar)}
-        />
-      </div>
+        <div className=" rounded-full" >
+          <img
+            src={avatar}
+            alt={`Avatar ${idx + 1}`}
+            onClick={() => handleAvatarSelect(avatar)}
+          />
+        </div>
       </div>
     ))}
     <label>
@@ -33,7 +33,11 @@ const AvatarSelector: React.FC<AvatarSelectorProps> = ({
         onChange={handleCustomAvatar}
       />
       {customAvatar ? (
-        <img className="w-32 rounded" src={customAvatar} alt="Custom Avatar" />
+        <div className="avatar">
+          <div className=" rounded-full" >
+            <img className="w-30 h-30 rounded" src={customAvatar} alt="Custom Avatar" />
+          </div>
+        </div>
       ) : (
         <span>+ Ajouter</span>
       )}
