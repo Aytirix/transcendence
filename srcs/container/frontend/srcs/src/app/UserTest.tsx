@@ -215,10 +215,6 @@ const ChatHeader: React.FC<{ title: string; status: string; duration: string }> 
   );
 };
 
-type Message = { id: number; sender_id: number; message: string; sent_at: string };
-type User = { id: number; username: string; email: string; avatar: string | null; lang: string; friends: any[] };
-type Group = { id: number; name: string; members: User[]; messages: Message[] };
-
 const MessageItem: React.FC<{ msg: Message; isOwn: boolean }> = ({ msg, isOwn }) => (
   <div
     className={`${
@@ -580,14 +576,8 @@ export default function WebSocketChat() {
               </button>
             )}
 
-            {typingUsers.length > 0 && (
-              <div className="absolute bottom-16 left-6 italic text-sm text-gray-500">
-                {typingUsers.join(', ')} écrit...
-              </div>
-            )}
           </div>
 
-          <MessageInput value={input} onChange={v => { setInput(v); sendTyping(); }} onSend={sendMessage} />
         </div>
       </div>
     </ThemeContext.Provider>

@@ -89,7 +89,7 @@ const IronManLogin: React.FC = () => {
         </a> */}
         {error && <div style={{ color: '#c20000', marginTop: '16px', textAlign: 'center' }}>{error}</div>}
         <span className="ironman-switch-link">
-          <GoogleLoginButton />
+          <GoogleLoginButton textbtn="login" />
           <Link to="/register">Nouveau héros ? Créer un compte</Link>
         </span>
       </form>
