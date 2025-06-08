@@ -212,6 +212,7 @@ export function isOnFinishMatch(tournament: Tournament, player1: playerStat, pla
 		if (tournament.waitingWinner.length === 1) {
 			tournament.winner = true;
 			messageTournament(tournament, "Winner", `Le gagnant est ${tournament.waitingWinner[0].name}`);
+			listTournament.delete(tournament.idTournament);
 			//penser a supprimer le tournois de la list ensuite et aussi a supprimer le tournois de la list quand le dernier joueur sort de la file d attente 
 			//penser au nettoyage des perdant nettoyage du gagnant avec un reset des donnees .
 		}
