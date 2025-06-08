@@ -19,6 +19,7 @@ export function useSafeWebSocket({ endpoint, onMessage, onStatusChange, reconnec
 	const socketRef = useRef<WebSocket | null>(null);
 	const reconnectTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 	const heartbeatRef = useRef<NodeJS.Timeout | null>(null);
+	const DiffTimeClientServer = useRef<number>(0);
 	const reconnectAttemptsRef = useRef(0);
 	const isManuallyClosed = useRef(false);
 

@@ -2,10 +2,10 @@ import { Friends, Group, User } from '@types';
 import { State, request, req_loadMoreMessage, req_newMessage, res_pong, req_accept_friend, req_add_friend, req_remove_friend, req_refuse_friend, req_block_user, req_createGroup, req_addUserGroup, req_leaveGroup, req_deleteGroup, req_search_user, reponse } from '@typesChat';
 import { IncomingMessage } from 'http';
 import { WebSocketServer, WebSocket } from 'ws';
+import modelsChat from '@models/modelChat';
 import modelsFriends from '@models/modelFriends';
 import controllersChat from '@controllers/controllerChat';
 import controllerFriends from '@controllers/controllerFriends';
-import { mapToObject } from '@tools';
 
 const state: State = {
 	user: new Map<number, User>(),
@@ -21,7 +21,7 @@ const state: State = {
 async function chatWebSocket(ws: WebSocket, user: User): Promise<void> {
 	controllersChat.init_connexion(ws, user, state);
 	ws.on('message', (message: Buffer) => {
-		let text: request | null = null;
+		var text: reponse | null = null;
 		try {
 			text = JSON.parse(message.toString().trim());
 		} catch (e) {
@@ -35,10 +35,13 @@ async function chatWebSocket(ws: WebSocket, user: User): Promise<void> {
 			return true;
 		}
 
+		console.log('Message reçu:', message.toString().trim());
+
 		switch (action) {
 			case 'ping':
 				const pong: res_pong = {
-					action: 'pong'
+					action: 'pong',
+					server_time: Date.now(),
 				};
 				ws.send(JSON.stringify(pong));
 				break;

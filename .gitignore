@@ -5,3 +5,5 @@
 srcs/container/backend/srcs/logs
 srcs/build/**
 srcs/container/backend/srcs/sqlite/sessions.sqlite
+PacmanAI/venv
+PacmanAI/__pycache__/
