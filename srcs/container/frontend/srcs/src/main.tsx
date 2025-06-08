@@ -12,7 +12,6 @@ import './app/assets/styles/index.css';
 // import './app/assets/styles/IronManTheme.css';
 // import './app/assets/styles/IronManNavBar.css';
 import { useEffect } from 'react';
-import SingletonGuard from './app/components/SingleWindowGuard.tsx';
 
 function DisableNativeContextMenu({ children }: { children: React.ReactNode }) {
 	useEffect(() => {
