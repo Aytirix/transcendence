@@ -7,5 +7,12 @@ export interface webMsg {
 		| "Move" 
 		| "EXIT" 
 		| "Ping";
+	action?: "Create"
+			| "Join";
+	sizeTournament?: 4
+				| 8
+				| 16
+				| 32;
+	id?: number;
 	value?: string; 
 };

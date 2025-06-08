@@ -16,9 +16,9 @@ import modelUser from '@models/modelUser';
  * @returns Le groupe si trouvé, sinon false
 */
 export function groupExists(ws: WebSocket, state: State, group_id: number): Group | false {
-	const group = state.groups.get(group_id);
+	const group = state.groups.find((group: Group) => group.id === group_id);
 	if (!group) {
-		ws.send(JSON.stringify({ action: 'error', result: 'error', notification: ['Groupe non trouvé'] } as reponse));
+		ws.send(JSON.stringify({ action: 'error', message: 'Groupe non trouvé' }));
 		return false;
 	}
 	return group;
@@ -109,13 +109,13 @@ export const filterBlockedUserMessages = (messages: Map<number, Message>, user: 
 		.map(message => [message.id, message]));
 }
 
-export const init_connexion = async (ws: WebSocket, user: User, state: State) => {
+export const init_connexion = async (ws: WebSocket, user: User, req: IncomingMessage, state: State) => {
 	console.log('Nouvelle connexion de l\'utilisateur:', user.id);
 	addOnlineUser(state, ws, user);
 	await modelsChat.getAllGroupsFromUser(user, state);
 
 	// Envoi de l'information de connexion à tous les amis connectés
-	const friends = await controllerFriends.getFriends(user.id, state);
+	const friendsConnected = controllerFriends.getConnectedFriends(user.id, state);
 
 	broadcastAllGroupUsers(user, state, null, JSON.stringify({ action: 'friend_connected', user_id: user.id } as send_friend_connected));
 
@@ -154,12 +154,24 @@ export const init_connexion = async (ws: WebSocket, user: User, state: State) =>
 
 export const user_disconnected = async (ws: WebSocket, user: User, state: State) => {
 	console.log('Déconnexion de l\'utilisateur:', user.id);
-	broadcastAllGroupUsers(user, state, null, JSON.stringify({ action: 'friend_disconnected', user_id: user.id } as res_disconnect));
+
+	for (const group of state.groups) {
+		group.members = group.members.filter(member => member.id !== user.id);
+		group.members.forEach(member => {
+			const wsMember = state.onlineSockets.get(member.id);
+			if (wsMember && wsMember.readyState === WebSocket.OPEN) {
+				wsMember.send(JSON.stringify({
+					action: 'user_disconnected',
+					user: user.id,
+				}));
+			}
+		});
+	}
 	removeOnlineUser(state, user);
 };
 
+
 export const newMessage = async (ws: WebSocket, user: User, state: State, req: req_newMessage) => {
-	const sentAtDate = new Date();
 	const group = groupExists(ws, state, req.group_id);
 	if (!group) return;
 
@@ -176,7 +188,6 @@ export const newMessage = async (ws: WebSocket, user: User, state: State, req: r
 	group.messages.set(newMessage.id, newMessage);
 	const messageToSend: res_newMessage = {
 		action: 'new_message',
-		result: 'ok',
 		group_id: group.id,
 		message: newMessage,
 	};

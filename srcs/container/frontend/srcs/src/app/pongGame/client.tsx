@@ -40,6 +40,12 @@ export const Pong: React.FC = () => {
 	const [mode, setMode] = useState<"SameKeyboard" | "Solo" | "Multi" | "EXIT" | null>(null);
 	const [whoAmI, setWhoAmI] = useState<"player1" | "player2" | null>(null);
 	const [resetView, setResetView] = useState(false);
+	const [showTournamentOptions, setShowTournamentOptions] = useState(false);
+	const [tournamentName, setTournamentName] = useState('');
+	const [tournamentSize, setTournamentSize] = useState(4);
+	const [tournamentList, setTournamentList] = useState<{ name: string; id: string; current: number; max: number; }[]>([]);
+
+
 
 	const keyPressed = useRef({
 		up_p1: false,
@@ -49,8 +55,7 @@ export const Pong: React.FC = () => {
 	});
 
 	useEffect(() => {
-		const url = `wss://${window.location.hostname}:7000/pong`;
-		const socket = new WebSocket(url);
+		const socket = new WebSocket('wss://localhost:7000/pong');
 		socketRef.current = socket;
 
 		socket.addEventListener('open', () => {
@@ -107,12 +112,21 @@ export const Pong: React.FC = () => {
 			if (mode === "EXIT") return;
 			if (e.key === 'ArrowUp') keyPressed.current.up_p1 = true;
 			if (e.key === 'ArrowDown') keyPressed.current.down_p1 = true;
+			if (mode === "SameKeyboard") {
+				if (e.key === 'w') keyPressed.current.up_p2 = true;
+				if (e.key === 's') keyPressed.current.down_p2 = true;
+			}
+
 		};
 
 		const handleKeyUp = (e: KeyboardEvent) => {
 			if (mode === "EXIT") return;
 			if (e.key === 'ArrowUp') keyPressed.current.up_p1 = false;
 			if (e.key === 'ArrowDown') keyPressed.current.down_p1 = false;
+			if (mode === "SameKeyboard") {
+				if (e.key === 'w') keyPressed.current.up_p2 = false;
+				if (e.key === 's') keyPressed.current.down_p2 = false;
+			}
 		};
 
 		window.addEventListener('keydown', handleKeyDown);
@@ -143,6 +157,21 @@ export const Pong: React.FC = () => {
 		};
 	}, [mode, whoAmI]);
 
+	
+	useEffect(() => {
+		const socket = socketRef.current;
+		if (!socket || socket.readyState !== WebSocket.OPEN) return;
+		socket.addEventListener("message", (event: MessageEvent) => {
+			try {
+				const msg = JSON.parse(event.data);
+				if (msg.type === "Tournament" && msg.action === "LIST_RESPONSE") {
+					setTournamentList(msg.value);
+				}
+			} catch {}
+		});
+	}, []);
+
+
 	useEffect(() => {
 		const interval = setInterval(() => {
 			const socket = socketRef.current;
@@ -165,14 +194,82 @@ export const Pong: React.FC = () => {
 		<div>
 			<canvas ref={canvasRef} width={800} height={600} style={{ border: '2px solid black', display: 'block', margin: '0 auto' }} />
 			{mode === "EXIT" && <div style={{ textAlign: 'center', fontSize: '24px', marginTop: '20px', color: 'red' }}>🎉 Partie terminée !</div>}
+			
 			<div style={{ textAlign: 'center', marginTop: '10px' }}>
 				<button onClick={() => sendMode("SameKeyboard")}>Same Keyboard</button>
 				<button onClick={() => sendMode("Solo")}>Solo</button>
 				<button onClick={() => sendMode("Multi")}>Multi</button>
 				<button onClick={() => sendMode("EXIT")}>EXIT</button>
+				<button onClick={() => setShowTournamentOptions(!showTournamentOptions)}>Tournament</button>
+				{showTournamentOptions && (
+					<div style={{ marginTop: '10px' }}>
+						<h4>Tournois en attente :</h4>
+						{tournamentList.length === 0 ? (
+							<p>Aucun tournoi disponible</p>
+						) : (
+							<ul style={{ listStyle: 'none', padding: 0 }}>
+								{tournamentList.map((t) => (
+									<li key={t.id} style={{ marginBottom: '10px' }}>
+									{t.name} — {t.current}/{t.max} joueurs
+									<button
+										style={{ marginLeft: '10px' }}
+										onClick={() => {
+											const socket = socketRef.current;
+											if (!socket || socket.readyState !== WebSocket.OPEN) return;
+											socket.send(JSON.stringify({
+												type: "Tournament",
+												action: "JOIN",
+												value: { tournamentId: t.id }
+											}));
+									}}
+									>Rejoindre</button>
+								</li>
+							))}
+							</ul>
+						)}
+					</div>
+				)}
+
+
+				{showTournamentOptions && (
+					<div style={{ marginTop: '10px' }}>
+						<input
+							type="text"
+							placeholder="Nom du tournoi"
+							value={tournamentName}
+							onChange={(e) => setTournamentName(e.target.value)}
+						/>
+						<select value={tournamentSize} onChange={(e) => setTournamentSize(parseInt(e.target.value))} style={{ marginLeft: '10px' }}>
+							<option value={4}>4 joueurs</option>
+							<option value={8}>8 joueurs</option>
+							<option value={16}>16 joueurs</option>
+							<option value={32}>32 joueurs</option>
+						</select>
+						<button
+							style={{ marginLeft: '10px' }}
+							onClick={() => {
+								const socket = socketRef.current;
+								if (!socket || socket.readyState !== WebSocket.OPEN) return;
+								socket.send(JSON.stringify({
+									type: "Tournament",
+									action: "Create",
+									value: {
+										name: tournamentName,
+										size: tournamentSize
+									}
+								}));
+								setShowTournamentOptions(false);
+							}}
+						>
+							Créer
+						</button>
+					</div>
+				)}
 			</div>
+
 		</div>
 	);
 };
 
 export default Pong;
+
