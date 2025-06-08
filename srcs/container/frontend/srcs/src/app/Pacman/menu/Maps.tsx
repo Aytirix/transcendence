@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import '../../assets/styles/pacman/Maps.scss';
+// import '../../assets/styles/pacman/Maps.scss';
 import { state } from '../../types/pacmanTypes';
 
 interface MapsProps {

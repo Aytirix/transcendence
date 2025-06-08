@@ -6,7 +6,7 @@ import { CenteredBox } from './menu/CenteredBox';
 import { useAuth } from '../../contexts/AuthContext';
 import PacmanGame from './theojeutmp/PacmanGame';
 import CreatePacmanMap from './menu/CreatePacmanMap'; // Import the map editor
-import '../assets/styles/Star.scss';
+// import '../assets/styles/Star.scss';
 
 function initState(): state {
 	const state: state = {

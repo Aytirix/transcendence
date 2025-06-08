@@ -1,6 +1,6 @@
 // import IronManNavBar from './IronManNavBar';
 import Intro from './intro';
-import './assets/styles/App.scss';
+// import './assets/styles/App.scss';
 import ApiService from '../api/ApiService';
 import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
