@@ -1,6 +1,6 @@
 // src/components/pacman/PacmanGame.tsx
 import React, { useState, useEffect } from 'react';
-import './PacmanGame.scss';
+// import './PacmanGame.scss';
 import { state } from '../../types/pacmanTypes';
 import portalImg from '../../assets/img/pacman/portal.gif';
 

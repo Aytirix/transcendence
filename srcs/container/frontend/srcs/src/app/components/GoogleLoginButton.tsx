@@ -34,5 +34,5 @@ export default function GoogleLoginButton() {
     }
   }, []);
 
-  return (<><p>texte</p><div ref={buttonDiv}></div></>);
+  return (<div ref={buttonDiv}></div>);
 }

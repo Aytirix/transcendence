@@ -2,7 +2,7 @@
 import React from 'react';
 import { state } from '../../types/pacmanTypes';
 import PacmanMap from './PacmanGame';
-import './ActiveRooms.scss';
+// import './ActiveRooms.scss';
 
 interface ActiveRoomsProps {
 	state: state;

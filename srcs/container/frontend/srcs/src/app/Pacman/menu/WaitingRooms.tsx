@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { state } from '@types/pacmanTypes';
-import '../../assets/styles/pacman/WaitingRooms.scss';
+// import '../../assets/styles/pacman/WaitingRooms.scss';
 import { use } from 'i18next';
 
 interface WaitingRoomsProps {

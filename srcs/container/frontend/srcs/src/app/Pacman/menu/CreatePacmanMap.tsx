@@ -1,6 +1,6 @@
 // src/components/pacman/CreatePacmanMap.tsx
 import React, { useState, useEffect } from 'react';
-import './CreatePacmanMap.scss';
+// import './CreatePacmanMap.scss';
 import { state, PacmanMap } from '../../types/pacmanTypes';
 import { set } from 'date-fns';
 

@@ -8,8 +8,8 @@ import {
 	DragEndEvent,
 	DragStartEvent
 } from '@dnd-kit/core';
-import './assets/styles/ModuleManager.scss';
-import './assets/styles/App.scss'
+// import './assets/styles/ModuleManager.scss';
+// import './assets/styles/App.scss'
 import modulesDataImport from './assets/ListeModules.json';
 
 interface ModuleItem {

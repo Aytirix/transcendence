@@ -9,7 +9,7 @@ import Settings from './Settings';
 import Statistics from './Statistics';
 import { state } from '../../types/pacmanTypes';
 // import '@styles/pacman/CenteredBox.scss';
-import '../../assets/styles/pacman/CenteredBox.scss';
+// import '../../assets/styles/pacman/CenteredBox.scss';
 
 const TABS = [
 	{ id: 'WaitingRooms', label: 'Lobby' },
