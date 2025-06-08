@@ -35,23 +35,22 @@ type Group = {
 
 // === Sub-components ===
 const Skeleton: React.FC<{ height?: string }> = ({ height = '1rem' }) => (
-  <div className="animate-pulse bg-gray-200 rounded" style={{ height, width: '100%' }} />
+	<div className="animate-pulse bg-gray-200 rounded" style={{ height, width: '100%' }} />
 );
 
-const Avatar: React.FC<{ src: string | null; alt: string }> = ({ src, alt }) => (
-  src ? (
-    <img
-      src={src}
-      alt={alt}
-      loading="lazy"
-      className="w-12 h-12 rounded-full object-cover border-2 border-white"
-    />
-  ) : (
-    <div className="w-12 h-12 rounded-full bg-gray-300 flex items-center justify-center text-gray-600">
-      {alt.charAt(0)}
-    </div>
-  )
-);
+const Avatar: React.FC<{ src: string | null; alt: string }> = ({ src, alt }) =>
+	src ? (
+		<img
+			src={src}
+			alt={alt}
+			loading="lazy"
+			className="w-12 h-12 rounded-full object-cover border-2 border-white"
+		/>
+	) : (
+		<div className="w-12 h-12 rounded-full bg-gray-300 flex items-center justify-center text-gray-600">
+			{alt.charAt(0)}
+		</div>
+	);
 
 const GroupList: React.FC<{
 	groups: Group[];
@@ -189,50 +188,51 @@ const FriendsList: React.FC<{
 	</div>
 );
 
-const ChatHeader: React.FC<{ title: string; status: string; duration: string }> = ({ title, status, duration }) => {
-  const { dark, toggle } = useTheme();
-  return (
-    <header
-      className={`p-4 flex justify-between items-center border-b ${
-        dark ? 'bg-gray-800 text-white border-gray-700' : 'bg-white text-gray-900 border-gray-200'
-      }`}
-    >
-      <h2 className="text-2xl font-semibold truncate">{title}</h2>
-      <div className="flex items-center space-x-4">
-        <button onClick={toggle} aria-label="Toggle theme">
-          {dark ? '☀️' : '🌙'}
-        </button>
-        <span
-          className={`px-3 py-1 rounded-full text-sm ${
-            status === 'Connected' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
-          }`}
-        >
-          {status}
-        </span>
-        <span className="text-gray-500">{duration}</span>
-      </div>
-    </header>
-  );
+const ChatHeader: React.FC<{ title: string; status: string; duration: string }> = ({
+	title,
+	status,
+	duration,
+}) => {
+	const { dark, toggle } = useTheme();
+	return (
+		<header
+			className={`p-4 flex justify-between items-center border-b ${dark ? 'bg-gray-800 text-white border-gray-700' : 'bg-white text-gray-900 border-gray-200'
+				}`}
+		>
+			<h2 className="text-2xl font-semibold truncate max-w-xs">{title}</h2>
+			<div className="flex items-center space-x-4">
+				<button onClick={toggle} aria-label="Toggle theme">
+					{dark ? '☀️' : '🌙'}
+				</button>
+				<span
+					className={`px-3 py-1 rounded-full text-sm ${status === 'Connected' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+						}`}
+				>
+					{status}
+				</span>
+				<span className="text-gray-500">{duration}</span>
+			</div>
+		</header>
+	);
 };
 
 const MessageItem: React.FC<{ msg: Message; isOwn: boolean }> = ({ msg, isOwn }) => (
-  <div
-    className={`${
-      isOwn ? 'ml-auto bg-blue-600 text-white' : 'mr-auto bg-gray-100 text-gray-800'
-    } p-3 rounded-xl max-w-xs`}
-  >
-    <p>{msg.message}</p>
-    <span className="text-xs block text-right text-gray-400 mt-1">
-      {format(new Date(msg.sent_at), 'HH:mm')}
-    </span>
-  </div>
+	<div
+		className={`${isOwn ? 'ml-auto bg-blue-600 text-white' : 'mr-auto bg-gray-100 text-gray-800'
+			} p-3 rounded-xl max-w-xs`}
+	>
+		<p>{msg.message}</p>
+		<span className="text-xs block text-right text-gray-400 mt-1">
+			{format(new Date(msg.sent_at), 'HH:mm')}
+		</span>
+	</div>
 );
 
 const MessageList: React.FC<{
-  messages: Message[];
-  currentUserId: number | null;
-  isLoading: boolean;
-  onScroll: (atBottom: boolean) => void;
+	messages: Message[];
+	currentUserId: number | null;
+	isLoading: boolean;
+	onScroll: (atBottom: boolean) => void;
 }> = ({ messages, currentUserId, isLoading, onScroll }) => {
 	const containerRef = useRef<HTMLDivElement>(null);
 	const grouped = React.useMemo(() => {
@@ -248,44 +248,43 @@ const MessageList: React.FC<{
 		}, {});
 	}, [messages]);
 
-  const handleScroll = () => {
-    const el = containerRef.current;
-    if (!el) return;
-    const atBottom = el.scrollHeight - el.scrollTop === el.clientHeight;
-    onScroll(atBottom);
-  };
+	const handleScroll = () => {
+		const el = containerRef.current;
+		if (!el) return;
+		onScroll(Math.abs(el.scrollHeight - el.scrollTop - el.clientHeight) < 5);
+	};
 
-  useEffect(() => {
-    const el = containerRef.current;
-    if (el) el.scrollTop = el.scrollHeight;
-  }, [messages]);
+	useEffect(() => {
+		const el = containerRef.current;
+		if (el) el.scrollTop = el.scrollHeight;
+	}, [messages]);
 
-  if (isLoading) {
-    return (
-      <div className="p-4 space-y-2">
-        {Array.from({ length: 5 }).map((_, i) => (
-          <Skeleton key={i} height="60px" />
-        ))}
-      </div>
-    );
-  }
+	if (isLoading) {
+		return (
+			<div className="p-4 space-y-2">
+				{Array.from({ length: 5 }).map((_, i) => (
+					<Skeleton key={i} height="60px" />
+				))}
+			</div>
+		);
+	}
 
-  return (
-    <div
-      ref={containerRef}
-      onScroll={handleScroll}
-      className="flex-1 overflow-y-auto p-4 space-y-4 min-h-0"
-    >
-      {Object.entries(grouped).map(([day, msgs]) => (
-        <div key={day}>
-          <div className="text-center text-gray-500 my-2">{day}</div>
-          {msgs.map(msg => (
-            <MessageItem key={msg.id} msg={msg} isOwn={msg.sender_id === currentUserId} />
-          ))}
-        </div>
-      ))}
-    </div>
-  );
+	return (
+		<div
+			ref={containerRef}
+			onScroll={handleScroll}
+			className="flex-1 overflow-y-auto p-4 space-y-4 min-h-0"
+		>
+			{Object.entries(grouped).map(([day, msgs]) => (
+				<div key={day}>
+					<div className="text-center text-gray-500 my-2">{day}</div>
+					{msgs.map((msg) => (
+						<MessageItem key={msg.id} msg={msg} isOwn={msg.sender_id === currentUserId} />
+					))}
+				</div>
+			))}
+		</div>
+	);
 };
 
 const MessageInput: React.FC<{
@@ -312,8 +311,8 @@ const MessageInput: React.FC<{
 );
 
 export default function WebSocketChat() {
-  const [dark, setDark] = useState(false);
-  const toggle = () => setDark(prev => !prev);
+	const [dark, setDark] = useState(false);
+	const toggle = () => setDark((p) => !p);
 
 	const [status, setStatus] = useState<'Connecting...' | 'Connected' | 'Closed' | 'Error' | 'Reconnecting'>(
 		'Connecting...'
@@ -328,8 +327,8 @@ export default function WebSocketChat() {
 	const [hasMoreHistory, setHasMoreHistory] = useState(true);
 	const [atBottom, setAtBottom] = useState(true);
 
-  const startRef = useRef(Date.now());
-  const currentUserIdRef = useRef<number|null>(null);
+	const startRef = useRef(Date.now());
+	const currentUserIdRef = useRef<number | null>(null);
 
 	// Timer for duration
 	useEffect(() => {
@@ -560,12 +559,12 @@ export default function WebSocketChat() {
 							</button>
 						)}
 
-            <MessageList
-              messages={activeGroup.messages}
-              currentUserId={currentUserIdRef.current}
-              isLoading={loadingHistory}
-              onScroll={setAtBottom}
-            />
+						<MessageList
+							messages={activeGroup.messages}
+							currentUserId={currentUserIdRef.current}
+							isLoading={loadingHistory}
+							onScroll={setAtBottom}
+						/>
 
             {!atBottom && activeGroup.messages.length > 0 && (
               <button

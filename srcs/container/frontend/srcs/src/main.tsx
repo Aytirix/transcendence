@@ -1,7 +1,8 @@
 import './i18next/i18next';
+import { createRoot } from 'react-dom/client';
+import SingletonGuard from './app/components/SingleWindowGuard.tsx';
 import { LanguageProvider } from './contexts/LanguageContext.tsx';
 import { BrowserRouter } from 'react-router-dom';
-import { createRoot } from 'react-dom/client';
 import AppRouter from './app/AppRouter.tsx';
 import { ToastContainer } from './app/components/Notifications';
 import IronManNavBar from './app/IronManNavBar';
