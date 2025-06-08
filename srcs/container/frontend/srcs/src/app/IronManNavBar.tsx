@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import ApiService from '../api/ApiService';
 import './assets/styles/IronManNavBar.css';
@@ -13,7 +13,8 @@ const LANGUAGES = [
 ];
 
 const IronManNavBar: React.FC = () => {
-  const { i18n } = useTranslation();
+  // const { i18n } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [langOpen, setLangOpen] = useState(false);
   const [logoMenuOpen, setLogoMenuOpen] = useState(false);
   const navigate = useNavigate();
@@ -32,7 +33,14 @@ const IronManNavBar: React.FC = () => {
     }
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [logoMenuOpen]);
-
+  useEffect(() => {
+        async function readLang() {
+            const res = await ApiService.get('/isAuth');
+            const lang = res.user?.lang || 'fr';
+            i18n.changeLanguage(lang);
+        }
+        readLang();
+    }, [i18n]);
   const hideOnPaths = ['/Pacman', '/Pong'];
   const loadNavBar = !hideOnPaths.includes(location.pathname);
 
@@ -62,7 +70,7 @@ const IronManNavBar: React.FC = () => {
             {logoMenuOpen && (
               <div className="ironman-logo-dropdown">
                 <Link to="/" onClick={() => setLogoMenuOpen(false)}>Accueil</Link>
-                <Link to="/Profile" onClick={() => setLogoMenuOpen(false)}>Profile</Link>
+                <Link to="/Profile" onClick={() => setLogoMenuOpen(false)}>{t('profile')}</Link>
                 <button
                   className="ironman-logout-btn"
                   onClick={async () => {
@@ -71,14 +79,14 @@ const IronManNavBar: React.FC = () => {
                     navigate('/login');
                   }}
                 >
-                  Logout
+                  {t('logout')}
                 </button>
               </div>
             )}
           </div>
           <div className="ironman-navbar-links">
-            <Link to="/Pacman">Pacman</Link>
-            <Link to="/Pong">pong tests</Link>
+            <Link to="/Pacman">Pacman</Link>|
+            <Link to="/Pong">Pong</Link>|
             <Link to="/Chat">Chat</Link>
           </div>
           <div className="ironman-navbar-lang">
