@@ -77,7 +77,7 @@ const SameKeyboard: React.FC = () => {
 			if (data.type === 'EXIT') {
 				socketRef.current?.close();
 				engine.current?.dispose();
-				navigate('/pong/menu');
+				navigate('/Pong/menu');
 				return;
 			}
 			if (data.ball && data.player1 && data.player2)
