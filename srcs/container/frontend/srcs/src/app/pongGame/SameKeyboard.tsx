@@ -25,6 +25,10 @@ const SameKeyboard: React.FC = () => {
 	const [isCinematic, setIscinematic] = useState(false);
 	const [parsedData, setParsedData] = useState<Parse | null>(null);
 	const [count, setCount] = useState(3);
+	const [scorePlayer1, setScorePlayer1] = useState(0);
+	const [scorePlayer2, setScorePlayer2] = useState(0);
+	const [namePlayer1] = useState("Player1");
+	const [namePlayer2] = useState("Player2");
 
 	const keyPressed = useRef({
 		p1_up: false,
@@ -66,6 +70,10 @@ const SameKeyboard: React.FC = () => {
 		// Réception des messages
 		socketRef.current.onmessage = (message: MessageEvent) => {
 			const data = JSON.parse(message.data);
+			if (data.type === 'Score') {
+				setScorePlayer1(data.player1);
+				setScorePlayer2(data.player2);
+			}
 			if (data.ball && data.player1 && data.player2)
 				setParsedData(data);
 		};
@@ -193,6 +201,8 @@ const SameKeyboard: React.FC = () => {
 				?	<h1 className='Start-go'>{count}</h1>
 				:	<h1 className='Start-go'>Go</h1>
 			)}
+			<h1 className='DashBoardp1'>{namePlayer1} : Score {scorePlayer1}</h1>
+			<h1 className='DashBoardp2'>{namePlayer2} : Score {scorePlayer2}</h1>
 			<button onClick={returnMenu} className='Return-button'>Exit Game</button>
 		</div>
 	);

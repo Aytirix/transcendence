@@ -169,6 +169,34 @@
 	animation: textGlowMenu 1.7s linear infinite;
 }
 
+.DashBoardp1 {
+	border: none;
+	position: absolute;
+	border-radius: 10px;
+	top: 20px;
+	right: 20px;
+	z-index: 2;
+	background: transparent;
+	font-size: 30px;
+	color: rgb(241, 247, 247);
+	font-weight: bold;
+	animation: textGlowMenu 1.7s linear infinite;
+}
+
+.DashBoardp2 {
+	border: none;
+	position: absolute;
+	border-radius: 10px;
+	top: 20px;
+	left: 20px;
+	z-index: 2;
+	background: transparent;
+	font-size: 30px;
+	color: rgb(241, 247, 247);
+	font-weight: bold;
+	animation: textGlowMenu 1.7s linear infinite;
+}
+
 .Start-go {
 	border: none;
 	border-radius: 10px;
