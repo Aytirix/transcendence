@@ -11,7 +11,7 @@ import {
   Mesh,
   AbstractMesh,
   Color3,
-  StandardMaterial
+  StandardMaterial,
 } from '@babylonjs/core';
 
 import { registerBuiltInLoaders } from '@babylonjs/loaders/dynamic';
@@ -24,6 +24,7 @@ export type BabylonInitResult = {
   paddle1: Mesh;
   paddle2: Mesh;
   galactic: AbstractMesh;
+  camera: FreeCamera;
 };
 
 export async function initBabylon(canvas: HTMLCanvasElement) : Promise<BabylonInitResult> {
@@ -78,9 +79,11 @@ export async function initBabylon(canvas: HTMLCanvasElement) : Promise<BabylonIn
 	// camera.keysLeft = [];
 	// camera.keysRight = [];
 	camera.attachControl(canvas, true);
-	camera.position.x = 61;
-	camera.position.y = 45;
-	camera.position.z = -83;
+	camera.position.x = -1209;
+	camera.position.y = 21.71;
+	camera.position.z = -1.446;
+	camera.rotation.x = 0.081;
+	camera.rotation.y = 1.599;
 
 	// Lumière principale
 	const light = new HemisphericLight("light", new Vector3(0, 1, 0), scene);
@@ -102,7 +105,7 @@ export async function initBabylon(canvas: HTMLCanvasElement) : Promise<BabylonIn
 	paddle1.edgesColor = new Color4(1, 0, 0, 1);
 
 	const ball = MeshBuilder.CreateSphere("ball", { diameter: 2 }, scene);
-	ball.position.set(30, 4, - 30);
+	ball.position.set(30, 4, 0);
 
 
 	const paddle2 = MeshBuilder.CreateBox("paddle2", { width: 0.1, height: 0.2, depth: 1 }, scene);
@@ -117,15 +120,14 @@ export async function initBabylon(canvas: HTMLCanvasElement) : Promise<BabylonIn
 	
 	// terrain ping pong 
 	
-	const cube = MeshBuilder.CreateBox("cube", {width: 8, height: 0.2, depth: 6.1}, scene);
+	const cube = MeshBuilder.CreateBox("cube", {width: 8, height: 0.001, depth: 6.1}, scene);
 	cube.scaling = new Vector3(10, 10 ,10)
 	cube.position.set(59, 4, 0);
 	cube.enableEdgesRendering();
-	cube.edgesWidth = 15;
+	cube.edgesWidth = 25;
 	cube.edgesColor = new Color4(1, 0, 0, 1);
-
 	cube.visibility = 0.01
 
-	return ({scene, engine, ball, paddle1, paddle2, galactic: galacticMesh});
+	return ({scene, engine, ball, paddle1, paddle2, galactic: galacticMesh, camera});
 	
 }
