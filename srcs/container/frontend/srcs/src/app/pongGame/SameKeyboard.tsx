@@ -197,7 +197,7 @@ const SameKeyboard: React.FC = () => {
 				}
 				else
 					i++;
-			}, 6); // 10ms entre chaque frame (~100 FPS)
+			}, 6);
 	}, [isReady3d])
 
 	return (
