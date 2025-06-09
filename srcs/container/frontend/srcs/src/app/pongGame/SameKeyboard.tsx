@@ -8,7 +8,7 @@ import { handleKeyDown, handleKeyUp } from './types/handleKey';
 
 const SameKeyboard: React.FC = () => {
 	const navigate = useNavigate();
-	const returnMenu = () => navigate('/pong/menu');
+	const returnMenu = () => socketRef.current?.send(JSON.stringify({type: "EXIT"}));
 
 	const canvasRef = useRef<HTMLCanvasElement | null>(null);
 	const paddle1 = useRef<Mesh | null>(null);
@@ -73,6 +73,12 @@ const SameKeyboard: React.FC = () => {
 			if (data.type === 'Score') {
 				setScorePlayer1(data.player1);
 				setScorePlayer2(data.player2);
+			}
+			if (data.type === 'EXIT') {
+				socketRef.current?.close();
+				engine.current?.dispose();
+				navigate('/pong/menu');
+				return;
 			}
 			if (data.ball && data.player1 && data.player2)
 				setParsedData(data);
