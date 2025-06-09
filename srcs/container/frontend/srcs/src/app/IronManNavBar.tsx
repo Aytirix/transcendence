@@ -41,8 +41,8 @@ const IronManNavBar: React.FC = () => {
         }
         readLang();
     }, [i18n]);
-  const hideOnPaths = ['/Pacman', '/Pong'];
-  const loadNavBar = !hideOnPaths.includes(location.pathname);
+  const hideOnPaths = ['/Pacman'];
+  const loadNavBar = !hideOnPaths.includes(location.pathname) && !location.pathname.startsWith('/Pong');
 
   return (
     <>
