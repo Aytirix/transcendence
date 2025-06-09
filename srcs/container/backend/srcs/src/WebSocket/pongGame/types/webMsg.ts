@@ -6,9 +6,16 @@ export interface webMsg {
 		| "Undefined" 
 		| "Move" 
 		| "EXIT" 
+		| "Score"
+		| "Name"
 		| "Ping";
 	action?: "Create"
-			| "Join";
+			| "Join"
+			| "Start"
+			| "Display"
+			| "Winner";
+	player1?: number;
+	player2?: number;
 	sizeTournament?: 4
 				| 8
 				| 16

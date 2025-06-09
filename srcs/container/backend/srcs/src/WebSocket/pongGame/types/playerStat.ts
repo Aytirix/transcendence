@@ -7,7 +7,10 @@ export interface playerStat {
 	email: string;
 	name: string;
 	id: number;
-	mode?: "Multi" | "Solo" | "SameKeyboard" | "Tournament" | "Undefined" | "Move" | "EXIT" | "Ping";
+	idTournament?: number;
+	matchTournamentNB?: number;
+	resultMatchTournament?: "Loose" | "Win" | "Current";
+	mode?: "Multi" | "Solo" | "SameKeyboard" | "Tournament" | "Undefined" | "Move" | "EXIT" | "Score" | "Name" | "Ping";
 	inGame : boolean;
 	socket: WebSocket;
 	lastping?: number;
@@ -17,6 +20,20 @@ export interface Tournament {
 	listPlayer: Set<playerStat>;
 	size: 4 | 8 | 16 | 32;
 	name: string;
-	winner?: string;
+	winner?: boolean;
 	isFull: boolean;
+	idTournament?: number;
+	currentMatch?: {player1: playerStat, player2:playerStat} [];
+	waitingWinner?: playerStat [];
+	historyTournament?: {
+		nbRound: number,
+		round: number, 
+		matchNB: {
+		number: number;
+		player1: playerStat;
+		p1ResultMatchTournament?: "Loose" | "Win" | "Current";
+		player2: playerStat;
+		p2ResultMatchTournament?: "Loose" | "Win" | "Current";
+		}[];
+	} [];
 }
