@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
-import { Solo } from "./Solo";
-import { MultiPlayers } from "./MultiPlayers";
-import { Tournament } from "./Tournament";
+import { Solo } from "./modes/Solo";
+import { MultiPlayers } from "./modes/MultiPlayers";
+import { Tournament } from "./modes/Tournament";
 
 const GameMenu: React.FC = () => {
 	const navigate = useNavigate();
