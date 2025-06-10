@@ -2,61 +2,78 @@ import React, { useEffect, useState } from "react";
 import useSafeWebSocket, { WebSocketStatus } from "../api/useSafeWebSocket";
 
 // Types
-type User = { id: number; username: string };
-type Friend = User;
+type Member = { id: number; username: string; avatar?: string; lang?: string };
+type Group = {
+  id: number;
+  name: string | null;
+  members: Member[];
+  owners_id: number[];
+  onlines_id: number[];
+  private: number;
+};
 type Message = {
   id: number;
-  from: number;
-  to: number;
-  content: string;
-  date: string;
+  sender_id: number;
+  message: string;
+  sent_at: string;
 };
-
-const CURRENT_USER: User = { id: 42, username: "Moi" };
-const MOCKED_FRIENDS: Friend[] = [
-  { id: 1, username: "Alice" },
-  { id: 2, username: "Bob" },
-];
 
 const endpoint = `/chat`;
 
 const ChatPage: React.FC = () => {
-  const [selectedFriend, setSelectedFriend] = useState<Friend | null>(MOCKED_FRIENDS[0]);
-  const [friends] = useState<Friend[]>(MOCKED_FRIENDS);
+  const [groups, setGroups] = useState<Group[]>([]);
+  const [selectedGroup, setSelectedGroup] = useState<Group | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [inputSearch, setInputSearch] = useState("");
-  
   const [wsStatus, setWsStatus] = useState<WebSocketStatus>("Connecting...");
+  const [currentUserId, setCurrentUserId] = useState<number | null>(null);
 
   const socket = useSafeWebSocket({
     endpoint,
     onMessage: (data) => {
-      console.log("Message WS reçu :", data);
       if (!data.action) {
         console.log("erreur WS reçu :", data);
         return;
       }
+      if (data.action !== "pong" && data.action !== "init_connected")
+        console.log("Message WS reçu :", data);
+
       switch (data.action) {
         case "new_message":
-          const m: Message = data.data || data;
+          // la payload attendue: { action, result, group_id, message }
+          // ici, message reçu = data.message
           if (
-            selectedFriend &&
-            ((m.from === CURRENT_USER.id && m.to === selectedFriend.id) ||
-              (m.from === selectedFriend.id && m.to === CURRENT_USER.id))
+            selectedGroup &&
+            data.group_id === selectedGroup.id &&
+            data.result === "ok" &&
+            data.message
           ) {
-            setMessages((prev) => [...prev, m]);
+            setMessages((prev) => [...prev, data.message]);
           }
           break;
         case "loadMoreMessage":
-          if (Array.isArray(data.data)) setMessages(data.data);
+          if (data.messages && typeof data.messages === "object") {
+            // Convertit l'objet messages en tableau, trié par id croissant
+            const arr = Object.values(data.messages) as Message[];
+            arr.sort((a, b) => a.id - b.id);
+            setMessages(arr);
+          } else {
+            setMessages([]);
+          }
           break;
         case "pong":
-          if (Array.isArray(data.data)) setMessages(data.data);
+          // laisse vide ici, spécifique à ton usage
           break;
+        case "init_connected": {
+          const groupArray: Group[] = Object.values(data.groups);
+          setGroups(groupArray);
+          if (groupArray.length) setSelectedGroup(groupArray[0]);
+          if (data.user?.id) setCurrentUserId(data.user.id);
+          break;
+        }
         default:
-          console.log("Message WS reçu :", data);
-        // autres cases selon besoins
+          console.log("Message WS reçu error :", data);
       }
     },
     onStatusChange: setWsStatus,
@@ -66,123 +83,115 @@ const ChatPage: React.FC = () => {
   });
 
   useEffect(() => {
-    if (!socket || !selectedFriend) return;
-    socket.send(JSON.stringify({
-      
-  "action": "loadMoreMessage",
-  "group_id": 38,
-  "firstMessageId": 0
-
-    }));
+    if (!socket || !selectedGroup) return;
+    socket.send(
+      JSON.stringify({
+        action: "loadMoreMessage",
+        group_id: selectedGroup.id,
+        firstMessageId: 0,
+      })
+    );
     setMessages([]);
-    console.log("api url", socket.onmessage?.toString());
-  }, [selectedFriend, socket]);
+  }, [selectedGroup, socket]);
 
   const sendMessage = () => {
-    if (!input.trim() || !selectedFriend || !socket || wsStatus !== "Connected") return;
+    if (!input.trim() || !selectedGroup || !socket || wsStatus !== "Connected") return;
     const payload = {
-  "action": "new_message",
-  "group_id": 38,
-  "message": input,
-
+      action: "new_message",
+      group_id: selectedGroup.id,
+      message: input,
     };
-    // {
-    // const payload = {
-
-    //   "action": "accept_friend",
-    //   "user_id": 50
-
-    // };
-    console.log("Envoi du message au serveur :", payload);
     socket.send(JSON.stringify(payload));
-    console.log("Envoi du message au serveur :", JSON.stringify(payload));
     setInput("");
-    // console.log("retour", socket.onmessage);
+    // Ne rien ajouter à messages ici !
   };
 
-    const sendSearch = () => {
-    if (!inputSearch.trim() || !selectedFriend || !socket || wsStatus !== "Connected") return;
+  const sendSearch = () => {
+    if (!inputSearch.trim() || !socket || wsStatus !== "Connected") return;
     const payload = {
-
-  "action": "search_user",
-  "name": inputSearch,
-  "group_id": null
-
-
+      action: "search_user",
+      name: inputSearch,
+      group_id: null,
     };
-    // {
-    // const payload = {
-
-    //   "action": "accept_friend",
-    //   "user_id": 50
-
-    // };
-    console.log("Envoi du message au serveur :", payload);
     socket.send(JSON.stringify(payload));
-    console.log("Envoi du message au serveur :", JSON.stringify(payload));
     setInputSearch("");
-    // console.log("retour", socket.onmessage);
   };
 
   return (
     <div className="flex h-screen">
-      {/* Friend Menu */}
+      {/* MENU LATÉRAL GROUPES */}
       <aside className="w-64 bg-gray-100 border-r flex flex-col">
-        <label className="input" >
-          <svg className="h-[1em] opacity-50" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-            <g
-              strokeLinejoin="round"
-              strokeLinecap="round"
-              strokeWidth="2.5"
-              fill="none"
-              stroke="currentColor"
-            >
-              <circle cx="11" cy="11" r="8"></circle>
-              <path d="m21 21-4.3-4.3"></path>
-            </g>
+        <label
+          htmlFor="search"
+          className="flex items-center border bg-gray-200 p-2 m-4 rounded"
+        >
+          <svg width="20" height="20" viewBox="0 0 22 22" fill="none" stroke="currentColor">
+            <circle cx="11" cy="11" r="8"></circle>
+            <path d="m21 21-4.3-4.3"></path>
           </svg>
-          <input type="search" className="grow" placeholder="Search friends" value={inputSearch} onChange={(e) => setInputSearch(e.target.value)}
-              onKeyDown={e => e.key === "Enter" && sendSearch()}/>
+          <input
+            type="search"
+            className="grow"
+            placeholder="Rechercher un groupe ou user"
+            value={inputSearch}
+            onChange={(e) => setInputSearch(e.target.value)}
+            onKeyDown={e => e.key === "Enter" && sendSearch()}
+          />
         </label>
-        <div className="p-4 font-bold text-xl">Amis</div>
+        <div className="p-4 font-bold text-xl">Groupes</div>
         <div className="flex-1 overflow-auto">
-          {friends.map((f) => (
+          {groups.map((g) => (
             <button
-              key={f.id}
-              className={`w-full text-left p-4 hover:bg-blue-200 focus:bg-blue-300 ${selectedFriend?.id === f.id ? "bg-blue-200 font-bold" : ""}`}
-              onClick={() => setSelectedFriend(f)}
+              key={g.id}
+              className={`w-full text-left p-4 hover:bg-blue-200 focus:bg-blue-300 ${selectedGroup?.id === g.id ? "bg-blue-200 font-bold" : ""}`}
+              onClick={() => setSelectedGroup(g)}
             >
-              {f.username}
+              {g.name || g.members.map(m => m.username).join(', ')}
             </button>
           ))}
         </div>
         <div className="text-xs text-gray-700 p-2">
-          Statut du chat: <span className={
-            wsStatus === "Connected" ? "text-green-600" :
-              wsStatus === "Error" ? "text-red-500" :
-                "text-yellow-600"
-          }>{wsStatus}</span>
+          Statut du chat:{" "}
+          <span
+            className={
+              wsStatus === "Connected"
+                ? "text-green-600"
+                : wsStatus === "Error"
+                ? "text-red-500"
+                : "text-yellow-600"
+            }
+          >
+            {wsStatus}
+          </span>
         </div>
       </aside>
-      {/* Chat Section */}
+      {/* CHAT */}
       <main className="flex-1 flex flex-col">
         <header className="p-4 border-b font-semibold text-lg">
-          {selectedFriend ? `Discussion avec ${selectedFriend.username}` : "Sélectionne un ami..."}
+          {selectedGroup
+            ? `Discussion de groupe : ${selectedGroup.name || selectedGroup.members.map(m => m.username).join(', ')}`
+            : "Sélectionne un groupe..."}
         </header>
         <div className="flex-1 overflow-auto p-4 space-y-2 bg-gray-50">
-          {messages.map((m) => (
+          {messages.map((m, idx) => (
             <div
-              key={m.id}
-              className={`max-w-xl ${m.from === CURRENT_USER.id ? "ml-auto bg-blue-200" : "mr-auto bg-white"} p-2 rounded shadow`}
+              key={m.id ?? idx}
+              className={`max-w-xl ${
+                m.sender_id === currentUserId
+                  ? "ml-auto bg-blue-200"
+                  : "mr-auto bg-white"
+              } p-2 rounded shadow`}
             >
-              <div>{m.content}</div>
+              <div>{m.message}</div>
               <div className="text-xs text-gray-500 text-right">
-                {new Date(m.date).toLocaleTimeString()}
+                {m.sent_at
+                  ? new Date(m.sent_at).toLocaleTimeString()
+                  : ""}
               </div>
             </div>
           ))}
         </div>
-        {selectedFriend && (
+        {selectedGroup && (
           <footer className="p-4 border-t flex space-x-2">
             <input
               type="text"
