@@ -46,6 +46,11 @@ const ChatPage: React.FC = () => {
   const [searchResults, setSearchResults] = useState<Member[] | null>(null);
   const [feedback, setFeedback] = useState<string | null>(null); // message d'action
 
+  // États pour la création de groupe
+  const [showCreateGroup, setShowCreateGroup] = useState(false);
+  const [newGroupName, setNewGroupName] = useState("");
+  const [selectedFriendsForGroup, setSelectedFriendsForGroup] = useState<number[]>([]);
+
   const selectedMessages: Message[] = selectedGroup ? groupMessages[selectedGroup.id] || [] : [];
 
   // Fonction pour vérifier le statut d'un utilisateur avec l'utilisateur actuel
@@ -139,6 +144,18 @@ const ChatPage: React.FC = () => {
             setFeedback("Groupe privé créé !");
             setSelectedGroup(data.group);
           } else setFeedback("Erreur création du groupe privé.");
+          setTimeout(() => setFeedback(null), 2000);
+          break;
+        }
+        case "create_group": {
+          if (data.result === "ok" && data.group) {
+            setGroups(prev => [...prev, data.group]);
+            setFeedback("Groupe créé avec succès !");
+            setSelectedGroup(data.group);
+            setShowCreateGroup(false);
+            setNewGroupName("");
+            setSelectedFriendsForGroup([]);
+          } else setFeedback("Erreur lors de la création du groupe.");
           setTimeout(() => setFeedback(null), 2000);
           break;
         }
@@ -267,7 +284,6 @@ const ChatPage: React.FC = () => {
     }));
   };
 
-
   const handleRefuseFriend = (userId: number) => {
     if (!socket || wsStatus !== "Connected") return;
     setFeedback(null);
@@ -290,14 +306,33 @@ const ChatPage: React.FC = () => {
     }));
   };
 
-  // const handleCreatePrivateGroup = (userId: number) => {
-  //   if (!socket || wsStatus !== "Connected") return;
-  //   setFeedback(null);
-  //   socket.send(JSON.stringify({
-  //     action: "create_private_group",
-  //     user_id: userId,
-  //   }));
-  // };
+  // Fonction pour gérer la création de groupe
+  const handleCreateGroup = () => {
+    if (!newGroupName.trim() || selectedFriendsForGroup.length === 0 || !socket || wsStatus !== "Connected") {
+      setFeedback("Veuillez saisir un nom de groupe et sélectionner au moins un ami.");
+      setTimeout(() => setFeedback(null), 2000);
+      return;
+    }
+    
+    setFeedback(null);
+    socket.send(JSON.stringify({
+      action: "create_group",
+      group_name: newGroupName,
+      users_id: selectedFriendsForGroup,
+    }));
+  };
+
+  // Fonction pour gérer la sélection des amis pour le groupe
+  const toggleFriendSelection = (friendId: number) => {
+    setSelectedFriendsForGroup(prev => 
+      prev.includes(friendId) 
+        ? prev.filter(id => id !== friendId)
+        : [...prev, friendId]
+    );
+  };
+
+  // Filtrer les amis qui sont vraiment des amis (pas en attente)
+  const confirmedFriends = friends.filter(friend => friend.relation.status === "friend");
 
   return (
     <div className="flex h-screen">
@@ -320,6 +355,55 @@ const ChatPage: React.FC = () => {
         </label>
         
         <div className="p-4 font-bold text-xl">Groupes</div>
+        
+        {/* Section de création de groupe */}
+        <div className="px-4 pb-2">
+          <button
+            className="w-full p-2 bg-green-500 text-white rounded hover:bg-green-600 text-sm"
+            onClick={() => setShowCreateGroup(!showCreateGroup)}
+          >
+            {showCreateGroup ? "Annuler" : "Créer un groupe"}
+          </button>
+          
+          {showCreateGroup && (
+            <div className="mt-2 space-y-2">
+              <input
+                type="text"
+                className="w-full p-2 border rounded text-sm"
+                placeholder="Nom du groupe"
+                value={newGroupName}
+                onChange={(e) => setNewGroupName(e.target.value)}
+              />
+              
+              <div className="text-xs font-semibold">Sélectionner des amis :</div>
+              <div className="max-h-32 overflow-y-auto space-y-1">
+                {confirmedFriends.length === 0 ? (
+                  <div className="text-xs text-gray-500">Aucun ami disponible</div>
+                ) : (
+                  confirmedFriends.map(friend => (
+                    <label key={friend.id} className="flex items-center space-x-2 text-xs cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={selectedFriendsForGroup.includes(friend.id)}
+                        onChange={() => toggleFriendSelection(friend.id)}
+                      />
+                      <span>{friend.username}</span>
+                    </label>
+                  ))
+                )}
+              </div>
+              
+              <button
+                className="w-full p-1 bg-blue-500 text-white rounded hover:bg-blue-600 text-sm"
+                onClick={handleCreateGroup}
+                disabled={!newGroupName.trim() || selectedFriendsForGroup.length === 0}
+              >
+                Créer
+              </button>
+            </div>
+          )}
+        </div>
+        
         <div className="flex-1 overflow-auto">
           {groups.map((g) => (
             <button
