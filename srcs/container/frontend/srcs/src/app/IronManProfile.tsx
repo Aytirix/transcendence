@@ -1,10 +1,19 @@
-import React, { useState, ChangeEvent, useEffect } from 'react';
+import React, { useState, useEffect, ChangeEvent } from 'react';
 import ApiService from '../api/ApiService';
-import {useAuth} from '../contexts/AuthContext';
-import IronManNavBar from './IronManNavBar';
-import './assets/styles/UserProfile.css';
+import { useAuth } from '../contexts/AuthContext';
 
-interface ProfileForm {
+import AvatarSelector from './components/UserProfile/AvatarSelector';
+import ProfileInputs from './components/UserProfile/ProfileInputs';
+// import UserProfileFeedback from './UserProfile/UserProfileFeedback';
+
+const defaultAvatars = [
+  'avatars/avatar1.png',
+  'avatars/avatar2.png',
+  'avatars/avatar3.png',
+  'avatars/avatar4.png',
+];
+
+export interface ProfileForm {
   email?: string;
   password?: string;
   username?: string;
@@ -12,12 +21,6 @@ interface ProfileForm {
   lang?: string;
   avatar?: string;
 }
-const defaultAvatars = [
-  'src/app/assets/avatars/avatar1.png',
-  'src/app/assets/avatars/avatar2.png',
-  'src/app/assets/avatars/avatar3.png',
-  'src/app/assets/avatars/avatar4.png',
-];
 
 const UserProfile: React.FC = () => {
   const [form, setForm] = useState<ProfileForm>({
@@ -25,27 +28,17 @@ const UserProfile: React.FC = () => {
     password: '',
     username: '',
     confirmPassword: '',
-    lang:  '',
-    avatar: defaultAvatars[0]
+    lang: '',
+    avatar: defaultAvatars[0],
   });
   const [customAvatarFile, setCustomAvatarFile] = useState<File | null>(null);
   const [customAvatar, setCustomAvatar] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const { user } = useAuth();
 
-
-  useEffect(() => {
-    // Ce code sera exécuté à chaque montage du composant
-    console.log("Le composant est monté !");
-  const toto = useAuth()
-  console.log("TOTOTOTOT", toto);
-  form.username = toto?.user?.username;
-  form.email = toto.user?.email
-  }, []);
-
-
-
+  useEffect(() => { /* ... */ }, []);
 
   const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -64,7 +57,7 @@ const UserProfile: React.FC = () => {
       const reader = new FileReader();
       reader.onload = (evt) => {
         setCustomAvatar(evt.target?.result as string);
-        setForm({ ...form, avatar: "custom" }); // marqueur pour signaler qu'on a un custom
+        setForm((prev) => ({ ...prev, avatar: "custom" }));
       };
       reader.readAsDataURL(file);
     }
@@ -77,28 +70,17 @@ const UserProfile: React.FC = () => {
     setLoading(true);
 
     try {
-      let resp;
-      
       const tab = { ...form };
-      if (tab.email === '') delete tab.email;
-      if (tab.username === '') delete tab.username;
-      if (tab.lang === '') delete tab.lang;
-      if (tab.password === '') delete tab.password;
-      if (tab.confirmPassword === '') delete tab.confirmPassword;
-      // if (form.avatar === 'custom' && customAvatarFile) {
-          // tab.avatar = customAvatarFile
-      // } else {
-      // }
+      Object.keys(tab).forEach((key) => { if (!tab[key as keyof ProfileForm]) delete tab[key as keyof ProfileForm]; });
       delete tab.avatar;
-      resp = await ApiService.put('/update-user', tab) as ApiService;
-
+      const resp = await ApiService.put('/update-user', tab);
       if (!resp.ok) {
         const data = await resp.json();
         setError(data.message || "Erreur lors de la mise à jour.");
       } else {
         setSuccess("Profil mis à jour !");
       }
-    } catch (err) {
+    } catch {
       setError("Erreur réseau ou serveur !");
     } finally {
       setLoading(false);
@@ -106,85 +88,27 @@ const UserProfile: React.FC = () => {
   };
 
   return (
-    <div className="profile-container">
+    <div className="min-h-screen flex items-center justify-center">
       <form className="profile-card" onSubmit={handleSubmit}>
-        <h2 className="profile-title">Modifier mon profil</h2>
+        <fieldset className="fieldset bg-base-200 border-base-300 rounded-box w-xl border p-4">
+          <legend className="fieldset-legend">Modifier mon profil</legend>
+          
+          <AvatarSelector
+            defaultAvatars={defaultAvatars}
+            selectedAvatar={form.avatar}
+            handleAvatarSelect={handleAvatarSelect}
+            handleCustomAvatar={handleCustomAvatar}
+            customAvatar={customAvatar}
+          />
 
-        {/* Sélection des avatars */}
-        <div className="avatar-options">
-          {defaultAvatars.map((avatar, idx) => (
-            <img
-              key={avatar}
-              src={avatar}
-              className={`avatar-img${form.avatar === avatar ? ' selected' : ''}`}
-              alt={`Avatar ${idx + 1}`}
-              onClick={() => handleAvatarSelect(avatar)}
-            />
-          ))}
-          <label className="custom-avatar-btn">
-            <input
-              type="file"
-              accept="image/*"
-              style={{ display: 'none' }}
-              onChange={handleCustomAvatar}
-            />
-            {customAvatar ? (
-              <img className="avatar-img selected" src={customAvatar} alt="Custom Avatar" />
-            ) : (
-              <span>+ Ajouter</span>
-            )}
-          </label>
-        </div>
+          <ProfileInputs form={form} handleChange={handleChange} user={user} />
 
-        <input
-          className="profile-input"
-          type="text"
-          name="username"
-          // placeholder={toto?.user?.username || "Pseudo"}
-          value={form.username}
-          onChange={handleChange}
-        />
-        <input
-          className="profile-input"
-          type="email"
-          name="email"
-          // placeholder={toto?.user?.email || "E-mail"}
-          value={form.email}
-          onChange={handleChange}
-        />
-        <input
-          className="profile-input"
-          type="password"
-          name="password"
-          placeholder="Ancien mot de passe"
-          value={form.password}
-          onChange={handleChange}
-        />
-        <input
-          className="profile-input"
-          type="password"
-          name="confirmPassword"
-          placeholder="Nouveau mot de passe"
-          value={form.confirmPassword}
-          onChange={handleChange}
-        />
-        <select
-          className="profile-input"
-          name="lang"
-          value={form.lang}
-          onChange={handleChange}
-        >
-          <option value="">Langue...</option>
-          <option value="fr">Français</option>
-          <option value="en">English</option>
-          <option value="es">Español</option>
-          <option value="it">Italia</option>
-        </select>
-        <button className="profile-btn" type="submit" disabled={loading}>
-          {loading ? "Mise à jour..." : "Mettre à jour"}
-        </button>
-        {error && <div className="profile-error">{error}</div>}
-        {success && <div className="profile-success">{success}</div>}
+          <button className="btn btn-neutral mt-4" type="submit" disabled={loading}>
+            {loading ? "Mise à jour..." : "Mettre à jour"}
+          </button>
+
+          {/* <UserProfileFeedback error={error} success={success} /> */}
+        </fieldset>
       </form>
     </div>
   );
