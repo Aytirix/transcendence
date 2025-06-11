@@ -244,13 +244,6 @@ const ChatPage: React.FC = () => {
          }
         return;
     }
-    // Demander le chargement des messages du groupe sélectionné
-    socket.send(
-      JSON.stringify({
-        action: "delete_group",
-          group_id: 38,
-      })
-    );
 
     // Demander le chargement des messages du groupe sélectionné
     socket.send(
