@@ -1,10 +1,10 @@
 import React, { useState, useEffect, ChangeEvent } from 'react';
 import ApiService from '../api/ApiService';
 import { useAuth } from '../contexts/AuthContext';
-
 import AvatarSelector from './components/UserProfile/AvatarSelector';
 import ProfileInputs from './components/UserProfile/ProfileInputs';
 // import UserProfileFeedback from './UserProfile/UserProfileFeedback';
+import AvatarUploader from './components/AvatarUploader';
 
 const defaultAvatars = [
   'avatars/avatar1.png',
@@ -92,7 +92,7 @@ const UserProfile: React.FC = () => {
       <form className="profile-card" onSubmit={handleSubmit}>
         <fieldset className="fieldset bg-base-200 border-base-300 rounded-box w-xl border p-4">
           <legend className="fieldset-legend">Modifier mon profil</legend>
-          
+
           <AvatarSelector
             defaultAvatars={defaultAvatars}
             selectedAvatar={form.avatar}
@@ -110,6 +110,9 @@ const UserProfile: React.FC = () => {
           {/* <UserProfileFeedback error={error} success={success} /> */}
         </fieldset>
       </form>
+      <div className="min-h-screen flex items-center justify-center bg-base-100">
+        <AvatarUploader />
+      </div>
     </div>
   );
 };
