@@ -7,7 +7,6 @@ import Chat from './UserTest';
 import { Pong } from './pongGame/client'
 import GameMenu from './pongGame/GameMenu';
 import WebSocketPacman from './Pacman/Init'
-import ModuleManager from './ModuleManager';
 import App from './App';
 import SameKeyboard from './pongGame/SameKeyboard';
 
@@ -39,7 +38,6 @@ class AppRouter extends Component {
 					<Route path="/Pong/menu/SameKeyboard" element={<SameKeyboard />} />
 					<Route path="/Pacman" element={<WebSocketPacman />} />
 					<Route path="/userTest" element={<Chat />} />
-					<Route path="/ModuleManager" element={<ModuleManager />} />
 				</Route>
 
 			</Routes>

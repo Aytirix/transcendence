@@ -1,6 +1,7 @@
 .rules {
 	max-width: 600px;
 	margin: 0 auto;
+	z-index: 10;
 
 	.rules-title {
 		text-align: center;
@@ -35,21 +36,26 @@
 		&::-webkit-scrollbar {
 			width: 8px;
 		}
+
 		&::-webkit-scrollbar-track {
 			background: rgba(0, 0, 0, 0.1);
 			border-radius: 4px;
 		}
+
 		&::-webkit-scrollbar-thumb {
 			background: rgba(0, 0, 0, 0.3);
 			border-radius: 4px;
+
 			&:hover {
 				background: rgba(0, 0, 0, 0.5);
 			}
 		}
+
 		p {
 			color: #9ca3af;
 			margin: 0.7rem 0;
 		}
+
 		ul {
 			color: #e5e7eb;
 			margin: 0.7rem 0 0.7rem 1.2rem;

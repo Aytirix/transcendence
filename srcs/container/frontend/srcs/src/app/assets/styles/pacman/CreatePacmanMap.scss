@@ -20,774 +20,394 @@ $spawn-clyde: orange;
 
 // ========== Mixins ==========
 @mixin button-style {
-  background-color: #333;
-  color: $text-color;
-  border: 2px solid $primary-color;
-  border-radius: 5px;
-  padding: 8px 15px;
-  font-family: inherit;
-  font-size: 0.8rem;
-  cursor: pointer;
-  transition: all 0.2s;
-  
-  &:hover {
-    background-color: $primary-color;
-    transform: translateY(-2px);
-  }
-  
-  &:active {
-    transform: translateY(0);
-  }
+	background-color: #333;
+	color: $text-color;
+	border: 2px solid $primary-color;
+	border-radius: 5px;
+	padding: 8px 15px;
+	font-family: inherit;
+	font-size: 0.8rem;
+	cursor: pointer;
+	transition: all 0.2s;
+
+	&:hover {
+		background-color: $primary-color;
+		transform: translateY(-2px);
+	}
+
+	&:active {
+		transform: translateY(0);
+	}
 }
 
 @mixin tile-option-style {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  cursor: pointer;
-  border: 1px solid transparent;
-  border-radius: 4px;
-  padding: 5px;
-  transition: all 0.2s;
-  
-  &:hover {
-    background-color: rgba(255, 255, 255, 0.1);
-  }
-  
-  &.selected {
-    border-color: $accent-color;
-    background-color: rgba($accent-color, 0.1);
-  }
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	cursor: pointer;
+	border: 1px solid transparent;
+	border-radius: 4px;
+	padding: 5px;
+	transition: all 0.2s;
+
+	&:hover {
+		background-color: rgba(255, 255, 255, 0.1);
+	}
+
+	&.selected {
+		border-color: $accent-color;
+		background-color: rgba($accent-color, 0.1);
+	}
 }
 
 @mixin dot-style($size, $color: #ffb8ae) {
-  width: $size;
-  height: $size;
-  background-color: $color;
-  border-radius: 50%;
-  @include center-absolute;
+	width: $size;
+	height: $size;
+	background-color: $color;
+	border-radius: 50%;
+	@include center-absolute;
 }
 
 @mixin center-absolute {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
 }
 
 @mixin panel-style {
-  background-color: $background-darker;
-  padding: 15px;
-  border-radius: 5px;
-  border: 2px solid #444;
+	background-color: $background-darker;
+	padding: 15px;
+	border-radius: 5px;
+	border: 2px solid #444;
 }
 
 @mixin code-style {
-  font-family: 'Courier New', monospace;
-  background-color: #000;
-  padding: 10px;
-  border-radius: 3px;
-  white-space: pre-wrap;
-  overflow-x: auto;
-  font-size: 0.7rem;
-  line-height: 1.2;
-  margin-bottom: 15px;
+	font-family: 'Courier New', monospace;
+	background-color: #000;
+	padding: 10px;
+	border-radius: 3px;
+	white-space: pre-wrap;
+	overflow-x: auto;
+	font-size: 0.7rem;
+	line-height: 1.2;
+	margin-bottom: 15px;
 }
 
 @mixin grid-cell-style {
-  border: 1px solid #333;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  position: relative;
-  width: 20px;
-  height: 20px;
-  cursor: pointer;
-  
-  &:hover {
-    opacity: 0.8;
-  }
+	border: 1px solid #333;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	position: relative;
+	width: 20px;
+	height: 20px;
+	cursor: pointer;
+
+	&:hover {
+		opacity: 0.8;
+	}
 }
 
 @mixin spawn-style($color) {
-  background-color: $color;
-  color: if(lightness($color) > 60, black, white);
+	background-color: $color;
+	color: if(lightness($color) > 60, black, white);
 }
 
 // ========== Base Styles ==========
 .create-pacman-map {
-  display: flex;
-  flex-direction: column;
-  padding: 10px;
-  color: $text-color;
-  min-height: 100vh;
-  background-color: $background-dark;
-  font-family: 'Press Start 2P', cursive;
-  
-  // Typography
-  h2, h3 {
-    color: $accent-color;
-    text-shadow: 2px 2px 0px #000;
-  }
-  
-  h2 {
-    text-align: center;
-    font-size: 1rem;
-    margin-bottom: 10px;
-  }
-  
-  h3 {
-    font-size: 1rem;
-    margin-bottom: 15px;
-  }
+	display: flex;
+	flex-direction: column;
+	padding: 10px;
+	color: $text-color;
+	min-height: 100vh;
+	background-color: $background-dark;
+	font-family: 'Press Start 2P', cursive;
+	z-index: 10;
+
+	// Typography
+	h2,
+	h3 {
+		color: $accent-color;
+		text-shadow: 2px 2px 0px #000;
+	}
+
+	h2 {
+		text-align: center;
+		font-size: 1rem;
+		margin-bottom: 10px;
+	}
+
+	h3 {
+		font-size: 1rem;
+		margin-bottom: 15px;
+	}
 }
 
 // ========== Components ==========
 // Modal
 .modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  background: rgba(0, 0, 0, 0.4);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1000;
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100vw;
+	height: 100vh;
+	background: rgba(0, 0, 0, 0.4);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	z-index: 1000;
 
-  .modal-content {
-    background: #121212;
-    border-radius: 12px;
-    padding: 32px 24px;
-    box-shadow: 0 4px 32px rgba(0, 0, 0, 0.18);
-    min-width: 320px;
-    text-align: center;
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-    
-    input {
-      padding: 10px 14px;
-      border-radius: 6px;
-      border: 1px solid #bbb;
-      font-size: 18px;
-      width: 220px;
-      margin-bottom: 8px;
-    }
-    
-    .error_name {
-      color: $error-color;
-      font-size: 0.8rem;
-      margin-top: 4px;
-    }
-  }
+	.modal-content {
+		background: #121212;
+		border-radius: 12px;
+		padding: 32px 24px;
+		box-shadow: 0 4px 32px rgba(0, 0, 0, 0.18);
+		min-width: 320px;
+		text-align: center;
+		display: flex;
+		flex-direction: column;
+		gap: 16px;
+
+		input {
+			padding: 10px 14px;
+			border-radius: 6px;
+			border: 1px solid #bbb;
+			font-size: 18px;
+			width: 220px;
+			margin-bottom: 8px;
+		}
+
+		.error_name {
+			color: $error-color;
+			font-size: 0.8rem;
+			margin-top: 4px;
+		}
+	}
 }
 
 // Map Name Input
 .map-name {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-bottom: 10px;
-  
-  label {
-    font-size: 0.8rem;
-  }
-  
-  input {
-    flex: 1;
-    max-width: 250px;
-    background-color: $background-light;
-    border: 2px solid $primary-color;
-    color: $text-color;
-    padding: 5px 8px;
-    border-radius: 4px;
-    font-family: inherit;
-  }
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	margin-bottom: 10px;
+	z-index: 10;
+
+	label {
+		font-size: 0.8rem;
+	}
+
+	input {
+		flex: 1;
+		max-width: 250px;
+		background-color: $background-light;
+		border: 2px solid $primary-color;
+		color: $text-color;
+		padding: 5px 8px;
+		border-radius: 4px;
+		font-family: inherit;
+	}
 }
 
 // Toolbar
 .toolbar {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 15px;
-  margin-bottom: 20px;
-  
-  .tool-group {
-    display: flex;
-    gap: 10px;
-    
-    button {
-      @include button-style;
-    }
-  }
+	display: flex;
+	flex-wrap: wrap;
+	gap: 15px;
+	margin-bottom: 20px;
+	z-index: 10;
+
+	.tool-group {
+		display: flex;
+		gap: 10px;
+
+		button {
+			@include button-style;
+		}
+	}
 }
 
 // Editor Layout
 .editor-container {
-  display: grid;
-  grid-template-columns: 250px 1fr 1fr;
-  gap: 20px;
-  width: 100%;
+	display: grid;
+	grid-template-columns: 250px 1fr 1fr;
+	gap: 20px;
+	width: 100%;
+	z-index: 10;
 }
 
-.left-panel, .right-panel {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
+.left-panel,
+.right-panel {
+	display: flex;
+	flex-direction: column;
+	gap: 20px;
+	z-index: 10;
+
 }
 
 .left-panel {
-  width: 250px;
-  flex-shrink: 0;
+	width: 250px;
+	flex-shrink: 0;
+	z-index: 10;
+
 }
 
 .main-content {
-  flex-grow: 1;
-  display: flex;
-  flex-direction: column;
+	flex-grow: 1;
+	display: flex;
+	flex-direction: column;
+	z-index: 10;
 }
 
 // Tile Selector
 .tile-selector {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 8px;
-  max-height: 400px;
-  overflow-y: auto;
-  
-  .tile-option {
-    @include tile-option-style;
-    
-    .tile {
-      width: 20px;
-      height: 20px;
-      position: relative;
-      margin-bottom: 5px;
-      
-      // Tile types
-      &.wall {
-        background-color: $primary-color;
-        border-radius: 3px;
-      }
-      
-      &.empty {
-        background-color: $background-darker;
-        border: 1px dashed #444;
-      }
-      
-      .dot {
-        @include dot-style(6px);
-      }
-      
-      .big-dot {
-        @include dot-style(10px);
-      }
-      
-      .door-line {
-        width: 80%;
-        height: 2px;
-        background-color: #ffd700;
-        @include center-absolute;
-      }
-      
-      &.tunnel {
-        border: 2px solid $tunnel-color;
-        border-radius: 50%;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        color: $tunnel-color;
-        font-weight: bold;
-        font-size: 12px;
-      }
-      
-      // Spawn points
-      &.spawn {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        font-weight: bold;
-        font-size: 12px;
-        border-radius: 50%;
-        
-        &.spawn-pacman { @include spawn-style($spawn-pacman); }
-        &.spawn-blinky { @include spawn-style($spawn-blinky); }
-        &.spawn-inky { @include spawn-style($spawn-inky); }
-        &.spawn-pinky { @include spawn-style($spawn-pinky); }
-        &.spawn-clyde { @include spawn-style($spawn-clyde); }
-      }
-    }
-    
-    span {
-      font-size: 0.6rem;
-      text-align: center;
-      max-width: 100%;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-  }
+	display: grid;
+	grid-template-columns: repeat(2, 1fr);
+	gap: 8px;
+	max-height: 400px;
+	overflow-y: auto;
+	z-index: 10;
+
+	.tile-option {
+		@include tile-option-style;
+
+		.tile {
+			width: 20px;
+			height: 20px;
+			position: relative;
+			margin-bottom: 5px;
+
+			// Tile types
+			&.wall {
+				background-color: $primary-color;
+				border-radius: 3px;
+			}
+
+			&.empty {
+				background-color: $background-darker;
+				border: 1px dashed #444;
+			}
+
+			.dot {
+				@include dot-style(6px);
+			}
+
+			.big-dot {
+				@include dot-style(10px);
+			}
+
+			.door-line {
+				width: 80%;
+				height: 2px;
+				background-color: #ffd700;
+				@include center-absolute;
+			}
+
+			&.tunnel {
+				border: 2px solid $tunnel-color;
+				border-radius: 50%;
+				display: flex;
+				justify-content: center;
+				align-items: center;
+				color: $tunnel-color;
+				font-weight: bold;
+				font-size: 12px;
+			}
+
+			// Spawn points
+			&.spawn {
+				display: flex;
+				justify-content: center;
+				align-items: center;
+				font-weight: bold;
+				font-size: 12px;
+				border-radius: 50%;
+
+				&.spawn-pacman {
+					@include spawn-style($spawn-pacman);
+				}
+
+				&.spawn-blinky {
+					@include spawn-style($spawn-blinky);
+				}
+
+				&.spawn-inky {
+					@include spawn-style($spawn-inky);
+				}
+
+				&.spawn-pinky {
+					@include spawn-style($spawn-pinky);
+				}
+
+				&.spawn-clyde {
+					@include spawn-style($spawn-clyde);
+				}
+			}
+		}
+
+		span {
+			font-size: 0.6rem;
+			text-align: center;
+			max-width: 100%;
+			overflow: hidden;
+			text-overflow: ellipsis;
+		}
+	}
 }
 
 // Map Preview
 .map-preview {
-  margin-top: 20px;
-  width: 300px;
-  flex-shrink: 0;
-  display: flex;
-  flex-direction: column;
-  @include panel-style;
-  flex-grow: 1;
-  
-  .map-code {
-    @include code-style;
-  }
+	margin-top: 20px;
+	width: 300px;
+	flex-shrink: 0;
+	display: flex;
+	flex-direction: column;
+	@include panel-style;
+	flex-grow: 1;
+	z-index: 10;
+
+	.map-code {
+		@include code-style;
+	}
 }
 
 // Console
 .map-console {
-  margin-top: 20px;
-  @include panel-style;
-  
-  .console-output {
-    @include code-style;
-    color: #0f0;
-    min-height: 60px;
-  }
-  
-  .console-error {
-    background-color: rgba($error-color, 0.1);
-    border-left: 4px solid $error-color;
-    padding: 8px 12px;
-    margin-bottom: 10px;
-    border-radius: 0 4px 4px 0;
-    overflow-y: auto;
-    max-height: 200px;
-    
-    .error-header {
-      font-weight: bold;
-      margin-bottom: 8px;
-      color: $error-color;
-    }
-    
-    .error-item {
-      padding: 3px 0;
-      color: lighten($error-color, 20%);
-    }
-    
-    // Scrollbar
-    &::-webkit-scrollbar {
-      width: 8px;
-    }
-    
-    &::-webkit-scrollbar-track {
-      background: rgba(0, 0, 0, 0.1);
-      border-radius: 4px;
-    }
-    
-    &::-webkit-scrollbar-thumb {
-      background: rgba(0, 0, 0, 0.3);
-      border-radius: 4px;
-      
-      &:hover {
-        background: rgba(0, 0, 0, 0.5);
-      }
-    }
-  }
-}
+	margin-top: 20px;
+	@include panel-style;
+	z-index: 10;
 
-// Grid Cell Styles
-.grid-cell {
-  @include grid-cell-style;
-  
-  &.wall {
-    background-color: $primary-color;
-  }
-  
-  &.tunnel {
-    border: 0.6px solid $tunnel-color;
-    border-radius: 50%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    color: $tunnel-color;
-    font-weight: bold;
-    font-size: 10px;
-  }
-  
-  &.empty {
-    background-color: $background-darker;
-  }
-  
-  .dot {
-    @include dot-style(6px);
-  }
-  
-  .big-dot {
-    @include dot-style(10px);
-  }
-  
-  .door-line {
-    width: 80%;
-    height: 2px;
-    background-color: #ffd700;
-  }
-}
 
-// Tunnel Pairing Visual Feedback
-.tunnel-paired {
-  box-shadow: 0 0 8px 2px $success-color, 0 0 0 2px $success-color inset;
-  border-color: $success-color !important;
-  background-color: darken($success-color, 70%) !important;
-  transition: box-shadow 0.2s, border-color 0.2s, background-color 0.2s;
-}
-
-.tunnel-unpaired {
-  box-shadow: 0 0 8px 2px $error-color, 0 0 0 2px $error-color inset;
-  border-color: $error-color !important;
-  background-color: darken($error-color, 70%) !important;
-  transition: box-shadow 0.2s, border-color 0.2s, background-color 0.2s;
-}
-
-// Animations
-@keyframes pulse {
-  0% { transform: translate(-50%, -50%) scale(1); }
-  50% { transform: translate(-50%, -50%) scale(1.1); }
-  100% { transform: translate(-50%, -50%) scale(1); }
-}
-  // Now the main styles
-  .create-pacman-map {
-	// Base styles
-	display: flex;
-	flex-direction: column;
-	padding: 10px;
-	color: white;
-	min-height: 100vh;
-	background-color: #121212;
-	font-family: 'Press Start 2P', cursive;
-  
-	// Typography
-	h2 {
-	  color: #FFEE00;
-	  text-align: center;
-	  font-size: 1rem;
-	  margin-bottom: 10px;
-	  text-shadow: 2px 2px 0px #000;
-	}
-  
-	h3 {
-	  font-size: 1rem;
-	  color: #FFEE00;
-	  margin-bottom: 15px;
-	}
-  
-	// Form elements
-	.map-name {
-	  display: flex;
-	  align-items: center;
-	  gap: 8px;
-	  margin-bottom: 10px;
-  
-	  label {
-		font-size: 0.8rem;
-	  }
-  
-	  input {
-		flex: 1;
-		max-width: 250px;
-		background-color: #222;
-		border: 2px solid #0000ff;
-		color: white;
-		padding: 5px 8px;
-		border-radius: 4px;
-		font-family: inherit;
-	  }
-	}
-  
-	// Toolbar
-	.toolbar {
-	  display: flex;
-	  flex-wrap: wrap;
-	  gap: 15px;
-	  margin-bottom: 20px;
-  
-	  .tool-group {
-		display: flex;
-		gap: 10px;
-  
-		button {
-		  @include button-style;
-		}
-	  }
-  
-	  .spawn-counters {
-		display: flex;
-		flex-wrap: wrap;
-		gap: 10px;
-		font-size: 0.7rem;
-  
-		.counter {
-		  padding: 5px 8px;
-		  border-radius: 3px;
-		  background-color: rgba(0, 0, 0, 0.3);
-		}
-	  }
-	}
-  
-	// Editor layout
-	.editor-container {
-	  display: grid;
-	  grid-template-columns: 250px 1fr 1fr;
-	  gap: 20px;
-	  width: 100%;
-	}
-  
-	.left-panel {
-	  width: 250px;
-	  flex-shrink: 0;
-	  display: flex;
-	  flex-direction: column;
-	  gap: 20px;
-	}
-
-	.right-panel {
-	  display: flex;
-	  flex-direction: column;
-	  gap: 20px;
-	}
-  
-	.main-content {
-	  flex-grow: 1;
-	  display: flex;
-	  flex-direction: column;
-	}
-  
-	// Tile selector
-	.tile-selector {
-	  display: grid;
-	  grid-template-columns: repeat(2, 1fr);
-	  gap: 8px;
-	  max-height: 400px;
-	  overflow-y: auto;
-  
-	  .tile-option {
-		@include tile-option-style;
-  
-		.tile {
-		  width: 20px;
-		  height: 20px;
-		  position: relative;
-		  margin-bottom: 5px;
-  
-		  // Tile types
-		  &.wall {
-			background-color: #0000ff;
-			border-radius: 3px;
-		  }
-  
-		  &.empty {
-			background-color: #111;
-			border: 1px dashed #444;
-		  }
-  
-		  .dot {
-			@include dot-style(6px);
-		  }
-  
-		  .big-dot {
-			@include dot-style(10px);
-		  }
-  
-		  .door-line {
-			width: 80%;
-			height: 2px;
-			background-color: #ffd700;
-			@include center-absolute;
-		  }
-  
-		  &.tunnel {
-			border: 2px solid #0066ff;
-			border-radius: 50%;
-			display: flex;
-			justify-content: center;
-			align-items: center;
-			color: #0066ff;
-			font-weight: bold;
-			font-size: 12px;
-			
-		  }
-  
-		  // Spawn points
-		  &.spawn {
-			display: flex;
-			justify-content: center;
-			align-items: center;
-			font-weight: bold;
-			font-size: 12px;
-			border-radius: 50%;
-  
-			&.spawn-pacman {
-			  background-color: yellow;
-			  color: black;
-			}
-  
-			&.spawn-blinky {
-			  background-color: red;
-			  color: white;
-			}
-  
-			&.spawn-inky {
-			  background-color: blue;
-			  color: white;
-			}
-  
-			&.spawn-pinky {
-			  background-color: pink;
-			  color: black;
-			}
-  
-			&.spawn-clyde {
-			  background-color: orange;
-			  color: black;
-			}
-		  }
-		}
-  
-		span {
-		  font-size: 0.6rem;
-		  text-align: center;
-		  max-width: 100%;
-		  overflow: hidden;
-		  text-overflow: ellipsis;
-		}
-	  }
-	}
-  
-	// Map editor
-	.map-editor {
-	  flex-grow: 1;
-  
-	  .grid-container {
-		display: inline-flex;
-		flex-direction: column;
-		border: 2px solid #0000ff;
-		background-color: #000;
-  
-		.grid-row {
-		  display: flex;
-		}
-  
-		.grid-cell {
-		  @include grid-cell-style;
-  
-		  .dot {
-			@include dot-style(6px);
-		  }
-  
-		  .big-dot {
-			@include dot-style(10px);
-		  }
-  
-		  .door-line {
-			width: 80%;
-			height: 2px;
-			background-color: #ffd700;
-		  }
-  
-		  .spawn-label {
-			font-weight: bold;
-			font-size: 12px;
-			z-index: 1;
-		  }
-		}
-	  }
-	}
-  
-	// Preview and console
-	.map-preview {
-	  margin-top: 20px;
-	  width: 300px;
-	  flex-shrink: 0;
-	  display: flex;
-	  flex-direction: column;
-	  @include panel-style;
-      flex-grow: 1;
-  
-	  .map-code {
-		@include code-style;
-	  }
-  
-	  .map-info {
-		font-size: 0.7rem;
-		line-height: 1.5;
-		color: #aaa;
-  
-		p {
-		  margin-bottom: 10px;
-		}
-	  }
-	}
-  
-	.map-console {
-	  margin-top: 20px;
-	  @include panel-style;
-  
-	  .console-output {
+	.console-output {
 		@include code-style;
 		color: #0f0;
 		min-height: 60px;
-	  }
 	}
 
 	.console-error {
-	  background-color: rgba(255, 0, 0, 0.1);
-	  border-left: 4px solid #ff3333;
-	  padding: 8px 12px;
-	  margin-bottom: 10px;
-	  border-radius: 0 4px 4px 0;
-	  overflow-y: auto;
-	  max-height: 200px;
-	  
-	  .error-header {
-		font-weight: bold;
-		margin-bottom: 8px;
-		color: #ff3333;
-	  }
-	  
-	  .error-list {
-		margin-bottom: 8px;
+		background-color: rgba($error-color, 0.1);
+		border-left: 4px solid $error-color;
+		padding: 8px 12px;
+		margin-bottom: 10px;
+		border-radius: 0 4px 4px 0;
+		overflow-y: auto;
+		max-height: 200px;
 
-	}
-	
-	.error-item {
-		padding: 3px 0;
-		color: #ff6666;
-		
-		&.spawn-error {
-			color: #ff9900;
+		.error-header {
+			font-weight: bold;
+			margin-bottom: 8px;
+			color: $error-color;
 		}
-		
-		&.pellet-error {
-			color: #ff66cc;
+
+		.error-item {
+			padding: 3px 0;
+			color: lighten($error-color, 20%);
 		}
-	}
-	
-	.error-tip {
-		background-color: rgba(255, 255, 255, 0.1);
-		padding: 6px 10px;
-		border-radius: 4px;
-		font-size: 0.9em;
-		color: #aaddff;
-		margin-top: 8px;
-		border-left: 3px solid #3399ff;
-		
-		strong {
-			color: #66ccff;
-		}
-	}
-	&::-webkit-scrollbar {
-		width: 8px;
+
+		// Scrollbar
+		&::-webkit-scrollbar {
+			width: 8px;
 		}
 
 		&::-webkit-scrollbar-track {
@@ -803,29 +423,459 @@ $spawn-clyde: orange;
 				background: rgba(0, 0, 0, 0.5);
 			}
 		}
-	 
 	}
-  }
-  
-  // Animations
-  @keyframes pulse {
-	0% { transform: translate(-50%, -50%) scale(1); }
-	50% { transform: translate(-50%, -50%) scale(1.1); }
-	100% { transform: translate(-50%, -50%) scale(1); }
-  }
+}
 
-// Tunnel pairing visual feedback
+// Grid Cell Styles
+.grid-cell {
+	@include grid-cell-style;
+	z-index: 10;
+
+
+	&.wall {
+		background-color: $primary-color;
+	}
+
+	&.tunnel {
+		border: 0.6px solid $tunnel-color;
+		border-radius: 50%;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		color: $tunnel-color;
+		font-weight: bold;
+		font-size: 10px;
+	}
+
+	&.empty {
+		background-color: $background-darker;
+	}
+
+	.dot {
+		@include dot-style(6px);
+	}
+
+	.big-dot {
+		@include dot-style(10px);
+	}
+
+	.door-line {
+		width: 80%;
+		height: 2px;
+		background-color: #ffd700;
+	}
+}
+
+// Tunnel Pairing Visual Feedback
 .tunnel-paired {
-  box-shadow: 0 0 8px 2px #00ff99, 0 0 0 2px #00ff99 inset;
-  border-color: #00ff99 !important;
-  background-color: #003322 !important;
-  transition: box-shadow 0.2s, border-color 0.2s, background-color 0.2s;
+	box-shadow: 0 0 8px 2px $success-color, 0 0 0 2px $success-color inset;
+	border-color: $success-color !important;
+	background-color: darken($success-color, 70%) !important;
+	transition: box-shadow 0.2s, border-color 0.2s, background-color 0.2s;
 }
 
 .tunnel-unpaired {
-  box-shadow: 0 0 8px 2px #ff3333, 0 0 0 2px #ff3333 inset;
-  border-color: #ff3333 !important;
-  background-color: #330000 !important;
-  transition: box-shadow 0.2s, border-color 0.2s, background-color 0.2s;
+	box-shadow: 0 0 8px 2px $error-color, 0 0 0 2px $error-color inset;
+	border-color: $error-color !important;
+	background-color: darken($error-color, 70%) !important;
+	transition: box-shadow 0.2s, border-color 0.2s, background-color 0.2s;
 }
 
+// Animations
+@keyframes pulse {
+	0% {
+		transform: translate(-50%, -50%) scale(1);
+	}
+
+	50% {
+		transform: translate(-50%, -50%) scale(1.1);
+	}
+
+	100% {
+		transform: translate(-50%, -50%) scale(1);
+	}
+}
+
+// Now the main styles
+.create-pacman-map {
+	// Base styles
+	display: flex;
+	flex-direction: column;
+	padding: 10px;
+	color: white;
+	min-height: 100vh;
+	background-color: #121212;
+	font-family: 'Press Start 2P', cursive;
+	z-index: 10;
+
+
+	// Typography
+	h2 {
+		color: #FFEE00;
+		text-align: center;
+		font-size: 1rem;
+		margin-bottom: 10px;
+		text-shadow: 2px 2px 0px #000;
+	}
+
+	h3 {
+		font-size: 1rem;
+		color: #FFEE00;
+		margin-bottom: 15px;
+	}
+
+	// Form elements
+	.map-name {
+		display: flex;
+		align-items: center;
+		gap: 8px;
+		margin-bottom: 10px;
+
+		label {
+			font-size: 0.8rem;
+		}
+
+		input {
+			flex: 1;
+			max-width: 250px;
+			background-color: #222;
+			border: 2px solid #0000ff;
+			color: white;
+			padding: 5px 8px;
+			border-radius: 4px;
+			font-family: inherit;
+		}
+	}
+
+	// Toolbar
+	.toolbar {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 15px;
+		margin-bottom: 20px;
+
+		.tool-group {
+			display: flex;
+			gap: 10px;
+
+			button {
+				@include button-style;
+			}
+		}
+
+		.spawn-counters {
+			display: flex;
+			flex-wrap: wrap;
+			gap: 10px;
+			font-size: 0.7rem;
+
+			.counter {
+				padding: 5px 8px;
+				border-radius: 3px;
+				background-color: rgba(0, 0, 0, 0.3);
+			}
+		}
+	}
+
+	// Editor layout
+	.editor-container {
+		display: grid;
+		grid-template-columns: 250px 1fr 1fr;
+		gap: 20px;
+		width: 100%;
+	}
+
+	.left-panel {
+		width: 250px;
+		flex-shrink: 0;
+		display: flex;
+		flex-direction: column;
+		gap: 20px;
+	}
+
+	.right-panel {
+		display: flex;
+		flex-direction: column;
+		gap: 20px;
+	}
+
+	.main-content {
+		flex-grow: 1;
+		display: flex;
+		flex-direction: column;
+	}
+
+	// Tile selector
+	.tile-selector {
+		display: grid;
+		grid-template-columns: repeat(2, 1fr);
+		gap: 8px;
+		max-height: 400px;
+		overflow-y: auto;
+
+		.tile-option {
+			@include tile-option-style;
+
+			.tile {
+				width: 20px;
+				height: 20px;
+				position: relative;
+				margin-bottom: 5px;
+
+				// Tile types
+				&.wall {
+					background-color: #0000ff;
+					border-radius: 3px;
+				}
+
+				&.empty {
+					background-color: #111;
+					border: 1px dashed #444;
+				}
+
+				.dot {
+					@include dot-style(6px);
+				}
+
+				.big-dot {
+					@include dot-style(10px);
+				}
+
+				.door-line {
+					width: 80%;
+					height: 2px;
+					background-color: #ffd700;
+					@include center-absolute;
+				}
+
+				&.tunnel {
+					border: 2px solid #0066ff;
+					border-radius: 50%;
+					display: flex;
+					justify-content: center;
+					align-items: center;
+					color: #0066ff;
+					font-weight: bold;
+					font-size: 12px;
+
+				}
+
+				// Spawn points
+				&.spawn {
+					display: flex;
+					justify-content: center;
+					align-items: center;
+					font-weight: bold;
+					font-size: 12px;
+					border-radius: 50%;
+
+					&.spawn-pacman {
+						background-color: yellow;
+						color: black;
+					}
+
+					&.spawn-blinky {
+						background-color: red;
+						color: white;
+					}
+
+					&.spawn-inky {
+						background-color: blue;
+						color: white;
+					}
+
+					&.spawn-pinky {
+						background-color: pink;
+						color: black;
+					}
+
+					&.spawn-clyde {
+						background-color: orange;
+						color: black;
+					}
+				}
+			}
+
+			span {
+				font-size: 0.6rem;
+				text-align: center;
+				max-width: 100%;
+				overflow: hidden;
+				text-overflow: ellipsis;
+			}
+		}
+	}
+
+	// Map editor
+	.map-editor {
+		flex-grow: 1;
+
+		.grid-container {
+			display: inline-flex;
+			flex-direction: column;
+			border: 2px solid #0000ff;
+			background-color: #000;
+
+			.grid-row {
+				display: flex;
+			}
+
+			.grid-cell {
+				@include grid-cell-style;
+
+				.dot {
+					@include dot-style(6px);
+				}
+
+				.big-dot {
+					@include dot-style(10px);
+				}
+
+				.door-line {
+					width: 80%;
+					height: 2px;
+					background-color: #ffd700;
+				}
+
+				.spawn-label {
+					font-weight: bold;
+					font-size: 12px;
+					z-index: 1;
+				}
+			}
+		}
+	}
+
+	// Preview and console
+	.map-preview {
+		margin-top: 20px;
+		width: 300px;
+		flex-shrink: 0;
+		display: flex;
+		flex-direction: column;
+		@include panel-style;
+		flex-grow: 1;
+
+		.map-code {
+			@include code-style;
+		}
+
+		.map-info {
+			font-size: 0.7rem;
+			line-height: 1.5;
+			color: #aaa;
+
+			p {
+				margin-bottom: 10px;
+			}
+		}
+	}
+
+	.map-console {
+		margin-top: 20px;
+		@include panel-style;
+
+		.console-output {
+			@include code-style;
+			color: #0f0;
+			min-height: 60px;
+		}
+	}
+
+	.console-error {
+		background-color: rgba(255, 0, 0, 0.1);
+		border-left: 4px solid #ff3333;
+		padding: 8px 12px;
+		margin-bottom: 10px;
+		border-radius: 0 4px 4px 0;
+		overflow-y: auto;
+		max-height: 200px;
+
+		.error-header {
+			font-weight: bold;
+			margin-bottom: 8px;
+			color: #ff3333;
+		}
+
+		.error-list {
+			margin-bottom: 8px;
+
+		}
+
+		.error-item {
+			padding: 3px 0;
+			color: #ff6666;
+
+			&.spawn-error {
+				color: #ff9900;
+			}
+
+			&.pellet-error {
+				color: #ff66cc;
+			}
+		}
+
+		.error-tip {
+			background-color: rgba(255, 255, 255, 0.1);
+			padding: 6px 10px;
+			border-radius: 4px;
+			font-size: 0.9em;
+			color: #aaddff;
+			margin-top: 8px;
+			border-left: 3px solid #3399ff;
+
+			strong {
+				color: #66ccff;
+			}
+		}
+
+		&::-webkit-scrollbar {
+			width: 8px;
+		}
+
+		&::-webkit-scrollbar-track {
+			background: rgba(0, 0, 0, 0.1);
+			border-radius: 4px;
+		}
+
+		&::-webkit-scrollbar-thumb {
+			background: rgba(0, 0, 0, 0.3);
+			border-radius: 4px;
+
+			&:hover {
+				background: rgba(0, 0, 0, 0.5);
+			}
+		}
+
+	}
+}
+
+// Animations
+@keyframes pulse {
+	0% {
+		transform: translate(-50%, -50%) scale(1);
+	}
+
+	50% {
+		transform: translate(-50%, -50%) scale(1.1);
+	}
+
+	100% {
+		transform: translate(-50%, -50%) scale(1);
+	}
+}
+
+// Tunnel pairing visual feedback
+.tunnel-paired {
+	box-shadow: 0 0 8px 2px #00ff99, 0 0 0 2px #00ff99 inset;
+	border-color: #00ff99 !important;
+	background-color: #003322 !important;
+	transition: box-shadow 0.2s, border-color 0.2s, background-color 0.2s;
+}
+
+.tunnel-unpaired {
+	box-shadow: 0 0 8px 2px #ff3333, 0 0 0 2px #ff3333 inset;
+	border-color: #ff3333 !important;
+	background-color: #330000 !important;
+	transition: box-shadow 0.2s, border-color 0.2s, background-color 0.2s;
+}

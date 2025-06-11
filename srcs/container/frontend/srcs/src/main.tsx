@@ -1,3 +1,4 @@
+import './app/assets/styles/index.css';
 import './i18next/i18next';
 import { createRoot } from 'react-dom/client';
 import SingletonGuard from './app/components/SingleWindowGuard.tsx';
@@ -7,7 +8,6 @@ import AppRouter from './app/AppRouter.tsx';
 import { ToastContainer } from './app/components/Notifications';
 import IronManNavBar from './app/IronManNavBar';
 import { AuthProvider } from './contexts/AuthContext';
-import './app/assets/styles/index.css';
 import { useEffect } from 'react';
 
 function DisableNativeContextMenu({ children }: { children: React.ReactNode }) {

@@ -1,10 +1,8 @@
-/* @tailwind base;
-@tailwind components;
-@tailwind utilities; */
-
 @import "tailwindcss";
-@plugin "daisyui" {
-    themes: light --default, cupcake;
+@plugin "daisyui";
+
+@theme {
+  --color-primary: #646cff;
 }
 
 #root {

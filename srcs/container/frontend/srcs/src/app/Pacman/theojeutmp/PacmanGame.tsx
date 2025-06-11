@@ -217,7 +217,7 @@ const PacmanGame: React.FC<PacmanGameProps> = ({ state }) => {
 
 
 	return (
-		<>
+		<div className="PacmanGame">
 			<div className="header">
 				<h3 className="title">PAC-MAN</h3>
 
@@ -380,7 +380,7 @@ const PacmanGame: React.FC<PacmanGameProps> = ({ state }) => {
 				<div className="column-right">
 					<div className="life">
 						<span className="life-text">Lives : </span>
-						
+
 						{/* Affichage des vies restantes de Pacman */}
 
 						{/* {Array.from({ length: state.game?.pacmanLife || 0 }).map((_, index) => {
@@ -390,7 +390,7 @@ const PacmanGame: React.FC<PacmanGameProps> = ({ state }) => {
 							return <span key={index} className="heart">❤️</span>;
 						})} */}
 					</div>
-					
+
 					{/* Scores des joueurs */}
 					{players.slice(0).map((player, index) => (
 						<h3
@@ -404,7 +404,7 @@ const PacmanGame: React.FC<PacmanGameProps> = ({ state }) => {
 							{player.username} : {player.score}
 						</h3>
 					))}
-					
+
 					{/* Console de débogage */}
 					<div className="debug-console">
 						<h4>Debug Info:</h4>
@@ -415,8 +415,8 @@ const PacmanGame: React.FC<PacmanGameProps> = ({ state }) => {
 						<div className="debug-item">
 							<span className="debug-label">Statut effrayé:</span>
 							<span className="debug-value">
-								{state.game?.frightenedState?.remainingTime 
-									? `${Math.round(state.game.frightenedState.remainingTime)}s` 
+								{state.game?.frightenedState?.remainingTime
+									? `${Math.round(state.game.frightenedState.remainingTime)}s`
 									: "Inactif"}
 							</span>
 						</div>
@@ -431,9 +431,9 @@ const PacmanGame: React.FC<PacmanGameProps> = ({ state }) => {
 							</span>
 						</div>
 					</div>
-					
+
 					{/* Bouton Quitter */}
-					<button 
+					<button
 						className="quit-button"
 						onClick={() => {
 							if (state.ws && state.ws.readyState === WebSocket.OPEN) {
@@ -447,7 +447,7 @@ const PacmanGame: React.FC<PacmanGameProps> = ({ state }) => {
 					</button>
 				</div>
 			</div>
-		</>
+		</div>
 	);
 };
 
