@@ -197,11 +197,22 @@ async function deleteGroup(group_id: number, state: State): Promise<boolean> {
 }
 
 async function createPrivateGroup(user: User, friend: User, state: State): Promise<Group | null> {
-	const query = `SELECT * FROM groups WHERE private = 1 AND id IN (SELECT group_id FROM group_users WHERE user_id IN (?, ?))`;
+    const query = `
+        SELECT g.* FROM groups g 
+        WHERE g.private = 1 
+        AND (
+            SELECT COUNT(*) FROM group_users gu 
+            WHERE gu.group_id = g.id 
+            AND gu.user_id IN (?, ?)
+        ) = 2
+        AND (
+            SELECT COUNT(*) FROM group_users gu2 
+            WHERE gu2.group_id = g.id
+        ) = 2
+    `;
 	const result: any = await executeReq(query, [user.id, friend.id]);
 	if (result.length > 0) {
 		const group = result[0];
-		console.log("group",group);
 		const groupId = group.id;
 		const group2: Group = {
 			id: group.id,
