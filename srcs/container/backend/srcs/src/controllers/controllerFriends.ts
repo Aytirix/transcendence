@@ -120,12 +120,10 @@ export const addFriend = async (ws: WebSocket, user: User, state: State, text: r
 	}
 
 	const friend = state.user.get(user_id) || await modelsUser.getUserById(user_id);
-	console.log('user.id :', user.id, 'friend.id :', friend.id);
 	if (!friend) return ws.send(JSON.stringify({ action: 'error', result: 'error', notification: ws.i18n.t('RelationFriends.userNotExist') } as reponse));
 	if (friend.id === user.id) return ws.send(JSON.stringify({ action: 'error', result: 'error', notification: ws.i18n.t('RelationFriends.cannotAddYourself') } as reponse));
 
 	const relation = getRelationFriend(user.id, friend.id, state);
-	console.log('relation :', relation);
 
 	if (relation) {
 		switch (relation.status) {
@@ -240,11 +238,10 @@ export const acceptFriend = async (ws: WebSocket, user: User, state: State, text
 	if (relation.status === 'pending' && relation.target === user.id) {
 		const friend = state.user.get(user_id) || await modelsUser.getUserById(user_id);
 		let groupPrivMsg: Group | null = await modelsChat.createPrivateGroup(user, friend, state);
-		// if (groupPrivMsg == null) {
-		// 	ws.send(JSON.stringify({ action: 'error', result: 'error', notification: ws.i18n.t(`RelationFriends.errorCreatePrivateGroup`) } as reponse));
-		// 	return;
-		// }
-		groupPrivMsg = null;
+		if (groupPrivMsg == null) {
+			ws.send(JSON.stringify({ action: 'error', result: 'error', notification: ws.i18n.t(`RelationFriends.errorCreatePrivateGroup`) } as reponse));
+			return;
+		}
 		if (await modelsFriends.updateFriendRelation(user, friend, 'friend', groupPrivMsg?.id || null , state) == false) {
 			ws.send(JSON.stringify({ action: 'error', result: 'error', notification: ws.i18n.t(`RelationFriends.errorAcceptRequest`) } as reponse));
 			return;
@@ -260,7 +257,7 @@ export const acceptFriend = async (ws: WebSocket, user: User, state: State, text
 					lang: friend.lang,
 					online: friend.online,
 				},
-				// group: groupPrivMsg,
+				group: groupPrivMsg,
 				notification: ws.i18n.t('RelationFriends.acceptedFriendRequestYou', { username: friend.username }),
 			} as res_accept_friend));
 		}
@@ -277,7 +274,7 @@ export const acceptFriend = async (ws: WebSocket, user: User, state: State, text
 						lang: user.lang,
 						online: user.online
 					},
-					// group: groupPrivMsg,
+					group: groupPrivMsg,
 					notification: ws.i18n.t('RelationFriends.acceptedFriendRequest', { username: user.username }),
 				} as res_accept_friend));
 			}
