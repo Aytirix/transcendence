@@ -8,6 +8,7 @@ import { ToastContainer } from './app/components/Notifications';
 import IronManNavBar from './app/IronManNavBar';
 import { AuthProvider } from './contexts/AuthContext';
 import './app/assets/styles/index.css';
+import { useEffect } from 'react';
 
 function DisableNativeContextMenu({ children }: { children: React.ReactNode }) {
 	useEffect(() => {
