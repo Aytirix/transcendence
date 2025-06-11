@@ -14,6 +14,10 @@ import addFormats from 'ajv-formats';
 import ajvErrors from 'ajv-errors';
 import dotenv from 'dotenv';
 import pacmanRoutes from './routes/pacmanRoutes';
+import avatarRoutes from './routes/avatarRoutes';
+import fastifyStatic from "@fastify/static";
+import path from "path";
+
 dotenv.config();
 
 const app = fastify({ trustProxy: true });
@@ -66,6 +70,15 @@ app.register(fastifyCors, {
 // Enregistrement des routes
 app.register(userRoutes);
 app.register(pacmanRoutes);
+app.register(avatarRoutes);
+app.register(fastifyStatic, {
+    root: path.join(__dirname, 'uploads'),
+    prefix: '/avatars/',
+    setHeaders: (res, path) => {
+        res.setHeader('Cross-Origin-Resource-Policy', 'cross-origin');
+        // (Tu peux aussi mettre 'same-origin' si tout est servi sur le même nom de domaine sans proxy)
+    }
+});
 
 // Intégration de WebSocket
 initWebSocket(app);  // Appel de la fonction initWebSocket

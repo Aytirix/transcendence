@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import { useLanguage } from '../contexts/LanguageContext';
 import React, { useState } from 'react';
-import './assets/styles/IronManTheme.css';
+// import './assets/styles/IronManTheme.css';
 import ApiService from '../api/ApiService';
 import { useNavigate } from 'react-router-dom';
 import GoogleLoginButton from './components/GoogleLoginButton';
@@ -63,21 +63,14 @@ const IronManRegister: React.FC = () => {
   };
 
   return (
-    <div className="ironman-container">
-      <form className="ironman-card" onSubmit={handleSubmit}>
-        <div className="ironman-icon">
-          {/* Iron Man SVG Mini-Face */}
-          <svg width="54" height="54" viewBox="0 0 54 54">
-            <ellipse cx="27" cy="27" rx="25" ry="25" fill="#c20000" stroke="#ffd700" strokeWidth="2"/>
-            <rect x="15" y="20" width="24" height="18" rx="6" fill="#ffd700"/>
-            <rect x="21" y="31" width="3" height="7" rx="1.5" fill="#c20000"/>
-            <rect x="30" y="31" width="3" height="7" rx="1.5" fill="#c20000"/>
-            <rect x="21" y="24" width="12" height="3" fill="#222"/>
-          </svg>
-        </div>
-        <h2 className="ironman-title">Rejoindre les Avengers</h2>
+    <>
+        <div className="min-h-screen flex items-center justify-center">
+    
+          <form className=" " onSubmit={handleSubmit}>
+            <fieldset className="fieldset bg-base-200 border-base-300 rounded-box w-xs border p-4">
+          <legend className="fieldset-legend">Register</legend>
         <input
-          className="ironman-input"
+          className="input input-a"
           type="email"
           name="email"
           placeholder="E-mail"
@@ -86,7 +79,7 @@ const IronManRegister: React.FC = () => {
           required
         />
         <input
-          className="ironman-input"
+          className="input input-a"
           type="text"
           name="username"
           placeholder="Nom d'utilisateur"
@@ -95,7 +88,7 @@ const IronManRegister: React.FC = () => {
           required
         />
         <input
-          className="ironman-input"
+          className="input input-a"
           type="password"
           name="password"
           placeholder="Mot de passe"
@@ -104,7 +97,7 @@ const IronManRegister: React.FC = () => {
           required
         />
         <input
-          className="ironman-input"
+          className="input input-a"
           type="password"
           name="confirmPassword"
           placeholder="Confirmez le mot de passe"
@@ -113,7 +106,7 @@ const IronManRegister: React.FC = () => {
           required
         />
         <select
-          className="ironman-input"
+          className="input input-a"
           name="lang"
           value={form.lang}
           onChange={handleChange}
@@ -124,17 +117,15 @@ const IronManRegister: React.FC = () => {
           <option value="es">Español</option>
           <option value="it">Italia</option>
         </select>
-        <button className="ironman-btn" type="submit">
+        <button className="btn btn-neutral mt-4" type="submit">
           Créer mon compte
         </button>
-        {error && <div style={{ color: '#c20000', marginTop: '16px', textAlign: 'center' }}>{error}</div>}
-        {success && <div style={{ color: '#52ff52', marginTop: '16px', textAlign: 'center' }}>{success}</div>}
-        <span className="ironman-switch-link">
-        <GoogleLoginButton textbtn="signup" />
-          <Link to="/login" >Déjà membre ? Se connecter</Link>
-        </span>
-      </form>
-    </div>
+          <GoogleLoginButton textbtn="signup"/>
+          <Link to="/login">Déjà membre ? Se connecter</Link>
+            </fieldset>
+          </form>
+        </div>
+        </>
   );
 };
 

@@ -14,6 +14,8 @@ import {
   StandardMaterial,
 } from '@babylonjs/core';
 
+import { Data } from './types/data';
+
 import { registerBuiltInLoaders } from '@babylonjs/loaders/dynamic';
 registerBuiltInLoaders();
 
@@ -74,16 +76,17 @@ export async function initBabylon(canvas: HTMLCanvasElement) : Promise<BabylonIn
 	// Caméra
 	const camera = new FreeCamera("camera1", new Vector3(60, 60, -70), scene);
 	camera.setTarget(Vector3.Zero());
-	// camera.keysDown = [];
-	// camera.keysUp = [];
-	// camera.keysLeft = [];
-	// camera.keysRight = [];
+	camera.keysDown = [];
+	camera.keysUp = [];
+	camera.keysLeft = [];
+	camera.keysRight = [];
 	camera.attachControl(canvas, true);
 	camera.position.x = -1209;
 	camera.position.y = 21.71;
 	camera.position.z = -1.446;
 	camera.rotation.x = 0.081;
 	camera.rotation.y = 1.599;
+	
 
 	// Lumière principale
 	const light = new HemisphericLight("light", new Vector3(0, 1, 0), scene);

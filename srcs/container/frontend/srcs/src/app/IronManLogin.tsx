@@ -1,8 +1,7 @@
 import { Link } from 'react-router-dom';
-import { useLanguage } from '../contexts/LanguageContext';
+// import { useLanguage } from '../contexts/LanguageContext';
 import React, { useState } from 'react';
 import ApiService from '../api/ApiService';
-import './assets/styles/IronManTheme.css';
 import { useNavigate } from 'react-router-dom';
 import GoogleLoginButton from './components/GoogleLoginButton';
 // import { User } from '../app/types/userTypes';
@@ -31,7 +30,7 @@ const IronManLogin: React.FC = () => {
     try {
       console.log("test0");
       const resp = await ApiService.post('/login', form) as ApiService;
-      console.log("test1");
+      console.log("test1", form);
       console.log(resp.ok);
       if (!resp.ok) {
         console.log("test2");
@@ -41,7 +40,7 @@ const IronManLogin: React.FC = () => {
       } else {
         navigate('/');
       }
-      
+
       console.log("test4");
     } catch (err) {
       setError('Erreur réseau ou serveur.');
@@ -51,53 +50,30 @@ const IronManLogin: React.FC = () => {
   };
 
   return (
-    <div className="ironman-container">
-      <form className="ironman-card" onSubmit={handleSubmit}>
-        <div className="ironman-icon">
-          {/* Iron Man SVG Mini-Face */}
-          <svg width="54" height="54" viewBox="0 0 54 54">
-            <ellipse cx="27" cy="27" rx="25" ry="25" fill="#c20000" stroke="#ffd700" strokeWidth="2"/>
-            <rect x="15" y="20" width="24" height="18" rx="6" fill="#ffd700"/>
-            <rect x="21" y="31" width="3" height="7" rx="1.5" fill="#c20000"/>
-            <rect x="30" y="31" width="3" height="7" rx="1.5" fill="#c20000"/>
-            <rect x="21" y="24" width="12" height="3" fill="#222"/>
-          </svg>
-        </div>
-        <h2 className="ironman-title">Connexion</h2>
-        <input
-          className="ironman-input"
-          name="email"
-          placeholder="  E-mail"
-          value={form.email}
-          onChange={handleChange}
-          required
-        />
-        <input
-          className="ironman-input"
-          type="password"
-          name="password"
-          placeholder="  Mot de passe"
-          value={form.password}
-          onChange={handleChange}
-          required
-        />
-        <button className="ironman-btn" type="submit" disabled={loading}>
-          {loading ? "Connexion..." : "Se connecter"}
-        </button>
-        {/* <a href="http://localhost:3000/auth/google">
-          <img src="https://developers.google.com/identity/images/btn_google_signin_dark_normal_web.png" alt="Sign in with Google" />
-        </a> */}
-        {error && <div style={{ color: '#c20000', marginTop: '16px', textAlign: 'center' }}>{error}</div>}
-        <span className="ironman-switch-link">
-          <GoogleLoginButton textbtn="login" />
-          <Link to="/register">Nouveau héros ? Créer un compte</Link>
-        </span>
+    <div className="min-h-screen flex items-center justify-center">
+
+      <form className=" " onSubmit={handleSubmit}>
+        <fieldset className="fieldset bg-base-200 border-base-300 rounded-box w-xs border p-4">
+          <legend className="fieldset-legend">Login</legend>
+
+          <label className="label">Email</label>
+          <input type="text" name="email" className="input input-a" placeholder="  Email" onChange={handleChange} required />
+
+          <label className="label">Password</label>
+          <input type="password" name="password" className="input input-a" placeholder="  Password" onChange={handleChange} required />
+
+          <button className="btn btn-neutral mt-4" type="submit" disabled={loading}>
+            {loading ? "Connexion..." : "Se connecter"}
+          </button>
+          <GoogleLoginButton textbtn="login"/>
+          <div className="w-full justify-center items-center"><Link to="/register" className="w-full justify-center items-center">Nouveau héros ? Créer un compte</Link></div>
+          {/* {error && <div style={{ color: '#c20000', marginTop: '16px', textAlign: 'center' }}>{error}</div>} */}
+        </fieldset>
       </form>
     </div>
   );
 };
 
 export default IronManLogin;
-
 
 
