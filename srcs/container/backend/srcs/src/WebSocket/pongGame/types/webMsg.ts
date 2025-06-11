@@ -6,8 +6,6 @@ export interface webMsg {
 		| "Undefined" 
 		| "Move" 
 		| "EXIT" 
-		| "Score"
-		| "Name"
 		| "Ping";
 	action?: "Create"
 			| "Join"
