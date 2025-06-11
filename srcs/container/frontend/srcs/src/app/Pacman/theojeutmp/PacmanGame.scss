@@ -1,5 +1,12 @@
 /* src/assets/styles/pacman/PacmanMap.scss */
 
+.PacmanGame {
+  z-index:  10;
+  margin: 0 auto;
+  overflow: hidden; /* Empêche le débordement */
+  top: 0;
+  left: 0;
+
 .pause-message {
   position: fixed;
   top: 50%;
@@ -11,7 +18,6 @@
   font-family: 'Press Start 2P', cursive; /* Police de caractères */
   padding: 20px;
   border-radius: 10px;
-  z-index: 1000; /* Assurez-vous que le message est au-dessus des autres éléments */
 }
 
 .header {
@@ -583,4 +589,5 @@
 		transform: scale(0.97);
 		box-shadow: 0 1px 4px #b91c1c88;
 	}
+}
 }

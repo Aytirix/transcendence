@@ -1,30 +1,29 @@
 <!doctype html>
 <html lang="en" data-theme="cupcake">
+
 <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <script src="https://accounts.google.com/gsi/client" async defer></script>
-    <meta name="google-signin-client_id" content="235494829152-rogrpto31jsvp0ml7qp16ncuvge7msmv.apps.googleusercontent.com">
-    <title>Vite + React + TS</title>
+	<meta charset="UTF-8" />
+	<link rel="icon" type="image/svg+xml" href="/vite.svg" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<script src="https://accounts.google.com/gsi/client" async defer></script>
+	<meta name="google-signin-client_id"
+		content="235494829152-rogrpto31jsvp0ml7qp16ncuvge7msmv.apps.googleusercontent.com">
+	<title>Vite + React + TS</title>
 </head>
+
 <body class="relative min-h-screen">
 
-    <!-- Background Video -->
-    <video autoplay loop muted
-        class="fixed inset-0 w-full h-full object-cover -z-10"
-    >
-        <source src="src/app/assets/videoplayback2.mp4" type="video/mp4">
-    </video>
+	<!-- Background Video -->
+	<!-- <video autoplay loop muted class="fixed inset-0 w-full h-full object-cover -z-10">
+		<source src="src/app/assets/videoplayback2.mp4" type="video/mp4">
+	</video> -->
 
-    <!-- Blurred White Overlay -->
-    <div class="fixed inset-0 w-full h-full bg-white/70 backdrop-blur-lg -z-0"></div>
+	<!-- Main Content -->
+	<div id="root" class="relative z-10">
+		<!-- React will mount here -->
+	</div>
 
-    <!-- Main Content -->
-    <div id="root" class="relative z-10">
-        <!-- React will mount here -->
-    </div>
-
-    <script type="module" src="/src/main.tsx"></script>
+	<script type="module" src="/src/main.tsx"></script>
 </body>
+
 </html>
