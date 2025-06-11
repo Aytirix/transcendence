@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import './PacmanGame.scss';
 import { state } from '../../types/pacmanTypes';
 import portalImg from '../../assets/img/pacman/portal.gif';
+import { SoundManager } from '../utils/SoundManager';
 
 // Import des GIFs de fantômes
 import ghostBRightGif from '../../assets/img/pacman/ghosts/B-right.gif';
@@ -102,7 +103,7 @@ export interface Player {
 	direction?: 'UP' | 'DOWN' | 'LEFT' | 'RIGHT';
 	returnToSpawn?: boolean; // true si le joueur doit retourner à son spawn
 	isFrightened?: boolean; // true si le fantôme est effrayé
-	remainingTime?: number; // Temps restant pour l'état effrayé
+	//remainingTime?: number; // Temps restant pour l'état effrayé
 	isDying?: boolean; // true si Pacman est en train de mourir
 }
 
@@ -323,7 +324,14 @@ const PacmanGame: React.FC<PacmanGameProps> = ({ state }) => {
 								//console.log('ghostChar', ghostChar);
 								const direction = ((player as any).direction || 'RIGHT').toLowerCase();
 								const isFrightened = (player as any).isFrightened;
-								const isBlinking = isFrightened && (player as any).remainingTime <= 8;
+								const frightenedState = state.game?.frightenedState;
+
+								// For debugging
+								console.log('WebSocket frightenedState:', frightenedState);
+
+								const isBlinking = isFrightened && 
+												   frightenedState?.active && 
+												   frightenedState?.remainingTime <= 8;
 								const isReturningToSpawn = (player as any).returnToSpawn === true;
 
 								// Sélection du GIF approprié
@@ -452,3 +460,9 @@ const PacmanGame: React.FC<PacmanGameProps> = ({ state }) => {
 };
 
 export default PacmanGame;
+
+// Exemple d'utilisation dans PacmanGame.tsx ou autres composants
+SoundManager.getInstance().play('start'); // Au début du jeu
+SoundManager.getInstance().play('chomp'); // Quand Pacman mange une pastille
+SoundManager.getInstance().play('ghostEat'); // Quand Pacman mange un fantôme
+SoundManager.getInstance().play('death'); // Quand Pacman meurt
