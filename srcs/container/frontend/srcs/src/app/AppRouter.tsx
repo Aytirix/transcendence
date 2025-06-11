@@ -14,6 +14,7 @@ import SameKeyboard from './pongGame/SameKeyboard';
 import IronManProfile from './IronManProfile';
 import IronManLogin from './IronManLogin';
 import IronManRegister from './IronManRegister';
+import ChatPage from './chat/ChatPage';
 
 // PAGES
 
@@ -31,6 +32,7 @@ class AppRouter extends Component {
 					<Route path="/" element={<App />} />
 					<Route path="/profile" element={<IronManProfile />} />
 					<Route path="/login" element={<IronManLogin />} />
+					<Route path="/chat" element={<ChatPage />} />
 					<Route path="/register" element={<IronManRegister />} />
 					<Route path="/Pong" element={<Pong />} />
 					<Route path="/Pong/menu" element={<GameMenu />} />
