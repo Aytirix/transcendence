@@ -88,6 +88,15 @@ export const deleteMap = async (ws: WebSocket, user_id: number, request: any) =>
 	return sendResponse(ws, 'deleteMap', 'success', [ws.i18n.t('pacman.success.mapDeleted')], { id: id });
 };
 
+export const searchMap = async (ws: WebSocket, request: any) => {
+	const { text: name } = request as { text: string };
+	const maps = await pacmanModel.searchMap(name);
+	if (!maps || maps.length === 0) {
+		return sendResponse(ws, 'searchMap', 'error', [ws.i18n.t('pacman.error.searchMap.noResults')]);
+	}
+	sendResponse(ws, 'searchMap', 'success', [], { maps });
+}
+
 export function createTestRoom(player: player, room: room): void {
 	const player2: player = {
 		id: -1,
@@ -238,6 +247,7 @@ export default {
 	getAllMapForUser,
 	insertOrUpdateMap,
 	deleteMap,
+	searchMap,
 	createTestRoom,
 	handleAddUser,
 	handleCreateRoom,
