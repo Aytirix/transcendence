@@ -260,6 +260,7 @@ const ChatPage: React.FC = () => {
 
 
   // --- Effet pour le debounce de la recherche utilisateur ---
+  
   const searchTimeout = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
