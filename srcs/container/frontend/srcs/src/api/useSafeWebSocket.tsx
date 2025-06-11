@@ -54,6 +54,10 @@ export function useSafeWebSocket({ endpoint, onMessage, onStatusChange, reconnec
 					}
 					return;
 				} else if (data.result !== 'error' && data.notification) {
+					if (!Array.isArray(data.notification)) {
+						notification.success(data.notification);
+						return;
+					}
 					for (const message of data.notification) {
 						notification.success(message);
 					}
