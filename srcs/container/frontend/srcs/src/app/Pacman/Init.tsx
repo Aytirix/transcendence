@@ -113,6 +113,10 @@ export default function WebSocketPacman() {
 				}));
 				break;
 			}
+			case 'searchMap': {
+				console.log('Search results:', data.data.maps);
+				break;
+			}
 			case 'insertOrUpdateMap': {
 				setState((prevState: state) => {
 					console.log('old maps:', prevState.maps);
@@ -228,17 +232,17 @@ export default function WebSocketPacman() {
 			</div>
 			<div className="bg-gray-200 text-white flex flex-col items-center justify-center">
 				{showMapEditor ? (
-					<CreatePacmanMap 
-					state={state} 
-					onSave={handleSaveMap} 
-					onCancel={() => {
-					  setShowMapEditor(false);
-					  setEditingMapData(null);
-					  setInitialMapData(null);
-					}}
-					initialMap={initialMapData || undefined}
-					editingMap={editingMapData || undefined}
-				  />
+					<CreatePacmanMap
+						state={state}
+						onSave={handleSaveMap}
+						onCancel={() => {
+							setShowMapEditor(false);
+							setEditingMapData(null);
+							setInitialMapData(null);
+						}}
+						initialMap={initialMapData || undefined}
+						editingMap={editingMapData || undefined}
+					/>
 				) : state.game.grid && state.game.grid.length > 0 ? (
 					<PacmanGame state={state} />
 				) : (

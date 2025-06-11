@@ -97,6 +97,9 @@ async function PacManWebSocket(ws: WebSocket, user: User): Promise<void> {
 			case 'deleteMap':	
 				controllerPacman.deleteMap(ws, player.id, text);
 				break;
+			case 'searchMap':	
+				controllerPacman.searchMap(ws, text);
+				break;
 			default:
 				ws.send(JSON.stringify({ action: 'error', result: 'error', notification: 'Action non reconnue' })); // to close
 				break;

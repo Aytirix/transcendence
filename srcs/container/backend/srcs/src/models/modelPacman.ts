@@ -121,6 +121,30 @@ async function deleteMap(id: number): Promise<boolean> {
 	return true;
 }
 
+async function searchMap(query: string): Promise<map[]> {
+	const searchQuery = `%${query}%`;
+	const sql = `
+		SELECT * FROM pacman_map
+		WHERE name LIKE ?% AND map is_public == 1 AND is_valid == 1
+		ORDER BY updated_at DESC
+	`;
+	const result: any = await executeReq(sql, [searchQuery, searchQuery]);
+	if (!result || result.length === 0) {
+		return [];
+	}
+	const maps: map[] = result.map((row: any) => ({
+		id: row.id,
+		user_id: row.user_id,
+		name: row.name,
+		map: JSON.parse(row.map) as map[][],
+		is_public: row.is_public === 1,
+		is_valid: row.is_valid === 1,
+		created_at: new Date(row.created_at),
+		updated_at: new Date(row.updated_at),
+	}));
+	return maps;
+}
+
 
 export default {
 	getAllMapsForUser,
@@ -129,4 +153,5 @@ export default {
 	insertMap,
 	updateMap,
 	deleteMap,
+	searchMap,
 }
