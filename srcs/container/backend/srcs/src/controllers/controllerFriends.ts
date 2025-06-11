@@ -120,7 +120,6 @@ export const addFriend = async (ws: WebSocket, user: User, state: State, text: r
 	}
 
 	const friend = state.user.get(user_id) || await modelsUser.getUserById(user_id);
-	console.log('user.id :', user.id, 'friend.id :', friend.id);
 	if (!friend) return ws.send(JSON.stringify({ action: 'error', result: 'error', notification: ws.i18n.t('RelationFriends.userNotExist') } as reponse));
 	if (friend.id === user.id) return ws.send(JSON.stringify({ action: 'error', result: 'error', notification: ws.i18n.t('RelationFriends.cannotAddYourself') } as reponse));
 
@@ -234,14 +233,11 @@ export const acceptFriend = async (ws: WebSocket, user: User, state: State, text
 	if (!user_id) return ws.send(JSON.stringify({ action: 'error', result: 'error', notification: ws.i18n.t('RelationFriends.errorSpecifyUserId') } as reponse));
 
 	const relation = getRelationFriend(user.id, user_id, state);
-	console.log('relation :', relation);
 	if (!relation) return ws.send(JSON.stringify({ action: 'error', result: 'error', notification: ws.i18n.t('RelationFriends.noRelationWithUser') } as reponse));
 
 	if (relation.status === 'pending' && relation.target === user.id) {
 		const friend = state.user.get(user_id) || await modelsUser.getUserById(user_id);
-		console.log('friend :', friend);
 		let groupPrivMsg: Group | null = await modelsChat.createPrivateGroup(user, friend, state);
-		console.log('groupPrivMsg :', groupPrivMsg);
 		if (groupPrivMsg == null) {
 			ws.send(JSON.stringify({ action: 'error', result: 'error', notification: ws.i18n.t(`RelationFriends.errorCreatePrivateGroup`) } as reponse));
 			return;
