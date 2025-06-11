@@ -201,6 +201,7 @@ async function createPrivateGroup(user: User, friend: User, state: State): Promi
 	const result: any = await executeReq(query, [user.id, friend.id]);
 	if (result.length > 0) {
 		const group = result[0];
+		console.log("group",group);
 		const groupId = group.id;
 		const group2: Group = {
 			id: group.id,

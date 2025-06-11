@@ -11,7 +11,7 @@ import App from './App';
 import IronManProfile from './IronManProfile';
 import IronManLogin from './IronManLogin';
 import IronManRegister from './IronManRegister';
-import ChatPage from './ChatPage';
+import ChatPage from './chat/ChatPage';
 
 // PAGES
 
