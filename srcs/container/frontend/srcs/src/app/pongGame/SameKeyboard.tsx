@@ -3,13 +3,13 @@ import './pong.css';
 import { useNavigate } from 'react-router-dom';
 import { Engine, Scene, Mesh, AbstractMesh, FreeCamera} from '@babylonjs/core';
 import { initBabylon } from './initBabylon';
-import { Parse } from './types/data';
+import { Parse} from './types/data';
 import { handleKeyDown, handleKeyUp } from './types/handleKey';
 
 const SameKeyboard: React.FC = () => {
 	const navigate = useNavigate();
 	const returnMenu = () => socketRef.current?.send(JSON.stringify({type: "EXIT"}));
-
+	
 	const canvasRef = useRef<HTMLCanvasElement | null>(null);
 	const paddle1 = useRef<Mesh | null>(null);
 	const paddle2 = useRef<Mesh | null>(null);
@@ -20,34 +20,40 @@ const SameKeyboard: React.FC = () => {
 	const engine = useRef<Engine | null>(null);
 	const socketRef = useRef<WebSocket | null>(null);
 	const deleteGo = useRef(false);
-
 	const [isReady3d, setIsReady3d] = useState(false);
 	const [isCinematic, setIscinematic] = useState(false);
 	const [parsedData, setParsedData] = useState<Parse | null>(null);
 	const [count, setCount] = useState(3);
-	const [scorePlayer1, setScorePlayer1] = useState(0);
-	const [scorePlayer2, setScorePlayer2] = useState(0);
 	const [namePlayer1] = useState("Player1");
 	const [namePlayer2] = useState("Player2");
-
+	
 	const keyPressed = useRef({
 		p1_up: false,
 		p1_down: false,
 		p2_up: false,
 		p2_down: false
 	});
-
+	
 	// Initialisation Babylon + WebSocket
 	useEffect(() => {
 		const canvas = canvasRef.current;
 		if (!canvas) return;
-
-		socketRef.current = new WebSocket("wss://localhost:7000/pong");
-
+		
+		const socket = new WebSocket("wss://localhost:7000/pong");
+		socketRef.current = socket;
+		
+		const inGame = sessionStorage.getItem("inGame");
+		if (inGame === "true") {
+			sessionStorage.removeItem("inGame");
+			navigate('/pong/menu');
+			return;
+		}
+		
 		const setup = async () => {
+				
 			const result = await initBabylon(canvas);
 			window.addEventListener("resize", () => engine.current?.resize());
-
+			
 			engine.current = result.engine;
 			scene.current = result.scene;
 			ball.current = result.ball;
@@ -55,7 +61,8 @@ const SameKeyboard: React.FC = () => {
 			paddle2.current = result.paddle2;
 			galactic.current = result.galactic;
 			camera.current = result.camera;
-
+			
+			
 			engine.current.runRenderLoop(() => {
 				galactic.current!.rotation.z += 0.0002;
 				galactic.current!.rotation.y += 0.0002;
@@ -66,36 +73,29 @@ const SameKeyboard: React.FC = () => {
 				setIsReady3d(true);
 			});
 		};
+		
 		setup();
-		// Réception des messages
-		socketRef.current.onmessage = (message: MessageEvent) => {
-			const data = JSON.parse(message.data);
-			if (data.type === 'Score') {
-				setScorePlayer1(data.player1);
-				setScorePlayer2(data.player2);
-			}
+
+
+		socket.onmessage = (message: MessageEvent) => {
+			const data = JSON.parse(message.data);			
 			if (data.type === 'EXIT') {
-				socketRef.current?.close();
+				socket.close();
 				engine.current?.dispose();
+				sessionStorage.removeItem("inGame");
 				navigate('/pong/menu');
 				return;
 			}
 			if (data.ball && data.player1 && data.player2)
 				setParsedData(data);
 		};
-		
 		// Nettoyage
 		return () => {
 			engine.current?.dispose();
-			socketRef.current?.close();
+			socket.close();
 		};
 	}, []);
 	
-	useEffect(() => {
-		console.log(camera.current?.rotation,"\n", camera.current?.position);
-		
-	})
-	// Envoi de type SameKeyboard une seule fois quand tout est prêt
 	useEffect(() => {
 		if (!isReady3d || !socketRef.current || !isCinematic) return;
 		if (count > 0) {
@@ -109,6 +109,7 @@ const SameKeyboard: React.FC = () => {
 				deleteGo.current = true;
 				return () => clearTimeout(goTimeout);
 			}, 500);
+			sessionStorage.setItem("inGame", "true");
 			socketRef.current.send(JSON.stringify({ type: "SameKeyboard" }));
 		}
 	}, [isReady3d, isCinematic, count]);
@@ -187,11 +188,11 @@ const SameKeyboard: React.FC = () => {
 					i++;
 				}
 				else if (i >= 200) {
-					camera.current.position.x = 56;
-					camera.current.position.y = 93;
-					camera.current.position.z = -68;
-					camera.current.rotation.x = 0.90;
-					camera.current.rotation.y = 0.010;
+					camera.current.position.x = 71.376;
+					camera.current.position.y = 91.805;
+					camera.current.position.z = -67.399;
+					camera.current.rotation.x = 0.908;
+					camera.current.rotation.y = -0.136;
 					clearInterval(interval);
 					setIscinematic(true)
 				}
@@ -207,8 +208,12 @@ const SameKeyboard: React.FC = () => {
 				?	<h1 className='Start-go'>{count}</h1>
 				:	<h1 className='Start-go'>Go</h1>
 			)}
-			<h1 className='DashBoardp1'>{namePlayer1} : Score {scorePlayer1}</h1>
-			<h1 className='DashBoardp2'>{namePlayer2} : Score {scorePlayer2}</h1>
+			{isCinematic && (
+			<>
+				<h1 className='DashBoardp1'>{namePlayer1} : Score {parsedData?.player1.score}</h1>
+				<h1 className='DashBoardp2'>{namePlayer2} : Score {parsedData?.player2.score}</h1>
+			</>
+			)}
 			<button onClick={returnMenu} className='Return-button'>Exit Game</button>
 		</div>
 	);

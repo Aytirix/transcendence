@@ -15,41 +15,27 @@ export function handleKeyDown(event: KeyboardEvent, keyPressed: {[key: string]: 
 			keyPressed.p2_down = true;
 			break;
 		case '1' :
-			camera.position.x = 56;
-			camera.position.y = 93;
-			camera.position.z = -68;
-			camera.rotation.x = 0.90;
-			camera.rotation.y = 0.010;
+			camera.position.x = 71.376;
+			camera.position.y = 91.805;
+			camera.position.z = -67.399;
+			camera.rotation.x = 0.908;
+			camera.rotation.y = -0.136;
 			break;
 		case '2' :
-			camera.position.x = 58.7;
-			camera.position.y = 84.15;
-			camera.position.z = -47.60;
-			camera.rotation.x = 1.07;
-			camera.rotation.y = 0.002;
-			break;
-		case '3' :
-			camera.position.x = 59.06;
-			camera.position.y = 106.81;
-			camera.position.z = -7.52;
-			camera.rotation.x = 1.529
-			camera.rotation.y = 0.005;
-			break;
-		case '4' :
 			camera.position.x = 130.38;
 			camera.position.y = 32.81;
 			camera.position.z = -1.33;
 			camera.rotation.x = 0.478
 			camera.rotation.y = -1.581;
 			break;
-		case '5' :
+		case '3' :
 			camera.position.x = -19.203;
 			camera.position.y = 28.187;
 			camera.position.z = -0.804;
 			camera.rotation.x = 0.363
 			camera.rotation.y = 1.570;
 			break;
-		case '6' :
+		case '4' :
 			camera.position.x = 338.131;
 			camera.position.y = 136.188;
 			camera.position.z = -481.417;
