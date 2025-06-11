@@ -7,10 +7,6 @@
     themes: light --default, cupcake;
 }
 
-:root {
-	color: #ffffff;
-}
-
 #root {
 	margin: 0;
 	text-align: center;
