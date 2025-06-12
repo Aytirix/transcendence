@@ -27,6 +27,7 @@ const SameKeyboard: React.FC = () => {
 	const [namePlayer1] = useState("Player1");
 	const [namePlayer2] = useState("Player2");
 	const [startReco, setStartReco] = useState(false);
+	const [isWinner, setIsWinner] = useState(false);
 	const inGame = sessionStorage.getItem("inGame");
 	const reconnection = localStorage.getItem("reconnection");
 
@@ -236,27 +237,27 @@ const SameKeyboard: React.FC = () => {
 				</div>
 			)}
 
+			
 			{/* Jeu */}
-			<div className="game-canvas">
-				<canvas ref={canvasRef} className="game-canvas" />
+				<div className="game-canvas">
+					<canvas ref={canvasRef} className="game-canvas" />
 
-				{/* Compte à rebours */}
-				{!deleteGo.current && isCinematic && !startReco && (
-					count > 0 
-						? <h1 className="Start-go">{count}</h1>
-						: <h1 className="Start-go">Go</h1>
-				)}
+					{/* Compte à rebours */}
+					{!deleteGo.current && isCinematic && !startReco && (
+						count > 0 
+							? <h1 className="Start-go">{count}</h1>
+							: <h1 className="Start-go">Go</h1>
+					)}
 
-				{/* Dashboard des scores */}
-				{isCinematic && (
-					<>
-						<h1 className="DashBoardp1">{namePlayer1} : Score {parsedData?.player1.score}</h1>
-						<h1 className="DashBoardp2">{namePlayer2} : Score {parsedData?.player2.score}</h1>
-						<button onClick={returnMenu} className="Return-button">Exit Game</button>
-					</>
-				)}
-
-			</div>
+					{/* Dashboard des scores et exit */}
+					{isCinematic && (
+						<>
+							<h1 className="DashBoardp1">{namePlayer1} : Score {parsedData?.player1.score}</h1>
+							<h1 className="DashBoardp2">{namePlayer2} : Score {parsedData?.player2.score}</h1>
+							<button onClick={returnMenu} className="Return-button">Exit Game</button>
+						</>
+					)}
+				</div>
 		</>
 	);
 
