@@ -46,7 +46,6 @@ const SameKeyboard: React.FC = () => {
 		socketRef.current = socket;
 		
 		if (inGame === "true") {
-			console.log("return ici");
 			sessionStorage.removeItem("inGame");
 			localStorage.removeItem("reconnection");
 			setIscinematic(true);
@@ -174,10 +173,6 @@ const SameKeyboard: React.FC = () => {
 		const handleDown = (event: KeyboardEvent) => handleKeyDown(event, keyPressed.current, camera.current!);
 		const handleUp = (event: KeyboardEvent) => handleKeyUp(event, keyPressed.current);
 
-		// if (!inGame) {
-		// 	sessionStorage.setItem("inGame", "true");
-		// }
-
 		window.addEventListener('keydown', handleDown);
 		window.addEventListener('keyup', handleUp);
 
@@ -246,7 +241,7 @@ const SameKeyboard: React.FC = () => {
 				<canvas ref={canvasRef} className="game-canvas" />
 
 				{/* Compte à rebours */}
-				{!deleteGo.current && isCinematic && (
+				{!deleteGo.current && isCinematic && !startReco && (
 					count > 0 
 						? <h1 className="Start-go">{count}</h1>
 						: <h1 className="Start-go">Go</h1>
@@ -257,10 +252,10 @@ const SameKeyboard: React.FC = () => {
 					<>
 						<h1 className="DashBoardp1">{namePlayer1} : Score {parsedData?.player1.score}</h1>
 						<h1 className="DashBoardp2">{namePlayer2} : Score {parsedData?.player2.score}</h1>
+						<button onClick={returnMenu} className="Return-button">Exit Game</button>
 					</>
 				)}
 
-				<button onClick={returnMenu} className="Return-button">Exit Game</button>
 			</div>
 		</>
 	);
