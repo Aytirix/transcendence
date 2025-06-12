@@ -26,7 +26,11 @@ const SameKeyboard: React.FC = () => {
 	const [count, setCount] = useState(3);
 	const [namePlayer1] = useState("Player1");
 	const [namePlayer2] = useState("Player2");
-	
+	const [startReco, setStartReco] = useState(false);
+	const [isWinner, setIsWinner] = useState(false);
+	const inGame = sessionStorage.getItem("inGame");
+	const reconnection = localStorage.getItem("reconnection");
+
 	const keyPressed = useRef({
 		p1_up: false,
 		p1_down: false,
@@ -42,13 +46,19 @@ const SameKeyboard: React.FC = () => {
 		const socket = new WebSocket("wss://localhost:7000/pong");
 		socketRef.current = socket;
 		
-		const inGame = sessionStorage.getItem("inGame");
 		if (inGame === "true") {
 			sessionStorage.removeItem("inGame");
+			localStorage.removeItem("reconnection");
+			setIscinematic(true);
 			navigate('/pong/menu');
 			return;
 		}
-		
+
+		if (reconnection === "true") {
+				setIscinematic(true);
+				setStartReco(true);
+		}
+
 		const setup = async () => {
 				
 			const result = await initBabylon(canvas);
@@ -83,8 +93,14 @@ const SameKeyboard: React.FC = () => {
 				socket.close();
 				engine.current?.dispose();
 				sessionStorage.removeItem("inGame");
+				localStorage.removeItem("reconnection");
 				navigate('/Pong/menu');
 				return;
+			}
+			if (data.type === "Remove") {
+				setStartReco(false);
+				setIscinematic(false);
+				localStorage.removeItem("reconnection");
 			}
 			if (data.ball && data.player1 && data.player2)
 				setParsedData(data);
@@ -98,6 +114,15 @@ const SameKeyboard: React.FC = () => {
 	
 	useEffect(() => {
 		if (!isReady3d || !socketRef.current || !isCinematic) return;
+		if (startReco) {
+			camera!.current!.position.x = 71.376;
+			camera!.current!.position.y = 91.805;
+			camera!.current!.position.z = -67.399;
+			camera!.current!.rotation.x = 0.908;
+			camera!.current!.rotation.y = -0.136;
+			sessionStorage.setItem("inGame", "true");
+			return;
+		}
 		if (count > 0) {
 			const timeout = setTimeout(() => {
 				setCount((count) => count - 1);
@@ -176,6 +201,8 @@ const SameKeyboard: React.FC = () => {
 
 	useEffect(() => {
 		if (!isReady3d || !socketRef.current || isCinematic) return;
+		sessionStorage.setItem("inGame", "true");
+		localStorage.setItem("reconnection", "true");
 		let i: number = -1209
 		camera.current!.rotation.x = 0.081;
 		camera.current!.rotation.y = 1.599;
@@ -202,21 +229,38 @@ const SameKeyboard: React.FC = () => {
 	}, [isReady3d])
 
 	return (
-		<div className='game-canvas'>
-			<canvas ref={canvasRef} className="game-canvas" />
-			{!deleteGo.current && isCinematic && (count > 0 
-				?	<h1 className='Start-go'>{count}</h1>
-				:	<h1 className='Start-go'>Go</h1>
+		<>
+			{/* Loading plein écran */}
+			{!isReady3d && (
+				<div>
+					<h1 className="loading">Loading ...</h1>
+				</div>
 			)}
-			{isCinematic && (
-			<>
-				<h1 className='DashBoardp1'>{namePlayer1} : Score {parsedData?.player1.score}</h1>
-				<h1 className='DashBoardp2'>{namePlayer2} : Score {parsedData?.player2.score}</h1>
-			</>
-			)}
-			<button onClick={returnMenu} className='Return-button'>Exit Game</button>
-		</div>
+
+			
+			{/* Jeu */}
+				<div className="game-canvas">
+					<canvas ref={canvasRef} className="game-canvas" />
+
+					{/* Compte à rebours */}
+					{!deleteGo.current && isCinematic && !startReco && (
+						count > 0 
+							? <h1 className="Start-go">{count}</h1>
+							: <h1 className="Start-go">Go</h1>
+					)}
+
+					{/* Dashboard des scores et exit */}
+					{isCinematic && (
+						<>
+							<h1 className="DashBoardp1">{namePlayer1} : Score {parsedData?.player1.score}</h1>
+							<h1 className="DashBoardp2">{namePlayer2} : Score {parsedData?.player2.score}</h1>
+							<button onClick={returnMenu} className="Return-button">Exit Game</button>
+						</>
+					)}
+				</div>
+		</>
 	);
+
 };
 
 export default SameKeyboard;
