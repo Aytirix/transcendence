@@ -14,8 +14,6 @@ import {
   StandardMaterial,
 } from '@babylonjs/core';
 
-import { Data } from './types/data';
-
 import { registerBuiltInLoaders } from '@babylonjs/loaders/dynamic';
 registerBuiltInLoaders();
 
@@ -40,7 +38,7 @@ export async function initBabylon(canvas: HTMLCanvasElement) : Promise<BabylonIn
 	galactic.addAllToScene();
 	const galacticMesh = galactic.meshes.find(mesh => mesh.name === "Sphere__0")!;
 	galacticMesh.rotationQuaternion = null;
-	const accessories1 = await LoadAssetContainerAsync("/images/spacecraft.glb", scene);
+	const accessories1 = await LoadAssetContainerAsync("/images/SpaceCraft1.glb", scene);
 	accessories1.addAllToScene();
 
 	thanos.meshes.forEach(mesh => {
@@ -129,8 +127,7 @@ export async function initBabylon(canvas: HTMLCanvasElement) : Promise<BabylonIn
 	cube.enableEdgesRendering();
 	cube.edgesWidth = 25;
 	cube.edgesColor = new Color4(1, 0, 0, 1);
-	cube.visibility = 0.01
+	cube.visibility = 0.01;
 
-	return ({scene, engine, ball, paddle1, paddle2, galactic: galacticMesh, camera});
-	
+	return ({scene, engine, ball, paddle1, paddle2, galactic: galacticMesh, camera});	
 }
