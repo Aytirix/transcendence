@@ -6,7 +6,7 @@ import { Tournament } from "./modes/Tournament";
 const GameMenu: React.FC = () => {
 	const navigate = useNavigate();
 
-	const SameKeyboard = () => { navigate('/Pong/menu/SameKeyboard'); };
+	const SameKeyboard = () => { navigate('/pong/menu/SameKeyboard'); };
 	return (
 		<>
 			<div className="video-wrapper">

@@ -13,6 +13,7 @@ import { handleReconnection } from './handlers/handleReconnection';
 import { handleFinish } from './handlers/handleFinish';
 import { handleSolo } from './handlers/handleSolo';
 import { handleTournament } from './handlers/handleTournament';
+import { handlePause } from './handlers/handlePause';
 
 export let pingMonitoring: boolean = false;
 
@@ -60,6 +61,9 @@ export function pongWebSocket(socket: WebSocket, user: User) {
 				break ;
 			case "Ping" :
 				handlePing(playerInfos);
+				break;
+			case "Pause" :
+				handlePause(playerInfos);
 				break;
 		}
 	});

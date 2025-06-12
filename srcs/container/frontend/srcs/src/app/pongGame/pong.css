@@ -49,7 +49,7 @@
   }
 }
 
-.loading {
+.loading1 {
 	position: fixed;
 	top: 0;
 	left: 0;
@@ -116,7 +116,6 @@
   background-attachment: fixed;
   flex-direction: column;
   width: 100vw;
-  position: fixed;
   top: 0;
   left: 0;
   margin: 0;
@@ -141,7 +140,6 @@
 }
 
 .video-wrapper {
-  position: fixed;
   top: 0;
   left: 0;
   width: 100vw;
@@ -212,6 +210,7 @@
 }
 
 .Start-go {
+	position: fixed;
 	border: none;
 	border-radius: 10px;
 	z-index: 2;
@@ -237,7 +236,7 @@
   height: 100vh;
   flex-direction: column;
   width: 100vw;
-  position: fixed;
+  /* position: fixed; */
   top: 0;
   left: 0;
   margin: 0;

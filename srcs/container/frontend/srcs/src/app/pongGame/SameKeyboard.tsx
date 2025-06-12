@@ -27,15 +27,18 @@ const SameKeyboard: React.FC = () => {
 	const [namePlayer1] = useState("Player1");
 	const [namePlayer2] = useState("Player2");
 	const [startReco, setStartReco] = useState(false);
-	const [isWinner, setIsWinner] = useState(false);
-	const inGame = sessionStorage.getItem("inGame");
+	const [isPause, setIsPause] = useState(false);
+	const [isService, setIsService] = useState(false);
+	// const [isWinner, setIsWinner] = useState(false);
+	// const inGame = sessionStorage.getItem("inGame");
 	const reconnection = localStorage.getItem("reconnection");
 
 	const keyPressed = useRef({
 		p1_up: false,
 		p1_down: false,
 		p2_up: false,
-		p2_down: false
+		p2_down: false,
+		esp: false
 	});
 	
 	// Initialisation Babylon + WebSocket
@@ -46,17 +49,19 @@ const SameKeyboard: React.FC = () => {
 		const socket = new WebSocket("wss://localhost:7000/pong");
 		socketRef.current = socket;
 		
-		if (inGame === "true") {
-			sessionStorage.removeItem("inGame");
-			localStorage.removeItem("reconnection");
-			setIscinematic(true);
-			navigate('/pong/menu');
-			return;
-		}
+		// if (inGame === "true") {
+		// 	sessionStorage.removeItem("inGame");
+		// 	localStorage.removeItem("reconnection");
+		// 	setStartReco(false);
+		// 	setIscinematic(true);
+		// 	navigate('/pong/menu');
+		// 	return;
+		// }
 
 		if (reconnection === "true") {
-				setIscinematic(true);
-				setStartReco(true);
+			setIscinematic(true);
+			setStartReco(true);
+			setIsPause(true);
 		}
 
 		const setup = async () => {
@@ -92,15 +97,20 @@ const SameKeyboard: React.FC = () => {
 			if (data.type === 'EXIT') {
 				socket.close();
 				engine.current?.dispose();
-				sessionStorage.removeItem("inGame");
+				// sessionStorage.removeItem("inGame");
 				localStorage.removeItem("reconnection");
-				navigate('/Pong/menu');
+				navigate('/pong/menu');
 				return;
 			}
 			if (data.type === "Remove") {
+				console.log("remove");
 				setStartReco(false);
 				setIscinematic(false);
 				localStorage.removeItem("reconnection");
+			}
+			if (data.type === "Service") {
+				setIsService(true);
+				setTimeout(() => setIsService(false), 1500);
 			}
 			if (data.ball && data.player1 && data.player2)
 				setParsedData(data);
@@ -120,7 +130,8 @@ const SameKeyboard: React.FC = () => {
 			camera!.current!.position.z = -67.399;
 			camera!.current!.rotation.x = 0.908;
 			camera!.current!.rotation.y = -0.136;
-			sessionStorage.setItem("inGame", "true");
+			console.log("startreco")
+			// sessionStorage.setItem("inGame", "true");
 			return;
 		}
 		if (count > 0) {
@@ -169,13 +180,34 @@ const SameKeyboard: React.FC = () => {
 
 	// Gestion des touches clavier
 	useEffect(() => {
+		if (!isReady3d || !socketRef.current || !isCinematic || isService) return;
+		const handlePause = (event: KeyboardEvent) => {
+			if (event.key === ' ') {
+				socketRef.current?.send(JSON.stringify({type: "Pause"}));
+				setIsPause(isPause => !isPause);
+			}
+		}
+		window.addEventListener('keydown', handlePause)
+		return (() => {
+			window.removeEventListener('keydown', handlePause);
+		})
+	}, [isPause, isCinematic, isReady3d, isService])
+
+	useEffect(() => {
 		if (!isReady3d || !socketRef.current || !isCinematic) return;
 
 		const handleDown = (event: KeyboardEvent) => handleKeyDown(event, keyPressed.current, camera.current!);
 		const handleUp = (event: KeyboardEvent) => handleKeyUp(event, keyPressed.current);
+		// const handlePause = (event: KeyboardEvent) => {
+		// 	if (event.key === ' ') {
+		// 		socketRef.current?.send(JSON.stringify({type: "Pause"}));
+		// 		setIsPause(isPause => !isPause);
+		// 	}
+		// }
 
 		window.addEventListener('keydown', handleDown);
 		window.addEventListener('keyup', handleUp);
+		// window.addEventListener('keydown', handlePause)
 
 		const interval = setInterval(() => {
 			const socket = socketRef.current;
@@ -195,13 +227,14 @@ const SameKeyboard: React.FC = () => {
 		return () => {
 			window.removeEventListener('keydown', handleDown);
 			window.removeEventListener('keyup', handleUp);
+			// window.removeEventListener('keydown', handlePause);
 			clearInterval(interval);
 		};
 	}, [isReady3d, isCinematic]);
 
 	useEffect(() => {
 		if (!isReady3d || !socketRef.current || isCinematic) return;
-		sessionStorage.setItem("inGame", "true");
+		// sessionStorage.setItem("inGame", "true");
 		localStorage.setItem("reconnection", "true");
 		let i: number = -1209
 		camera.current!.rotation.x = 0.081;
@@ -233,14 +266,19 @@ const SameKeyboard: React.FC = () => {
 			{/* Loading plein écran */}
 			{!isReady3d && (
 				<div>
-					<h1 className="loading">Loading ...</h1>
+					<h1 className="loading1">Loading ...</h1>
 				</div>
 			)}
-
-			
 			{/* Jeu */}
 				<div className="game-canvas">
 					<canvas ref={canvasRef} className="game-canvas" />
+
+					{/* jeu en pause */}
+					{isPause && isReady3d &&(
+						<h1 className='Start-go'>
+							[ Pause ]
+						</h1>
+					)}
 
 					{/* Compte à rebours */}
 					{!deleteGo.current && isCinematic && !startReco && (
