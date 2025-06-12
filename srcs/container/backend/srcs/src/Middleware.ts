@@ -52,6 +52,7 @@ export async function isAuthenticated(request: FastifyRequest, reply: FastifyRep
 export async function isAuth(request: FastifyRequest, reply: FastifyReply) {
 	if (request && request.session && request.session.user !== undefined && checkSessionInfo(request)) {
 		const user = request.session.user as User;
+		console.log("Middle user", user);
 		return reply.status(200).send({
 			isAuthenticated: true,
 			user: {

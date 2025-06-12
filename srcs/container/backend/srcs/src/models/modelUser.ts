@@ -19,7 +19,6 @@ export const Login = async (email: string, password: string): Promise<User | nul
 	if (!(await bcrypt.compare(password, user.password))) {
 		return null;
 	}
-
 	return {
 		id: user.id,
 		username: user.username,
@@ -106,6 +105,7 @@ export const getUserById = async (id: number): Promise<User | null> => {
 	if (result.length === 0) {
 		return null;
 	}
+	console.log("back", result);
 	return {
 		id: result[0].id,
 		username: result[0].username,

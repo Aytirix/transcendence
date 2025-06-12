@@ -79,7 +79,7 @@ export const update = {
 	body: {
 		properties: {
 			...register.body.properties,
-			avatar: { type: 'string', format: 'uri', nullable: true },
+			avatar: { type: 'string', nullable: true },
 		},
 		required: [],
 		errorMessage: {
@@ -118,7 +118,8 @@ export const isAuth = {
 						email: { type: 'string', format: 'email' },
 						username: { type: 'string', minLength: 3, maxLength: 15, pattern: '^[a-zA-Z0-9]+$' },
 						lang: { type: 'string', enum: ['fr', 'en', 'it'] },
-						avatar: { type: 'string', format: 'uri' },
+						// avatar: { type: 'string', format: 'uri' },
+						avatar: { type: 'string' },
 					},
 				},
 			},
@@ -159,7 +160,7 @@ export const authGoogleCallback = {
 						email: { type: 'string', format: 'email' },
 						username: { type: 'string', minLength: 3, maxLength: 15, pattern: '^[a-zA-Z0-9]+$' },
 						lang: { type: 'string', enum: ['fr', 'en', 'it'] },
-						avatar: { type: 'string', format: 'uri' },
+						avatar: { type: 'string'},
 					},
 				},
 			},
