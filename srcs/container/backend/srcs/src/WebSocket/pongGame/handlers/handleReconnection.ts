@@ -14,7 +14,7 @@ export function handleReconnection(socket: WebSocket, user: User) : boolean {
 				waitingID.delete(user.id);
 				tempPlayer.socket.send(JSON.stringify({type: "SameKeyboard"}));
 				tempPlayer.game.getPlayer1().getPlayerInfos().socket = socket;
-				tempPlayer.game.setStatus("PLAYING");
+				tempPlayer.game.setStatus("PLAYING"); //playing
 				return (true);
 			}
 			else if (tempPlayer.mode === "Solo") {
@@ -43,5 +43,6 @@ export function handleReconnection(socket: WebSocket, user: User) : boolean {
 				return (true);
 			}
 		}
+		socket.send(JSON.stringify({type: "Remove"}));
 	return (false);
 }

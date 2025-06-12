@@ -49,6 +49,20 @@
   }
 }
 
+.loading {
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100vw;
+	height: 100vh;
+	background-color: black;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	z-index: 2;
+	color: rgb(241, 247, 247);
+	animation: textGlowMenu 1.7s linear infinite;
+}
 
 .start-button {
   border: none;
