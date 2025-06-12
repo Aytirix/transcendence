@@ -33,9 +33,9 @@ class AppRouter extends Component {
 					<Route path="/login" element={<IronManLogin />} />
 					<Route path="/chat" element={<ChatPage />} />
 					<Route path="/register" element={<IronManRegister />} />
-					<Route path="/Pong" element={<Pong />} />
-					<Route path="/Pong/menu" element={<GameMenu />} />
-					<Route path="/Pong/menu/SameKeyboard" element={<SameKeyboard />} />
+					<Route path="/pong" element={<Pong />} />
+					<Route path="/pong/menu" element={<GameMenu />} />
+					<Route path="/pong/menu/SameKeyboard" element={<SameKeyboard />} />
 					<Route path="/Pacman" element={<WebSocketPacman />} />
 					<Route path="/userTest" element={<Chat />} />
 				</Route>

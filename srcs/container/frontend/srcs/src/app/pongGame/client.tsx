@@ -5,7 +5,7 @@ import './pong.css';
 export const Pong: React.FC = () => {
 	const navigate = useNavigate();
 
-	const StartGame = () => { navigate('/Pong/menu'); };
+	const StartGame = () => { navigate('/pong/menu'); };
 
 	return (
 		<div className="page-custom">

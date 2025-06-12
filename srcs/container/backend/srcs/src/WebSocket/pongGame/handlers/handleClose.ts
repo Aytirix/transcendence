@@ -15,5 +15,5 @@ export function handleClose(playerInfos: playerStat) {
 			waitingID.delete(playerInfos.id);
 		else if (playerInfos.mode === "Multi")
 			waitingID.delete(playerInfos.id);
-	}, 5000);
+	}, 30000);
 }

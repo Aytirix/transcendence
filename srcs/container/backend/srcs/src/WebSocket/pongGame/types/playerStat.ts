@@ -10,7 +10,7 @@ export interface playerStat {
 	idTournament?: number;
 	matchTournamentNB?: number;
 	resultMatchTournament?: "Loose" | "Win" | "Current";
-	mode?: "Multi" | "Solo" | "SameKeyboard" | "Tournament" | "Undefined" | "Move" | "EXIT" | "Ping";
+	mode?: "Multi" | "Solo" | "SameKeyboard" | "Tournament" | "Undefined" | "Move" | "EXIT" | "Pause" | "Ping";
 	inGame : boolean;
 	socket: WebSocket;
 	lastping?: number;

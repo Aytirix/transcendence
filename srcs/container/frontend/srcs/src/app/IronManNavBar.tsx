@@ -41,7 +41,7 @@ const IronManNavBar: React.FC = () => {
     readLang();
   }, [i18n]);
   const hideOnPaths = ['/Pacman', '/login', '/register'];
-  const loadNavBar = !hideOnPaths.includes(location.pathname) && !location.pathname.startsWith('/Pong');
+  const loadNavBar = !hideOnPaths.includes(location.pathname) && !location.pathname.startsWith('/pong');
 
   return (
     <>
@@ -85,7 +85,7 @@ const IronManNavBar: React.FC = () => {
         //   </div>
         //   <div className="ironman-navbar-links">
         //     <Link to="/Pacman">Pacman</Link>|
-        //     <Link to="/Pong">Pong</Link>|
+        //     <Link to="/pong">Pong</Link>|
         //     <Link to="/Chat">Chat</Link>
         //   </div>
         //   <div className="ironman-navbar-lang">
@@ -130,7 +130,7 @@ const IronManNavBar: React.FC = () => {
           </div>
            <div className="navbar-center">
              <Link to="/Pacman" className="btn btn-ghost text-xl" >Pacman</Link>
-             <Link to="/Pong" className="btn btn-ghost text-xl">Pong</Link>
+             <Link to="/pong" className="btn btn-ghost text-xl">Pong</Link>
             <Link to="/Chat" className="btn btn-ghost text-xl">Chat</Link>
            </div>
           <div className="navbar-end">

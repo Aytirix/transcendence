@@ -11,8 +11,8 @@ export function handlePing(playerInfos: playerStat) {
 export function startingPing(sockets: Map<WebSocket, playerStat>) {
 	setInterval(() => {
 		for (const [playerSocket, playerInfos] of sockets) {
-
-			const isInactive = (Date.now() - playerInfos.lastping) > 7000
+			
+			const isInactive = (Date.now() - playerInfos.lastping) > 30000
 			if (isInactive) {
 				console.log(`Deconnection of player username => ${playerInfos.name}`);
 				if (playerInfos.game)

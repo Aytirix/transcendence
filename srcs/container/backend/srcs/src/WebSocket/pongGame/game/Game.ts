@@ -159,7 +159,7 @@ export class Game {
 		}
 		else if ((this.ball.pos_x + this.ball.radius) <= 0) {
 			this.player1.setScore();
-
+			this.player1.getPlayerInfos().socket.send(JSON.stringify({type: "Service"}))
 			if (this.player1.getPlayerInfos().mode === "Solo")
 				handleScorePlayer1(this.ball, this.player1, this.player2, this)
 			else
@@ -175,7 +175,7 @@ export class Game {
 		}
 		else if ((this.ball.pos_x - this.ball.radius) >= this.width){
 			this.player2.setScore();
-
+			this.player1.getPlayerInfos().socket.send(JSON.stringify({type: "Service"}))
 			if (this.player1.getPlayerInfos().mode === "Solo")
 				handleScorePlayer2(this.ball, this.player1, this.player2, this)
 			else
@@ -197,6 +197,7 @@ export class Game {
 		player2.pos_x = 20;
 		player2.pos_y = 250;
 		this.setStatus("KICKOFF");
+
 		setTimeout(() => {
 			switch (direction) {
 				case 1 :
