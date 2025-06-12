@@ -59,8 +59,9 @@
 	display: flex;
 	justify-content: center;
 	align-items: center;
-	color: #255e95;
 	z-index: 2;
+	color: rgb(241, 247, 247);
+	animation: textGlowMenu 1.7s linear infinite;
 }
 
 .start-button {
