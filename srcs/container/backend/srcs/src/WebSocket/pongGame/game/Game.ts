@@ -16,7 +16,7 @@ export class Game {
 		private detectionPaddle: boolean = false,
 		private readonly width: number = 800,
 		private readonly height: number = 600,
-		private status: "PLAYING" | "KICKOFF" | "EXIT" = "PLAYING",
+		private status: "PLAYING" | "KICKOFF" | "SERVICE" | "EXIT" = "PLAYING",
 		private jsonWebsocket: string = "",
 		private tournament?: Tournament,
 	) {}
@@ -35,7 +35,7 @@ export class Game {
 	}
 	update(): boolean {
 		this.frameRate++;
-		if (this.getStatus() === "KICKOFF") { return false }
+		if (this.getStatus() === "KICKOFF" || this.getStatus() === "SERVICE") { return false }
 		this.ball.move();
 		this.detectionCollision();
 		this.jsonWebsocket = JSON.stringify({
@@ -104,7 +104,7 @@ export class Game {
 				//gerer l actualisation la deco et surtout le exit du tournois 
 			}
 			else if (this.player1.getPlayerInfos().mode === "SameKeyboard") {
-				this.player1.getPlayerInfos().socket.send(JSON.stringify({type: "EXIT"}));
+				this.player1.getPlayerInfos().socket.send(JSON.stringify({type: "FINISHED"})); //EXIT
 				handleFinish(this.player1.getPlayerInfos());
 				this.resetDisplay("SameKeyboard");
 			}
@@ -151,15 +151,16 @@ export class Game {
 	detectionCollision(): void {
 		if (this.player1.isCollidingWithBall(this.ball)) {
 			this.ball.d_x = -1;
+			if (this.ball.pos_x + this.ball.radius > this.player1.pos_x)
+				this.ball.pos_x = this.player1.pos_x - this.ball.radius; 
 			if (this.ball.speed <= 12.5)
 				this.ball.speed += 0.5;
 			this.player1.zoneEffect(this.ball);
-			if (this.player1.getPlayerInfos().mode === "Solo")
+			if (this.player1.getPlayerInfos().mode === "Solo") //controler ici si ca fait pas bug le fait de regler la ball par rapport a la raquette 
 				handleCollisionWithPlayer1(this.ball, this.player1, this.player2, this)
 		}
 		else if ((this.ball.pos_x + this.ball.radius) <= 0) {
 			this.player1.setScore();
-			this.player1.getPlayerInfos().socket.send(JSON.stringify({type: "Service"}))
 			if (this.player1.getPlayerInfos().mode === "Solo")
 				handleScorePlayer1(this.ball, this.player1, this.player2, this)
 			else
@@ -167,6 +168,9 @@ export class Game {
 		}
 		else if (this.player2.isCollidingWithBall(this.ball)) {
 			this.ball.d_x = 1;
+			if (this.ball.pos_x - + this.ball.radius < this.player2.pos_x)
+				this.ball.pos_x = this.player2.pos_x + this.ball.radius;
+			console.log(this.ball.pos_x);
 			if (this.ball.speed <= 12.5)
 				this.ball.speed += 0.5;
 			this.player2.zoneEffect(this.ball);
@@ -175,7 +179,6 @@ export class Game {
 		}
 		else if ((this.ball.pos_x - this.ball.radius) >= this.width){
 			this.player2.setScore();
-			this.player1.getPlayerInfos().socket.send(JSON.stringify({type: "Service"}))
 			if (this.player1.getPlayerInfos().mode === "Solo")
 				handleScorePlayer2(this.ball, this.player1, this.player2, this)
 			else
@@ -196,7 +199,7 @@ export class Game {
 		player1.pos_y = 250;
 		player2.pos_x = 20;
 		player2.pos_y = 250;
-		this.setStatus("KICKOFF");
+		this.setStatus("SERVICE"); //KICKOFF
 
 		setTimeout(() => {
 			switch (direction) {
@@ -257,7 +260,7 @@ export class Game {
 	getBall() : Ball {return (this.ball); }
 	getPlayer1() : Paddle {return (this.player1); }
 	getPlayer2() : Paddle {return (this.player2); }
-	setStatus(stat: "PLAYING" | "KICKOFF" | "EXIT") { this.status = stat; }
+	setStatus(stat: "PLAYING" | "KICKOFF" | "SERVICE" | "EXIT") { this.status = stat; }
 	setFramerate(frameRate: number) { this.frameRate = frameRate; }
 	setTournament(tournament: Tournament) { this.tournament = tournament; }
 }

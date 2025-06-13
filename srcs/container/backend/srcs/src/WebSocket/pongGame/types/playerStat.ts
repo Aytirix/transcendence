@@ -10,10 +10,12 @@ export interface playerStat {
 	idTournament?: number;
 	matchTournamentNB?: number;
 	resultMatchTournament?: "Loose" | "Win" | "Current";
+	resultMatch?: "Loose" | "win";
 	mode?: "Multi" | "Solo" | "SameKeyboard" | "Tournament" | "Undefined" | "Move" | "EXIT" | "Pause" | "Ping";
 	inGame : boolean;
 	socket: WebSocket;
 	lastping?: number;
+	timePause?: number;
 };
 
 export interface Tournament {
