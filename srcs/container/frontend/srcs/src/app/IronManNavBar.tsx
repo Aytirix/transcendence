@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import ApiService from '../api/ApiService';
 import { useTranslation } from 'react-i18next';
 import { useLocation } from 'react-router-dom';
+import {useAuth} from '../contexts/AuthContext';
 
 const LANGUAGES = [
   { code: 'fr', label: 'Français' },
@@ -19,7 +20,8 @@ const IronManNavBar: React.FC = () => {
   const navigate = useNavigate();
   const logoMenuRef = useRef<HTMLDivElement>(null);
   const location = useLocation();
-
+  const toto = useAuth();
+  console.log("toto", toto);
   // Fermer le logo-menu au clic en dehors
   React.useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
@@ -139,7 +141,7 @@ const IronManNavBar: React.FC = () => {
                 <div className="w-10 rounded-full">
                   <img
                     alt="Avatar"
-                    src="avatars/avatar1.png" />
+                    src={toto.user?.avatar} />
                 </div>
               </div>
               <ul
