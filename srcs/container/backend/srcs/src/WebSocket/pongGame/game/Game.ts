@@ -151,7 +151,7 @@ export class Game {
 	detectionCollision(): void {
 		if (this.player1.isCollidingWithBall(this.ball)) {
 			this.ball.d_x = -1;
-			if (this.ball.pos_x + this.ball.radius > this.player1.pos_x)
+			// if (this.ball.pos_x + this.ball.radius > this.player1.pos_x)
 				this.ball.pos_x = this.player1.pos_x - this.ball.radius; 
 			if (this.ball.speed <= 12.5)
 				this.ball.speed += 0.5;
@@ -168,7 +168,7 @@ export class Game {
 		}
 		else if (this.player2.isCollidingWithBall(this.ball)) {
 			this.ball.d_x = 1;
-			if (this.ball.pos_x - + this.ball.radius < this.player2.pos_x)
+			// if (this.ball.pos_x - + this.ball.radius < this.player2.pos_x)
 				this.ball.pos_x = this.player2.pos_x + this.ball.radius;
 			console.log(this.ball.pos_x);
 			if (this.ball.speed <= 12.5)
