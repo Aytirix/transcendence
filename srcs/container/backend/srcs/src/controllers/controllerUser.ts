@@ -288,10 +288,20 @@ export const UploadAvatar = async (request: FastifyRequest, reply: FastifyReply)
 			}
 		});
 
+		console.log(`Uploading file: ${filePath}`);
+
 		await pipelineAsync(file.file, fs.createWriteStream(filePath));
 
-		await userModel.UpdateUser(request.session.user.id.toString(), null, null, null, null, safeFilename);
+		console.log(`File uploaded successfully: ${filePath}`);
+
+		const result = await userModel.UpdateUser(request.session.user.id.toString(), null, null, null, null, safeFilename);
+		if (!result) {
+			return reply.code(500).send({ success: false, message: request.i18n.t('user.file.updateError') });
+		}
+		
 		request.session.user.avatar = safeFilename;
+
+		console.log(`User avatar updated: ${request.session.user.avatar}`);
 
 		return reply.code(200).send({
 			success: true,
