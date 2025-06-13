@@ -41,7 +41,16 @@
 		"logout": "Déconnexion réussie."
 	},
 	"user": {
-		"updateSuccess": "Utilisateur mis à jour avec succès."
+		"updateSuccess": "Utilisateur mis à jour avec succès.",
+		"file": {
+			"missing": "Aucun fichier reçu.",
+			"tooLarge": "Fichier trop volumineux (max 3Mo) !",
+			"invalidFormat": "Format de fichier invalide. Formats acceptés : JPEG, PNG, WEBP.",
+			"uploadSuccess": "Avatar mis à jour avec succès.",
+			"uploadError": "Erreur lors de l'upload de l'avatar.",
+			"failedSave": "Échec de l'enregistrement de l'avatar dans la base de données.",
+			"invalidname": "Le nom de l'avatar est invalide. Veuillez choisir parmi les avatars prédéfinis."
+		}
 	},
 	"pacman": {
 		"name_required": "Veuillez spécifier un nom de salle",

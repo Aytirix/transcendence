@@ -141,7 +141,7 @@ const IronManNavBar: React.FC = () => {
                 <div className="w-10 rounded-full">
                   <img
                     alt="Avatar"
-                    src={toto.user?.avatar} />
+                    src={ApiService.getFile(toto.user?.avatar)} />
                 </div>
               </div>
               <ul
