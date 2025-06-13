@@ -114,9 +114,10 @@ export const UpdateUser = async (request: FastifyRequest, reply: FastifyReply) =
 		email: email || user.email,
 		username: username || user.username,
 		lang: lang || user.lang,
+		avatar: avatar || user.avatar,
 	};
 	return reply.send({
-		message: `email: ${email || user.email}, username: ${username || user.username}, lang: ${lang || user.lang}`,
+		message: `Vos informations ont été mises à jour avec succès.`,
 	});
 }
 
