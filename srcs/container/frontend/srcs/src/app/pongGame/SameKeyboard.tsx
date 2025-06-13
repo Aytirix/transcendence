@@ -8,7 +8,8 @@ import { handleKeyDown, handleKeyUp } from './types/handleKey';
 
 const SameKeyboard: React.FC = () => {
 	const navigate = useNavigate();
-	const returnMenu = () => socketRef.current?.send(JSON.stringify({type: "EXIT"}));
+	const returnMenu = () => socketRef.current?.send(JSON.stringify({type: "EXIT"}));			
+	const returnMenuWinner = () => { navigate('/pong/menu')};
 	
 	const canvasRef = useRef<HTMLCanvasElement | null>(null);
 	const paddle1 = useRef<Mesh | null>(null);
@@ -20,6 +21,7 @@ const SameKeyboard: React.FC = () => {
 	const engine = useRef<Engine | null>(null);
 	const socketRef = useRef<WebSocket | null>(null);
 	const deleteGo = useRef(false);
+	
 	const [isReady3d, setIsReady3d] = useState(false);
 	const [isCinematic, setIscinematic] = useState(false);
 	const [parsedData, setParsedData] = useState<Parse | null>(null);
@@ -28,9 +30,9 @@ const SameKeyboard: React.FC = () => {
 	const [namePlayer2] = useState("Player2");
 	const [startReco, setStartReco] = useState(false);
 	const [isPause, setIsPause] = useState(false);
-	const [isService, setIsService] = useState(false);
-	// const [isWinner, setIsWinner] = useState(false);
-	// const inGame = sessionStorage.getItem("inGame");
+	const [isWinner, setisWinner] = useState(false);
+	const [nameWinner, setNameWinner] = useState<string | null>(null);
+
 	const reconnection = localStorage.getItem("reconnection");
 
 	const keyPressed = useRef({
@@ -38,9 +40,18 @@ const SameKeyboard: React.FC = () => {
 		p1_down: false,
 		p2_up: false,
 		p2_down: false,
-		esp: false
 	});
 	
+	function restoreCamera(data: any) {
+		console.log("avant", camera.current!.position.x);
+		camera.current!.position.x = data.camera.pos_x;
+		camera.current!.position.y = data.camera.pos_y;
+		camera.current!.position.z = data.camera.pos_z;
+		camera.current!.rotation.x = data.camera.rot_x;
+		camera.current!.rotation.y = data.camera.rot_y;
+		console.log("apres", camera.current!.position.x);
+
+	}
 	// Initialisation Babylon + WebSocket
 	useEffect(() => {
 		const canvas = canvasRef.current;
@@ -48,15 +59,6 @@ const SameKeyboard: React.FC = () => {
 		
 		const socket = new WebSocket("wss://localhost:7000/pong");
 		socketRef.current = socket;
-		
-		// if (inGame === "true") {
-		// 	sessionStorage.removeItem("inGame");
-		// 	localStorage.removeItem("reconnection");
-		// 	setStartReco(false);
-		// 	setIscinematic(true);
-		// 	navigate('/pong/menu');
-		// 	return;
-		// }
 
 		if (reconnection === "true") {
 			setIscinematic(true);
@@ -81,6 +83,7 @@ const SameKeyboard: React.FC = () => {
 			engine.current.runRenderLoop(() => {
 				galactic.current!.rotation.z += 0.0002;
 				galactic.current!.rotation.y += 0.0002;
+				console.log("ball x dans renderlopp", ball.current?.position.x)
 				scene.current?.render();
 			});
 			
@@ -88,32 +91,55 @@ const SameKeyboard: React.FC = () => {
 				setIsReady3d(true);
 			});
 		};
-		
 		setup();
-
-
 		socket.onmessage = (message: MessageEvent) => {
 			const data = JSON.parse(message.data);			
 			if (data.type === 'EXIT') {
 				socket.close();
 				engine.current?.dispose();
-				// sessionStorage.removeItem("inGame");
 				localStorage.removeItem("reconnection");
+				localStorage.removeItem("data");
 				navigate('/pong/menu');
 				return;
 			}
 			if (data.type === "Remove") {
-				console.log("remove");
 				setStartReco(false);
 				setIscinematic(false);
 				localStorage.removeItem("reconnection");
+				localStorage.removeItem("data");
+
 			}
-			if (data.type === "Service") {
-				setIsService(true);
-				setTimeout(() => setIsService(false), 1500);
+			if (data.type === "Pause") {
+				setIsPause(data.value);
 			}
-			if (data.ball && data.player1 && data.player2)
+			if (data.type === "FINISHED") {
+				localStorage.removeItem("reconnection");
+				localStorage.removeItem("data");
+				console.log(`finished ${parsedData?.player1.score} ${parsedData?.player1.score}`)
+				setisWinner(true);
+				if (parsedData?.player1.score === 21)
+					setNameWinner("player1")
+				else					
+					setNameWinner("player2")
+				camera!.current!.position.x = 338.131;
+				camera!.current!.position.y = 136.188;
+				camera!.current!.position.z = -481.417;
+				camera!.current!.rotation.x = 0.280;
+				camera!.current!.rotation.y = -0.561;
+			}
+			if (data.ball && data.player1 && data.player2) {
+				console.log(`ball backend: ${data.ball.pos_x}`);
 				setParsedData(data);
+				localStorage.setItem("data", JSON.stringify({
+					...data, 
+					camera: {
+						pos_x: camera!.current!.position.x,
+						pos_y: camera!.current!.position.y,
+						pos_z: camera!.current!.position.z,
+						rot_x: camera!.current!.rotation.x,
+						rot_y: camera!.current!.rotation.y
+				}}));
+			}
 		};
 		// Nettoyage
 		return () => {
@@ -125,15 +151,16 @@ const SameKeyboard: React.FC = () => {
 	useEffect(() => {
 		if (!isReady3d || !socketRef.current || !isCinematic) return;
 		if (startReco) {
-			camera!.current!.position.x = 71.376;
-			camera!.current!.position.y = 91.805;
-			camera!.current!.position.z = -67.399;
-			camera!.current!.rotation.x = 0.908;
-			camera!.current!.rotation.y = -0.136;
-			console.log("startreco")
-			// sessionStorage.setItem("inGame", "true");
+			const saveData = localStorage.getItem("data");
+			if (saveData) {
+				console.log("test");
+				const data = JSON.parse(saveData);
+				restoreCamera(data);
+				setParsedData(data);
+			}
 			return;
 		}
+
 		if (count > 0) {
 			const timeout = setTimeout(() => {
 				setCount((count) => count - 1);
@@ -164,6 +191,7 @@ const SameKeyboard: React.FC = () => {
 
 		paddle1.current!.position.z = paddleUp - ((parsedData.player2.pos_y + 50) * (paddleUp - paddleDown)) / pixelHeight;
 		paddle2.current!.position.z = paddleUp - ((parsedData.player1.pos_y + 50) * (paddleUp - paddleDown)) / pixelHeight;
+		console.log("ball 3D x =", ball.current.position.x, "paddle x =", paddle1.current?.position.x);
 	}, [parsedData, isReady3d, isCinematic]);
 
 	// Ping pour maintenir la connexion WebSocket
@@ -180,34 +208,26 @@ const SameKeyboard: React.FC = () => {
 
 	// Gestion des touches clavier
 	useEffect(() => {
-		if (!isReady3d || !socketRef.current || !isCinematic || isService) return;
+		if (!isReady3d || !socketRef.current || !isCinematic) return;
 		const handlePause = (event: KeyboardEvent) => {
 			if (event.key === ' ') {
 				socketRef.current?.send(JSON.stringify({type: "Pause"}));
-				setIsPause(isPause => !isPause);
 			}
 		}
 		window.addEventListener('keydown', handlePause)
 		return (() => {
 			window.removeEventListener('keydown', handlePause);
 		})
-	}, [isPause, isCinematic, isReady3d, isService])
+	}, [isPause, isCinematic, isReady3d])
 
 	useEffect(() => {
 		if (!isReady3d || !socketRef.current || !isCinematic) return;
 
 		const handleDown = (event: KeyboardEvent) => handleKeyDown(event, keyPressed.current, camera.current!);
 		const handleUp = (event: KeyboardEvent) => handleKeyUp(event, keyPressed.current);
-		// const handlePause = (event: KeyboardEvent) => {
-		// 	if (event.key === ' ') {
-		// 		socketRef.current?.send(JSON.stringify({type: "Pause"}));
-		// 		setIsPause(isPause => !isPause);
-		// 	}
-		// }
 
 		window.addEventListener('keydown', handleDown);
 		window.addEventListener('keyup', handleUp);
-		// window.addEventListener('keydown', handlePause)
 
 		const interval = setInterval(() => {
 			const socket = socketRef.current;
@@ -227,14 +247,12 @@ const SameKeyboard: React.FC = () => {
 		return () => {
 			window.removeEventListener('keydown', handleDown);
 			window.removeEventListener('keyup', handleUp);
-			// window.removeEventListener('keydown', handlePause);
 			clearInterval(interval);
 		};
 	}, [isReady3d, isCinematic]);
 
 	useEffect(() => {
 		if (!isReady3d || !socketRef.current || isCinematic) return;
-		// sessionStorage.setItem("inGame", "true");
 		localStorage.setItem("reconnection", "true");
 		let i: number = -1209
 		camera.current!.rotation.x = 0.081;
@@ -269,12 +287,12 @@ const SameKeyboard: React.FC = () => {
 					<h1 className="loading1">Loading ...</h1>
 				</div>
 			)}
-			{/* Jeu */}
+			{/* jeu */}
 				<div className="game-canvas">
-					<canvas ref={canvasRef} className="game-canvas" />
+					<canvas ref={canvasRef} className="game-canvas"/>
 
-					{/* jeu en pause */}
-					{isPause && isReady3d &&(
+					 {/* jeu en pause */}
+					{isPause && isReady3d && isCinematic && (
 						<h1 className='Start-go'>
 							[ Pause ]
 						</h1>
@@ -288,13 +306,20 @@ const SameKeyboard: React.FC = () => {
 					)}
 
 					{/* Dashboard des scores et exit */}
-					{isCinematic && (
+					{isCinematic && !isWinner && (
 						<>
 							<h1 className="DashBoardp1">{namePlayer1} : Score {parsedData?.player1.score}</h1>
 							<h1 className="DashBoardp2">{namePlayer2} : Score {parsedData?.player2.score}</h1>
 							<button onClick={returnMenu} className="Return-button">Exit Game</button>
 						</>
 					)}
+					{isWinner && (
+						<>
+							<h1 className='Winner'>Winner is {nameWinner}</h1>
+							<button onClick={returnMenuWinner} className="Return-Menu">Return Menu</button>
+						</>
+					)}
+
 				</div>
 		</>
 	);

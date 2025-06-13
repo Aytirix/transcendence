@@ -27,4 +27,11 @@ export interface Parse {
 		readonly speed: number;
 		score: number;
 	};
+	camera?: {
+		pos_x: number;
+		pos_y: number;
+		pos_z: number;
+		rot_x: number;
+		rot_y: number;
+	}
 }

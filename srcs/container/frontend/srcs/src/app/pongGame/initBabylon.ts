@@ -74,10 +74,10 @@ export async function initBabylon(canvas: HTMLCanvasElement) : Promise<BabylonIn
 	// Caméra
 	const camera = new FreeCamera("camera1", new Vector3(60, 60, -70), scene);
 	camera.setTarget(Vector3.Zero());
-	camera.keysDown = [];
-	camera.keysUp = [];
-	camera.keysLeft = [];
-	camera.keysRight = [];
+	// camera.keysDown = [];
+	// camera.keysUp = [];
+	// camera.keysLeft = [];
+	// camera.keysRight = [];
 	camera.attachControl(canvas, true);
 	camera.position.x = -1209;
 	camera.position.y = 21.71;
@@ -96,7 +96,7 @@ export async function initBabylon(canvas: HTMLCanvasElement) : Promise<BabylonIn
 	
 	// Raquette et balle
 	const paddle1 = MeshBuilder.CreateBox("paddle1", { width: 0.1, height: 0.2, depth: 1 }, scene);
-	paddle1.position.set(20, 4, 0);
+	paddle1.position.set(21.3, 4, 0);
 	paddle1.scaling = new Vector3(10, 10 ,10)
 	const greenMaterial = new StandardMaterial("greenMat", scene);
 	greenMaterial.diffuseColor = new Color3(0, 1, 0);
