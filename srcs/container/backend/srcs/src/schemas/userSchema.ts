@@ -79,7 +79,6 @@ export const update = {
 	body: {
 		properties: {
 			...register.body.properties,
-			avatar: { type: 'string', nullable: true },
 		},
 		required: [],
 		errorMessage: {
@@ -159,7 +158,7 @@ export const authGoogleCallback = {
 						email: { type: 'string', format: 'email' },
 						username: { type: 'string', minLength: 3, maxLength: 15, pattern: '^[a-zA-Z0-9]+$' },
 						lang: { type: 'string', enum: ['fr', 'en', 'it'] },
-						avatar: { type: 'string'},
+						avatar: { type: 'string' },
 					},
 				},
 			},
@@ -180,11 +179,47 @@ export const authGoogleCallback = {
 	},
 };
 
+export const UploadAvatar = {
+	description: 'Upload d\'avatar utilisateur',
+	tags: ['user'],
+	consumes: ['multipart/form-data'],
+	body: {
+		properties: {
+			avatar: {
+				type: 'string',
+				format: 'binary'
+			}
+		},
+		required: ['avatar']
+	},
+	response: {
+		200: {
+			description: 'Avatar uploadé avec succès',
+			type: 'object',
+			properties: {
+				success: { type: 'boolean', const: true },
+				message: { type: 'string' },
+				url: { type: 'string', format: 'uri' },
+				fileName: { type: 'string' },
+			}
+		},
+		400: {
+			description: 'Fichier invalide',
+			...messageResponse,
+		},
+		401: {
+			description: 'Non authentifié',
+			...messageResponse,
+		},
+	},
+};
+
 export default {
 	login,
 	register,
 	update,
 	logout,
 	isAuth,
-	authGoogleCallback
+	authGoogleCallback,
+	UploadAvatar
 };

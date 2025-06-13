@@ -66,7 +66,7 @@ export const usernameAlreadyExists = async (username: string): Promise<boolean> 
 	return true;
 };
 
-export const UpdateUser = async (id: string, email: string = null, username: string = null, password: string = null, lang: string = null, avatar: string = null): Promise<void> => {
+export const UpdateUser = async (id: string, email: string = null, username: string = null, password: string = null, lang: string = null, avatar: string = null): Promise<boolean> => {
 	const updates: string[] = [];
 	const params: (string | null)[] = [];
 
@@ -98,7 +98,11 @@ export const UpdateUser = async (id: string, email: string = null, username: str
 
 	params.push(id);
 
-	await executeReq(`UPDATE users SET ${updates.join(', ')} WHERE id = ?`, params);
+	const result: any = await executeReq(`UPDATE users SET ${updates.join(', ')} WHERE id = ?`, params);
+	if (result.affectedRows === 0) {
+		return false;
+	}
+	return true;
 };
 
 export const getUserById = async (id: number): Promise<User | null> => {

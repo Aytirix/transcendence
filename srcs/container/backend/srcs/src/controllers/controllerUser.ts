@@ -2,6 +2,15 @@ import { FastifyRequest, FastifyReply } from 'fastify';
 import userModel from '@models/modelUser';
 import i18n from '@i18n';
 import { IdentityPoolClient, OAuth2Client } from 'google-auth-library';
+import path from 'path';
+import fs from "fs";
+import { promisify } from "util";
+import { pipeline } from "stream";
+
+const pipelineAsync = promisify(pipeline);
+
+const AVATAR_DIR = path.join(__dirname, "..", "uploads");
+if (!fs.existsSync(AVATAR_DIR)) fs.mkdirSync(AVATAR_DIR);
 
 const Auth2Client = new OAuth2Client('235494829152-rogrpto31jsvp0ml7qp16ncuvge7msmv.apps.googleusercontent.com');
 
@@ -106,6 +115,13 @@ export const UpdateUser = async (request: FastifyRequest, reply: FastifyReply) =
 
 	if (lang && lang !== user.lang) {
 		request.i18n.changeLanguage(lang);
+	}
+
+	console.log(`avatar: ${avatar}`);
+	if (avatar && !['avatar1.png', 'avatar2.png', 'avatar3.png', 'avatar4.png'].includes(avatar)) {
+		return reply.status(400).send({
+			message: request.i18n.t('user.file.invalidname'),
+		});
 	}
 
 	await userModel.UpdateUser(user.id.toString(), email, username, password, lang, avatar);
@@ -228,10 +244,72 @@ export async function authGoogleCallback(request: FastifyRequest, reply: Fastify
 	}
 }
 
+export const UploadAvatar = async (request: FastifyRequest, reply: FastifyReply) => {
+	// Gérer les requêtes OPTIONS (preflight)
+	if (request.method === 'OPTIONS') {
+		return reply
+			.code(200)
+			.header('Access-Control-Allow-Origin', request.headers.origin || '*')
+			.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS')
+			.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, Cookie')
+			.header('Access-Control-Allow-Credentials', 'true')
+			.send();
+	}
+
+	const file = await request.file();
+
+	if (!file) {
+		return reply.code(400).send({ success: false, message: request.i18n.t('user.file.missing') });
+	}
+
+	// Taille maximum (multi-part gère l'arrêt, mais on vérifie)
+	if (file.file.truncated) {
+		return reply.code(413).send({ success: false, message: request.i18n.t('user.file.tooLarge') });
+	}
+
+	// Contrôle du format
+	const ALLOWED_MIME = ['image/jpeg', 'image/png', 'image/webp'];
+	if (!ALLOWED_MIME.includes(file.mimetype)) {
+		return reply.code(400).send({ success: false, message: request.i18n.t('user.file.invalidFormat') });
+	}
+
+	const fileExtension = path.extname(file.filename);
+	let safeFilename = `profile_${request.session.user.id}${fileExtension}`;
+	let filePath = path.join(AVATAR_DIR, safeFilename);
+
+	try {
+		// Supprimer tous les fichiers profile existants pour cet utilisateur
+		const existingFiles = fs.readdirSync(AVATAR_DIR);
+		const userProfilePattern = `profile_${request.session.user.id}.`;
+		existingFiles.forEach(file => {
+			if (file.startsWith(userProfilePattern)) {
+				const oldFilePath = path.join(AVATAR_DIR, file);
+				fs.unlinkSync(oldFilePath);
+			}
+		});
+
+		await pipelineAsync(file.file, fs.createWriteStream(filePath));
+
+		await userModel.UpdateUser(request.session.user.id.toString(), null, null, null, null, safeFilename);
+		request.session.user.avatar = safeFilename;
+
+		return reply.code(200).send({
+			success: true,
+			message: request.i18n.t('user.file.uploadSuccess'),
+			url: `/avatars/${safeFilename}`,
+			fileName: safeFilename,
+		});
+	} catch (error) {
+		console.log('Error processing file upload:', error);
+		return reply.code(500).send({ success: false, message: request.i18n.t('user.file.uploadError') });
+	}
+}
+
 export default {
 	Login,
 	Register,
 	UpdateUser,
 	Logout,
 	authGoogleCallback,
+	UploadAvatar
 };
