@@ -21,6 +21,7 @@ const SameKeyboard: React.FC = () => {
 	const engine = useRef<Engine | null>(null);
 	const socketRef = useRef<WebSocket | null>(null);
 	const deleteGo = useRef(false);
+	const waitFrame = useRef<Parse[]>([]);
 	
 	const [isReady3d, setIsReady3d] = useState(false);
 	const [isCinematic, setIscinematic] = useState(false);
@@ -43,13 +44,11 @@ const SameKeyboard: React.FC = () => {
 	});
 	
 	function restoreCamera(data: any) {
-		console.log("avant", camera.current!.position.x);
 		camera.current!.position.x = data.camera.pos_x;
 		camera.current!.position.y = data.camera.pos_y;
 		camera.current!.position.z = data.camera.pos_z;
 		camera.current!.rotation.x = data.camera.rot_x;
 		camera.current!.rotation.y = data.camera.rot_y;
-		console.log("apres", camera.current!.position.x);
 
 	}
 	// Initialisation Babylon + WebSocket
@@ -83,7 +82,9 @@ const SameKeyboard: React.FC = () => {
 			engine.current.runRenderLoop(() => {
 				galactic.current!.rotation.z += 0.0002;
 				galactic.current!.rotation.y += 0.0002;
-				console.log("ball x dans renderlopp", ball.current?.position.x)
+				const directFrame = waitFrame.current.shift();
+				if (directFrame)
+					setParsedData(directFrame);
 				scene.current?.render();
 			});
 			
@@ -115,7 +116,6 @@ const SameKeyboard: React.FC = () => {
 			if (data.type === "FINISHED") {
 				localStorage.removeItem("reconnection");
 				localStorage.removeItem("data");
-				console.log(`finished ${parsedData?.player1.score} ${parsedData?.player1.score}`)
 				setisWinner(true);
 				if (parsedData?.player1.score === 21)
 					setNameWinner("player1")
@@ -128,8 +128,10 @@ const SameKeyboard: React.FC = () => {
 				camera!.current!.rotation.y = -0.561;
 			}
 			if (data.ball && data.player1 && data.player2) {
-				console.log(`ball backend: ${data.ball.pos_x}`);
-				setParsedData(data);
+				waitFrame.current.push(data)
+				if (data.ball.pos_x < 778 && data.ball.pos_x > 775 
+					|| data.ball.pos_x < 26 && data.ball.pos_x > 23)
+					waitFrame.current.push(data)
 				localStorage.setItem("data", JSON.stringify({
 					...data, 
 					camera: {
@@ -153,7 +155,6 @@ const SameKeyboard: React.FC = () => {
 		if (startReco) {
 			const saveData = localStorage.getItem("data");
 			if (saveData) {
-				console.log("test");
 				const data = JSON.parse(saveData);
 				restoreCamera(data);
 				setParsedData(data);
@@ -191,7 +192,6 @@ const SameKeyboard: React.FC = () => {
 
 		paddle1.current!.position.z = paddleUp - ((parsedData.player2.pos_y + 50) * (paddleUp - paddleDown)) / pixelHeight;
 		paddle2.current!.position.z = paddleUp - ((parsedData.player1.pos_y + 50) * (paddleUp - paddleDown)) / pixelHeight;
-		console.log("ball 3D x =", ball.current.position.x, "paddle x =", paddle1.current?.position.x);
 	}, [parsedData, isReady3d, isCinematic]);
 
 	// Ping pour maintenir la connexion WebSocket
