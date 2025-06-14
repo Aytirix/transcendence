@@ -20,8 +20,7 @@ const IronManNavBar: React.FC = () => {
   const navigate = useNavigate();
   const logoMenuRef = useRef<HTMLDivElement>(null);
   const location = useLocation();
-  const toto = useAuth();
-  console.log("toto", toto);
+  const user = useAuth();
   // Fermer le logo-menu au clic en dehors
   React.useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
@@ -141,7 +140,7 @@ const IronManNavBar: React.FC = () => {
                 <div className="w-10 rounded-full">
                   <img
                     alt="Avatar"
-                    src={ApiService.getFile(toto.user?.avatar)} />
+                    src={ApiService.getFile(user.user?.avatar)} />
                 </div>
               </div>
               <ul
