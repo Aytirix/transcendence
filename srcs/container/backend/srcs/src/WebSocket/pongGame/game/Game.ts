@@ -50,6 +50,7 @@ export class Game {
 			player1: {
 				pos_x: this.player1.pos_x,
 				pos_y: this.player1.pos_y,
+				userName: this.player1.getPlayerInfos().name,
 				height: this.player1.height,
 				width: this.player1.width,
 				margin: this.player1.margin,
@@ -109,7 +110,7 @@ export class Game {
 				this.resetDisplay("SameKeyboard");
 			}
 			else if (this.player1.getPlayerInfos().mode === "Solo") {
-				this.player1.getPlayerInfos().socket.send(JSON.stringify({type: "EXIT"}));
+				this.player1.getPlayerInfos().socket.send(JSON.stringify({type: "FINISHED"}));
 				handleFinish(this.player1.getPlayerInfos());
 				this.resetDisplay("Solo");
 			}

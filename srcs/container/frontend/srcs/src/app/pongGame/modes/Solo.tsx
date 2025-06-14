@@ -27,8 +27,8 @@ const Solo: React.FC = () => {
 		const [isCinematic, setIscinematic] = useState(false);
 		const [parsedData, setParsedData] = useState<Parse | null>(null);
 		const [count, setCount] = useState(3);
-		const [namePlayer1] = useState("Player1");
-		const [namePlayer2] = useState("Player2");
+		const [namePlayer1, setNamePlayer1] = useState();
+		const [namePlayer2] = useState("Ironman");
 		const [startReco, setStartReco] = useState(false);
 		const [isPause, setIsPause] = useState(false);
 		const [isWinner, setisWinner] = useState(false);
@@ -125,9 +125,9 @@ const Solo: React.FC = () => {
 					localStorage.removeItem("data");
 					setisWinner(true);
 					if (parsedData?.player1.score === 21)
-						setNameWinner("player1")
+						setNameWinner(namePlayer1!)
 					else					
-						setNameWinner("player2")
+						setNameWinner(namePlayer2)
 					camera!.current!.position.x = 338.131;
 					camera!.current!.position.y = 136.188;
 					camera!.current!.position.z = -481.417;
@@ -137,8 +137,11 @@ const Solo: React.FC = () => {
 				if (data.ball && data.player1 && data.player2) {
 					waitFrame.current.push(data)
 					if (data.ball.pos_x < 778 && data.ball.pos_x > 775 
-						|| data.ball.pos_x < 26 && data.ball.pos_x > 23)
+						|| data.ball.pos_x < 26 && data.ball.pos_x > 23) {
+						if (!namePlayer1)
+							setNamePlayer1(data.player1.userName);
 						waitFrame.current.push(data)
+					}	
 					localStorage.setItem("data", JSON.stringify({
 						...data, 
 						camera: {
@@ -310,8 +313,8 @@ const Solo: React.FC = () => {
 						{/* Dashboard des scores et exit */}
 						{isCinematic && !isWinner && (
 							<>
-								<h1 className="DashBoardp1">{namePlayer1} : Score {parsedData?.player1.score}</h1>
-								<h1 className="DashBoardp2">{namePlayer2} : Score {parsedData?.player2.score}</h1>
+								<h1 className="DashBoardp1">{!namePlayer1 ? "" : `${namePlayer1} : Score ${parsedData?.player1.score}`}</h1>
+								<h1 className="DashBoardp2">{!namePlayer1 ? "" : `${namePlayer2} : Score ${parsedData?.player2.score}`}</h1>
 								<button onClick={returnMenu} className="Return-button">Exit Game</button>
 							</>
 						)}
