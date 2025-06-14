@@ -1,16 +1,12 @@
 import { FastifyRequest, FastifyReply } from 'fastify';
 import userModel from '@models/modelUser';
+import tools from '@tools';
 import i18n from '@i18n';
 import { IdentityPoolClient, OAuth2Client } from 'google-auth-library';
 import path from 'path';
 import fs from "fs";
 import { promisify } from "util";
 import { pipeline } from "stream";
-
-const pipelineAsync = promisify(pipeline);
-
-const AVATAR_DIR = path.join(__dirname, "..", "uploads");
-if (!fs.existsSync(AVATAR_DIR)) fs.mkdirSync(AVATAR_DIR);
 
 const Auth2Client = new OAuth2Client('235494829152-rogrpto31jsvp0ml7qp16ncuvge7msmv.apps.googleusercontent.com');
 
@@ -117,11 +113,17 @@ export const UpdateUser = async (request: FastifyRequest, reply: FastifyReply) =
 		request.i18n.changeLanguage(lang);
 	}
 
-	console.log(`avatar: ${avatar}`);
 	if (avatar && !['avatar1.png', 'avatar2.png', 'avatar3.png', 'avatar4.png'].includes(avatar)) {
 		return reply.status(400).send({
 			message: request.i18n.t('user.file.invalidname'),
 		});
+	}
+
+	if (avatar && request.session.user.avatar && !['avatar1.png', 'avatar2.png', 'avatar3.png', 'avatar4.png'].includes(request.session.user.avatar)) {
+		const avatarPath = path.join(__dirname, '..', '..', 'uploads', request.session.user.avatar);
+		if (fs.existsSync(avatarPath)) {
+			fs.unlinkSync(avatarPath);
+		}
 	}
 
 	await userModel.UpdateUser(user.id.toString(), email, username, password, lang, avatar);
@@ -149,7 +151,6 @@ export const Logout = async (request: FastifyRequest, reply: FastifyReply, msg: 
 export async function authGoogleCallback(request: FastifyRequest, reply: FastifyReply) {
 	const { jwt } = request.body as { jwt: string };
 	try {
-		console.log(`JWT ; ${jwt}`);
 		const ticket = await Auth2Client.verifyIdToken({
 			idToken: jwt,
 			audience: '235494829152-rogrpto31jsvp0ml7qp16ncuvge7msmv.apps.googleusercontent.com',
@@ -262,47 +263,34 @@ export const UploadAvatar = async (request: FastifyRequest, reply: FastifyReply)
 		return reply.code(400).send({ success: false, message: request.i18n.t('user.file.missing') });
 	}
 
+	// Vérifier que le fichier a un nom
+	if (!file.filename) {
+		return reply.code(400).send({ success: false, message: request.i18n.t('user.file.invalidname') });
+	}
+
 	// Taille maximum (multi-part gère l'arrêt, mais on vérifie)
 	if (file.file.truncated) {
 		return reply.code(413).send({ success: false, message: request.i18n.t('user.file.tooLarge') });
 	}
 
 	// Contrôle du format
-	const ALLOWED_MIME = ['image/jpeg', 'image/png', 'image/webp'];
+	const ALLOWED_MIME = ['image/jpg', 'image/jpeg', 'image/png', 'image/webp'];
 	if (!ALLOWED_MIME.includes(file.mimetype)) {
 		return reply.code(400).send({ success: false, message: request.i18n.t('user.file.invalidFormat') });
 	}
 
+	const pipelineAsync = promisify(pipeline);
+
+	const AVATAR_DIR = path.join(__dirname, "..", "..", "uploads");
+
 	const fileExtension = path.extname(file.filename);
-	let safeFilename = `profile_${request.session.user.id}${fileExtension}`;
-	let filePath = path.join(AVATAR_DIR, safeFilename);
+	const safeFilename = `profile_${request.session.user.id}.jpg`;
+	const safeFilePath = path.join(AVATAR_DIR, safeFilename);
 
 	try {
-		// Supprimer tous les fichiers profile existants pour cet utilisateur
-		const existingFiles = fs.readdirSync(AVATAR_DIR);
-		const userProfilePattern = `profile_${request.session.user.id}.`;
-		existingFiles.forEach(file => {
-			if (file.startsWith(userProfilePattern)) {
-				const oldFilePath = path.join(AVATAR_DIR, file);
-				fs.unlinkSync(oldFilePath);
-			}
-		});
-
-		console.log(`Uploading file: ${filePath}`);
-
-		await pipelineAsync(file.file, fs.createWriteStream(filePath));
-
-		console.log(`File uploaded successfully: ${filePath}`);
-
-		const result = await userModel.UpdateUser(request.session.user.id.toString(), null, null, null, null, safeFilename);
-		if (!result) {
-			return reply.code(500).send({ success: false, message: request.i18n.t('user.file.updateError') });
-		}
-		
+		await pipelineAsync(file.file, fs.createWriteStream(safeFilePath));
+		await userModel.UpdateUser(request.session.user.id.toString(), null, null, null, null, safeFilename);
 		request.session.user.avatar = safeFilename;
-
-		console.log(`User avatar updated: ${request.session.user.avatar}`);
-
 		return reply.code(200).send({
 			success: true,
 			message: request.i18n.t('user.file.uploadSuccess'),
@@ -310,7 +298,7 @@ export const UploadAvatar = async (request: FastifyRequest, reply: FastifyReply)
 			fileName: safeFilename,
 		});
 	} catch (error) {
-		console.log('Error processing file upload:', error);
+		console.error('Error processing file upload:', error);
 		return reply.code(500).send({ success: false, message: request.i18n.t('user.file.uploadError') });
 	}
 }
