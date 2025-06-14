@@ -8,7 +8,8 @@ import { Pong } from './pongGame/client'
 import GameMenu from './pongGame/GameMenu';
 import WebSocketPacman from './Pacman/Init'
 import App from './App';
-import SameKeyboard from './pongGame/SameKeyboard';
+import SameKeyboard from './pongGame/modes/SameKeyboard';
+import Solo from './pongGame/modes/Solo';
 
 import IronManProfile from './IronManProfile';
 import IronManLogin from './IronManLogin';
@@ -36,6 +37,7 @@ class AppRouter extends Component {
 					<Route path="/pong" element={<Pong />} />
 					<Route path="/pong/menu" element={<GameMenu />} />
 					<Route path="/pong/menu/SameKeyboard" element={<SameKeyboard />} />
+					<Route path="/pong/menu/Solo" element={<Solo />} />
 					<Route path="/Pacman" element={<WebSocketPacman />} />
 					<Route path="/userTest" element={<Chat />} />
 				</Route>

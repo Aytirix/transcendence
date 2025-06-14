@@ -6,7 +6,6 @@ import { playerStat } from '../types/playerStat';
 export function handleReconnection(socket: WebSocket, user: User) : boolean {
 	console.log("avant user id", user.id);
 	if (waitingID.has(user.id)) {
-		console.log("apres waiting user id", user.id);
 			const tempPlayer = waitingID.get(user.id);
 			if (tempPlayer.mode === "SameKeyboard") {
 				sockets.delete(tempPlayer.socket);
@@ -27,7 +26,7 @@ export function handleReconnection(socket: WebSocket, user: User) : boolean {
 				waitingID.delete(user.id);
 				tempPlayer.socket.send(JSON.stringify({type: "Solo"}));
 				tempPlayer.game.getPlayer1().getPlayerInfos().socket = socket;
-				tempPlayer.game.setStatus("PLAYING");
+				tempPlayer.game.setStatus("KICKOFF");
 				return (true);
 			}
 			else if (tempPlayer.mode === "Multi") {
@@ -45,7 +44,7 @@ export function handleReconnection(socket: WebSocket, user: User) : boolean {
 				return (true);
 			}
 		}
-		console.log("apres sans waiting user id", user.id);
-		socket.send(JSON.stringify({type: "Remove"}));
+			console.log("apres sans waiting user id", user.id);
+			socket.send(JSON.stringify({type: "Remove"}));
 	return (false);
 }
