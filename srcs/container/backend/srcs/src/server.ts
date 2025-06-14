@@ -15,8 +15,6 @@ import ajvErrors from 'ajv-errors';
 import dotenv from 'dotenv';
 import pacmanRoutes from './routes/pacmanRoutes';
 import fileRoutes from './routes/fileRoutes';
-import fastifyStatic from "@fastify/static";
-import path from "path";
 
 dotenv.config();
 
@@ -74,13 +72,6 @@ app.register(fastifyCors, {
 app.register(userRoutes);
 app.register(pacmanRoutes);
 app.register(fileRoutes);
-app.register(fastifyStatic, {
-    root: path.join(__dirname, 'uploads'),
-    prefix: '/avatars/',
-    setHeaders: (res, path) => {
-        res.setHeader('Cross-Origin-Resource-Policy', 'cross-origin');
-    }
-});
 
 // Intégration de WebSocket
 initWebSocket(app);  // Appel de la fonction initWebSocket
