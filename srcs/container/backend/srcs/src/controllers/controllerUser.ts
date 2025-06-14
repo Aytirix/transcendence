@@ -136,6 +136,13 @@ export const UpdateUser = async (request: FastifyRequest, reply: FastifyReply) =
 	};
 	return reply.send({
 		message: `Vos informations ont été mises à jour avec succès.`,
+		user: {
+			id: request.session.user.id,
+			email: request.session.user.email,
+			username: request.session.user.username,
+			lang: request.session.user.lang,
+			avatar: request.session.user.avatar || null,
+		},
 	});
 }
 
@@ -293,7 +300,6 @@ export const UploadAvatar = async (request: FastifyRequest, reply: FastifyReply)
 		request.session.user.avatar = safeFilename;
 		return reply.code(200).send({
 			success: true,
-			message: request.i18n.t('user.file.uploadSuccess'),
 			url: `/avatars/${safeFilename}`,
 			fileName: safeFilename,
 		});

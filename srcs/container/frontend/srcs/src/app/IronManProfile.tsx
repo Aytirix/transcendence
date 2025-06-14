@@ -21,35 +21,29 @@ export interface ProfileForm {
 }
 
 const UserProfile: React.FC = () => {
+	const { user, setUser } = useAuth();
 	const [form, setForm] = useState<ProfileForm>({
-		email: '',
+		email: user?.email || '',
 		password: '',
-		username: '',
+		username: user?.username || '',
 		confirmPassword: '',
-		lang: '',
+		lang: user?.lang || '',
 		avatar: defaultAvatars[0],
 	});
 	const [preview, setPreview] = useState<string | null>(null); // Pour custom avatar
 	const [customAvatarUrl, setCustomAvatarUrl] = useState<string | null>(null);
 	const [uploading, setUploading] = useState(false);
-	const [error, setError] = useState<string | null>(null);
-	const [success, setSuccess] = useState<string | null>(null);
 	const [loading, setLoading] = useState(false);
-	const { user } = useAuth();
 
 	// Choix d'un avatar par défaut
 	const handleAvatarSelect = (avatar: string) => {
 		setForm({ ...form, avatar });
 		setPreview(null);
 		setCustomAvatarUrl(null);
-		setError(null);
-		setSuccess(null);
 	};
 
 	// Upload custom avatar
 	const handleCustomAvatar = (e: ChangeEvent<HTMLInputElement>) => {
-		setError(null);
-		setSuccess(null);
 		setCustomAvatarUrl(null);
 
 		const file = e.target.files?.[0];
@@ -76,8 +70,6 @@ const UserProfile: React.FC = () => {
 
 	const handleUpload = async (file: File) => {
 		setUploading(true);
-		setError(null);
-		setSuccess(null);
 		try {
 			const formData = new FormData();
 			formData.append("file", file);
@@ -86,6 +78,7 @@ const UserProfile: React.FC = () => {
 			setCustomAvatarUrl(result.url);
 			setForm({ ...form, avatar: result.fileName });
 			setUploading(false);
+			setUser((prevUser) => prevUser ? { ...prevUser, avatar: `${result.fileName}?v=${Date.now()}` } : null);
 		} catch (err: any) {
 			setUploading(false);
 			console.error("Upload error:", err);
@@ -94,35 +87,31 @@ const UserProfile: React.FC = () => {
 
 	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault();
-		setError(null);
-		setSuccess(null);
 		setLoading(true);
 
 		try {
-			const tab = { ...form };
+			let tab = { ...form };
 			Object.keys(tab).forEach((key) => { if (!tab[key as keyof ProfileForm]) delete tab[key as keyof ProfileForm]; });
-			console.log("tab1", tab);
-			const resp = await ApiService.put('/update-user', tab);
-			if (!resp.ok) {
-				const data = await resp.json();
-				setError(data.message || "Erreur lors de la mise à jour.");
-			} else {
-				setSuccess("Profil mis à jour !");
+
+			if (!defaultAvatars.includes(tab.avatar || '')) {
+				tab.avatar = '';
+			}
+
+			const res = await ApiService.put('/update-user', tab as JSON);
+			if (res.ok) {
+				setUser((prevUser) => prevUser ? { ...prevUser, ...res.user } : null);
 			}
 		} catch {
-			setError("Erreur réseau ou serveur !");
 		} finally {
 			setLoading(false);
 		}
 	};
 
-	// Avatar affiché = celui stocké dans form.avatar (toujours à jour)
-
 	const displayAvatar = user?.avatar || form.avatar || defaultAvatars[0];
 	useEffect(() => {
 		setForm(prevForm => ({ ...prevForm, avatar: displayAvatar }));
 	}
-	, [displayAvatar]);
+		, [displayAvatar]);
 
 	return (
 		<div className="min-h-screen flex items-center justify-center">
@@ -165,11 +154,9 @@ const UserProfile: React.FC = () => {
 							</label>
 						</div>
 						{/* Infos upload */}
-						{(preview || customAvatarUrl || uploading || error || success) && (
+						{(preview || customAvatarUrl || uploading) && (
 							<div className="mt-4 flex flex-col items-center">
 								{uploading && <span className="loading loading-dots loading-sm mt-1"></span>}
-								{error && <div className="alert alert-error mt-2">{error}</div>}
-								{success && <div className="alert alert-success mt-2">{success}</div>}
 								{customAvatarUrl && (
 									<a
 										href={customAvatarUrl}

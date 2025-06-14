@@ -87,6 +87,35 @@ export const update = {
 			},
 		}
 	},
+	response: {
+		200: {
+			description: 'Mise à jour réussie',
+			type: 'object',
+			properties: {
+				message: { type: 'string' },
+				user: {
+					type: 'object',
+					properties: {
+						id: { type: 'number', minLength: 3, maxLength: 5 },
+						email: { type: 'string', format: 'email' },
+						username: { type: 'string', minLength: 3, maxLength: 15, pattern: '^[a-zA-Z0-9]+$' },
+						lang: { type: 'string', enum: ['fr', 'en', 'it'] },
+						avatar: { type: 'string' },
+					},
+					required: ['id', 'email', 'username', 'lang', 'avatar'],
+				},
+			},
+			required: ['user'],
+		},
+		400: {
+			description: 'Format des données incorrect',
+			...messageResponse,
+		},
+		409: {
+			description: 'Conflit de données (email ou nom d\'utilisateur déjà utilisé)',
+			...messageResponse,
+		},
+	},
 }
 
 export const logout = {
