@@ -1,10 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
-import './pong.css';
+import '../pong.css';
 import { useNavigate } from 'react-router-dom';
 import { Engine, Scene, Mesh, AbstractMesh, FreeCamera} from '@babylonjs/core';
-import { initBabylon } from './initBabylon';
-import { Parse} from './types/data';
-import { handleKeyDown, handleKeyUp } from './types/handleKey';
+import { initBabylon } from '../initBabylon';
+import { Parse} from '../types/data';
+import { handleKeyDown, handleKeyUp } from '../types/handleKey';
 
 const SameKeyboard: React.FC = () => {
 	const navigate = useNavigate();
@@ -59,12 +59,18 @@ const SameKeyboard: React.FC = () => {
 		const socket = new WebSocket("wss://localhost:7000/pong");
 		socketRef.current = socket;
 
-		if (reconnection === "true") {
-			setIscinematic(true);
-			setStartReco(true);
-			setIsPause(true);
+		if (reconnection) {
+			console.log(reconnection);
+			if (reconnection === "SameKeyboard") {
+				setIscinematic(true);
+				setStartReco(true);
+				setIsPause(true);
+			}
+			else {
+				localStorage.removeItem("reconnection")
+				localStorage.removeItem("data")
+			}
 		}
-
 		const setup = async () => {
 				
 			const result = await initBabylon(canvas);
@@ -173,7 +179,7 @@ const SameKeyboard: React.FC = () => {
 				deleteGo.current = true;
 				return () => clearTimeout(goTimeout);
 			}, 500);
-			sessionStorage.setItem("inGame", "true");
+			// sessionStorage.setItem("inGame", "true");
 			socketRef.current.send(JSON.stringify({ type: "SameKeyboard" }));
 		}
 	}, [isReady3d, isCinematic, count]);
@@ -253,7 +259,7 @@ const SameKeyboard: React.FC = () => {
 
 	useEffect(() => {
 		if (!isReady3d || !socketRef.current || isCinematic) return;
-		localStorage.setItem("reconnection", "true");
+		localStorage.setItem("reconnection", "SameKeyboard");
 		let i: number = -1209
 		camera.current!.rotation.x = 0.081;
 		camera.current!.rotation.y = 1.599;

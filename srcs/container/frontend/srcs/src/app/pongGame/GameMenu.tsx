@@ -1,5 +1,4 @@
 import { useNavigate } from "react-router-dom";
-import { Solo } from "./modes/Solo";
 import { MultiPlayers } from "./modes/MultiPlayers";
 import { Tournament } from "./modes/Tournament";
 
@@ -7,6 +6,7 @@ const GameMenu: React.FC = () => {
 	const navigate = useNavigate();
 
 	const SameKeyboard = () => { navigate('/pong/menu/SameKeyboard'); };
+	const Solo = () => { navigate('/pong/menu/Solo'); };
 	return (
 		<>
 			<div className="video-wrapper">

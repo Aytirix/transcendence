@@ -43,7 +43,7 @@ export async function initBabylon(canvas: HTMLCanvasElement) : Promise<BabylonIn
 
 	thanos.meshes.forEach(mesh => {
 		mesh.scaling = new Vector3(2.3, 2.3, 2.3);
-		mesh.position = new Vector3(190, 1.28, 0);
+		mesh.position = new Vector3(195, 1.28, 0);
 		mesh.rotation.y = 1.3;
 		mesh.rotation.x = 0;
 		mesh.rotation.z = 0;

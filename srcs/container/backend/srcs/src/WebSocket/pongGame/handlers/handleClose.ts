@@ -10,10 +10,12 @@ export function handleClose(playerInfos: playerStat) {
 		waitingID.set(playerInfos.id, playerInfos);
 	else if (waitingID.has(playerInfos.id) === false && playerInfos.mode === "Multi")
 		waitingID.set(playerInfos.id, playerInfos);
-		setTimeout(() => {
+	setTimeout(() => {
 		if (playerInfos.mode === "SameKeyboard")
 			waitingID.delete(playerInfos.id);
 		else if (playerInfos.mode === "Multi")
+			waitingID.delete(playerInfos.id);
+		else if (playerInfos.mode === "Solo")
 			waitingID.delete(playerInfos.id);
 	}, 30000);
 }
