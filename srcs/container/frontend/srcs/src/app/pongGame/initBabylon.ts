@@ -74,10 +74,10 @@ export async function initBabylon(canvas: HTMLCanvasElement) : Promise<BabylonIn
 	// Caméra
 	const camera = new FreeCamera("camera1", new Vector3(60, 60, -70), scene);
 	camera.setTarget(Vector3.Zero());
-	// camera.keysDown = [];
-	// camera.keysUp = [];
-	// camera.keysLeft = [];
-	// camera.keysRight = [];
+	camera.keysDown = [];
+	camera.keysUp = [];
+	camera.keysLeft = [];
+	camera.keysRight = [];
 	camera.attachControl(canvas, true);
 	camera.position.x = -1209;
 	camera.position.y = 21.71;
