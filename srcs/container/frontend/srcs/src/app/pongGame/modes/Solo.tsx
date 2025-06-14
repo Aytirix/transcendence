@@ -268,11 +268,11 @@ const Solo: React.FC = () => {
 						i++;
 					}
 					else if (i >= 200) {
-						camera.current.position.x = 71.376;
-						camera.current.position.y = 91.805;
-						camera.current.position.z = -67.399;
-						camera.current.rotation.x = 0.908;
-						camera.current.rotation.y = -0.136;
+						camera.current.position.x = 130.38;
+						camera.current.position.y = 32.81;
+						camera.current.position.z = -1.33;
+						camera.current.rotation.x = 0.478
+						camera.current.rotation.y = -1.581;
 						clearInterval(interval);
 						setIscinematic(true)
 					}
