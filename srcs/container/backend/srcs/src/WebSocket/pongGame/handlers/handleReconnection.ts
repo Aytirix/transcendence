@@ -7,7 +7,10 @@ export function handleReconnection(socket: WebSocket, user: User) : boolean {
 	console.log("avant user id", user.id);
 	if (waitingID.has(user.id)) {
 			const tempPlayer = waitingID.get(user.id);
-			if (tempPlayer.mode === "SameKeyboard") {
+			if (tempPlayer.inGame === false) {
+				waitingID.delete(user.id);
+			}
+			else if (tempPlayer.mode === "SameKeyboard") {
 				sockets.delete(tempPlayer.socket);
 				tempPlayer.socket = socket;
 				tempPlayer.lastping = Date.now();
@@ -30,6 +33,7 @@ export function handleReconnection(socket: WebSocket, user: User) : boolean {
 				return (true);
 			}
 			else if (tempPlayer.mode === "Multi") {
+				console.log("winner reco")
 				const user1 = tempPlayer.game.getPlayer1().getPlayerInfos().id;
 				sockets.delete(tempPlayer.socket)
 				tempPlayer.socket = socket;
@@ -40,7 +44,7 @@ export function handleReconnection(socket: WebSocket, user: User) : boolean {
 					tempPlayer.game.getPlayer1().getPlayerInfos().socket = socket;
 				else
 					tempPlayer.game.getPlayer2().getPlayerInfos().socket = socket;
-				tempPlayer.game.setStatus("PLAYING");
+				tempPlayer.game.setStatus("KICKOFF");
 				return (true);
 			}
 		}

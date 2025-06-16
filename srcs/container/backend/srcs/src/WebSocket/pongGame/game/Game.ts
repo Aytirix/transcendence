@@ -60,6 +60,7 @@ export class Game {
 			player2: {
 				pos_x: this.player2.pos_x,
 				pos_y: this.player2.pos_y,
+				userName: this.player2.getPlayerInfos().name,
 				height: this.player2.height,
 				width: this.player2.width,
 				margin: this.player2.margin,
@@ -119,8 +120,9 @@ export class Game {
 		if (this.getStatus() === "EXIT") {
 			if (this.player1.getPlayerInfos().mode === "Multi"
 			&& this.player2.getPlayerInfos().mode === "Multi") {
-				this.player1.getPlayerInfos().socket.send(JSON.stringify({type: "EXIT"}));
-				this.player2.getPlayerInfos().socket.send(JSON.stringify({type: "EXIT"}));
+				console.log("test exit pause ")
+				this.player1.getPlayerInfos().socket.send(JSON.stringify({type: "FINISHED", value: this.player1.getPlayerInfos().resultMatch}));
+				this.player2.getPlayerInfos().socket.send(JSON.stringify({type: "FINISHED", value: this.player2.getPlayerInfos().resultMatch}));
 				handleFinish(this.player1.getPlayerInfos());
 				handleFinish(this.player2.getPlayerInfos());
 				this.resetDisplay("Multi");

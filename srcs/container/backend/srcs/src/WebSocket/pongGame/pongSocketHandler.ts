@@ -28,7 +28,8 @@ export function pongWebSocket(socket: WebSocket, user: User) {
 				mode: "Undefined",
 				inGame: false,
 				socket: socket,
-				lastping: Date.now()
+				lastping: Date.now(),
+				timePause: 0
 			};
 			sockets.set(socket, playerInfos);
 	}
@@ -57,6 +58,11 @@ export function pongWebSocket(socket: WebSocket, user: User) {
 				handleMove(playerInfos, msg.value);
 				break ;
 			case "EXIT" :
+				playerInfos.resultMatch = "Loose"
+				if (playerInfos.name !== playerInfos.game.getPlayer1().getPlayerInfos().name)
+					playerInfos.game.getPlayer1().getPlayerInfos().resultMatch = "win"
+				else
+					playerInfos.game.getPlayer2().getPlayerInfos().resultMatch = "win"
 				handleFinish(playerInfos);
 				break ;
 			case "Ping" :

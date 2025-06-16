@@ -20,6 +20,22 @@ export function startingPing(sockets: Map<WebSocket, playerStat>) {
 				sockets.delete(playerSocket);
 				playerSocket.close();
 			}
+
+			if (playerInfos.mode === "Multi" && playerInfos.timePause) {
+				const isInactivePause = (Date.now() - playerInfos.timePause) > 30000
+				if (isInactivePause) {
+						playerInfos.resultMatch = "Loose"
+					if (playerInfos.name !== playerInfos.game.getPlayer1().getPlayerInfos().name) {
+						playerInfos.game.getPlayer1().getPlayerInfos().resultMatch = "win"
+					}
+					else {
+						playerInfos.game.getPlayer2().getPlayerInfos().resultMatch = "win"
+					}
+
+					if (playerInfos.game)
+						playerInfos.game.setStatus("EXIT");
+				}
+			}
 		}
 	}, 4000);
 }
