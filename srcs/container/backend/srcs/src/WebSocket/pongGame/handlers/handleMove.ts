@@ -11,10 +11,16 @@ export function handleMove(playerInfos: playerStat, cmd: string)
 			playerInfos.game.getPlayer1().move("down");
 			break ;
 		case "p2_up" :
-			playerInfos.game.getPlayer2().move("up");
+			if (playerInfos.mode === "Multi")
+				playerInfos.game.getPlayer2().move("down");
+			else
+				playerInfos.game.getPlayer2().move("up");
 			break ;
 		case "p2_down" :
-			playerInfos.game.getPlayer2().move("down");
+			if (playerInfos.mode === "Multi")
+				playerInfos.game.getPlayer2().move("up");
+			else
+				playerInfos.game.getPlayer2().move("down");
 			break ;
 	}
 }
