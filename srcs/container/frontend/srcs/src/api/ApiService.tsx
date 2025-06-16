@@ -83,6 +83,9 @@ class ApiService {
 	}
 
 	static getFile(name: string | null | undefined): string {
+		if (name && (name.startsWith('http://') || name.startsWith('https://'))) {
+			return name;
+		}
 		if (!name || name === '' || name === 'null' || name === 'undefined') {
 			return `${this.apiURL}/avatars/avatar1.png`;
 		}

@@ -8,7 +8,9 @@ import fs from "fs";
 import { promisify } from "util";
 import { pipeline } from "stream";
 
-const Auth2Client = new OAuth2Client('235494829152-rogrpto31jsvp0ml7qp16ncuvge7msmv.apps.googleusercontent.com');
+require('dotenv').config();
+
+const Auth2Client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
 export const Login = async (request: FastifyRequest, reply: FastifyReply) => {
 	const { email, password } = request.body as { email: string; password: string };
@@ -56,7 +58,9 @@ export const Register = async (request: FastifyRequest, reply: FastifyReply) => 
 		});
 	}
 
-	const user = await userModel.Register(email, username, password, lang);
+	const defaultAvatar = ['avatar1.png', 'avatar2.png', 'avatar3.png', 'avatar4.png'][Math.floor(Math.random() * 4)];
+
+	const user = await userModel.Register(email, username, password, defaultAvatar, lang || 'fr');
 
 	request.i18n.changeLanguage(lang);
 	request.session.user = user;
@@ -160,7 +164,7 @@ export async function authGoogleCallback(request: FastifyRequest, reply: Fastify
 	try {
 		const ticket = await Auth2Client.verifyIdToken({
 			idToken: jwt,
-			audience: '235494829152-rogrpto31jsvp0ml7qp16ncuvge7msmv.apps.googleusercontent.com',
+			audience: process.env.GOOGLE_CLIENT_ID
 		});
 		const payload = ticket.getPayload();
 		if (!payload) {
@@ -189,7 +193,7 @@ export async function authGoogleCallback(request: FastifyRequest, reply: Fastify
 					email: user.email,
 					username: user.username,
 					lang: user.lang,
-					avatar: user.avatar || null,
+					avatar: user.avatar,
 				},
 			});
 		}
@@ -199,7 +203,7 @@ export async function authGoogleCallback(request: FastifyRequest, reply: Fastify
 			email: payload['email'],
 			username: payload['name'].replace(/[^a-zA-Z0-9]/g, '').toLowerCase().slice(0, 10) || payload['email'].split('@')[0].toLowerCase().slice(0, 10),
 			lang: 'fr',
-			avatar: payload['picture'] || null,
+			avatar: payload['picture'] || ['avatar1.png', 'avatar2.png', 'avatar3.png', 'avatar4.png'][Math.floor(Math.random() * 4)],
 		};
 
 		let addnum = 0;
@@ -227,7 +231,7 @@ export async function authGoogleCallback(request: FastifyRequest, reply: Fastify
 			user.id = userExist.id;
 			await userModel.addRelationGoogleToken(userExist.id, payload['sub']);
 		} else {
-			user = await userModel.Register(user.email, user.username, null, user.lang);
+			user = await userModel.Register(user.email, user.username, null, user.avatar, user.lang);
 			await userModel.addRelationGoogleToken(user.id, payload['sub']);
 		}
 
