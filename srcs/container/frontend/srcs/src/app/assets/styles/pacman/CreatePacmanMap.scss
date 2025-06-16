@@ -114,68 +114,50 @@ $spawn-clyde: orange;
 	color: if(lightness($color) > 60, black, white);
 }
 
-// ========== Base Styles ==========
-.create-pacman-map {
-	display: flex;
-	flex-direction: column;
-	padding: 10px;
-	color: $text-color;
-	min-height: 100vh;
-	background-color: $background-dark;
-	font-family: 'Press Start 2P', cursive;
-	z-index: 10;
-
-	// Typography
-	h2,
-	h3 {
-		color: $accent-color;
-		text-shadow: 2px 2px 0px #000;
-	}
-
-	h2 {
-		text-align: center;
-		font-size: 1rem;
-		margin-bottom: 10px;
-	}
-
-	h3 {
-		font-size: 1rem;
-		margin-bottom: 15px;
-	}
-}
-
 // ========== Components ==========
 // Modal
 .modal-overlay {
-	position: fixed;
-	top: 0;
-	left: 0;
+	//position: absolute;
 	width: 100vw;
 	height: 100vh;
-	background: rgba(0, 0, 0, 0.4);
 	display: flex;
-	align-items: center;
+	align-items: flex-start;
 	justify-content: center;
 	z-index: 1000;
+	padding-top: 100px;
 
 	.modal-content {
-		background: #121212;
+		background: rgba(18, 18, 18, 0.95);
 		border-radius: 12px;
 		padding: 32px 24px;
-		box-shadow: 0 4px 32px rgba(0, 0, 0, 0.18);
-		min-width: 320px;
+		box-shadow: 0 4px 32px rgba(0, 0, 0, 0.5);
+		min-width: 400px;
 		text-align: center;
 		display: flex;
 		flex-direction: column;
 		gap: 16px;
+		backdrop-filter: blur(5px);
+		border: 1px solid rgba(255, 255, 255, 0.1);  // Bordure subtile
 
 		input {
 			padding: 10px 14px;
 			border-radius: 6px;
 			border: 1px solid #bbb;
-			font-size: 18px;
-			width: 220px;
+			font-size: 10px;
+			width: 320px;
 			margin-bottom: 8px;
+		}
+
+		button {
+			@include button-style;
+			width: 100%;
+			font-size: 0.8rem;
+			margin-top: 10px;
+
+			&:hover {
+				background-color: $primary-color;
+				color: $text-color;
+			}
 		}
 
 		.error_name {
@@ -230,11 +212,11 @@ $spawn-clyde: orange;
 
 // Editor Layout
 .editor-container {
-	display: grid;
-	grid-template-columns: 250px 1fr 1fr;
-	gap: 20px;
-	width: 100%;
-	z-index: 10;
+	//display: grid;
+	//grid-template-columns: 250px 1fr 1fr;
+	//gap: 20px;
+	//width: 100%;
+	//z-index: 10;
 }
 
 .left-panel,
@@ -481,46 +463,32 @@ $spawn-clyde: orange;
 	transition: box-shadow 0.2s, border-color 0.2s, background-color 0.2s;
 }
 
-// Animations
-@keyframes pulse {
-	0% {
-		transform: translate(-50%, -50%) scale(1);
-	}
-
-	50% {
-		transform: translate(-50%, -50%) scale(1.1);
-	}
-
-	100% {
-		transform: translate(-50%, -50%) scale(1);
-	}
-}
-
-// Now the main styles
+// ========== Base Styles ==========
 .create-pacman-map {
-	// Base styles
 	display: flex;
 	flex-direction: column;
 	padding: 10px;
-	color: white;
+	color: $text-color;
 	min-height: 100vh;
-	background-color: #121212;
+	//background-color: $background-dark;
 	font-family: 'Press Start 2P', cursive;
 	z-index: 10;
 
-
 	// Typography
+	h2,
+	h3 {
+		color: $accent-color;
+		text-shadow: 2px 2px 0px #000;
+	}
+
 	h2 {
-		color: #FFEE00;
 		text-align: center;
 		font-size: 1rem;
 		margin-bottom: 10px;
-		text-shadow: 2px 2px 0px #000;
 	}
 
 	h3 {
 		font-size: 1rem;
-		color: #FFEE00;
 		margin-bottom: 15px;
 	}
 
@@ -863,19 +831,4 @@ $spawn-clyde: orange;
 	100% {
 		transform: translate(-50%, -50%) scale(1);
 	}
-}
-
-// Tunnel pairing visual feedback
-.tunnel-paired {
-	box-shadow: 0 0 8px 2px #00ff99, 0 0 0 2px #00ff99 inset;
-	border-color: #00ff99 !important;
-	background-color: #003322 !important;
-	transition: box-shadow 0.2s, border-color 0.2s, background-color 0.2s;
-}
-
-.tunnel-unpaired {
-	box-shadow: 0 0 8px 2px #ff3333, 0 0 0 2px #ff3333 inset;
-	border-color: #ff3333 !important;
-	background-color: #330000 !important;
-	transition: box-shadow 0.2s, border-color 0.2s, background-color 0.2s;
 }
