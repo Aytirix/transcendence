@@ -7,11 +7,13 @@ import { User } from '../app/types/userTypes';
 interface AuthContextType {
 	user: User | null;
 	loading: boolean;
+	setUser: React.Dispatch<React.SetStateAction<User | null>>;
 }
 
 const IsAuthenticated = createContext<AuthContextType>({
 	user: null,
-	loading: true
+	loading: true,
+	setUser: () => {},
 });
 
 export const useAuth = (): AuthContextType => {
@@ -62,7 +64,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 	}, [navigate]);
 
 	return (
-		<IsAuthenticated.Provider value={{ user, loading }}>
+		<IsAuthenticated.Provider value={{ user, loading, setUser }}>
 			{loading ? (
 				<></>
 			) : (

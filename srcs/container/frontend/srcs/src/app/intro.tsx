@@ -14,10 +14,10 @@ function intro() {
         }
         readLang();
     }, [i18n]);
-    const toto = useAuth();
+    const user = useAuth();
     return (
         <div className="intro">
-            <h1>{t('hello')} {toto.user?.username}</h1>
+            <h1>{t('hello')} {user.user?.username}</h1>
             <p>{t('test')}</p>
         </div>
     );

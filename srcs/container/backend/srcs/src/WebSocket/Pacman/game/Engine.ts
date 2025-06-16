@@ -65,8 +65,9 @@ export default class Engine {
 			Array.from(this.players.values()).map(p => p.nameChar)
 		);
 
-		// Si c'est le mode entraînement, on force PacmanAI à être Pacman
-		if (this.trainingAI) usedCharacters.add(CharacterType.Pacman);
+		// Forcer l'hote à jouer Pacman si c'est une partie d'entraînement ou s'il n'y a qu'un seul joueur réel
+		let realPlayer = Array.from(players.values()).filter(p => p.id > 0);
+		realPlayer = realPlayer.sort(() => Math.random() - 0.5);
 
 		// Filtrer les personnages disponibles
 		let availableCharacters = characters.filter(c => !usedCharacters.has(c));
@@ -76,7 +77,7 @@ export default class Engine {
 			let spawns: vector2[] = [];
 			let player: Ghost | Pacman;
 			let characterType: CharacterType;
-			if ((this.trainingAI && p.username.startsWith('PacmanAI')) || p.username === 'user1') {
+			if ((this.trainingAI && p.username.startsWith('PacmanAI')) || (p.username === realPlayer[0].username)) {
 				characterType = CharacterType.Pacman;
 				spawns = this.map.getSpawnPositions()[CharacterType.Pacman];
 				spawnIndex = this.players.size % availableCharacters.length;
@@ -92,6 +93,8 @@ export default class Engine {
 
 			// Conversion grille → pixel en centrant
 			const position = this.gridToPixel(spawns[spawnIndex]);
+
+			usedCharacters.add(characterType);
 
 			if (characterType === CharacterType.Pacman) player = new Pacman(p, position, characterType);
 			else player = new Ghost(p, position, characterType, this.map);

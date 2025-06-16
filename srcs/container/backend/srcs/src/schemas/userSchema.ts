@@ -79,7 +79,6 @@ export const update = {
 	body: {
 		properties: {
 			...register.body.properties,
-			avatar: { type: 'string', format: 'uri', nullable: true },
 		},
 		required: [],
 		errorMessage: {
@@ -87,6 +86,35 @@ export const update = {
 				...register.body.errorMessage.properties,
 			},
 		}
+	},
+	response: {
+		200: {
+			description: 'Mise à jour réussie',
+			type: 'object',
+			properties: {
+				message: { type: 'string' },
+				user: {
+					type: 'object',
+					properties: {
+						id: { type: 'number', minLength: 3, maxLength: 5 },
+						email: { type: 'string', format: 'email' },
+						username: { type: 'string', minLength: 3, maxLength: 15, pattern: '^[a-zA-Z0-9]+$' },
+						lang: { type: 'string', enum: ['fr', 'en', 'it'] },
+						avatar: { type: 'string' },
+					},
+					required: ['id', 'email', 'username', 'lang', 'avatar'],
+				},
+			},
+			required: ['user'],
+		},
+		400: {
+			description: 'Format des données incorrect',
+			...messageResponse,
+		},
+		409: {
+			description: 'Conflit de données (email ou nom d\'utilisateur déjà utilisé)',
+			...messageResponse,
+		},
 	},
 }
 
@@ -118,7 +146,7 @@ export const isAuth = {
 						email: { type: 'string', format: 'email' },
 						username: { type: 'string', minLength: 3, maxLength: 15, pattern: '^[a-zA-Z0-9]+$' },
 						lang: { type: 'string', enum: ['fr', 'en', 'it'] },
-						avatar: { type: 'string', format: 'uri' },
+						avatar: { type: 'string' },
 					},
 				},
 			},
@@ -159,7 +187,7 @@ export const authGoogleCallback = {
 						email: { type: 'string', format: 'email' },
 						username: { type: 'string', minLength: 3, maxLength: 15, pattern: '^[a-zA-Z0-9]+$' },
 						lang: { type: 'string', enum: ['fr', 'en', 'it'] },
-						avatar: { type: 'string', format: 'uri' },
+						avatar: { type: 'string' },
 					},
 				},
 			},
@@ -180,11 +208,47 @@ export const authGoogleCallback = {
 	},
 };
 
+export const UploadAvatar = {
+	description: 'Upload d\'avatar utilisateur',
+	tags: ['user'],
+	consumes: ['multipart/form-data'],
+	body: {
+		properties: {
+			avatar: {
+				type: 'string',
+				format: 'binary'
+			}
+		},
+		required: ['avatar']
+	},
+	response: {
+		200: {
+			description: 'Avatar uploadé avec succès',
+			type: 'object',
+			properties: {
+				success: { type: 'boolean', const: true },
+				message: { type: 'string' },
+				url: { type: 'string', format: 'uri' },
+				fileName: { type: 'string' },
+			}
+		},
+		400: {
+			description: 'Fichier invalide',
+			...messageResponse,
+		},
+		401: {
+			description: 'Non authentifié',
+			...messageResponse,
+		},
+	},
+};
+
 export default {
 	login,
 	register,
 	update,
 	logout,
 	isAuth,
-	authGoogleCallback
+	authGoogleCallback,
+	UploadAvatar
 };

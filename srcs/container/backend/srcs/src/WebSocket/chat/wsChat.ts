@@ -74,10 +74,6 @@ async function chatWebSocket(ws: WebSocket, user: User): Promise<void> {
 				break;
 			case 'accept_friend':
 				controllerFriends.acceptFriend(ws, user, state, (text as req_accept_friend));
-				const toto: res_pong = {
-					action: 'pong'
-				};
-				ws.send(JSON.stringify(toto));
 				break;
 			case 'refuse_friend':
 				controllerFriends.refuseFriend(ws, user, state, (text as req_refuse_friend));

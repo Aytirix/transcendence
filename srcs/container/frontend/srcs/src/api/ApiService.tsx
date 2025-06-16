@@ -1,9 +1,10 @@
 import notification from '../app/components/Notifications';
 
 class ApiService {
-	private static url = `https://${window.location.hostname}:7000`;
+	private static apiURL = `https://${window.location.hostname}:7000`;
+	private static url = `https://${window.location.hostname}:3000`;
 
-	static async request(path: string, method: string, body?: JSON) {
+	static async request(path: string, method: string, body?: JSON) : Promise<any> {
 		const headers = new Headers({
 			'Content-Type': 'application/json',
 			'Accept': 'application/json'
@@ -20,15 +21,14 @@ class ApiService {
 		}
 
 		try {
-			const response = await fetch(`${this.url}${path}`, config);
+			const response = await fetch(`${this.apiURL}${path}`, config);
 			const resJson = await response.json();
+			resJson.ok =  response.ok;
 			if (resJson.message) {
 				if (response.ok) {
 					notification.success(resJson.message);
-					resJson.ok = true;
 				}
 				else {
-					resJson.ok = false;
 					notification.error(resJson.message);
 				}
 			}
@@ -60,11 +60,10 @@ class ApiService {
 			method: 'POST',
 			body: formData,
 			credentials: 'include',
-			// Surtout PAS de 'Content-Type', laissé à fetch
 		};
 
 		try {
-			const response = await fetch(`${this.url}${endpoint}`, config);
+			const response = await fetch(`${this.apiURL}${endpoint}`, config);
 			const resJson = await response.json();
 			if (resJson.message) {
 				if (response.ok) {
@@ -76,12 +75,27 @@ class ApiService {
 				}
 			}
 			return resJson;
-		} catch (error) {
+		} catch (error: any) {
+			notification.error(error.message);
 			console.error('Error during file upload:', error);
 			throw new Error('Upload error');
 		}
 	}
 
+	static getFile(name: string | null | undefined): string {
+		if (name && (name.startsWith('http://') || name.startsWith('https://'))) {
+			return name;
+		}
+		if (!name || name === '' || name === 'null' || name === 'undefined') {
+			return `${this.apiURL}/avatars/avatar1.png`;
+		}
+		if (['avatar1.png', 'avatar2.png', 'avatar3.png', 'avatar4.png'].includes(name)) {
+			return `${this.url}/avatars/${name}`;
+		}
+		else {
+			return `${this.apiURL}/avatars/${name}`;
+		}
+	}
 }
 
 export default ApiService;
