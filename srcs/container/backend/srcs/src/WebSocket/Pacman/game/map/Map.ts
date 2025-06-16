@@ -627,13 +627,6 @@ export default class PacmanMap {
 				TileType.SpawnClyde, TileType.SpawnPinky].includes(tile)) {
 					spawnCounts[tile]++;
 				}
-
-				// Vérification des bordures
-				if ((y === 0 || y === grid.length - 1 || x === 0 || x === grid[y].length - 1) &&
-					(tile !== TileType.Wall && tile !== TileType.Teleport)) {
-					errors.push(`La bordure doit être fermée par des murs '#' ou téléporteurs 'T', trouvé '${tile}' à (x:${x},y:${y})`);
-					error_limit--;
-				}
 			}
 		}
 

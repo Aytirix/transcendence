@@ -60,6 +60,25 @@ async function getMapForUserById(id: number, userId: number): Promise<map[]> {
 	return maps;
 }
 
+async function getMapById(id: number): Promise<map | null> {
+	const query = `SELECT * FROM pacman_map WHERE id = ?`;
+	const result: any = await executeReq(query, [id]);
+	if (!result || result.length === 0) {
+		return null;
+	}
+	const row = result[0];
+	return {
+		id: row.id,
+		user_id: row.user_id,
+		name: row.name,
+		map: JSON.parse(row.map),
+		is_public: row.is_public === 1,
+		is_valid: row.is_valid === 1,
+		created_at: new Date(row.created_at),
+		updated_at: new Date(row.updated_at),
+	};
+}
+
 async function insertMap(map: map): Promise<boolean> {
 	const query = `
         INSERT INTO pacman_map (user_id, name, map, is_public, is_valid) 
@@ -121,14 +140,10 @@ async function deleteMap(id: number): Promise<boolean> {
 	return true;
 }
 
-async function searchMap(query: string): Promise<map[]> {
+async function searchMap(player_id: number, query: string): Promise<map[]> {
 	const searchQuery = `%${query}%`;
-	const sql = `
-		SELECT * FROM pacman_map
-		WHERE name LIKE ?% AND map is_public == 1 AND is_valid == 1
-		ORDER BY updated_at DESC
-	`;
-	const result: any = await executeReq(sql, [searchQuery, searchQuery]);
+	const sql = 'SELECT * FROM `pacman_map` as `pm` WHERE `pm`.`name` LIKE ? AND `pm`.`is_valid` = 1 AND (`pm`.`is_public` = 1  OR `pm`.`user_id` = ?) ORDER BY `pm`.`updated_at` DESC';
+	const result: any = await executeReq(sql, [searchQuery, player_id]);
 	if (!result || result.length === 0) {
 		return [];
 	}
@@ -145,11 +160,11 @@ async function searchMap(query: string): Promise<map[]> {
 	return maps;
 }
 
-
 export default {
 	getAllMapsForUser,
 	getMapForUserByName,
 	getMapForUserById,
+	getMapById,
 	insertMap,
 	updateMap,
 	deleteMap,
