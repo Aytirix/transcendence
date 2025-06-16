@@ -14,7 +14,6 @@ const SearchResults: React.FC<SearchResultsProps> = ({
   searchResults,
   currentUserId,
   getFriendshipStatus,
-  // handleInvite, // Conservé au cas où l'on souhaite réintroduire l'invitation de groupe depuis la recherche globale
   handleAddFriend,
 }) => {
   if (searchResults.length === 0) {
