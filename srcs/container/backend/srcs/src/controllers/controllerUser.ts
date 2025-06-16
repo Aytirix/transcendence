@@ -44,7 +44,7 @@ export const Register = async (request: FastifyRequest, reply: FastifyReply) => 
 		});
 	}
 
-	if ((await userModel.usernameAlreadyExists(email))) {
+	if (username.startsWith('PacmanAI') || await userModel.usernameAlreadyExists(username)) {
 		return reply.status(409).send({
 			message: request.i18n.t('errors.username.alreadyExists'),
 		});
@@ -97,7 +97,7 @@ export const UpdateUser = async (request: FastifyRequest, reply: FastifyReply) =
 		});
 	}
 
-	if (username && username !== user.username && await userModel.usernameAlreadyExists(username)) {
+	if (username && username !== user.username && (username.startsWith('PacmanAI') || await userModel.usernameAlreadyExists(username))) {
 		return reply.status(409).send({
 			message: request.i18n.t('errors.username.alreadyExists'),
 		});
