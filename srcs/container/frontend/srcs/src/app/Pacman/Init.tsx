@@ -7,6 +7,7 @@ import { useAuth } from '../../contexts/AuthContext';
 import PacmanGame from './theojeutmp/PacmanGame';
 import CreatePacmanMap from './menu/CreatePacmanMap'; // Import the map editor
 import '../assets/styles/Star.scss';
+import { VolumeControl } from './components/VolumeControl';
 
 function initState(): state {
 	const state: state = {
@@ -14,6 +15,7 @@ function initState(): state {
 		statusws: 'Connecting...',
 		player: useAuth().user,
 		maps: [],
+		publicMaps: [],
 		rooms: {
 			active: [],
 			waiting: [],
@@ -150,6 +152,14 @@ export default function WebSocketPacman() {
 				});
 				break;
 			}
+			case 'searchMap': {
+				console.log('Search results:', data.data.maps);
+				setState((prevState: state) => ({
+					...prevState,
+					publicMaps: data.data.maps || [],
+				}));
+				break;
+			}
 			default:
 				console.log('Unknown action:', data.data.action);
 				break;
@@ -231,6 +241,7 @@ export default function WebSocketPacman() {
 				</div>
 			</div>
 			<div className="bg-gray-200 text-white flex flex-col items-center justify-center">
+				<VolumeControl />
 				{showMapEditor ? (
 					<CreatePacmanMap
 						state={state}

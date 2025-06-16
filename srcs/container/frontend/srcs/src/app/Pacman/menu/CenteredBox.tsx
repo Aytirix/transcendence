@@ -4,15 +4,18 @@ import { motion, AnimatePresence } from 'framer-motion';
 import WaitingRooms from './WaitingRooms';
 import ActiveRooms from './ActiveRooms';
 import Rules from './Rules';
+import Statistics from './Statistics';
 import Maps from './Maps';
 import { state, PacmanMap } from '../../types/pacmanTypes';
 import '../../assets/styles/pacman/CenteredBox.scss';
+import { Link, useNavigate } from 'react-router-dom';
 
 
 const TABS = [
 	{ id: 'WaitingRooms', label: 'Lobby' },
 	{ id: 'ActiveRooms', label: 'En direct' },
 	{ id: 'Rules', label: 'Règles' },
+	{ id: 'Statistics', label: 'Statistique' },
 	{ id: 'Maps', label: 'Carte' },
 ];
 
@@ -24,26 +27,21 @@ interface CenteredBoxProps {
 
 export const CenteredBox: React.FC<CenteredBoxProps> = ({ state, onCreateMap, onEditMap }) => {
 	const [currentPage, setCurrentPage] = useState<string>('WaitingRooms');
-
+	const navigate = useNavigate();
+	
 	return (
 		<>
 			<div className='home-button'>
 				<button
 					className="home-icon-btn"
-					onClick={() => window.location.href = '/'}
+					onClick={async () => {navigate('/');}}
 					aria-label="Retour à l'accueil"
 					title="Retour à l'accueil"
 				>
-					<svg width="36" height="36" viewBox="0 0 54 54">
-					<ellipse cx="27" cy="27" rx="25" ry="25" fill="#c20000" stroke="#ffd700" strokeWidth="2" />
-					<rect x="15" y="20" width="24" height="18" rx="6" fill="#ffd700" />
-					<rect x="21" y="31" width="3" height="7" rx="1.5" fill="#c20000" />
-					<rect x="30" y="31" width="3" height="7" rx="1.5" fill="#c20000" />
-					<rect x="21" y="24" width="12" height="3" fill="#222" />
-					</svg>
+					<img src="/avatars/ironman.svg" alt="Iron Man home icon" />
 					<span className="home-label">Accueil</span>
 				</button>
-				</div>
+			</div>
 			<div className="centered-box">
 				<div className='title-container'>
 					<h1>PACMAN</h1>
@@ -76,6 +74,7 @@ export const CenteredBox: React.FC<CenteredBoxProps> = ({ state, onCreateMap, on
 								{{
 									WaitingRooms: <WaitingRooms state={state} />,
 									ActiveRooms: <ActiveRooms state={state} />,
+									Statistics: <Statistics />,
 									Rules: <Rules />,
 									Maps: <Maps onCreateMap={onCreateMap} onEditMap={onEditMap} state={state} />,
 								}[currentPage] || <p>Page non trouvée</p>}
