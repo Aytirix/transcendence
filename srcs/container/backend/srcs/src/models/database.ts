@@ -47,7 +47,6 @@ async function createDbFile(): Promise<sqlite3.Database> {
 					// Base créée avec succès, initialiser avec le template
 					initializeDatabase(templateDataseFile, resolve, reject);
 				} else {
-					console.log("Base de données SQLite ouverte avec succès.");
 					resolve(db);
 				}
 			}
@@ -118,7 +117,6 @@ async function executeReq(req: string, data: Array<string | number> = []) {
 					if (err) {
 						reject(err.message);
 					} else {
-						console.log(`this lastID: ${JSON.stringify(this)}`);
 						const result = {
 							affectedRows: this.changes,
 							insertId: this.lastID
