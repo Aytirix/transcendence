@@ -42,27 +42,11 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({
   handleCreateGroup,
 }) => {
   // Filtrer les amis qui sont vraiment des amis (pas en attente)
-  const confirmedFriends = friends.filter(friend => friend.relation.status === "friend");
+  console.log("frtiend",friends);
+  // const confirmedFriends = friends.filter(friend => friend.relation.status === "friend");
 
   return (
     <aside className="w-64 bg-gray-100 border-r flex flex-col">
-      <label
-        htmlFor="search"
-        className="flex items-center border bg-gray-200 p-2 m-4 rounded"
-      >
-        <svg width="20" height="20" viewBox="0 0 22 22" fill="none" stroke="currentColor">
-          <circle cx="11" cy="11" r="8"></circle>
-          <path d="m21 21-4.3-4.3"></path>
-        </svg>
-        <input
-          type="search"
-          className="grow bg-transparent outline-none ml-2" // Adjusted classes
-          placeholder="Rechercher un user"
-          value={inputSearch}
-          onChange={e => setInputSearch(e.target.value)}
-        />
-      </label>
-
       <div className="p-4 font-bold text-xl">Groupes</div>
 
       {/* Section de création de groupe */}
@@ -127,27 +111,6 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({
             {g.name || g.members.map(m => m.username).join(', ')} {/* Group name or member list for private chats */}
           </button>
         ))}
-      </div>
-      <button
-        className={`mx-4 mt-2 mb-2 p-2 rounded transition-colors duration-150 ${showFriends ? "bg-green-500 hover:bg-green-600" : "bg-blue-500 hover:bg-blue-600"} text-white`} // Improved styles
-        onClick={() => setShowFriends(!showFriends)}
-      >
-        {showFriends ? "Retour aux groupes" : `Afficher les amis (${friends.length})`}
-      </button>
-
-      <div className="text-xs text-gray-700 p-2 border-t"> {/* Added border-t */}
-        Statut du chat:{" "}
-        <span
-          className={
-            wsStatus === "Connected"
-              ? "text-green-600"
-              : wsStatus === "Error" || wsStatus === "Closed"
-              ? "text-red-500"
-              : "text-yellow-600"
-          }
-        >
-          {wsStatus}
-        </span>
       </div>
     </aside>
   );

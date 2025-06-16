@@ -17,6 +17,7 @@ const FriendList: React.FC<FriendListProps> = ({
   handleRemoveFriend,
   // handleOpenPrivateChat
 }) => {
+  console.log("friendProp",friends);
   if (friends.length === 0) {
     return (
       <div className="text-center text-gray-500 mt-8">
@@ -56,6 +57,7 @@ const FriendList: React.FC<FriendListProps> = ({
                 <button
                   className="px-3 py-1 bg-green-100 text-green-700 rounded hover:bg-green-200 text-sm font-medium"
                   onClick={() => handleAcceptFriend(friend.id)}
+                  hidden={(friend.relation.target === friend.id)?true:false}
                 >
                   Accepter
                 </button>

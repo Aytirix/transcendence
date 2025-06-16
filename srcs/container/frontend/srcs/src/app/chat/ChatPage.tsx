@@ -97,12 +97,6 @@ const ChatPage: React.FC = () => {
         }
         break;
       }
-      case "invite_user": { // Typiquement pour inviter dans un groupe
-        if (data.result === "ok") setFeedback("Invitation envoyée !");
-        else setFeedback("Erreur lors de l'invitation.");
-        setTimeout(() => setFeedback(null), 2000);
-        break;
-      }
       case "add_friend": { // Quand on envoie/reçoit une demande d'ami
         if (data.result === "ok") {
           setFeedback("Demande d'amitié envoyée !");
@@ -181,7 +175,7 @@ const ChatPage: React.FC = () => {
         setTimeout(() => setFeedback(null), 2000);
         break;
       }
-      case "user_online": {
+      case "friend_connected": {
           if (data.user_id) {
               setFriends(prev => prev.map(f => f.id === data.user_id ? { ...f, online: true } : f));
               // Optionnel: Mettre à jour les membres des groupes si nécessaire
@@ -189,7 +183,7 @@ const ChatPage: React.FC = () => {
           }
           break;
       }
-      case "user_offline": {
+      case "friend_disconnected": {
            if (data.user_id) {
               setFriends(prev => prev.map(f => f.id === data.user_id ? { ...f, online: false } : f));
                // Optionnel: Mettre à jour les membres des groupes si nécessaire
@@ -207,7 +201,7 @@ const ChatPage: React.FC = () => {
            }
            break;
       }
-       case "group_deleted": {
+       case "delete_group": {
            if (data.group_id) {
                setGroups(prev => prev.filter(g => g.id !== data.group_id));
                // Désélectionner le groupe s'il était sélectionné

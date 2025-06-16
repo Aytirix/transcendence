@@ -1,5 +1,7 @@
 // src/types.ts
 
+import { number } from "framer-motion";
+
 export type Member = {
   id: number;
   username: string;
@@ -18,7 +20,7 @@ export type Group = {
 
 export type Message = {
   id: number;
-  sender_id: number;
+  sender_id: string | number;
   message: string;
   sent_at: string;
 };

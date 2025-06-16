@@ -133,6 +133,7 @@ const IronManNavBar: React.FC = () => {
              <Link to="/Pacman" className="btn btn-ghost text-xl" >Pacman</Link>
              <Link to="/Pong" className="btn btn-ghost text-xl">Pong</Link>
             <Link to="/Chat" className="btn btn-ghost text-xl">Chat</Link>
+            <Link to="/friend" className="btn btn-ghost text-xl">Ami</Link>
            </div>
           <div className="navbar-end">
             <div className="dropdown dropdown-end">
