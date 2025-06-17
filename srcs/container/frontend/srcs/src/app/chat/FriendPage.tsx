@@ -169,7 +169,7 @@ const FriendsSearchPage: React.FC = () => {
   }, [friends]);
 
   return (
-    <div className="flex h-screen">
+    <div className="">
       <FriendsSidebar
         friends={friends}
         inputSearch={inputSearch}
