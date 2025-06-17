@@ -16,7 +16,7 @@ export class Game {
 		private detectionPaddle: boolean = false,
 		private readonly width: number = 800,
 		private readonly height: number = 600,
-		private status: "PLAYING" | "KICKOFF" | "SERVICE" | "EXIT" = "PLAYING",
+		private status: "PLAYING" | "KICKOFF" | "SERVICE" | "DECONNEXION" | "EXIT" = "PLAYING",
 		private jsonWebsocket: string = "",
 		private tournament?: Tournament,
 	) {}
@@ -35,7 +35,9 @@ export class Game {
 	}
 	update(): boolean {
 		this.frameRate++;
-		if (this.getStatus() === "KICKOFF" || this.getStatus() === "SERVICE") { return false }
+		if (this.getStatus() === "KICKOFF" 
+		|| this.getStatus() === "SERVICE" 
+		|| this.getStatus() === "DECONNEXION") { return false }
 		this.ball.move();
 		this.detectionCollision();
 		this.jsonWebsocket = JSON.stringify({
@@ -263,7 +265,7 @@ export class Game {
 	getBall() : Ball {return (this.ball); }
 	getPlayer1() : Paddle {return (this.player1); }
 	getPlayer2() : Paddle {return (this.player2); }
-	setStatus(stat: "PLAYING" | "KICKOFF" | "SERVICE" | "EXIT") { this.status = stat; }
+	setStatus(stat: "PLAYING" | "KICKOFF" | "SERVICE" | "DECONNEXION" | "EXIT") { this.status = stat; }
 	setFramerate(frameRate: number) { this.frameRate = frameRate; }
 	setTournament(tournament: Tournament) { this.tournament = tournament; }
 }

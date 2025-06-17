@@ -50,7 +50,7 @@ export function handleReconnection(socket: WebSocket, user: User) : boolean {
 					tempPlayer.game.getPlayer2().getPlayerInfos().socket.send(JSON.stringify({ type: "assign", value: "p2" }))
 				}
 
-				tempPlayer.game.setStatus("KICKOFF");
+				tempPlayer.game.setStatus("DECONNEXION"); //KICKOFF
 				// console.log("essai")
 				return (true);
 			}
