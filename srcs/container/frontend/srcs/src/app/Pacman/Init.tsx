@@ -1,10 +1,9 @@
 import { useEffect, useState } from 'react';
-import ApiService from '../../api/ApiService';
 import { useSafeWebSocket, WebSocketStatus } from '../../api/useSafeWebSocket';
 import { state, PacmanMap } from '../types/pacmanTypes';
 import { CenteredBox } from './menu/CenteredBox';
 import { useAuth } from '../../contexts/AuthContext';
-import PacmanGame from './theojeutmp/PacmanGame';
+import PacmanGame from './game/PacmanGame';
 import CreatePacmanMap from './menu/CreatePacmanMap'; // Import the map editor
 import '../assets/styles/Star.scss';
 import { VolumeControl } from './components/VolumeControl';
@@ -13,7 +12,7 @@ function initState(): state {
 	const state: state = {
 		ws: null,
 		statusws: 'Connecting...',
-		player: useAuth().user,
+		player: null, // Will be set in the component
 		maps: [],
 		publicMaps: [],
 		rooms: {
@@ -24,6 +23,7 @@ function initState(): state {
 			launch: false,
 			grid: [],
 			frightenedState: {
+				active: false,
 				remainingTime: 0,
 			},
 			players: [],
@@ -40,10 +40,21 @@ function initState(): state {
 }
 
 export default function WebSocketPacman() {
+	const { user } = useAuth();
 	const [state, setState] = useState<state>(initState());
 	const [showMapEditor, setShowMapEditor] = useState(false);
 	const [editingMapData, setEditingMapData] = useState<Partial<PacmanMap> | null>(null);
 	const [initialMapData, setInitialMapData] = useState<string[] | null>(null);
+
+	// Initialize player when user is available
+	useEffect(() => {
+		if (user) {
+			setState(prevState => ({
+				...prevState,
+				player: user
+			}));
+		}
+	}, [user]);
 
 	const handleEditMap = (map: PacmanMap) => {
 		const fullMap = state.maps.find(m => m.id === map.id);
@@ -66,6 +77,7 @@ export default function WebSocketPacman() {
 		setShowMapEditor(true);
 	};
 
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	const handleMessage = (data: any) => {
 		switch (data.action) {
 			case 'getrooms': {
@@ -117,6 +129,10 @@ export default function WebSocketPacman() {
 			}
 			case 'searchMap': {
 				console.log('Search results:', data.data.maps);
+				setState((prevState: state) => ({
+					...prevState,
+					publicMaps: data.data.maps || [],
+				}));
 				break;
 			}
 			case 'insertOrUpdateMap': {
@@ -150,14 +166,6 @@ export default function WebSocketPacman() {
 						};
 					}
 				});
-				break;
-			}
-			case 'searchMap': {
-				console.log('Search results:', data.data.maps);
-				setState((prevState: state) => ({
-					...prevState,
-					publicMaps: data.data.maps || [],
-				}));
 				break;
 			}
 			default:
@@ -199,6 +207,7 @@ export default function WebSocketPacman() {
 					players: [],
 					tileSize: 50,
 					frightenedState: {
+						active: false,
 						remainingTime: 0,
 					},
 					isSpectator: false,
@@ -231,6 +240,37 @@ export default function WebSocketPacman() {
 			websocket?.close();
 		};
 	}, [websocket]);
+
+	// Gérer automatiquement la requête searchMap quand l'utilisateur rejoint une room
+	useEffect(() => {
+		if (!state.ws || state.ws.readyState !== WebSocket.OPEN) {
+			return;
+		}
+
+		// Vérifier si l'utilisateur est dans une CurrentRoom
+		const currentRoom = state.rooms?.waiting?.find(r =>
+			r.players?.some(p => p.id === state.player?.id)
+		);
+
+		// Si l'utilisateur est dans une room, envoyer searchMap et configurer un rafraîchissement
+		if (currentRoom) {
+			console.log('Utilisateur dans une room, envoi de searchMap');
+			
+			// Envoyer immédiatement
+			state.ws.send(JSON.stringify({ action: 'searchMap', text: '' }));
+
+			// Configurer un rafraîchissement toutes les 10 secondes pour les mises à jour temps réel
+			const interval = setInterval(() => {
+				if (state.ws && state.ws.readyState === WebSocket.OPEN) {
+					state.ws.send(JSON.stringify({ action: 'searchMap', text: '' }));
+				}
+			}, 1000);
+
+			return () => {
+				clearInterval(interval);
+			};
+		}
+	}, [state.ws, state.rooms?.waiting, state.player?.id]);
 
 	return (
 		<div id="PacmanStars">

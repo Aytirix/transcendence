@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { Tab } from '@headlessui/react';
 import { motion, AnimatePresence } from 'framer-motion';
 import WaitingRooms from './WaitingRooms';
 import ActiveRooms from './ActiveRooms';
@@ -8,7 +7,7 @@ import Statistics from './Statistics';
 import Maps from './Maps';
 import { state, PacmanMap } from '../../types/pacmanTypes';
 import '../../assets/styles/pacman/CenteredBox.scss';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 
 const TABS = [
