@@ -36,9 +36,9 @@ const MultiPlayers: React.FC = () => {
 			// const [namePlayer1, setNamePlayer1] = useState();
 			// const [namePlayer2, setNamePlayer2] = useState();
 			const [startReco, setStartReco] = useState(false);
-			const [isPause, setIsPause] = useState(false);
 			const [isWinner, setisWinner] = useState(false);
 			const [waitingPlayers, setWaitingPlayers] = useState(false);
+			const [isPause, setIsPause] = useState(false);
 		
 			const reconnection = localStorage.getItem("reconnection");
 		
@@ -71,6 +71,7 @@ const MultiPlayers: React.FC = () => {
 						setIscinematic(true);
 						setStartReco(true);
 						setIsPause(true);
+						console.log("reconnection")
 					}
 					else {
 						localStorage.removeItem("reconnection")
@@ -119,15 +120,18 @@ const MultiPlayers: React.FC = () => {
 					if (data.type === "Remove") {
 						setStartReco(false);
 						setIscinematic(false);
+						setIsPause(false);
 						localStorage.removeItem("reconnection");
 						localStorage.removeItem("data");
 		
 					}
 					if (data.type === "Pause") {
+						console.log(`pause = ${isPause}`)
 						setIsPause(data.value);
 					}
 					if (data.type === "assign") {
 						assignPlayer.current = data.value;
+						// localStorage.setItem("assign", data.value);
 						setWaitingPlayers(true);
 					}
 					if (data.type === "FINISHED") {
@@ -192,6 +196,7 @@ const MultiPlayers: React.FC = () => {
 						const data = JSON.parse(saveData);
 						restoreCamera(data);
 						setParsedData(data);
+						setWaitingPlayers(true);
 					}
 					return;
 				}
@@ -279,7 +284,8 @@ const MultiPlayers: React.FC = () => {
 		
 			useEffect(() => {
 				if (!isReady3d || !socketRef.current || isCinematic) return;
-				localStorage.setItem("reconnection", "MultiPlayers");
+				localStorage.setItem("reconnection", "MultiPlayers"); //certqinement a cause de ca
+
 				let i: number = -1209
 				camera.current!.rotation.x = 0.081;
 				camera.current!.rotation.y = 1.599;

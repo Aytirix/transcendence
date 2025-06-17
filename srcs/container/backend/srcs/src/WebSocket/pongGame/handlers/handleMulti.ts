@@ -5,12 +5,12 @@ import { createGame } from "../game/initGame";
 import { Game } from "../game/Game";
 
 export function handleMulti(playerInfos: playerStat, msg: webMsg) {
-	console.log("multi")
+	// console.log("multi")
 	if (!playerInfos) return ;
-	console.log("multi1")
+	// console.log("multi1")
 
 	playerInfos.mode = msg.type;
-	console.log("multi2")
+	// console.log("multi2")
 
 	if (waitingMulti.size === 1 && waitingMulti.has(playerInfos) === true) return ;
 	if (waitingMulti.size >= 1) {
@@ -20,7 +20,7 @@ export function handleMulti(playerInfos: playerStat, msg: webMsg) {
 				waitingMulti.delete(player2Infos);
 				playerInfos.inGame = true;
 				player2Infos.inGame = true;
-				console.log(`player 2 = ${player2Infos.name} player1 = ${playerInfos.name}`)
+				// console.log(`player 2 = ${player2Infos.name} player1 = ${playerInfos.name}`)
 				const multiGame : Game = createGame(playerInfos, player2Infos);
 				playerInfos.game = multiGame;
 				player2Infos.game = multiGame;

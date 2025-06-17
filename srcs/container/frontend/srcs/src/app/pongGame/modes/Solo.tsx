@@ -113,6 +113,7 @@ const Solo: React.FC = () => {
 				if (data.type === "Remove") {
 					setStartReco(false);
 					setIscinematic(false);
+					setIsPause(false);
 					localStorage.removeItem("reconnection");
 					localStorage.removeItem("data");
 	
@@ -136,10 +137,10 @@ const Solo: React.FC = () => {
 				}
 				if (data.ball && data.player1 && data.player2) {
 					waitFrame.current.push(data)
+					if (!namePlayer1)
+						setNamePlayer1(data.player1.userName);
 					if (data.ball.pos_x < 778 && data.ball.pos_x > 775 
 						|| data.ball.pos_x < 26 && data.ball.pos_x > 23) {
-						if (!namePlayer1)
-							setNamePlayer1(data.player1.userName);
 						waitFrame.current.push(data)
 					}	
 					localStorage.setItem("data", JSON.stringify({

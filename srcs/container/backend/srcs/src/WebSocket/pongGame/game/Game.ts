@@ -60,7 +60,7 @@ export class Game {
 			player2: {
 				pos_x: this.player2.pos_x,
 				pos_y: this.player2.pos_y,
-				userName: this.player2.getPlayerInfos().name,
+				userName: this.player1.getPlayerInfos().mode !== "SameKeyboard" ? this.player2.getPlayerInfos().name : "player2",
 				height: this.player2.height,
 				width: this.player2.width,
 				margin: this.player2.margin,
@@ -120,7 +120,7 @@ export class Game {
 		if (this.getStatus() === "EXIT") {
 			if (this.player1.getPlayerInfos().mode === "Multi"
 			&& this.player2.getPlayerInfos().mode === "Multi") {
-				console.log("test exit pause ")
+				// console.log("test exit pause ")
 				this.player1.getPlayerInfos().socket.send(JSON.stringify({type: "FINISHED", value: this.player1.getPlayerInfos().resultMatch}));
 				this.player2.getPlayerInfos().socket.send(JSON.stringify({type: "FINISHED", value: this.player2.getPlayerInfos().resultMatch}));
 				handleFinish(this.player1.getPlayerInfos());
@@ -173,7 +173,7 @@ export class Game {
 			this.ball.d_x = 1;
 			// if (this.ball.pos_x - + this.ball.radius < this.player2.pos_x)
 				this.ball.pos_x = this.player2.pos_x + this.ball.radius;
-			console.log(this.ball.pos_x);
+			// console.log(this.ball.pos_x);
 			if (this.ball.speed <= 12.5)
 				this.ball.speed += 0.5;
 			this.player2.zoneEffect(this.ball);

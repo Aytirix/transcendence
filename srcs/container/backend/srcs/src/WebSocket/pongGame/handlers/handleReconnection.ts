@@ -4,8 +4,9 @@ import { sockets, waitingID, waitingMulti } from '../state/serverState';
 import { playerStat } from '../types/playerStat';
 
 export function handleReconnection(socket: WebSocket, user: User) : boolean {
-	console.log("avant user id", user.id);
+	// console.log("avant user id", user.id);
 	if (waitingID.has(user.id)) {
+			console.log("wqiting")
 			const tempPlayer = waitingID.get(user.id);
 			if (tempPlayer.inGame === false) {
 				waitingID.delete(user.id);
@@ -40,15 +41,21 @@ export function handleReconnection(socket: WebSocket, user: User) : boolean {
 				tempPlayer.lastping = Date.now();
 				sockets.set(socket, tempPlayer);
 				waitingID.delete(user.id);
-				if (user1 === user.id)
+				if (user1 === user.id) {
 					tempPlayer.game.getPlayer1().getPlayerInfos().socket = socket;
-				else
+					tempPlayer.game.getPlayer1().getPlayerInfos().socket.send(JSON.stringify({ type: "assign", value: "p1" }))
+				}
+				else {
 					tempPlayer.game.getPlayer2().getPlayerInfos().socket = socket;
+					tempPlayer.game.getPlayer2().getPlayerInfos().socket.send(JSON.stringify({ type: "assign", value: "p2" }))
+				}
+
 				tempPlayer.game.setStatus("KICKOFF");
+				// console.log("essai")
 				return (true);
 			}
 		}
-			console.log("apres sans waiting user id", user.id);
+			// console.log("apres sans waiting user id", user.id);
 			socket.send(JSON.stringify({type: "Remove"}));
 	return (false);
 }

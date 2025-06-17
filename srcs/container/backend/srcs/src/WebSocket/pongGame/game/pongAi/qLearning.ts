@@ -20,7 +20,7 @@ export function qTableConstructor() : QTable {
 					for(const pos of POS) {
 						for (const zone of ZONE) {
 								const key = `${sens}_${pos}_${zone}`;
-								qtable[key] = [0, 0, 0, 0, 0, 0, 0, 0, 0]; 
+								qtable[key] = [0, 0, 0, 0, 0, 0, 0, 0, 0];
 						}
 					}
 		}
