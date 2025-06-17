@@ -19,6 +19,8 @@ export class Game {
 		private status: "PLAYING" | "KICKOFF" | "SERVICE" | "DECONNEXION" | "EXIT" = "PLAYING",
 		private jsonWebsocket: string = "",
 		private tournament?: Tournament,
+		private lastFpsCheck: number = 0,
+
 	) {}
 	start(): void{
 		let i: number = 0;
@@ -35,6 +37,14 @@ export class Game {
 	}
 	update(): boolean {
 		this.frameRate++;
+
+		if (!this.lastFpsCheck || Date.now() - this.lastFpsCheck > 1000) {
+		console.log(`[${this.player1.getPlayerInfos().name}] FPS back: ${this.frameRate}`);
+		this.lastFpsCheck = Date.now();
+		this.frameRate = 0;
+		}
+
+
 		if (this.getStatus() === "KICKOFF" 
 		|| this.getStatus() === "SERVICE" 
 		|| this.getStatus() === "DECONNEXION") { return false }

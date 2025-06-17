@@ -89,7 +89,7 @@ const SameKeyboard: React.FC = () => {
 				galactic.current!.rotation.z += 0.0002;
 				galactic.current!.rotation.y += 0.0002;
 				const directFrame = waitFrame.current.shift();
-				if (directFrame)
+				if (directFrame) 
 					setParsedData(directFrame);
 				scene.current?.render();
 			});
@@ -136,6 +136,7 @@ const SameKeyboard: React.FC = () => {
 			}
 			if (data.ball && data.player1 && data.player2) {
 				waitFrame.current.push(data)
+					console.log("test", data.player1.userName)
 				if (data.ball.pos_x < 778 && data.ball.pos_x > 775 
 					|| data.ball.pos_x < 26 && data.ball.pos_x > 23)
 					waitFrame.current.push(data)
