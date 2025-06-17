@@ -15,8 +15,8 @@ const ActiveRooms: React.FC<ActiveRoomsProps> = ({ state }) => {
 
 	return (
 		<>
-			<h2 className="rooms-title">Parties en cours</h2>
 			<div className="waiting-rooms">
+			<h2 className="rooms-title">Parties en cours</h2>
 				<>
 					{state.rooms.active.length === 0 ? (
 						<p className="no-room">Aucune partie en cours</p>

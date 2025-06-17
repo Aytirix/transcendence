@@ -1,9 +1,9 @@
 // src/components/pacman/PacmanGame.tsx
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import './PacmanGame.scss';
 import { state } from '../../types/pacmanTypes';
 import portalImg from '../../assets/img/pacman/portal.gif';
-import { SoundManager } from '../utils/SoundManager';
+import { SoundManager } from '../utils/SoundManager.tsx';
 
 // Import des GIFs de fantômes
 import ghostBRightGif from '../../assets/img/pacman/ghosts/B-right.gif';
@@ -88,8 +88,8 @@ const pacmanImages = {
 	'default': pacmanPng
 };
 
-const CONTAINER_SIZE_WIDTH = 700; // Doit correspondre à la taille CSS
-const CONTAINER_SIZE_HEIGHT = 750 // Doit correspondre à la taille CSS
+const CONTAINER_SIZE_WIDTH = 709; // Doit correspondre à la taille CSS
+const CONTAINER_SIZE_HEIGHT = 761; // Doit correspondre à la taille CSS
 
 export interface Player {
 	id: number;
@@ -162,6 +162,13 @@ const PauseMode = ({ state }: { state: state }) => {
 
 const PacmanGame: React.FC<PacmanGameProps> = ({ state }) => {
 	const { grid, players, tileSize } = state.game;
+	const [audioEnabled, setAudioEnabled] = useState(false);
+
+	// Refs pour mémoriser l'état précédent du jeu
+	const previousScore = useRef<number>(0);
+	const previousLife = useRef<number>(state.game.pacmanLife);
+	const previousFrightened = useRef<boolean>(state.game.frightenedState.active);
+	const gameStarted = useRef<boolean>(false);
 
 	const numRows = grid.length;
 	const numCols = grid[0].length;
@@ -175,8 +182,25 @@ const PacmanGame: React.FC<PacmanGameProps> = ({ state }) => {
 	const offsetX = (CONTAINER_SIZE_WIDTH - mapWidth * scale) / 2;
 	const offsetY = (CONTAINER_SIZE_HEIGHT - mapHeight * scale) / 2;
 
-	const handleKeyDown = (event: KeyboardEvent) => {
+	// Fonction pour activer l'audio au premier clic/interaction
+	const handleFirstInteraction = useCallback(async () => {
+		if (!audioEnabled) {
+			console.log('🔊 Tentative d\'activation de l\'audio...');
+			const success = await SoundManager.getInstance().forceEnableAudio();
+			if (success) {
+				setAudioEnabled(true);
+				console.log('✅ Audio activé avec succès !');
+			} else {
+				console.warn('⚠️ Échec de l\'activation audio');
+			}
+		}
+	}, [audioEnabled]);
+
+	const handleKeyDown = useCallback(async (event: KeyboardEvent) => {
 		if (!state.ws || state.ws.readyState !== WebSocket.OPEN) return;
+
+		// Activer l'audio au premier appui de touche
+		await handleFirstInteraction();
 
 		const keyActions: Record<string, string> = {
 			'ArrowUp': 'UP',
@@ -193,7 +217,7 @@ const PacmanGame: React.FC<PacmanGameProps> = ({ state }) => {
 			}));
 			event.preventDefault();
 		}
-	};
+	}, [state.ws, handleFirstInteraction]);
 
 	useEffect(() => {
 		window.addEventListener('keydown', handleKeyDown);
@@ -201,7 +225,67 @@ const PacmanGame: React.FC<PacmanGameProps> = ({ state }) => {
 		return () => {
 			window.removeEventListener('keydown', handleKeyDown);
 		};
-	}, [state.ws]);
+	}, [handleKeyDown]);
+
+	// Surveiller les changements d'état du jeu pour déclencher les sons
+	useEffect(() => {
+		if (!audioEnabled) return;
+
+		// Initialiser les refs au premier rendu
+		const currentPlayer = players.find(p => p.id === state.player?.id);
+		const currentScore = currentPlayer?.score || 0;
+		
+		// Si c'est la première fois ou si le jeu vient de commencer
+		if (!gameStarted.current && state.game.launch) {
+			console.log('🎵 Début de partie - Son Start');
+			SoundManager.getInstance().forcePlay('start');
+			gameStarted.current = true;
+			previousScore.current = currentScore;
+			previousLife.current = state.game.pacmanLife;
+			previousFrightened.current = state.game.frightenedState.active;
+			return; // Ne pas vérifier d'autres changements lors de l'initialisation
+		}
+
+		// Vérifier les changements de score (pastille mangée) - logique améliorée
+		if (currentScore > previousScore.current) {
+			const scoreDifference = currentScore - previousScore.current;
+			console.log(`📊 Score: ${previousScore.current} → ${currentScore} (diff: +${scoreDifference})`);
+			
+			// Si le score augmente beaucoup (ex: 200+ points), c'est probablement un fantôme
+			if (scoreDifference >= 200 && state.game.frightenedState.active) {
+				console.log('🎵 Fantôme mangé - Son GhostEat');
+				SoundManager.getInstance().forcePlay('ghostEat');
+			} else if (scoreDifference >= 50) { // Power pellet (généralement 50 points)
+				console.log('🎵 Power Pellet - Son PowerUp (via score)');
+				// Ne pas jouer le son ici car il sera joué par la détection frightenedState
+			} else if (scoreDifference >= 5) { // Pastille normale (généralement 10 points)
+				console.log('🎵 Pastille mangée - Son Chomp');
+				SoundManager.getInstance().forcePlay('chomp');
+			}
+			
+			previousScore.current = currentScore;
+		}
+
+		// Vérifier les changements de vie (mort)
+		if (state.game.pacmanLife < previousLife.current) {
+			console.log(`💀 Vies: ${previousLife.current} → ${state.game.pacmanLife}`);
+			console.log('🎵 Vie perdue - Son Death');
+			SoundManager.getInstance().forcePlay('death');
+			previousLife.current = state.game.pacmanLife;
+		}
+
+		// Vérifier l'activation du mode frightened (power pellet)
+		if (state.game.frightenedState.active && !previousFrightened.current) {
+			console.log('⚡ Mode Frightened activé');
+			console.log('🎵 Power Pellet - Son PowerUp');
+			SoundManager.getInstance().forcePlay('powerUp');
+			previousFrightened.current = true;
+		} else if (!state.game.frightenedState.active && previousFrightened.current) {
+			console.log('⚡ Mode Frightened désactivé');
+			previousFrightened.current = false;
+		}
+
+	}, [audioEnabled, players, state.game.pacmanLife, state.game.frightenedState, state.player?.id, state.game.launch]);
 
 	// Attribue une classe CSS à chaque caractère
 	const getTileClass = (char: string, rowIndex: number, colIndex: number) => {
@@ -218,10 +302,50 @@ const PacmanGame: React.FC<PacmanGameProps> = ({ state }) => {
 
 
 	return (
-		<div className="PacmanGame">
+		<div className="PacmanGame" onClick={handleFirstInteraction}>
 			<div className="header">
 				<h3 className="title">PAC-MAN</h3>
-
+				{!audioEnabled && (
+					<div className="audio-notice" style={{ color: 'yellow', fontSize: '14px' }}>
+						Cliquez pour activer le son
+					</div>
+				)}
+				{audioEnabled && (
+					<div className="sound-test-buttons" style={{ display: 'flex', gap: '5px', marginTop: '5px', flexWrap: 'wrap' }}>
+						<button style={{ padding: '2px 6px', fontSize: '12px' }} onClick={() => SoundManager.getInstance().play('start')}>🎵 Start</button>
+						<button style={{ padding: '2px 6px', fontSize: '12px' }} onClick={() => SoundManager.getInstance().forcePlay('chomp')}>🎵 Chomp</button>
+						<button style={{ padding: '2px 6px', fontSize: '12px' }} onClick={() => SoundManager.getInstance().forcePlay('death')}>🎵 Death</button>
+						<button style={{ padding: '2px 6px', fontSize: '12px' }} onClick={() => SoundManager.getInstance().forcePlay('ghostEat')}>🎵 Ghost</button>
+						<button style={{ padding: '2px 6px', fontSize: '12px' }} onClick={() => SoundManager.getInstance().forcePlay('powerUp')}>🎵 Power</button>
+						<button style={{ padding: '2px 6px', fontSize: '11px', backgroundColor: '#666' }} onClick={() => {
+							SoundManager.getInstance().testSounds();
+							console.log('🔊 Audio enabled:', SoundManager.getInstance().isAudioEnabled());
+						}}>🔧 Test Audio</button>
+						<button style={{ padding: '2px 6px', fontSize: '11px', backgroundColor: '#555' }} onClick={() => {
+							SoundManager.getInstance().diagnoseAudio();
+						}}>🔍 Diagnostic</button>
+						<button style={{ padding: '2px 6px', fontSize: '11px', backgroundColor: '#777' }} onClick={async () => {
+							const success = await SoundManager.getInstance().forceEnableAudio();
+							console.log(`🔧 Forçage audio: ${success ? 'SUCCÈS' : 'ÉCHEC'}`);
+						}}>🔧 Force Audio</button>
+						<button style={{ padding: '2px 6px', fontSize: '11px', backgroundColor: '#444' }} onClick={() => {
+							console.clear();
+							console.log('🧹 Console nettoyée');
+						}}>🧹 Clear</button>
+						<button style={{ padding: '2px 6px', fontSize: '11px', backgroundColor: '#333' }} onClick={() => {
+							const currentPlayer = players.find(p => p.id === state.player?.id);
+							console.log('🔍 État actuel du jeu:', {
+								score: currentPlayer?.score || 0,
+								life: state.game.pacmanLife,
+								frightened: state.game.frightenedState.active,
+								launch: state.game.launch,
+								previousScore: previousScore.current,
+								previousLife: previousLife.current,
+								gameStarted: gameStarted.current
+							});
+						}}>🔍 Debug</button>
+					</div>
+				)}
 			</div>
 			<PauseMode state={state} />
 			<div className="pacman-map-wrapper">
@@ -326,13 +450,22 @@ const PacmanGame: React.FC<PacmanGameProps> = ({ state }) => {
 								const isFrightened = (player as any).isFrightened;
 								const frightenedState = state.game?.frightenedState;
 
-								// For debugging
-								console.log('WebSocket frightenedState:', frightenedState);
-
 								const isBlinking = isFrightened && 
 												   frightenedState?.active && 
-												   frightenedState?.remainingTime <= 8;
+												   frightenedState?.remainingTime !== undefined &&
+												   frightenedState?.remainingTime <= 5 && 
+												   frightenedState?.remainingTime > 0;
 								const isReturningToSpawn = (player as any).returnToSpawn === true;
+
+								// For debugging - seulement en cas de blinking
+								if (isBlinking) {
+									console.log('👻 Ghost BLINKING:', {
+										ghostChar,
+										direction,
+										remainingTime: frightenedState?.remainingTime,
+										isBlinking
+									});
+								}
 
 								// Sélection du GIF approprié
 								// Solution plus simple mais moins sûre au niveau du typage
@@ -460,9 +593,3 @@ const PacmanGame: React.FC<PacmanGameProps> = ({ state }) => {
 };
 
 export default PacmanGame;
-
-// Exemple d'utilisation dans PacmanGame.tsx ou autres composants
-SoundManager.getInstance().play('start'); // Au début du jeu
-SoundManager.getInstance().play('chomp'); // Quand Pacman mange une pastille
-SoundManager.getInstance().play('ghostEat'); // Quand Pacman mange un fantôme
-SoundManager.getInstance().play('death'); // Quand Pacman meurt
