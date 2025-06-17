@@ -30,7 +30,8 @@ export function pongWebSocket(socket: WebSocket, user: User) {
 				inGame: false,
 				socket: socket,
 				lastping: Date.now(),
-				timePause: 0
+				timePause: 0,
+				pauseGame: false,
 			};
 			sockets.set(socket, playerInfos);
 	}

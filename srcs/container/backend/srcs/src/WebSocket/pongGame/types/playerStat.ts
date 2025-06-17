@@ -16,6 +16,7 @@ export interface playerStat {
 	socket: WebSocket;
 	lastping?: number;
 	timePause?: number;
+	pauseGame?: boolean;
 };
 
 export interface Tournament {

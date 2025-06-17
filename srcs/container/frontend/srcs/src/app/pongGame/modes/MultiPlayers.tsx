@@ -248,7 +248,7 @@ const MultiPlayers: React.FC = () => {
 				if (!isReady3d || !socketRef.current || !isCinematic || !waitingPlayers) return;
 				const handlePause = (event: KeyboardEvent) => {
 					if (event.key === ' ') {
-						socketRef.current?.send(JSON.stringify({type: "Pause"}));
+						socketRef.current?.send(JSON.stringify({type: "Pause"})); //value p1
 					}
 				}
 				window.addEventListener('keydown', handlePause)
