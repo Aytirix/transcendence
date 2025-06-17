@@ -17,7 +17,7 @@ const FriendList: React.FC<FriendListProps> = ({
   handleRemoveFriend,
   // handleOpenPrivateChat
 }) => {
-  console.log("friendProp",friends);
+  console.log("friendProp", friends);
   if (friends.length === 0) {
     return (
       <div className="text-center text-gray-500 mt-8">
@@ -27,69 +27,55 @@ const FriendList: React.FC<FriendListProps> = ({
   }
 
   return (
-    <div className="flex-1 overflow-auto p-4 space-y-2 bg-gray-50">
-      {friends.map((friend) => (
-        <div
-          key={friend.id}
-          className="p-4 bg-white rounded shadow flex items-center space-x-3"
-        >
-          {friend.avatar ? (
-            <img src={friend.avatar} alt={friend.username} className="w-12 h-12 rounded-full" />
-          ) : (
-            <div className="w-12 h-12 rounded-full bg-gray-300 flex items-center justify-center text-lg font-semibold">
-              {friend.username[0]?.toUpperCase()}
-            </div>
-          )}
-          <div className="flex-1">
-            <div className="font-semibold text-lg">{friend.username}</div>
-            <div className="text-sm text-gray-500">
-              <span className={`inline-block w-2 h-2 rounded-full mr-1 ${friend.online ? "bg-green-500" : "bg-gray-400"}`}></span>
-              {friend.online ? "En ligne" : "Hors ligne"} • Langue: {friend.lang ?? "?"}
-            </div>
-            <div className="text-xs text-gray-400 mt-1">
-              Statut: {friend.relation.status === "pending" ? "En attente" : "Ami"}
-            </div>
-          </div>
-
-          <div className="flex space-x-2">
+      <ul className="list bg-base-100 rounded-box shadow-md">
+        {friends.map((friend) => (
+          <li className="list-row flex justify-between w-full items-center" key={friend.id}>
+            <div className="flex gap-4 items-center">
+            <div className={`avatar ${friend.online ? "avatar-online" : "avatar-offline"}`}>
+             <div className="w-18 rounded-full"><img src={`https://${window.location.hostname}:3000/avatars/${friend.avatar}`} alt="A" /></div></div>
+              <div className="w-20 text-left">{friend.username}</div>
+              <div className="w-6 rounded-full"><img src={`https://${window.location.hostname}:3000/flags/${friend.lang}_flat.png`} alt="A" /></div>
+              <div className={`${
+                friend.relation.status === "friend"
+                ? "text-green-700"
+                : friend.relation.status === "pending"
+                ? "text-yellow-600"
+                : "text-gray-500"
+              }`}>
+                {friend.relation.status === "pending" ? "En attente" : "Ami"}
+              </div>
+              </div>
             {friend.relation.status === "pending" ? (
               <>
                 <button
                   className="px-3 py-1 bg-green-100 text-green-700 rounded hover:bg-green-200 text-sm font-medium"
                   onClick={() => handleAcceptFriend(friend.id)}
-                  hidden={(friend.relation.target === friend.id)?true:false}
+                  hidden={(friend.relation.target === friend.id) ? true : false}
                 >
                   Accepter
                 </button>
                 <button
                   className="px-3 py-1 bg-red-100 text-red-700 rounded hover:bg-red-200 text-sm font-medium"
                   onClick={() => handleRefuseFriend(friend.id)}
+                  hidden={(friend.relation.target === friend.id) ? true : false}
                 >
                   Refuser
                 </button>
               </>
             ) : (
-               // <> // À décommenter si chat privé implémenté
-               //  {friend.relation.privmsg_id && (
-               //    <button
-               //      className="px-3 py-1 bg-blue-100 text-blue-700 rounded hover:bg-blue-200 text-sm font-medium"
-               //      onClick={() => handleOpenPrivateChat(friend.id, friend.relation.privmsg_id!)}
-               //    >
-               //      Message
-               //    </button>
-               //  )}
-                <button
-                  className="px-3 py-1 bg-red-100 text-red-700 rounded hover:bg-red-200 text-sm font-medium"
-                  onClick={() => handleRemoveFriend(friend.id)}
-                >
-                  Retirer
-                </button>
-               // </>
+              <button
+                className="px-3 py-1 bg-red-100 text-red-700 rounded hover:bg-red-200 text-sm font-medium"
+                onClick={() => handleRemoveFriend(friend.id)}
+              >
+                Retirer
+              </button>
             )}
-          </div>
-        </div>
-      ))}
-    </div>
+          </li>
+
+
+
+        ))}
+      </ul>
   );
 };
 
