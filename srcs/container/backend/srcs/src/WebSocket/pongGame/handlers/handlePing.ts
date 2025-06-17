@@ -16,11 +16,13 @@ export function startingPing(sockets: Map<WebSocket, playerStat>) {
 			if (isInactive) {
 				console.log(`Deconnection of player username => ${playerInfos.name}`);
 				playerInfos.resultMatch = "Loose"
-				if (playerInfos.name !== playerInfos.game.getPlayer1().getPlayerInfos().name) {
-					playerInfos.game.getPlayer1().getPlayerInfos().resultMatch = "win"
-				}
-				else {
-					playerInfos.game.getPlayer2().getPlayerInfos().resultMatch = "win"
+				if (playerInfos.mode === "Multi") {
+					if (playerInfos.name !== playerInfos.game.getPlayer1().getPlayerInfos().name) {
+						playerInfos.game.getPlayer1().getPlayerInfos().resultMatch = "win"
+					}
+					else {
+						playerInfos.game.getPlayer2().getPlayerInfos().resultMatch = "win"
+					}
 				}
 				if (playerInfos.game)
 					playerInfos.game.setStatus("EXIT");
