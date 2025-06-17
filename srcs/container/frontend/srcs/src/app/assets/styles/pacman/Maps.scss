@@ -238,3 +238,17 @@
 		padding: 0.7rem 0.3rem;
 	}
 }
+
+@keyframes fadeIn {
+	from {
+		opacity: 0;
+		transform: translateY(20px);
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}
+.maps {
+	animation: fadeIn 0.5s ease-in-out;
+}

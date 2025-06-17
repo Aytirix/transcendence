@@ -1,5 +1,5 @@
 import React from 'react';
-// import '../../assets/styles/pacman/Rules.scss';
+import '../../assets/styles/pacman/Rules.scss';
 
 const Rules: React.FC = () => {
 	return (
