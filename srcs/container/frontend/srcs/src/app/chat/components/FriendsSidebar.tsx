@@ -1,4 +1,4 @@
-// src/components/FriendsSidebar.tsx
+
 import React from "react";
 import { Friend, WebSocketStatus } from "../types/chat";
 
@@ -14,22 +14,15 @@ const FriendsSidebar: React.FC<FriendsSidebarProps> = ({
   setInputSearch,
 }) => {
   return (
-      <label
-        htmlFor="search"
-        className="flex items-center border bg-gray-200 p-2 m-4 rounded"
-      >
-        <svg width="20" height="20" viewBox="0 0 22 22" fill="none" stroke="currentColor">
-          <circle cx="11" cy="11" r="8"></circle>
-          <path d="m21 21-4.3-4.3"></path>
-        </svg>
+      <div className="navbar-start">
         <input
           type="search"
-          className="grow bg-transparent outline-none ml-2"
+          className="input input-bordered w-24 md:w-auto"
           placeholder="Rechercher un utilisateur"
           value={inputSearch}
           onChange={e => setInputSearch(e.target.value)}
         />
-      </label>
+      </div>
   );
 };
 
