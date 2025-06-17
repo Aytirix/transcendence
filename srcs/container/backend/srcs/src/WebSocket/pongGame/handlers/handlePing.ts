@@ -15,12 +15,18 @@ export function startingPing(sockets: Map<WebSocket, playerStat>) {
 			const isInactive = (Date.now() - playerInfos.lastping) > 30000
 			if (isInactive) {
 				console.log(`Deconnection of player username => ${playerInfos.name}`);
+				playerInfos.resultMatch = "Loose"
+				if (playerInfos.name !== playerInfos.game.getPlayer1().getPlayerInfos().name) {
+					playerInfos.game.getPlayer1().getPlayerInfos().resultMatch = "win"
+				}
+				else {
+					playerInfos.game.getPlayer2().getPlayerInfos().resultMatch = "win"
+				}
 				if (playerInfos.game)
 					playerInfos.game.setStatus("EXIT");
 				sockets.delete(playerSocket);
 				playerSocket.close();
 			}
-
 			if (playerInfos.mode === "Multi" && playerInfos.timePause) {
 				const isInactivePause = (Date.now() - playerInfos.timePause) > 30000
 				if (isInactivePause) {
@@ -31,7 +37,6 @@ export function startingPing(sockets: Map<WebSocket, playerStat>) {
 					else {
 						playerInfos.game.getPlayer2().getPlayerInfos().resultMatch = "win"
 					}
-
 					if (playerInfos.game)
 						playerInfos.game.setStatus("EXIT");
 				}

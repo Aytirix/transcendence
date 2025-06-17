@@ -112,6 +112,7 @@ const SameKeyboard: React.FC = () => {
 			if (data.type === "Remove") {
 				setStartReco(false);
 				setIscinematic(false);
+				setIsPause(false);
 				localStorage.removeItem("reconnection");
 				localStorage.removeItem("data");
 

@@ -18,6 +18,7 @@ export function createGame(playerInfos: playerStat, player2Infos?: playerStat) :
 		const player1 = new Paddle(780, 250, playerInfos);
 		const player2 = new Paddle(20, 250, player2Infos);
 		const game: Game = new Game(ball, player1, player2);
+
 		playerInfos.socket.send(JSON.stringify({ type: "assign", value: "p1" }));
 		player2Infos.socket.send(JSON.stringify({ type: "assign", value: "p2" }));
 		return (game);
@@ -35,6 +36,7 @@ export function createGame(playerInfos: playerStat, player2Infos?: playerStat) :
 		const player1 = new Paddle(780, 250, playerInfos);
 		const player2 = new Paddle(20, 250, player2Infos);
 		const game: Game = new Game(ball, player1, player2);
+
 		playerInfos.socket.send(JSON.stringify({ type: "assign", value: "player1" }));
 		player2Infos.socket.send(JSON.stringify({ type: "assign", value: "player2" }));
 		return (game);
