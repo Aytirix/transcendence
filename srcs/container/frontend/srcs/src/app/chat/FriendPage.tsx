@@ -8,7 +8,7 @@ import FriendsContentArea from "./components/FriendsContentArea"; // à créer (
 
 const endpoint = `/chat`;
 
-const FriendsSearchPage: React.FC = () => {
+const FriendPage: React.FC = () => {
   const [friends, setFriends] = useState<Friend[]>([]);
   const [inputSearch, setInputSearch] = useState("");
   const [wsStatus, setWsStatus] = useState<WebSocketStatus>("Connecting...");
@@ -147,6 +147,7 @@ const FriendsSearchPage: React.FC = () => {
   const handleRefuseFriend = (userId: number) => {
     if (socket?.readyState !== WebSocket.OPEN) return;
     setFeedback(null);
+    console.log("remove_friend", userId);
     socket.send(JSON.stringify({
       action: "refuse_friend",
       user_id: userId,
@@ -155,8 +156,28 @@ const FriendsSearchPage: React.FC = () => {
   const handleRemoveFriend = (userId: number) => {
     if (socket?.readyState !== WebSocket.OPEN) return;
     setFeedback(null);
+    console.log("remove_friend", userId);
     socket.send(JSON.stringify({
       action: "remove_friend",
+      user_id: userId,
+    }));
+  };
+
+    const handleBlockedFriend = (userId: number) => {
+    if (socket?.readyState !== WebSocket.OPEN) return;
+    setFeedback(null);
+    console.log("block_user", userId);
+    socket.send(JSON.stringify({
+      action: "block_user",
+      user_id: userId,
+    }));
+  };
+    const handleUnBlockedFriend = (userId: number) => {
+    if (socket?.readyState !== WebSocket.OPEN) return;
+    setFeedback(null);
+    console.log("unblock_user", userId);
+    socket.send(JSON.stringify({
+      action: "unblock_user",
       user_id: userId,
     }));
   };
@@ -170,12 +191,20 @@ const FriendsSearchPage: React.FC = () => {
 
   return (
     <div className="">
+      <div className="navbar bg-base-100 shadow-sm">
       <FriendsSidebar
         friends={friends}
         inputSearch={inputSearch}
         setInputSearch={setInputSearch}
         wsStatus={wsStatus}
       />
+      <div className="navbar-center">
+        {searchResults
+          ? "Résultats de recherche"
+          : `Liste des amis (${friends.length})`
+        }
+      </div>
+      </div>
       <FriendsContentArea
         searchResults={searchResults}
         friends={friends}
@@ -187,9 +216,11 @@ const FriendsSearchPage: React.FC = () => {
         handleAcceptFriend={handleAcceptFriend}
         handleRefuseFriend={handleRefuseFriend}
         handleRemoveFriend={handleRemoveFriend}
+        handleBlockedFriend={handleBlockedFriend}
+        handleUnBlockedFriend={handleUnBlockedFriend}
       />
     </div>
   );
 };
 
-export default FriendsSearchPage;
+export default FriendPage;

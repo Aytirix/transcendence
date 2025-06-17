@@ -1,6 +1,6 @@
 // src/types.ts
 
-import { number } from "framer-motion";
+
 
 export type Member = {
   id: number;
@@ -31,7 +31,7 @@ export type Friend = {
   avatar?: string;
   lang?: string;
   relation: {
-    status: "pending" | "friend";
+    status: "pending" | "friend" | "blocked";
     target: number; // user_id ciblé par la demande
     privmsg_id?: number | null; // ID du groupe privé si relation est "friend"
   };

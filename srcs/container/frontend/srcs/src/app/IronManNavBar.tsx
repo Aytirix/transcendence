@@ -36,10 +36,10 @@ const IronManNavBar: React.FC = () => {
             </div>
           </div>
            <div className="navbar-center">
-             <Link to="/Pacman" className="btn btn-ghost text-xl" >Pacman</Link>
-             <Link to="/Pong" className="btn btn-ghost text-xl">Pong</Link>
-            <Link to="/Chat" className="btn btn-ghost text-xl">Chat</Link>
-            <Link to="/friend" className="btn btn-ghost text-xl">Ami</Link>
+             <Link to="/Pacman" className="btn btn-ghost sm:text-lg md:text-xl lg:text-2xl" >Pacman</Link>
+             <Link to="/Pong" className="btn btn-ghost sm:text-lg md:text-xl lg:text-2xl">Pong</Link>
+            <Link to="/Chat" className="btn btn-ghost sm:text-lg md:text-xl lg:text-2xl">Chat</Link>
+            <Link to="/friend" className="btn btn-ghost sm:text-lg md:text-xl lg:text-2xl">Ami</Link>
            </div>
           <div className="navbar-end">
             <div className="dropdown dropdown-end">

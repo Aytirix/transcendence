@@ -17,6 +17,8 @@ interface FriendsContentAreaProps {
   handleAcceptFriend: (userId: number) => void;
   handleRefuseFriend: (userId: number) => void;
   handleRemoveFriend: (userId: number) => void;
+  handleBlockedFriend: (userId: number) => void;
+  handleUnBlockedFriend: (userId: number) => void;
 }
 
 const FriendsContentArea: React.FC<FriendsContentAreaProps> = ({
@@ -30,15 +32,11 @@ const FriendsContentArea: React.FC<FriendsContentAreaProps> = ({
   handleAcceptFriend,
   handleRefuseFriend,
   handleRemoveFriend,
+          handleBlockedFriend,
+        handleUnBlockedFriend,
 }) => {
   return (
     <main className="flex-1 flex flex-col">
-      <header className="p-4 border-b font-semibold text-lg">
-        {searchResults
-          ? "Résultats de recherche"
-          : `Liste des amis (${friends.length})`
-        }
-      </header>
       {feedback && (
         <div className="m-4 p-2 bg-green-200 rounded text-green-900 text-center">{feedback}</div>
       )}
@@ -55,6 +53,8 @@ const FriendsContentArea: React.FC<FriendsContentAreaProps> = ({
           handleAcceptFriend={handleAcceptFriend}
           handleRefuseFriend={handleRefuseFriend}
           handleRemoveFriend={handleRemoveFriend}
+          handleBlockedFriend={handleBlockedFriend}
+          handleUnBlockedFriend={handleUnBlockedFriend}
         />
       )}
     </main>
