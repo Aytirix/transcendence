@@ -4,5 +4,87 @@
 	"logout": "Logout",
 	"profile": "Profile",
 	"username": "nom utilisateur",
-	"password": "Mot de passe"
+	"password": "Mot de passe",
+	
+	"home": {
+		"welcome_to_transcendence": "Bienvenido a Transcendence",
+		"experience_classic_games": "Experimenta juegos clásicos reimaginados con tecnología moderna",
+		"epic_games": "Juegos Épicos",
+		"hours_of_fun": "Horas de Diversión",
+		"school_spirit": "Espíritu Escolar",
+		
+		"choose_your_adventure": "Elige tu Aventura",
+		"classic_pong_description": "El clásico juego Pong con un toque moderno y multijugador",
+		"classic_pacman_description": "El icónico Pac-Man con características mejoradas",
+			"pong": {
+			"multiplayer": "Multiplayer"
+
+		},
+		"real_time": "Tiempo real",
+		"competitive": "Competitivo",
+		"retro_arcade": "Arcade retro",
+		"high_scores": "Puntuaciones altas",
+		"nostalgic": "Nostálgico",
+		"play_now": "Jugar ahora",
+		
+		"why_transcendence": "¿Por qué Transcendence?",
+		"real_time_gaming": "Juegos en tiempo real",
+		"real_time_description": "Disfruta de una jugabilidad fluida con nuestra tecnología WebSocket avanzada",
+		"competitive_play": "Juego competitivo",
+		"competitive_description": "Desafía a otros jugadores y escala en las clasificaciones",
+		"social_features": "Características sociales",
+		"social_description": "Chatea, desafía amigos y construye comunidades de juegos",
+		"retro_experience": "Experiencia retro",
+		"retro_description": "Redescubre los clásicos con estética pixel perfecta",
+		
+		"ready_to_play": "¿Listo para jugar?",
+		"join_the_fun": "¡Únete a la aventura y muestra tus habilidades!",
+		"start_with_pong": "Empezar con Pong",
+		"try_pacman": "Probar Pac-Man",
+		
+		"made_with": "Hecho con",
+		"at_42_school": "en la escuela 42",
+		"developed_by": "Desarrollado por"
+	},
+
+	"credits": {
+		"project_credits": "Créditos del proyecto",
+		"contributions_title": "Contribuciones",
+		"project_transcendence": "Proyecto Transcendence",
+		"role" : {
+			"lead": "Desarrollador principal",
+			"pongFullstack": "Desarrollador Fullstack de Pong",
+			"generalFrontend": "Desarrollador Frontend general",
+			"pacManFrontend": "Desarrollador Frontend de Pac-Man"
+		},
+		"contributions": {
+			"projectArchitecture": "Arquitectura del proyecto (excepto Pong)",
+			"userAuthentication": "Autenticación de usuario (registro, inicio de sesión)",
+			"googleOAuthIntegration": "Integración con Google OAuth",
+			"twoFAImplementation": "Implementación de 2FA",
+			"pacManBackend": "Backend de Pac-Man",
+			"chatSystemBackend": "Backend del sistema de chat",
+			"projectConfiguration": "Configuración del proyecto (Docker)",
+			"databaseDesign": "Diseño y gestión de la base de datos",
+			"avatarManagementSystem": "Sistema de gestión de avatares",
+			"completePongDevelopment": "Desarrollo completo del juego Pong",
+			"pongFrontendInterface": "Interfaz frontend de Pong",
+			"pongBackendLogic": "Lógica backend de Pong",
+			"realTimeMultiplayerSystem": "Sistema multijugador en tiempo real",
+			"uiUxDesign": "Diseño UI/UX",
+			"gameMatchmaking": "Emparejamiento de partidas",
+			"pongStatisticsScoring": "Estadísticas y puntuación de Pong",
+			"loginRegisterInterfaces": "Interfaces de inicio de sesión/registro",
+			"userProfileManagement": "Gestión de perfil de usuario",
+			"avatarUploadSystem": "Sistema de subida de avatares",
+			"navigationBar": "Barra de navegación",
+			"chatSystemFrontend": "Frontend del sistema de chat",
+			"pacManGameInterface": "Interfaz del juego Pac-Man",
+			"interactiveMapCreation": "Creación de mapas interactivos",
+			"gameMechanicsImplementation": "Implementación de mecánicas de juego",
+			"statisticsDashboard": "Panel de estadísticas",
+			"gameLobbySystem": "Sistema de lobby de juego",
+			"playerProgressionTracking": "Seguimiento de la progresión del jugador"
+		}
+	}
 }

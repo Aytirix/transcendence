@@ -9,7 +9,6 @@ i18n
 	.use(initReactI18next)
 	.init({
 		lng: 'fr',
-		keySeparator: false,
 		debug: false,
 		interpolation: {
 			escapeValue: false,
