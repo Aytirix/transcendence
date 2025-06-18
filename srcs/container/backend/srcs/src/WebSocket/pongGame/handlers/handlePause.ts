@@ -30,6 +30,7 @@ import { playerStat } from "../types/playerStat";
 export function handlePause(playerInfos: playerStat) {
 
 
+	console.log(playerInfos.game.getStatus());
 	if (playerInfos.game.getStatus() === "KICKOFF" 
 	&& playerInfos.game.getStatus() !== "SERVICE") {
 		if (playerInfos.mode === "Multi") {
@@ -43,6 +44,7 @@ export function handlePause(playerInfos: playerStat) {
 				}
 			}
 			else {
+				console.log("pause2")
 				if (!playerInfos.game.getPlayer2().getPlayerInfos().pauseGame) {
 					playerInfos.game.setStatus("PLAYING")
 					playerInfos.timePause = 0;
