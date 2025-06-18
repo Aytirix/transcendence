@@ -1,10 +1,9 @@
 import { Link } from 'react-router-dom';
-import { useLanguage } from '../contexts/LanguageContext';
 import React, { useState } from 'react';
-// import './assets/styles/IronManTheme.css';
 import ApiService from '../api/ApiService';
-import { useNavigate } from 'react-router-dom';
+import { useLanguage } from '../contexts/LanguageContext';
 import GoogleLoginButton from './components/GoogleLoginButton';
+import LanguageToggle from './components/LanguageToggle';
 
 interface RegisterSchema {
   email: string;
@@ -15,6 +14,7 @@ interface RegisterSchema {
 }
 
 const IronManRegister: React.FC = () => {
+  const { t } = useLanguage();
   const [form, setForm] = useState<RegisterSchema>({
     email: '',
     password: '',
@@ -23,14 +23,13 @@ const IronManRegister: React.FC = () => {
     lang: 'fr',
   });
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
-  };
-
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
-  const navigate = useNavigate();
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    setForm({ ...form, [e.target.name]: e.target.value });
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -42,11 +41,10 @@ const IronManRegister: React.FC = () => {
       return;
     }
     setLoading(true);
-    // const {...toSend } = form;
 
     try {
-      console.log("form",form);
-      const resp = await ApiService.post('/register', form) as ApiService;
+      console.log("form", form);
+      const resp: any = await ApiService.post('/register', form) as ApiService;
 
       if (!resp.ok) {
         const data = await resp.json();
@@ -63,68 +61,83 @@ const IronManRegister: React.FC = () => {
 
   return (
     <>
-        <div className="min-h-screen flex items-center justify-center">
-    
-          <form className=" " onSubmit={handleSubmit}>
-            <fieldset className="fieldset bg-base-200 border-base-300 rounded-box w-xs border p-4">
-          <legend className="fieldset-legend">Register</legend>
-        <input
-          className="input input-a"
-          type="email"
-          name="email"
-          placeholder="E-mail"
-          value={form.email}
-          onChange={handleChange}
-          required
-        />
-        <input
-          className="input input-a"
-          type="text"
-          name="username"
-          placeholder="Nom d'utilisateur"
-          value={form.username}
-          onChange={handleChange}
-          required
-        />
-        <input
-          className="input input-a"
-          type="password"
-          name="password"
-          placeholder="Mot de passe"
-          value={form.password}
-          onChange={handleChange}
-          required
-        />
-        <input
-          className="input input-a"
-          type="password"
-          name="confirmPassword"
-          placeholder="Confirmez le mot de passe"
-          value={form.confirmPassword}
-          onChange={handleChange}
-          required
-        />
-        <select
-          className="input input-a"
-          name="lang"
-          value={form.lang}
-          onChange={handleChange}
-          required
-        >
-          <option value="fr">Français</option>
-          <option value="en">English</option>
-          <option value="es">Español</option>
-          <option value="it">Italia</option>
-        </select>
-        <button className="btn btn-neutral mt-4" type="submit">
-          Créer mon compte
-        </button>
-          <GoogleLoginButton textbtn="signup"/>
-          <Link to="/login">Déjà membre ? Se connecter</Link>
-            </fieldset>
-          </form>
+      <div className="min-h-screen flex items-center justify-center relative">
+        {/* Bouton de changement de langue en haut à droite */}
+        <div className="absolute top-4 right-4">
+          <LanguageToggle />
         </div>
-        </>
+
+        <form className=" " onSubmit={handleSubmit}>
+          <fieldset className="fieldset bg-base-200 border-base-300 rounded-box w-xs border p-4">
+            <legend className="fieldset-legend">{t('register.title')}</legend>
+            
+            <input
+              className="input input-a"
+              type="email"
+              name="email"
+              placeholder={t('register.email')}
+              value={form.email}
+              onChange={handleChange}
+              required
+            />
+            
+            <input
+              className="input input-a"
+              type="text"
+              name="username"
+              placeholder={t('register.username')}
+              value={form.username}
+              onChange={handleChange}
+              required
+            />
+            
+            <input
+              className="input input-a"
+              type="password"
+              name="password"
+              placeholder={t('register.password')}
+              value={form.password}
+              onChange={handleChange}
+              required
+            />
+            
+            <input
+              className="input input-a"
+              type="password"
+              name="confirmPassword"
+              placeholder={t('register.confirmPassword')}
+              value={form.confirmPassword}
+              onChange={handleChange}
+              required
+            />
+            
+            <select
+              className="input input-a"
+              name="lang"
+              value={form.lang}
+              onChange={handleChange}
+              required
+            >
+              <option value="fr">Français</option>
+              <option value="en">English</option>
+              <option value="es">Español</option>
+              <option value="it">Italiano</option>
+            </select>
+            
+            <button className="btn btn-neutral mt-4" type="submit" disabled={loading}>
+              {loading ? "Création..." : t('register.submit')}
+            </button>
+            
+            <GoogleLoginButton textbtn="signup"/>
+            
+            <Link to="/login">{t('register.loginLink')}</Link>
+            
+            {error && <div style={{ color: '#c20000', marginTop: '16px', textAlign: 'center' }}>{error}</div>}
+            {success && <div style={{ color: '#28a745', marginTop: '16px', textAlign: 'center' }}>{success}</div>}
+          </fieldset>
+        </form>
+      </div>
+    </>
   );
 };
 

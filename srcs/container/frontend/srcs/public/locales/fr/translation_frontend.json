@@ -1,8 +1,26 @@
 {
 	"hello": "Bonjour",
-	"test": "Le site web actuel propose une interface moderne et responsive, permettant à chaque utilisateur de naviguer facilement et de gérer son profil en toute sécurité. Les fonctionnalités de base sont en place : inscription, connexion, et visualisation des informations utilisateurs. Le projet Transcendence, développé à l’école 42, s’intègre à cette plateforme en ajoutant une dimension innovante et interactive. Son objectif principal est de créer, directement sur le site, un jeu de Pong multijoueur accessible à tous, avec gestion en temps réel des parties grâce aux websockets. Il intègre aussi des fonctionnalités sociales comme le chat, les invitations, les tournois entre utilisateurs et la gestion de profils personnalisés. Ce projet permet non seulement d’enrichir l’expérience utilisateur, mais aussi de moderniser le site en promouvant l’échange et la compétition amicale. Enfin, Transcendence offre un environnement propice à la collaboration et à la maîtrise des outils de développement web, tout en renforçant l’esprit communautaire au sein de la plateforme.",
+	"test": "Le site web actuel propose une interface moderne et responsive, permettant à chaque utilisateur de naviguer facilement et de gérer son profil en toute sécurité. Les fonctionnalités de base sont en place : inscription, connexion, et visualisation des informations utilisateurs. Le projet Transcendence, développé à l'école 42, s'intègre à cette plateforme en ajoutant une dimension innovante et interactive. Son objectif principal est de créer, directement sur le site, un jeu de Pong multijoueur accessible à tous, avec gestion en temps réel des parties grâce aux websockets. Il intègre aussi des fonctionnalités sociales comme le chat, les invitations, les tournois entre utilisateurs et la gestion de profils personnalisés. Ce projet permet non seulement d'enrichir l'expérience utilisateur, mais aussi de moderniser le site en promouvant l'échange et la compétition amicale. Enfin, Transcendence offre un environnement propice à la collaboration et à la maîtrise des outils de développement web, tout en renforçant l'esprit communautaire au sein de la plateforme.",
 	"logout": "Déconnexion",
 	"profile": "Profile",
 	"username": "nom utilisateur",
-	"password": "Mot de passe"
+	"password": "Mot de passe",
+	"login": {
+		"title": "Connexion",
+		"email": "Email",
+		"password": "Mot de passe",
+		"submit": "Se connecter",
+		"loading": "Connexion...",
+		"registerLink": "Nouveau héros ? Créer un compte"
+	},
+	"register": {
+		"title": "Inscription",
+		"email": "E-mail",
+		"username": "Nom d'utilisateur",
+		"password": "Mot de passe",
+		"confirmPassword": "Confirmez le mot de passe",
+		"language": "Langue",
+		"submit": "Créer mon compte",
+		"loginLink": "Déjà membre ? Se connecter"
+	}
 }
