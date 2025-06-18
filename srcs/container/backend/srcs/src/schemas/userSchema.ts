@@ -210,7 +210,7 @@ export const authGoogleCallback = {
 
 export const UploadAvatar = {
 	description: 'Upload d\'avatar utilisateur',
-	tags: ['user'],
+	tags: ['Authentification'],
 	consumes: ['multipart/form-data'],
 	body: {
 		properties: {
@@ -243,6 +243,42 @@ export const UploadAvatar = {
 	},
 };
 
+export const verifyCode = {
+	description: 'Vérification d\'un code',
+	tags: ['Authentification'],
+	body: {
+		type: 'object',
+		properties: {
+			code: { type: 'string', minLength: 25 },
+		},
+		required: ['code'],
+		additionalProperties: false,
+		errorMessage: {
+			required: {
+				code: 'errors.code.required',
+			},
+			properties: {
+				code: 'errors.code.invalid',
+			},
+			additionalProperties: 'errors.NoadditionalProperties',
+		}
+	},
+	response: {
+		200: {
+			description: 'Code vérifié avec succès',
+			...messageResponse,
+		},
+		400: {
+			description: 'Code invalide',
+			...messageResponse,
+		},
+		401: {
+			description: 'Non autorisé',
+			...messageResponse,
+		},
+	},
+};
+
 export default {
 	login,
 	register,
@@ -250,5 +286,6 @@ export default {
 	logout,
 	isAuth,
 	authGoogleCallback,
-	UploadAvatar
+	UploadAvatar,
+	verifyCode,
 };

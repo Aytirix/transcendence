@@ -1,5 +1,6 @@
 import { FastifyRequest, FastifyReply } from 'fastify';
 import userModel from '@models/modelUser';
+import controller2FA from '@controllers/controller2FA';
 import tools from '@tools';
 import i18n from '@i18n';
 import { IdentityPoolClient, OAuth2Client } from 'google-auth-library';
@@ -7,6 +8,7 @@ import path from 'path';
 import fs from "fs";
 import { promisify } from "util";
 import { pipeline } from "stream";
+import { User } from '@types';
 
 require('dotenv').config();
 
@@ -60,10 +62,14 @@ export const Register = async (request: FastifyRequest, reply: FastifyReply) => 
 
 	const defaultAvatar = ['avatar1.png', 'avatar2.png', 'avatar3.png', 'avatar4.png'][Math.floor(Math.random() * 4)];
 
-	const user = await userModel.Register(email, username, password, defaultAvatar, lang || 'fr');
-
-	request.i18n.changeLanguage(lang);
-	request.session.user = user;
+	const user = {
+		email,
+		username,
+		password,
+		lang: lang || 'fr',
+		avatar: defaultAvatar,
+	}
+	controller2FA.createVerifyEmailAccount(request, email, user);
 
 	return reply.send({
 		message: request.i18n.t('login.welcome'),
@@ -138,6 +144,7 @@ export const UpdateUser = async (request: FastifyRequest, reply: FastifyReply) =
 		lang: lang || user.lang,
 		avatar: avatar || user.avatar,
 	};
+
 	return reply.send({
 		message: `Vos informations ont été mises à jour avec succès.`,
 		user: {

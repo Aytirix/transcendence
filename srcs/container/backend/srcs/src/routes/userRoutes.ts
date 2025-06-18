@@ -1,5 +1,6 @@
 import { FastifyInstance } from 'fastify';
 import userController from '@controllers/controllerUser';
+import controller2FA from '@controllers/controller2FA';
 import userSchema from '@schemas/userSchema';
 import Middleware from '@Middleware';
 
@@ -37,4 +38,8 @@ export default async (fastify: FastifyInstance) => {
 		handler: userController.authGoogleCallback,
 	});
 
+	fastify.post('/auth/confirmEmail', {
+		schema: userSchema.verifyCode,
+		handler: controller2FA.verifyCodeRegister,
+	});
 };

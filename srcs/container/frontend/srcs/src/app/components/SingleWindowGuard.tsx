@@ -1,7 +1,9 @@
 import React, { useEffect, useState, ReactNode } from 'react';
+import { useLocation } from 'react-router-dom';
 
 const CHANNEL_NAME = 'Trascendence';
 const APP_WINDOW_NAME = 'TrascendenceApp';
+const IGNORE_PATH = ['/auth/confirmEmail', '/login', '/register', '/'];
 
 type Message = 'HELLO' | 'OCCUPIED' | 'FOCUS';
 
@@ -12,6 +14,9 @@ interface SingletonGuardProps {
 const SingletonGuard: React.FC<SingletonGuardProps> = ({ children }) => {
 	const [isPrimary, setIsPrimary] = useState<boolean | null>(null);
 	const [channel] = useState(() => new BroadcastChannel(CHANNEL_NAME));
+	const location = useLocation();
+
+	// ✅ Appels de hooks faits AVANT toute condition de return
 
 	useEffect(() => {
 		window.name = APP_WINDOW_NAME;
@@ -55,6 +60,12 @@ const SingletonGuard: React.FC<SingletonGuardProps> = ({ children }) => {
 			channel.close();
 		};
 	}, [channel]);
+
+	// ✅ Conditions de retour après les hooks
+	console.log(`Current path: ${location.pathname}`);
+	if (IGNORE_PATH.includes(location.pathname)) {
+		return <>{children}</>;
+	}
 
 	if (isPrimary === null) return null;
 
