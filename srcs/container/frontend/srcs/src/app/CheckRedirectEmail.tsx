@@ -36,14 +36,19 @@ const CheckRedirectEmail: React.FC = () => {
 			if (!resp.ok) {
 				setStatus('error');
 				setMessage(resp.message || 'Erreur lors de la validation');
+				if (redirect) {
+					setTimeout(() => {
+						navigate('/login');
+					}, 2000);
+				}
 			} else {
 				setStatus('success');
 				setMessage(resp.message || 'Succès !');
-			}
-			if (redirect) {
-				setTimeout(() => {
-					navigate(redirect);
-				}, 2000);
+				if (redirect) {
+					setTimeout(() => {
+						navigate(redirect);
+					}, 2000);
+				}
 			}
 		} catch (err: any) {
 			setStatus('error');

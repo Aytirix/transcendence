@@ -129,7 +129,6 @@ export const logout = {
 	},
 }
 
-
 export const isAuth = {
 	description: 'Vérification de l\'authentification. Appeler depuis le frontend pour savoir si l\'utilisateur est connecté.',
 	tags: ['Authentification'],
