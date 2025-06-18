@@ -61,7 +61,9 @@ async function sendTemplateEmail(
 	replacements: Record<string, string>,
 	request?: FastifyRequest
 ): Promise<void> {
-	const templatePath = join(__dirname, '../template_email', `${templateName}.html`);
+	const language = request.i18n.language || 'fr';
+	console.log(`Sending email using template: ${templateName} in language: ${language}`);
+	const templatePath = join(__dirname, '../template_email', language, `${templateName}.html`);
 
 	// Ajouter des variables par défaut si request est fourni
 	const defaultReplacements = request ? {
@@ -82,9 +84,8 @@ async function sendTemplateEmail(
 	await transporter.sendMail(mailOptions);
 }
 
-export const sendRegisterVerifyEmail = async (request: FastifyRequest, email: string, user: any): Promise<boolean> => {
+export const sendRegisterVerifyEmail = async (request: FastifyRequest, email: string, type: string, user: any): Promise<boolean> => {
 	try {
-		const type = 'createAccount_confirm_email';
 		// Sauvegarder le code en base de données
 		const userCode = await createVerificationCode(email, user.username, type, user);
 		if (!userCode) return false;
@@ -192,17 +193,21 @@ export async function verifyCode(req: FastifyRequest, reply: FastifyReply) {
 		return reply.status(400).send({ success: false, message: i18n.t('errors.code.invalid') });
 	}
 
-	if (type == 'createAccount_confirm_email' && typeof isValid === 'object' && isValid !== null) {
-		const user = await userModel.Register(isValid.email, isValid.username, isValid.password, isValid.avatar, isValid.lang);
-		req.session.user = user;
-		return reply.status(200).send({ success: true, message: i18n.t('email.verificationCode.CreateAccountOk'), user });
-	} else if (type == 'update_confirm_email' && isValid === true) {
-		await userModel.UpdateUser(req.session.user.id.toString(), email);
-		req.session.user.email = email;
-		return reply.status(200).send({ success: true, message: i18n.t('email.verificationCode.UpdateEmailOk') });
-	} else {
-		return reply.status(400).send({ success: false, message: i18n.t('errors.code.invalid') });
+	if (isValid){
+		if (type == 'createAccount_confirm_email' && typeof isValid === 'object') {
+			const user = await userModel.Register(isValid.email, isValid.username, isValid.password, isValid.avatar, isValid.lang);
+			req.session.user = user;
+			return reply.status(200).send({ success: true, message: i18n.t('email.verificationCode.CreateAccountOk'), user });
+		} else if (type == 'update_confirm_email') {
+			await userModel.UpdateUser(req.session.user.id.toString(), email);
+			req.session.user.email = email;
+			return reply.status(200).send({ success: true, message: i18n.t('email.verificationCode.UpdateEmailOk') });
+		} else if (type == 'loginAccount_confirm_email' && typeof isValid === 'object') {
+			req.session.user = isValid as User;
+			return reply.status(200).send({ success: true, message: i18n.t('email.verificationCode.LoginAccountOk'), isValid });
+		}
 	}
+	return reply.status(400).send({ success: false, message: i18n.t('errors.code.invalid') });
 }
 
 export default {

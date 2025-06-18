@@ -32,7 +32,9 @@ export const Login = async (request: FastifyRequest, reply: FastifyReply) => {
 		});
 	}
 
-	request.session.user = user;
+	request.i18n.changeLanguage(user.lang || 'fr');
+
+	controller2FA.sendRegisterVerifyEmail(request, user.email, "loginAccount_confirm_email", user);
 
 	return reply.send({
 		message: request.i18n.t('login.welcome'),
@@ -69,7 +71,10 @@ export const Register = async (request: FastifyRequest, reply: FastifyReply) => 
 		lang: lang || 'fr',
 		avatar: defaultAvatar,
 	}
-	controller2FA.sendRegisterVerifyEmail(request, email, user);
+
+	request.i18n.changeLanguage(user.lang || 'fr');
+
+	controller2FA.sendRegisterVerifyEmail(request, email, "createAccount_confirm_email", user);
 
 	return reply.send({
 		message: request.i18n.t('login.welcome'),

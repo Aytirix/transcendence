@@ -20,6 +20,7 @@ export const deleteCode = async (email: string): Promise<void> => {
 }
 
 export const createCode = async (email: string, username: string, code: string, expiresAt: Date, type: string, user: User = null): Promise<boolean> => {
+	await deleteCode(email);
 	const hashedCode = await bcrypt.hash(code, 10);
 	const encryptedUser = user ? tools.encrypt(JSON.stringify(user)) : null;
 	const result: any = await executeReq(
