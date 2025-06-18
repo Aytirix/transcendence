@@ -24,6 +24,8 @@
 		"loginLink": "Already a member? Sign in"
 	},
 	
+	"project_credits": "Project Credits",
+	"project_transcendence": "Transcendence Project",
 	"home": {
 		"welcome_to_transcendence": "Welcome to Transcendence",
 		"experience_classic_games": "Experience classic games reimagined with modern technology",
@@ -34,10 +36,7 @@
 		"choose_your_adventure": "Choose Your Adventure",
 		"classic_pong_description": "The classic Pong game with a modern multiplayer twist",
 		"classic_pacman_description": "The iconic Pac-Man with enhanced features",
-			"pong": {
-			"multiplayer": "Multiplayer"
-
-		},
+		"multiplayer": "Multiplayer",
 		"real_time": "Real-time",
 		"competitive": "Competitive",
 		"retro_arcade": "Retro Arcade",
@@ -66,9 +65,7 @@
 	},
 	
 	"credits": {
-		"project_credits": "Project Credits",
 		"contributions_title": "Contributions",
-		"project_transcendence": "Transcendence Project",
 		"role" : {
 			"lead": "Lead Developer",
 			"pongFullstack": "Pong Fullstack Developer",

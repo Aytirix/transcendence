@@ -24,6 +24,8 @@
 		"loginLink": "Déjà membre ? Se connecter"
 	},
 	
+	"project_credits": "Crédits du Projet",
+	"project_transcendence": "Projet Transcendence",
 	"home": {
 		"welcome_to_transcendence": "Bienvenue sur Transcendence",
 		"experience_classic_games": "Découvrez des jeux classiques réinventés avec une technologie moderne",
@@ -64,9 +66,7 @@
 	},
 	
 	"credits": {
-		"project_credits": "Crédits du Projet",
 		"contributions_title": "Contributions",
-		"project_transcendence": "Projet Transcendence",
 		"role" : {
 			"lead": "Développeur principal",
 			"pongFullstack": "Développeur Fullstack Pong",

@@ -23,6 +23,9 @@
 		"submit": "Crea il mio account",
 		"loginLink": "Già membro? Accedi"
 	},
+
+	"project_credits": "Crediti del Progetto",
+	"project_transcendence": "Progetto Transcendence",
 	
 	"home": {
 		"welcome_to_transcendence": "Benvenuto in Transcendence",
@@ -63,8 +66,6 @@
 	},
 	
 	"credits": {
-		"project_credits": "Crediti del Progetto",
-		"project_transcendence": "Progetto Transcendence",
 		"contributions_title": "Contributi",
 		"role" : {
 			"lead": "Sviluppatore principale",

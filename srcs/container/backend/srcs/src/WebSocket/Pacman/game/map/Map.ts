@@ -584,12 +584,12 @@ export default class PacmanMap {
 		const errors: string[] = [];
 
 		// Vérification des dimensions (31 lignes de 29 caractères)
-		if (grid.length !== 29) {
+		if (grid.length !== 31) {
 			errors.push(`La carte doit avoir 31 lignes, actuellement: ${grid.length}`);
 		}
 
 		for (let y = 0; y < grid.length; y++) {
-			if (grid[y].length !== 31) {
+			if (grid[y].length !== 29) {
 				errors.push(`La ligne ${y} a ${grid[y].length} caractères au lieu de 29`);
 			}
 		}
