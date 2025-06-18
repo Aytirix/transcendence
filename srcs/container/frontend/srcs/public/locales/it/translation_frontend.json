@@ -1,8 +1,26 @@
 {
-	"hello": "Buongiorno",
-	"test": "L’attuale sito web offre un’interfaccia moderna e reattiva, permettendo a ogni utente di navigare facilmente e gestire il proprio profilo in sicurezza. Le funzionalità di base sono già disponibili: registrazione, accesso e visualizzazione delle informazioni utente. Il progetto Transcendence, sviluppato presso la scuola 42, si integra in questa piattaforma aggiungendo una dimensione innovativa e interattiva. Il suo obiettivo principale è creare, direttamente sul sito, un gioco di Pong multigiocatore accessibile a tutti, con gestione delle partite in tempo reale grazie ai websocket. Comprende anche funzionalità sociali come chat, inviti, tornei tra utenti e gestione personalizzata dei profili. Questo progetto non solo arricchisce l’esperienza utente ma modernizza anche il sito, promuovendo l’interazione e la competizione amichevole. Infine, Transcendence offre un ambiente ideale per la collaborazione e la padronanza degli strumenti di sviluppo web, rafforzando lo spirito comunitario all’interno della piattaforma.",
-	"logout": "Déconnexion",
-	"profile": "Profile",
-	"username": "nom utilisateur",
-	"password": "Mot de passe"
+	"hello": "Ciao",
+	"test": "Il sito web attuale offre un'interfaccia moderna e responsive, permettendo a ogni utente di navigare facilmente e gestire il proprio profilo in sicurezza. Le funzionalità di base sono in atto: registrazione, accesso e visualizzazione delle informazioni utente. Il progetto Transcendence, sviluppato alla scuola 42, si integra in questa piattaforma aggiungendo una dimensione innovativa e interattiva. Il suo obiettivo principale è creare, direttamente sul sito, un gioco Pong multiplayer accessibile a tutti, con gestione in tempo reale delle partite attraverso websockets. Integra anche funzionalità sociali come chat, inviti, tornei tra utenti e gestione di profili personalizzati. Questo progetto non solo arricchisce l'esperienza utente, ma modernizza anche il sito promuovendo lo scambio e la competizione amichevole. Infine, Transcendence offre un ambiente favorevole alla collaborazione e alla padronanza degli strumenti di sviluppo web, rafforzando lo spirito comunitario all'interno della piattaforma.",
+	"logout": "Disconnetti",
+	"profile": "Profilo",
+	"username": "nome utente",
+	"password": "Password",
+	"login": {
+		"title": "Accesso",
+		"email": "Email",
+		"password": "Password",
+		"submit": "Accedi",
+		"loading": "Connessione...",
+		"registerLink": "Nuovo eroe? Crea un account"
+	},
+	"register": {
+		"title": "Registrazione",
+		"email": "Email",
+		"username": "Nome utente",
+		"password": "Password",
+		"confirmPassword": "Conferma password",
+		"language": "Lingua",
+		"submit": "Crea il mio account",
+		"loginLink": "Già membro? Accedi"
+	}
 }
