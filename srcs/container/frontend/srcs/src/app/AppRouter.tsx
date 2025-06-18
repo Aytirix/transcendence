@@ -3,7 +3,6 @@ import { Routes, Route } from 'react-router-dom';
 
 
 // import WebSocketTest from './users/WebSocketTest';
-import Chat from './UserTest';
 import { Pong } from './pongGame/client'
 import GameMenu from './pongGame/GameMenu';
 import WebSocketPacman from './Pacman/Init'
@@ -40,7 +39,6 @@ class AppRouter extends Component {
 					<Route path="/Pong/menu" element={<GameMenu />} />
 					<Route path="/Pong/menu/SameKeyboard" element={<SameKeyboard />} />
 					<Route path="/Pacman" element={<WebSocketPacman />} />
-					<Route path="/userTest" element={<Chat />} />
 
 					{/* Route Redirection email */}
 					<Route path="/auth/checkCode" element={<CheckRedirectEmail />} />
