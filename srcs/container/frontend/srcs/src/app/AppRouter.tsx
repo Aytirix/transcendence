@@ -14,6 +14,7 @@ import IronManProfile from './IronManProfile';
 import IronManLogin from './IronManLogin';
 import IronManRegister from './IronManRegister';
 import ChatPage from './chat/ChatPage';
+import CheckRedirectEmail from './CheckRedirectEmail';
 
 // PAGES
 
@@ -38,8 +39,10 @@ class AppRouter extends Component {
 					<Route path="/Pong/menu/SameKeyboard" element={<SameKeyboard />} />
 					<Route path="/Pacman" element={<WebSocketPacman />} />
 					<Route path="/userTest" element={<Chat />} />
-				</Route>
 
+					{/* Route Redirection email */}
+					<Route path="/auth/confirmEmail" element={<CheckRedirectEmail validationRoute="/auth/confirmEmail"	redirectUrl="/"/>} />
+				</Route>
 			</Routes>
 		);
 	}

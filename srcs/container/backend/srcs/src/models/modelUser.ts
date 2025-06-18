@@ -46,12 +46,13 @@ export const Register = async (email: string, username: string, password: string
 		id: result.insertId,
 		username,
 		email,
+		avatar,
 		lang,
 	};
 };
 
 export const emailAlreadyExists = async (email: string): Promise<boolean> => {
-	const result: any = await executeReq('SELECT * FROM users WHERE email = ?', [email]);
+	const result: any = await executeReq('SELECT email FROM users WHERE email = ? UNION SELECT email FROM verification_codes WHERE email = ? LIMIT 1', [email, email]);
 	if (result.length === 0) {
 		return false;
 	}
@@ -59,7 +60,7 @@ export const emailAlreadyExists = async (email: string): Promise<boolean> => {
 };
 
 export const usernameAlreadyExists = async (username: string): Promise<boolean> => {
-	const result: any = await executeReq('SELECT * FROM users WHERE username = ?', [username]);
+	const result: any = await executeReq('SELECT username FROM users WHERE username = ? UNION SELECT username FROM verification_codes WHERE username = ? LIMIT 1', [username, username]);
 	if (result.length === 0) {
 		return false;
 	}

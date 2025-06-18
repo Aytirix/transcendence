@@ -32,6 +32,7 @@
 		"i18next": "^24.2.3",
 		"i18next-fs-backend": "^2.6.0",
 		"mysql2": "^3.14.0",
+		"nodemailer": "^7.0.3",
 		"pm2": "^6.0.5",
 		"tsconfig-paths": "^4.2.0",
 		"ws": "^8.18.1"

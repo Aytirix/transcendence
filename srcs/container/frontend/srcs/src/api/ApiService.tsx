@@ -83,6 +83,7 @@ class ApiService {
 	}
 
 	static getFile(name: string | null | undefined): string {
+		console.log(`getFile called with name: ${name}`);
 		if (name && (name.startsWith('http://') || name.startsWith('https://'))) {
 			return name;
 		}
