@@ -181,7 +181,7 @@ const GroupsMessagesPage: React.FC = () => {
                 selectedFriendsForGroup={selectedFriendsForGroup}
                 toggleFriendSelection={toggleFriendSelection}
                 handleCreateGroup={handleCreateGroup}
-                friends={setFriends}
+                friends={friends}
             />
             <ChatContentArea
                 selectedGroup={selectedGroup}

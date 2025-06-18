@@ -131,6 +131,7 @@ const FriendPage: React.FC = () => {
   const handleAddFriend = (userId: number) => {
     if (socket?.readyState !== WebSocket.OPEN) return;
     setFeedback(null);
+    console.log("add_friend", userId);
     socket.send(JSON.stringify({
       action: "add_friend",
       user_id: userId,
@@ -139,6 +140,7 @@ const FriendPage: React.FC = () => {
   const handleAcceptFriend = (userId: number) => {
     if (socket?.readyState !== WebSocket.OPEN) return;
     setFeedback(null);
+    console.log("accept_friend", userId);
     socket.send(JSON.stringify({
       action: "accept_friend",
       user_id: userId,
@@ -147,7 +149,7 @@ const FriendPage: React.FC = () => {
   const handleRefuseFriend = (userId: number) => {
     if (socket?.readyState !== WebSocket.OPEN) return;
     setFeedback(null);
-    console.log("remove_friend", userId);
+    console.log("refuse_friend", userId);
     socket.send(JSON.stringify({
       action: "refuse_friend",
       user_id: userId,
