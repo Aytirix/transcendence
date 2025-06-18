@@ -38,8 +38,8 @@ export default async (fastify: FastifyInstance) => {
 		handler: userController.authGoogleCallback,
 	});
 
-	fastify.post('/auth/confirmEmail', {
+	fastify.post('/auth/checkCode', {
 		schema: userSchema.verifyCode,
-		handler: controller2FA.verifyCodeRegister,
+		handler: controller2FA.verifyCode,
 	});
 };

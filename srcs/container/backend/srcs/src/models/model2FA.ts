@@ -20,9 +20,7 @@ export const deleteCode = async (email: string): Promise<void> => {
 }
 
 export const createCode = async (email: string, username: string, code: string, expiresAt: Date, type: string, user: User = null): Promise<boolean> => {
-	console.log(`Creating verification code: ${code}`);
 	const hashedCode = await bcrypt.hash(code, 10);
-	console.log(`create hash for code: ${hashedCode}`);
 	const encryptedUser = user ? tools.encrypt(JSON.stringify(user)) : null;
 	const result: any = await executeReq(
 		'INSERT INTO verification_codes (email, username, code, user_json, type, expires_at) VALUES (?, ?, ?, ?, ?, ?)',
@@ -35,7 +33,6 @@ export const verifyCode = async (email: string, type: string, code: string): Pro
 	const result: any = await executeReq('SELECT code, user_json FROM verification_codes WHERE email = ? AND type = ? AND expires_at > NOW()', [email, type]);
 
 	if (result.length === 0) {
-		console.warn(`No valid verification code found for email: ${email}`);
 		return null;
 	}
 	const { code: hashedCode, user_json } = result[0];

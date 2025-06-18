@@ -42,7 +42,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 					if (res.isAuthenticated) setLanguage(res.user.lang);
 					if (res.isAuthenticated && (window.location.pathname == "/login" || window.location.pathname == "/register")) {
 						navigate('/');
-					} else if (!res.isAuthenticated && (window.location.pathname !== "/login" && window.location.pathname !== "/register")) {
+					} else if (!res.isAuthenticated && (!["/login", "/register", "/auth/checkCode"].includes(window.location.pathname))) {
 						navigate('/login');
 					}
 				}
