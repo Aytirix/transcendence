@@ -9,6 +9,7 @@ import GameMenu from './pongGame/GameMenu';
 import WebSocketPacman from './Pacman/Init'
 import App from './App';
 import SameKeyboard from './pongGame/SameKeyboard';
+import Credits from './Credits';
 
 import IronManProfile from './IronManProfile';
 import IronManLogin from './IronManLogin';
@@ -30,6 +31,7 @@ class AppRouter extends Component {
 
 				<Route>
 					<Route path="/" element={<App />} />
+					<Route path="/credits" element={<Credits />} />
 					<Route path="/profile" element={<IronManProfile />} />
 					<Route path="/login" element={<IronManLogin />} />
 					<Route path="/chat" element={<ChatPage />} />
