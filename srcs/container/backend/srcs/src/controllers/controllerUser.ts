@@ -69,7 +69,7 @@ export const Register = async (request: FastifyRequest, reply: FastifyReply) => 
 		lang: lang || 'fr',
 		avatar: defaultAvatar,
 	}
-	controller2FA.createVerifyEmailAccount(request, email, user);
+	controller2FA.sendRegisterVerifyEmail(request, email, user);
 
 	return reply.send({
 		message: request.i18n.t('login.welcome'),
@@ -136,10 +136,13 @@ export const UpdateUser = async (request: FastifyRequest, reply: FastifyReply) =
 		}
 	}
 
-	await userModel.UpdateUser(user.id.toString(), email, username, password, lang, avatar);
+	if (email && email !== user.email) {
+		await controller2FA.sendUpdateVerifyEmail(request, email);
+	}
+
+	await userModel.UpdateUser(user.id.toString(), null, username, password, lang, avatar);
 	request.session.user = {
 		...user,
-		email: email || user.email,
 		username: username || user.username,
 		lang: lang || user.lang,
 		avatar: avatar || user.avatar,

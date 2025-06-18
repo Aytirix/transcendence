@@ -4,7 +4,7 @@ class ApiService {
 	private static apiURL = `https://${window.location.hostname}:7000`;
 	private static url = `https://${window.location.hostname}:3000`;
 
-	static async request(path: string, method: string, body?: JSON) : Promise<any> {
+	static async request(path: string, method: string, body: any = null, notif: boolean = true) : Promise<any> {
 		const headers = new Headers({
 			'Content-Type': 'application/json',
 			'Accept': 'application/json'
@@ -25,10 +25,10 @@ class ApiService {
 			const resJson = await response.json();
 			resJson.ok =  response.ok;
 			if (resJson.message) {
-				if (response.ok) {
+				if (notif && response.ok) {
 					notification.success(resJson.message);
 				}
-				else {
+				else if (notif) {
 					notification.error(resJson.message);
 				}
 			}
@@ -39,23 +39,23 @@ class ApiService {
 		}
 	}
 
-	static async get(endpoint: string, body?: JSON) {
-		return this.request(endpoint, 'GET', body);
+	static async get(endpoint: string, body: any = null, notif: boolean = true) {
+		return this.request(endpoint, 'GET', body, notif);
 	}
 
-	static async post(endpoint: string, body?: JSON) {
-		return this.request(endpoint, 'POST', body);
+	static async post(endpoint: string, body: any = null, notif: boolean = true) {
+		return this.request(endpoint, 'POST', body, notif);
 	}
 
-	static async put(endpoint: string, body?: JSON) {
-		return this.request(endpoint, 'PUT', body);
+	static async put(endpoint: string, body: any = null, notif: boolean = true) {
+		return this.request(endpoint, 'PUT', body, notif);
 	}
 
-	static async delete(endpoint: string, body?: JSON) {
-		return this.request(endpoint, 'DELETE', body);
+	static async delete(endpoint: string, body: any = null, notif: boolean = true) {
+		return this.request(endpoint, 'DELETE', body, notif);
 	}
 
-	static async uploadFile(endpoint: string, formData: FormData) {
+	static async uploadFile(endpoint: string, formData: FormData, notif: boolean = true) {
 		const config: RequestInit = {
 			method: 'POST',
 			body: formData,
@@ -66,10 +66,10 @@ class ApiService {
 			const response = await fetch(`${this.apiURL}${endpoint}`, config);
 			const resJson = await response.json();
 			if (resJson.message) {
-				if (response.ok) {
+				if (notif && response.ok) {
 					notification.success(resJson.message);
 					resJson.ok = true;
-				} else {
+				} else if (notif) {
 					resJson.ok = false;
 					notification.error(resJson.message);
 				}

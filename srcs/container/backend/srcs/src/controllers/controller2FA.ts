@@ -65,6 +65,7 @@ async function sendTemplateEmail(
 
 	// Ajouter des variables par défaut si request est fourni
 	const defaultReplacements = request ? {
+
 		baseUrl: 'https://localhost:3000',
 		siteName: 'Transcendence',
 		...replacements
@@ -81,24 +82,25 @@ async function sendTemplateEmail(
 	await transporter.sendMail(mailOptions);
 }
 
-export const createVerifyEmailAccount = async (request: FastifyRequest, email: string, user: any): Promise<boolean> => {
+export const sendRegisterVerifyEmail = async (request: FastifyRequest, email: string, user: any): Promise<boolean> => {
 	try {
+		const type = 'createAccount_confirm_email';
 		// Sauvegarder le code en base de données
-		const userCode = await createVerificationCode(email, user.username, 'confirm_email', user);
+		const userCode = await createVerificationCode(email, user.username, type, user);
 		if (!userCode) return false;
 
-		const encryptedData = tools.encrypt(JSON.stringify({ userCode, email, type: 'confirm_email' }));
+		const encryptedData = tools.encrypt(JSON.stringify({ userCode, email, type, timestamp: Date.now() }));
 		// Préparer les variables pour le template
 		const templateReplacements = {
-			verificationLink: `https://localhost:3000/auth/confirmEmail?code=${encryptedData}`,
+			verificationLink: `https://localhost:3000/auth/checkCode?code=${encryptedData}&type=${type}&redirectUrl=/`,
 			expiryTime: '15 minutes',
 		};
 
 		// Envoyer l'email en utilisant la fonction générale
 		await sendTemplateEmail(
-			'confirm_email', // nom du template
+			type,
 			email,
-			request.i18n.t('email.verificationCode.subject'),
+			request.i18n.t('email.verificationCode.subjectCreateAccount'),
 			templateReplacements,
 			request
 		);
@@ -110,25 +112,34 @@ export const createVerifyEmailAccount = async (request: FastifyRequest, email: s
 	}
 };
 
-// Fonction pour envoyer un email de réinitialisation de mot de passe
-export const SendPasswordResetEmail = async (email: string, resetToken: string, request?: FastifyRequest) => {
+export const sendUpdateVerifyEmail = async (request: FastifyRequest, email: string): Promise<boolean> => {
 	try {
+		const type = 'update_confirm_email';
+		// Sauvegarder le code en base de données
+		await model2FA.deleteCode(request.session.user.email);
+		const userCode = await createVerificationCode(request.session.user.email, null, type, null);
+		if (!userCode) return false;
+
+		const encryptedData = tools.encrypt(JSON.stringify({ userCode, email, originalEmail: request.session.user.email, type, timestamp: Date.now() }));
+		// Préparer les variables pour le template
 		const templateReplacements = {
-			resetLink: `${process.env.BASE_URL}/reset-password?token=${resetToken}`,
-			expiryTime: '30 minutes',
-			supportEmail: process.env.SUPPORT_EMAIL || process.env.EMAIL_USER
+			verificationLink: `https://localhost:3000/auth/checkCode?code=${encryptedData}&type=${type}`,
+			expiryTime: '15 minutes',
 		};
 
+		// Envoyer l'email en utilisant la fonction générale
 		await sendTemplateEmail(
-			'password_reset',
+			type,
 			email,
-			request?.i18n.t('email.passwordReset.subject') || 'Réinitialisation de mot de passe',
+			request.i18n.t('email.verificationCode.subjectUpdateEmail'),
 			templateReplacements,
 			request
 		);
+
+		return true;
 	} catch (error) {
-		console.error('Error sending password reset email:', error);
-		throw error;
+		console.error('Error sending verification code:', error);
+		return false;
 	}
 };
 
@@ -141,7 +152,7 @@ export function generateCode() {
 	return code;
 }
 
-export async function createVerificationCode(email: string, username: string, type: string, user = null): Promise<false | string> {
+export async function createVerificationCode(email: string, username: string = null, type: string, user = null): Promise<false | string> {
 	const code = generateCode();
 	const expiresAt = new Date(Date.now() + 15 * 60 * 1000); // 15 minutes expiration
 
@@ -152,45 +163,54 @@ export async function createVerificationCode(email: string, username: string, ty
 	return code;
 }
 
-export async function verifyCodeRegister(req: FastifyRequest, reply: FastifyReply) {
+export async function verifyCode(req: FastifyRequest, reply: FastifyReply) {
 	const { code } = req.body as { code: string };
 	const json = tools.decrypt(code);
 	if (!json) {
-		reply.status(400).send({ success: false, message: i18n.t('errors.code.invalid') });
-		return;
+		return reply.status(400).send({ success: false, message: i18n.t('errors.code.invalid') });
 	}
-	const { userCode, email } = JSON.parse(json);
+	const { userCode, email, originalEmail, type } = JSON.parse(json);
 
-	if (!userCode || !email) {
-		reply.status(400).send({ success: false, message: i18n.t('errors.code.invalid') });
-		return;
+	if (!userCode || !email || !type) {
+		return reply.status(400).send({ success: false, message: i18n.t('errors.code.invalid') });
 	}
 
-	// Vérifier le code en base de données
-	const isValid = await model2FA.verifyCode(email, "confirm_email", userCode);
+	// Vérifier si l'utilisateur est déjà connecté pour certains types
+	if (['createAccount_confirm_email'].includes(type) && req.session.user) {
+		return reply.status(400).send({ success: false, message: i18n.t('login.alreadyLoggedIn') });
+	} else if (['update_confirm_email'].includes(type)) {
+		if (!req.session.user) return reply.status(400).send({ success: false, message: i18n.t('login.notLoggedIn') });
+
+		if (originalEmail && originalEmail !== req.session.user.email) {
+			return reply.status(400).send({ success: false, message: i18n.t('errors.code.invalid') });
+		}
+	}
+
+	const isValid = await model2FA.verifyCode(originalEmail || email, type, userCode);
 
 	if (!isValid) {
-		reply.status(400).send({ success: false, message: i18n.t('errors.code.invalid') });
-		return;
+		return reply.status(400).send({ success: false, message: i18n.t('errors.code.invalid') });
 	}
 
-	// Si isValid est un objet, alos c'est une inscription utilisateur
-	if (typeof isValid === 'object' && isValid !== null) {
+	if (type == 'createAccount_confirm_email' && typeof isValid === 'object' && isValid !== null) {
 		const user = await userModel.Register(isValid.email, isValid.username, isValid.password, isValid.avatar, isValid.lang);
-		console.log(`User registered: ${JSON.stringify(user)}`);
 		req.session.user = user;
-		reply.send({ success: true, message: i18n.t('email.verificationCode.CreateAccountOk'), user });
-		return;
+		return reply.status(200).send({ success: true, message: i18n.t('email.verificationCode.CreateAccountOk'), user });
+	} else if (type == 'update_confirm_email' && isValid === true) {
+		await userModel.UpdateUser(req.session.user.id.toString(), email);
+		req.session.user.email = email;
+		return reply.status(200).send({ success: true, message: i18n.t('email.verificationCode.UpdateEmailOk') });
+	} else {
+		return reply.status(400).send({ success: false, message: i18n.t('errors.code.invalid') });
 	}
-	reply.status(400).send({ success: false, message: i18n.t('errors.code.invalid') });
 }
 
 export default {
 	generateCode,
 	createVerificationCode,
-	verifyCodeRegister,
-	createVerifyEmailAccount,
-	SendPasswordResetEmail,
+	verifyCode,
+	sendRegisterVerifyEmail,
+	sendUpdateVerifyEmail,
 	processTemplate,
 	sendTemplateEmail
 };

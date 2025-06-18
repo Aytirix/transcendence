@@ -41,7 +41,7 @@ class AppRouter extends Component {
 					<Route path="/userTest" element={<Chat />} />
 
 					{/* Route Redirection email */}
-					<Route path="/auth/confirmEmail" element={<CheckRedirectEmail validationRoute="/auth/confirmEmail"	redirectUrl="/"/>} />
+					<Route path="/auth/checkCode" element={<CheckRedirectEmail />} />
 				</Route>
 			</Routes>
 		);
