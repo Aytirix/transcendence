@@ -146,7 +146,7 @@ function Intro() {
                             className="credits-link"
                             onClick={() => navigate('/credits')}
                         >
-                            {t('home.project_credits')}
+                            {t('project_credits')}
                         </button>
                     </p>
                 </div>

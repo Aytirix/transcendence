@@ -24,6 +24,8 @@
 		"loginLink": "¿Ya eres miembro? Iniciar sesión"
 	},
 	
+	"project_credits": "Créditos del proyecto",
+	"project_transcendence": "Proyecto Transcendence",
 	"home": {
 		"welcome_to_transcendence": "Bienvenido a Transcendence",
 		"experience_classic_games": "Experimenta juegos clásicos reimaginados con tecnología moderna",
@@ -34,10 +36,7 @@
 		"choose_your_adventure": "Elige tu Aventura",
 		"classic_pong_description": "El clásico juego Pong con un toque moderno y multijugador",
 		"classic_pacman_description": "El icónico Pac-Man con características mejoradas",
-			"pong": {
-			"multiplayer": "Multiplayer"
-
-		},
+		"multiplayer": "Multiplayer",
 		"real_time": "Tiempo real",
 		"competitive": "Competitivo",
 		"retro_arcade": "Arcade retro",
@@ -64,11 +63,9 @@
 		"at_42_school": "en la escuela 42",
 		"developed_by": "Desarrollado por"
 	},
-
+	
 	"credits": {
-		"project_credits": "Créditos del proyecto",
 		"contributions_title": "Contribuciones",
-		"project_transcendence": "Proyecto Transcendence",
 		"role" : {
 			"lead": "Desarrollador principal",
 			"pongFullstack": "Desarrollador Fullstack de Pong",

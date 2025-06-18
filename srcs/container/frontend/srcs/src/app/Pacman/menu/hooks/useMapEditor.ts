@@ -14,8 +14,8 @@ export const useMapEditor = ({
 	editingMap, 
 	onSave 
 }: UseMapEditorProps) => {
-	const DEFAULT_ROWS = 29;
-	const DEFAULT_COLS = 31;
+	const DEFAULT_ROWS = 31;
+	const DEFAULT_COLS = 29;
 
 	// États pour la grille et métadonnées
 	const [grid, setGrid] = useState<string[]>(

@@ -75,7 +75,7 @@ function Credits() {
             <div className="credits-content">
                 <header className="credits-header">
                     <h1 className="credits-title">
-                        <span className="gradient-text">{t('credits.project_credits')}</span>
+                        <span className="gradient-text">{t('project_credits')}</span>
                     </h1>
                 </header>
 
@@ -123,7 +123,7 @@ function Credits() {
 
                 <footer className="credits-footer">
                     <div className="project-info">
-                        <h3>{t('credits.project_transcendence')}</h3>
+                        <h3>{t('project_transcendence')}</h3>
                         <div className="tech-stack">
                             <span className="tech-item">React</span>
                             <span className="tech-item">TypeScript</span>
