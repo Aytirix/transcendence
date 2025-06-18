@@ -70,18 +70,18 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({
 
             <div className="text-xs font-semibold">Sélectionner des amis :</div>
             <div className="max-h-32 overflow-y-auto space-y-1 border p-1 rounded"> {/* Added border and padding */}
-              {confirmedFriends.length === 0 ? (
+              {friends.length === 0 ? (
                 <div className="text-xs text-gray-500">Aucun ami disponible pour la création de groupe.</div>
               ) : (
-                confirmedFriends.map(friend => (
-                  <label key={friend.id} className="flex items-center space-x-2 text-xs cursor-pointer">
+                (friends ?? []).map(f => (
+                  <label key={f.id} className="flex items-center space-x-2 text-xs cursor-pointer">
                     <input
                       type="checkbox"
-                      checked={selectedFriendsForGroup.includes(friend.id)}
-                      onChange={() => toggleFriendSelection(friend.id)}
+                      checked={selectedFriendsForGroup.includes(f.id)}
+                      onChange={() => toggleFriendSelection(f.id)}
                       className="form-checkbox" // Added class for styling
                     />
-                    <span>{friend.username}</span>
+                    <span>{f.username}</span>
                   </label>
                 ))
               )}
@@ -100,6 +100,7 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({
 
       <div className="flex-1 overflow-y-auto"> {/* Changed to overflow-y-auto */}
         {groups.map((g) => (
+          
           <button
             key={g.id}
             className={`w-full text-left p-4 hover:bg-blue-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 transition-colors duration-150 ${selectedGroup?.id === g.id && !showFriends ? "bg-blue-200 font-bold" : ""}`} // Improved focus and transition
@@ -108,6 +109,7 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({
               setShowFriends(false);
             }}
           >
+            {console.log( "group", g)}
             {g.name || g.members.map(m => m.username).join(', ')} {/* Group name or member list for private chats */}
           </button>
         ))}

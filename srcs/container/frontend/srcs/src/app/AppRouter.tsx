@@ -13,7 +13,6 @@ import SameKeyboard from './pongGame/SameKeyboard';
 import IronManProfile from './IronManProfile';
 import IronManLogin from './IronManLogin';
 import IronManRegister from './IronManRegister';
-import ChatPage from './chat/ChatPage';
 import GroupChatPage from './chat/GroupChatPage';
 import FriendPage from './chat/FriendPage';
 
