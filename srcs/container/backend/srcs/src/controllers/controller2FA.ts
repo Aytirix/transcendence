@@ -47,6 +47,22 @@ function processTemplate(templatePath: string, replacements: Record<string, stri
 }
 
 /**
+ * Fonction pour construire l'URL de base depuis la requête
+ * @param request - Objet request Fastify
+ * @returns L'URL de base (protocole + host + port si nécessaire)
+ */
+function getBaseUrlFromRequest(request: FastifyRequest): string {
+	// Récupérer le protocole (https si forwarded, sinon http)
+	const protocol = request.headers['x-forwarded-proto'] ||
+		(request.headers['x-forwarded-ssl'] === 'on' ? 'https' : 'http');
+
+	// Récupérer le host depuis les headers (peut déjà contenir le port)
+	const host = request.headers['x-forwarded-host'] || request.headers.host;
+
+	return `${protocol}://${host}:3000`;
+}
+
+/**
  * Fonction générale pour envoyer des emails avec template
  * @param templateName - Nom du fichier template (sans extension)
  * @param to - Email destinataire
@@ -67,8 +83,7 @@ async function sendTemplateEmail(
 
 	// Ajouter des variables par défaut si request est fourni
 	const defaultReplacements = request ? {
-
-		baseUrl: 'https://localhost:3000',
+		baseUrl: getBaseUrlFromRequest(request),
 		siteName: 'Transcendence',
 		...replacements
 	} : replacements;
@@ -91,9 +106,13 @@ export const sendRegisterVerifyEmail = async (request: FastifyRequest, email: st
 		if (!userCode) return false;
 
 		const encryptedData = tools.encrypt(JSON.stringify({ userCode, email, type, timestamp: Date.now() }));
+
+		// Récupérer l'URL de base depuis la requête
+		const baseUrl = getBaseUrlFromRequest(request);
+
 		// Préparer les variables pour le template
 		const templateReplacements = {
-			verificationLink: `https://localhost:3000/auth/checkCode?code=${encryptedData}&type=${type}&redirectUrl=/`,
+			verificationLink: `${baseUrl}/auth/checkCode?code=${encryptedData}&type=${type}&redirectUrl=/`,
 			expiryTime: '15 minutes',
 		};
 
@@ -122,9 +141,13 @@ export const sendUpdateVerifyEmail = async (request: FastifyRequest, email: stri
 		if (!userCode) return false;
 
 		const encryptedData = tools.encrypt(JSON.stringify({ userCode, email, originalEmail: request.session.user.email, type, timestamp: Date.now() }));
+
+		// Récupérer l'URL de base depuis la requête
+		const baseUrl = getBaseUrlFromRequest(request);
+
 		// Préparer les variables pour le template
 		const templateReplacements = {
-			verificationLink: `https://localhost:3000/auth/checkCode?code=${encryptedData}&type=${type}`,
+			verificationLink: `${baseUrl}/auth/checkCode?code=${encryptedData}&type=${type}`,
 			expiryTime: '15 minutes',
 		};
 
@@ -193,7 +216,7 @@ export async function verifyCode(req: FastifyRequest, reply: FastifyReply) {
 		return reply.status(400).send({ success: false, message: i18n.t('errors.code.invalid') });
 	}
 
-	if (isValid){
+	if (isValid) {
 		if (type == 'createAccount_confirm_email' && typeof isValid === 'object') {
 			const user = await userModel.Register(isValid.email, isValid.username, isValid.password, isValid.avatar, isValid.lang);
 			req.session.user = user;
