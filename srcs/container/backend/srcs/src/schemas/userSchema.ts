@@ -209,7 +209,7 @@ export const authGoogleCallback = {
 
 export const UploadAvatar = {
 	description: 'Upload d\'avatar utilisateur',
-	tags: ['Authentification'],
+	tags: ['user'],
 	consumes: ['multipart/form-data'],
 	body: {
 		properties: {
