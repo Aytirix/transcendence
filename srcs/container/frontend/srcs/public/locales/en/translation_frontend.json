@@ -4,5 +4,95 @@
 	"logout": "Logout",
 	"profile": "Profile",
 	"username": "nom utilisateur",
-	"password": "Mot de passe"
+	"password": "Mot de passe",
+
+	"pacman": {
+		"title": "Pacman",
+		"menu" : {
+			"home": "Home",
+			"lobby": {
+				"button": "Lobby",
+				"gameNamePlaceholder": "Room name",
+				"create": "Create room",
+				"join": "Join",
+				"noGamesFound": "No rooms found",
+				"gameForm": {
+					"map": "Map:",
+					"mapPlaceholder": "Select a map",
+					"quit": "Leave room",
+					"startGame": "Start game",
+					"waitingForPlayers": "Waiting for players"
+				}
+			},
+			"liveGames" : {
+				"button": "Live",
+				"title": "Ongoing games",
+				"noGamesFound": "No ongoing games"
+			},
+			"rules": {
+				"button": "Rules",
+				"title": "Game rules",
+				"content1": "Pacman is a classic arcade game where the player controls Pacman, a yellow creature moving through a maze to eat pellets while avoiding ghosts.",
+				"content2": "This version of Pacman revisits the classic in multiplayer mode (2 to 5 players).",
+				"content3": "When fewer than 5 players are present, computers fill the remaining spots.",
+				"content4": "Each player controls a different character: Pacman, Clyde, Pinky, Inky, or Blinky.",
+				"content5": "Pacman's goal is to eat all the pellets to win (he has three lives), while the ghosts must cooperate to eliminate him.",
+				"footer": "Have fun!"
+			},
+			"statistics": {
+				"button": "Statistics",
+				"title": "Player statistics",
+				"gamesPlayed": "Games played",
+				"gamesWon": "Games won",
+				"gamesLost": "Games lost",
+				"winRate": "Win rate",
+				"bestScore": "Best score",
+				"averageScore": "Average score",
+				"ranking": "Ranking",
+				"noStats": "No statistics available"
+			},
+			"maps": {
+				"button": "Map",
+				"title": "Maps",
+				"content": "Select a map to start the game.",
+				"descriptionEditor": "Create and share your own maps with the community.",
+				"editor": "Map editor",
+				"create": "Create new map",
+				"public": "Public",
+				"private": "Private",
+				"noMapsFound": "No maps found",
+				"suppress" : "Delete",
+				"edit": "Edit",
+				"mapEditor": {
+					"title": "Create a Pacman map",
+					"mapName": "Map name",
+					"validate": "Validate",
+					"mapNamePlaceholder": "Enter map name",
+					"save": "Save map",
+					"mapPreview": "Map preview",
+					"console": "Console",
+					"errors": "❌ Errors in the map",
+					"tiles": {
+						"wall": "Wall",
+						"empty": "Empty",
+						"pellet": "Pellet",
+						"superPellet": "Super pellet",
+						"door": "Door",
+						"tunnel": "Tunnel",
+						"pacmanSpawn": "Pacman spawn",
+						"blinkySpawn": "Blinky spawn",
+						"inkySpawn": "Inky spawn",
+						"pinkySpawn": "Pinky spawn",
+						"clydeSpawn": "Clyde spawn"
+					},
+					"addBorders": "Add borders",
+					"back": "Back"
+				}
+			}
+		},
+		"game": {
+			"quit": "Leave game",
+			"pacmanLife": "Pacman life"
+		}
+	}
 }

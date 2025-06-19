@@ -4,5 +4,95 @@
 	"logout": "Déconnexion",
 	"profile": "Profile",
 	"username": "nom utilisateur",
-	"password": "Mot de passe"
+	"password": "Mot de passe",
+
+	"pacman": {
+		"title": "Pacman",
+		"menu" : {
+			"home": "Accueil",
+			"lobby": {
+				"button": "Lobby",
+				"gameNamePlaceholder": "Nom de la salle",
+				"create": "Créer une salle",
+				"join": "Rejoindre",
+				"noGamesFound": "Aucune salle trouvée",
+				"gameForm": {
+					"map": "Carte :",
+					"mapPlaceholder": "Sélectionnez une carte",
+					"quit": "Quitter la salle",
+					"startGame": "Lancer la partie",
+					"waitingForPlayers": "En attente de joueurs"
+				}
+			},
+			"liveGames" : {
+				"button": "En direct",
+				"title": "Parties en cours",
+				"noGamesFound": "Aucune partie en cours"
+			},
+			"rules": {
+				"button": "Règles",
+				"title": "Règles du jeu",
+				"content1": "Pacman est un jeu d'arcade classique où le joueur contrôle Pacman, une créature jaune qui se déplace dans un labyrinthe pour manger des pastilles tout en évitant les fantômes.",
+				"content2": "Cette version de Pacman revisite le classique en mode multijoueur (de 2 à 5 joueurs).",
+				"content3": "Lorsque moins de 5 joueurs sont présents, des ordinateurs complètent la partie.",
+				"content4": "Chaque joueur contrôle un personnage différent : Pacman, Clyde, Pinky, Inky ou Blinky.",
+				"content5": "L'objectif de Pacman est de manger toutes les pastilles pour gagner (il dispose de trois vies), tandis que les fantômes doivent coopérer pour l'éliminer.",
+				"footer": "Amusez-vous bien !"
+			},
+			"statistics": {
+				"button": "Statistiques",
+				"title": "Statistiques du joueur",
+				"gamesPlayed": "Parties jouées",
+				"gamesWon": "Parties gagnées",
+				"gamesLost": "Parties perdues",
+				"winRate": "Taux de victoire",
+				"bestScore": "Meilleur score",
+				"averageScore": "Score moyen",
+				"ranking": "Classement",
+				"noStats": "Aucune statistique disponible"
+			},
+			"maps": {
+				"button": "Carte",
+				"title": "Cartes",
+				"content": "Sélectionnez une carte pour commencer la partie.",
+				"descriptionEditor": "Créez et partagez vos propres cartes avec la communauté.",
+				"editor": "Éditeur de carte",
+				"create": "Créer une nouvelle carte",
+				"public": "Public",
+				"private": "Privé",
+				"noMapsFound": "Aucune carte trouvée",
+				"suppress" : "Supprimer",
+				"edit": "Éditer",
+				"mapEditor": {
+					"title": "Créer une carte Pacman",
+					"mapName": "Nom de la carte",
+					"validate": "Valider",
+					"mapNamePlaceholder": "Entrez le nom de la carte",
+					"save": "Sauvegarder la carte",
+					"mapPreview": "Aperçu de la carte",
+					"console": "Console",
+					"errors": "❌ Erreurs dans la carte",
+					"tiles": {
+						"wall": "Mur",
+						"empty": "Vide",
+						"pellet": "Pastille",
+						"superPellet": "Super pastille",
+						"door": "Porte",
+						"tunnel": "Tunnel",
+						"pacmanSpawn": "Spawn Pacman",
+						"blinkySpawn": "Spawn Blinky",
+						"inkySpawn": "Spawn Inky",
+						"pinkySpawn": "Spawn Pinky",
+						"clydeSpawn": "Spawn Clyde"
+					},
+					"addBorders": "Ajouter bordures",
+					"back": "Retour"
+				}
+			}
+		},
+		"game": {
+			"quit": "Quitter la partie",
+			"pacmanLife": "Vie Pacman"
+		}
+	}
 }
