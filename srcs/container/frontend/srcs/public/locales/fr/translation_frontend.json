@@ -47,7 +47,6 @@
 		"made_with": "Fait avec",
 		"at_42_school": "à l'école 42",
 		"developed_by": "Développé par"
-		
 	},
 	
 	"credits": {
@@ -110,7 +109,8 @@
 			"liveGames" : {
 				"button": "En direct",
 				"title": "Parties en cours",
-				"noGamesFound": "Aucune partie en cours"
+				"noGamesFound": "Aucune partie en cours",
+				"spectate": "Spectateur"
 			},
 			"rules": {
 				"button": "Règles",
@@ -131,8 +131,10 @@
 				"winRate": "Taux de victoire",
 				"bestScore": "Meilleur score",
 				"averageScore": "Score moyen",
-				"ranking": "Classement",
-				"noStats": "Aucune statistique disponible"
+				"leaderboard": "Classement",
+				"noStats": "Aucune statistique disponible",
+				"loading": "Chargement des statistiques...",
+				"error": "Erreur lors du chargement des statistiques :"
 			},
 			"maps": {
 				"button": "Carte",
@@ -143,19 +145,25 @@
 				"create": "Créer une nouvelle carte",
 				"public": "Public",
 				"private": "Privé",
+				"valid": "Valide",
+				"invalid": "Invalide",
 				"noMapsFound": "Aucune carte trouvée",
 				"suppress" : "Supprimer",
 				"edit": "Éditer",
 				"mapEditor": {
 					"title": "Créer une carte Pacman",
-					"mapName": "Nom de la carte",
+					"mapName": "Nom de la carte :",
 					"validate": "Valider",
 					"mapNamePlaceholder": "Entrez le nom de la carte",
+					"nameExists": "Le nom de la carte existe déjà",
+					"mapNameTooShort": "Le nom de la carte doit comporter au moins 3 caractères",
+					"mapNameTooLong": "Le nom de la carte ne doit pas dépasser 30 caractères",
 					"save": "Sauvegarder la carte",
 					"mapPreview": "Aperçu de la carte",
 					"console": "Console",
 					"errors": "❌ Erreurs dans la carte",
 					"tiles": {
+						"title": "Tuiles",
 						"wall": "Mur",
 						"empty": "Vide",
 						"pellet": "Pastille",
@@ -177,5 +185,10 @@
 			"quit": "Quitter la partie",
 			"pacmanLife": "Vie Pacman"
 		}
+	},
+	"pageNotFound": {
+		"title": "Page non trouvée",
+		"message": "Désolé, la page que vous cherchez n'existe pas.",
+		"backToHome": "Retour à l'accueil"
 	}
 }

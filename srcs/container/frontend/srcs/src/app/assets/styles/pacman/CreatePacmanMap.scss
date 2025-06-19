@@ -1,5 +1,4 @@
 // src/components/pacman/CreatePacmanMap.scss
-@import './general_pacman.scss';
 
 // ========== Variables ==========
 $primary-color: #0000ff;
@@ -21,24 +20,16 @@ $spawn-clyde: orange;
 
 // ========== Mixins ==========
 @mixin button-style {
-	background-color: #333;
+	background: linear-gradient(135deg, #333 0%, #555 100%);
 	color: $text-color;
-	border: 2px solid $primary-color;
-	border-radius: 5px;
-	padding: 8px 15px;
+	border: 1px solid $primary-color;
+	border-radius: 6px;
+	padding: 6px 12px;
 	font-family: inherit;
-	font-size: 0.8rem;
+	font-size: 0.7rem;
 	cursor: pointer;
-	transition: all 0.2s;
-
-	&:hover {
-		background-color: $primary-color;
-		transform: translateY(-2px);
-	}
-
-	&:active {
-		transform: translateY(0);
-	}
+	transition: all 0.3s ease;
+	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 }
 
 @mixin tile-option-style {
@@ -77,10 +68,14 @@ $spawn-clyde: orange;
 }
 
 @mixin panel-style {
-	background-color: $background-darker;
-	padding: 15px;
-	border-radius: 5px;
-	border: 2px solid #444;
+	background: linear-gradient(135deg, rgba(18, 18, 18, 0.95) 0%, rgba(30, 30, 30, 0.9) 100%);
+	border: 1px solid rgba($accent-color, 0.2);
+	border-radius: 8px;
+	padding: 12px;
+	box-shadow: 
+		0 4px 20px rgba(0, 0, 0, 0.5),
+		0 0 0 1px rgba(255, 255, 255, 0.05);
+	backdrop-filter: blur(10px);
 }
 
 @mixin code-style {
@@ -118,46 +113,80 @@ $spawn-clyde: orange;
 // ========== Components ==========
 // Modal
 .modal-overlay {
-	//position: absolute;
+	position: fixed;
+	top: 0;
+	left: 0;
 	width: 100vw;
 	height: 100vh;
+	background: rgba(0, 0, 0, 0.8);
 	display: flex;
-	align-items: flex-start;
+	align-items: center;
 	justify-content: center;
 	z-index: 1000;
-	padding-top: 100px;
+	backdrop-filter: blur(5px);
 
 	.modal-content {
-		background: rgba(18, 18, 18, 0.95);
-		border-radius: 12px;
-		padding: 32px 24px;
-		box-shadow: 0 4px 32px rgba(0, 0, 0, 0.5);
-		min-width: 400px;
+		background: linear-gradient(135deg, rgba(18, 18, 18, 0.98) 0%, rgba(30, 30, 30, 0.95) 100%);
+		border-radius: 16px;
+		padding: 40px 32px;
+		box-shadow: 
+			0 8px 40px rgba(0, 0, 0, 0.7),
+			0 0 0 1px rgba($accent-color, 0.3);
+		min-width: 500px;
 		text-align: center;
 		display: flex;
 		flex-direction: column;
-		gap: 16px;
-		backdrop-filter: blur(5px);
-		border: 1px solid rgba(255, 255, 255, 0.1);  // Bordure subtile
+		gap: 20px;
+		border: 2px solid rgba($accent-color, 0.5);
+
+		h3 {
+			color: $accent-color;
+			font-size: 1.2rem;
+			margin-bottom: 10px;
+			text-shadow: 0 0 10px rgba($accent-color, 0.5);
+		}
 
 		input {
-			padding: 10px 14px;
-			border-radius: 6px;
-			border: 1px solid #bbb;
-			font-size: 10px;
-			width: 320px;
+			padding: 12px 16px;
+			border-radius: 8px;
+			border: 2px solid rgba($primary-color, 0.5);
+			background: rgba(0, 0, 0, 0.7);
+			color: $text-color;
+			font-size: 1rem;
+			font-family: inherit;
+			width: 100%;
 			margin-bottom: 8px;
+			transition: border-color 0.3s, box-shadow 0.3s;
+
+			&:focus {
+				outline: none;
+				border-color: $accent-color;
+				box-shadow: 0 0 10px rgba($accent-color, 0.3);
+			}
+
+			&::placeholder {
+				color: rgba($text-color, 0.5);
+			}
 		}
 
 		button {
 			@include button-style;
 			width: 100%;
-			font-size: 0.8rem;
+			font-size: 1rem;
 			margin-top: 10px;
+			padding: 12px 20px;
+			background: linear-gradient(135deg, $primary-color 0%, darken($primary-color, 20%) 100%);
+			border: 2px solid $accent-color;
+			transition: all 0.3s ease;
 
 			&:hover {
-				background-color: $primary-color;
-				color: $text-color;
+				background: linear-gradient(135deg, $accent-color 0%, darken($accent-color, 20%) 100%);
+				transform: translateY(-2px);
+				box-shadow: 0 4px 15px rgba($accent-color, 0.3);
+			}
+
+			&:active {
+				transform: translateY(0);
 			}
 		}
 
@@ -176,6 +205,9 @@ $spawn-clyde: orange;
 	gap: 8px;
 	margin-bottom: 10px;
 	z-index: 10;
+	width: 100%;
+	max-width: 1400px;
+	justify-content: center;
 
 	label {
 		font-size: 0.8rem;
@@ -200,6 +232,9 @@ $spawn-clyde: orange;
 	gap: 15px;
 	margin-bottom: 20px;
 	z-index: 10;
+	width: 100%;
+	max-width: 1400px;
+	justify-content: center;
 
 	.tool-group {
 		display: flex;
@@ -211,29 +246,12 @@ $spawn-clyde: orange;
 	}
 }
 
-// Editor Layout
-.editor-container {
-	display: grid;
-	grid-template-columns: 250px 1fr 1fr;
-	gap: 20px;
-	width: 100%;
-	z-index: 10;
-}
-
-.left-panel,
-.right-panel {
+// Editor Layout - Styles simplifiés
+.left-panel {
 	display: flex;
 	flex-direction: column;
-	gap: 20px;
+	gap: 15px;
 	z-index: 10;
-
-}
-
-.left-panel {
-	width: 250px;
-	flex-shrink: 0;
-	z-index: 10;
-
 }
 
 .main-content {
@@ -296,305 +314,346 @@ $spawn-clyde: orange;
 				color: $tunnel-color;
 				font-weight: bold;
 				font-size: 12px;
+			}				// Spawn points
+				&.spawn {
+					display: flex;
+					justify-content: center;
+					align-items: center;
+					font-weight: bold;
+					font-size: 8px;
+					border-radius: 50%;
+
+					&.spawn-pacman {
+						@include spawn-style($spawn-pacman);
+					}
+
+					&.spawn-blinky {
+						@include spawn-style($spawn-blinky);
+					}
+
+					&.spawn-inky {
+						@include spawn-style($spawn-inky);
+					}
+
+					&.spawn-pinky {
+						@include spawn-style($spawn-pinky);
+					}
+
+					&.spawn-clyde {
+						@include spawn-style($spawn-clyde);
+					}
+				}
 			}
 
-			// Spawn points
-			&.spawn {
-				display: flex;
-				justify-content: center;
-				align-items: center;
-				font-weight: bold;
-				font-size: 12px;
-				border-radius: 50%;
-
-				&.spawn-pacman {
-					@include spawn-style($spawn-pacman);
-				}
-
-				&.spawn-blinky {
-					@include spawn-style($spawn-blinky);
-				}
-
-				&.spawn-inky {
-					@include spawn-style($spawn-inky);
-				}
-
-				&.spawn-pinky {
-					@include spawn-style($spawn-pinky);
-				}
-
-				&.spawn-clyde {
-					@include spawn-style($spawn-clyde);
-				}
+			span {
+				font-size: 0.5rem;
+				text-align: center;
+				max-width: 100%;
+				overflow: hidden;
+				text-overflow: ellipsis;
+				line-height: 1.1;
 			}
 		}
-
-		span {
-			font-size: 0.6rem;
-			text-align: center;
-			max-width: 100%;
-			overflow: hidden;
-			text-overflow: ellipsis;
-		}
-	}
-}
-
-// Map Preview
-.map-preview {
-	margin-top: 20px;
-	width: 300px;
-	flex-shrink: 0;
-	display: flex;
-	flex-direction: column;
-	@include panel-style;
-	flex-grow: 1;
-	z-index: 10;
-
-	.map-code {
-		@include code-style;
-	}
-}
-
-// Console
-.map-console {
-	margin-top: 20px;
-	@include panel-style;
-	z-index: 10;
-
-
-	.console-output {
-		@include code-style;
-		color: #0f0;
-		min-height: 60px;
 	}
 
-	.console-error {
-		background-color: rgba($error-color, 0.1);
-		border-left: 4px solid $error-color;
-		padding: 8px 12px;
-		margin-bottom: 10px;
-		border-radius: 0 4px 4px 0;
-		overflow-y: auto;
-		max-height: 200px;
-
-		.error-header {
-			font-weight: bold;
+	// Console intégrée dans le right-panel - Compact et visible
+	.map-console {
+		@include panel-style;
+		height: 100%;
+		min-height: 200px;
+		max-height: 400px;
+		
+		h3 {
+			color: #3b82f6;
+			font-size: 0.8rem;
 			margin-bottom: 8px;
-			color: $error-color;
+			font-family: 'Press Start 2P', cursive;
+			text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
 		}
 
-		.error-item {
-			padding: 3px 0;
-			color: lighten($error-color, 20%);
+		.console-output {
+			@include code-style;
+			color: #0f0;
+			min-height: 100px;
+			max-height: 300px;
+			overflow-y: auto;
+			font-size: 0.6rem;
+		}
+	}
+
+	// Grid Cell Styles
+	.grid-cell {
+		@include grid-cell-style;
+		z-index: 10;
+
+		&.wall {
+			background-color: $primary-color;
 		}
 
-		// Scrollbar
-		&::-webkit-scrollbar {
-			width: 8px;
+		&.tunnel {
+			border: 0.6px solid $tunnel-color;
+			border-radius: 50%;
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			color: $tunnel-color;
+			font-weight: bold;
+			font-size: 10px;
 		}
 
-		&::-webkit-scrollbar-track {
-			background: rgba(0, 0, 0, 0.1);
-			border-radius: 4px;
+		&.empty {
+			background-color: $background-darker;
 		}
 
-		&::-webkit-scrollbar-thumb {
-			background: rgba(0, 0, 0, 0.3);
-			border-radius: 4px;
-
-			&:hover {
-				background: rgba(0, 0, 0, 0.5);
-			}
+		.dot {
+			@include dot-style(6px);
 		}
+
+		.big-dot {
+			@include dot-style(10px);
+		}
+
+		.door-line {
+			width: 80%;
+			height: 2px;
+			background-color: #ffd700;
+		}
+	}
+
+	// Tunnel Pairing Visual Feedback
+	.tunnel-paired {
+		box-shadow: 0 0 8px 2px $success-color, 0 0 0 2px $success-color inset;
+		border-color: $success-color !important;
+		background-color: darken($success-color, 70%) !important;
+		transition: box-shadow 0.2s, border-color 0.2s, background-color 0.2s;
+	}
+
+	.tunnel-unpaired {
+		box-shadow: 0 0 8px 2px $error-color, 0 0 0 2px $error-color inset;
+		border-color: $error-color !important;
+		background-color: darken($error-color, 70%) !important;
+		transition: box-shadow 0.2s, border-color 0.2s, background-color 0.2s;
+	
+}
+
+// ========== Animations ==========
+@keyframes pulse {
+	0% {
+		transform: translate(-50%, -50%) scale(1);
+	}
+
+	50% {
+		transform: translate(-50%, -50%) scale(1.1);
+	}
+
+	100% {
+		transform: translate(-50%, -50%) scale(1);
 	}
 }
 
-// Grid Cell Styles
-.grid-cell {
-	@include grid-cell-style;
-	z-index: 10;
-
-
-	&.wall {
-		background-color: $primary-color;
+@keyframes neon-pulse {
+	from {
+		text-shadow: 
+			2px 2px 0px #000,
+			0 0 10px $accent-color;
 	}
-
-	&.tunnel {
-		border: 0.6px solid $tunnel-color;
-		border-radius: 50%;
-		display: flex;
-		justify-content: center;
-		align-items: center;
-		color: $tunnel-color;
-		font-weight: bold;
-		font-size: 10px;
+	to {
+		text-shadow: 
+			2px 2px 0px #000,
+			0 0 20px $accent-color, 
+			0 0 30px $accent-color, 
+			0 0 40px $accent-color;
 	}
-
-	&.empty {
-		background-color: $background-darker;
-	}
-
-	.dot {
-		@include dot-style(6px);
-	}
-
-	.big-dot {
-		@include dot-style(10px);
-	}
-
-	.door-line {
-		width: 80%;
-		height: 2px;
-		background-color: #ffd700;
-	}
-}
-
-// Tunnel Pairing Visual Feedback
-.tunnel-paired {
-	box-shadow: 0 0 8px 2px $success-color, 0 0 0 2px $success-color inset;
-	border-color: $success-color !important;
-	background-color: darken($success-color, 70%) !important;
-	transition: box-shadow 0.2s, border-color 0.2s, background-color 0.2s;
-}
-
-.tunnel-unpaired {
-	box-shadow: 0 0 8px 2px $error-color, 0 0 0 2px $error-color inset;
-	border-color: $error-color !important;
-	background-color: darken($error-color, 70%) !important;
-	transition: box-shadow 0.2s, border-color 0.2s, background-color 0.2s;
 }
 
 // ========== Base Styles ==========
 .create-pacman-map {
 	display: flex;
 	flex-direction: column;
-	padding: 10px;
+	align-items: center;
+	justify-content: flex-start;
+	padding: 10px 15px;
 	color: $text-color;
-	min-height: 100vh;
-	//background-color: $background-dark;
+	height: 100vh;
+	max-height: 100vh;
+	overflow: hidden;
+	box-sizing: border-box;
 	font-family: 'Press Start 2P', cursive;
 	z-index: 10;
+	width: 100vw;
 
 	// Typography
-	h2,
+	h2 {
+		text-align: center;
+		font-size: 1.1rem;
+		margin: 5px auto 15px auto;
+		max-width: 600px;
+		text-transform: uppercase;
+		letter-spacing: 1px;
+		z-index: 20;
+		position: relative;
+		background: rgba(0, 0, 0, 0.8);
+		padding: 8px 16px;
+		border-radius: 6px;
+		border: 2px solid $accent-color;
+		animation: neon-pulse 2s infinite alternate;
+		color: $accent-color;
+		text-shadow: 
+			2px 2px 0px #000,
+			0 0 10px $accent-color;
+		font-family: 'Press Start 2P', cursive;
+	}
+
 	h3 {
 		color: $accent-color;
 		text-shadow: 2px 2px 0px #000;
-	}
-
-	h2 {
-		text-align: center;
-		font-size: 1rem;
+		font-size: 0.8rem;
 		margin-bottom: 10px;
 	}
 
-	h3 {
-		font-size: 1rem;
-		margin-bottom: 15px;
-	}
-
-	// Form elements
+	// Form elements - Plus compact
 	.map-name {
 		display: flex;
 		align-items: center;
 		gap: 8px;
 		margin-bottom: 10px;
+		width: 100%;
+		max-width: 500px;
+		justify-content: center;
+		padding: 8px 15px;
+		background: rgba(0, 0, 0, 0.4);
+		border-radius: 6px;
+		border: 1px solid rgba($accent-color, 0.3);
 
 		label {
-			font-size: 0.8rem;
+			font-size: 0.7rem;
+			color: $accent-color;
+			text-shadow: 0 0 5px rgba($accent-color, 0.5);
+			min-width: 70px;
 		}
 
 		input {
 			flex: 1;
-			max-width: 250px;
-			background-color: #222;
-			border: 2px solid #0000ff;
-			color: white;
-			padding: 5px 8px;
+			max-width: 200px;
+			background-color: rgba(0, 0, 0, 0.7);
+			border: 1px solid $primary-color;
+			color: $text-color;
+			padding: 6px 10px;
 			border-radius: 4px;
 			font-family: inherit;
+			font-size: 0.8rem;
+			transition: border-color 0.3s, box-shadow 0.3s;
+
+			&:focus {
+				outline: none;
+				border-color: $accent-color;
+				box-shadow: 0 0 8px rgba($accent-color, 0.3);
+			}
 		}
 	}
 
-	// Toolbar
+	// Toolbar - Ultra compact
 	.toolbar {
 		display: flex;
 		flex-wrap: wrap;
-		gap: 15px;
-		margin-bottom: 20px;
+		gap: 8px;
+		margin-bottom: 10px;
+		width: 100%;
+		max-width: 700px;
+		justify-content: center;
+		padding: 8px 15px;
+		background: rgba(0, 0, 0, 0.3);
+		border-radius: 6px;
+		border: 1px solid rgba($primary-color, 0.3);
 
 		.tool-group {
 			display: flex;
-			gap: 10px;
+			gap: 6px;
 
 			button {
 				@include button-style;
+				font-size: 0.7rem;
+				padding: 4px 8px;
 			}
 		}
 
 		.spawn-counters {
 			display: flex;
 			flex-wrap: wrap;
-			gap: 10px;
-			font-size: 0.7rem;
+			gap: 6px;
+			font-size: 0.6rem;
 
 			.counter {
-				padding: 5px 8px;
-				border-radius: 3px;
+				padding: 3px 5px;
+				border-radius: 2px;
 				background-color: rgba(0, 0, 0, 0.3);
 			}
 		}
 	}
 
-	// Editor layout
+	// Editor layout - Arrangement horizontal optimisé pour une seule page
 	.editor-container {
-		display: grid;
-		grid-template-columns: 250px 1fr 1fr;
+		display: flex;
+		justify-content: center;
+		align-items: flex-start;
 		gap: 20px;
 		width: 100%;
+		max-width: 1200px;
+		margin: 0 auto;
+		flex: 1;
+		min-height: 0;
 	}
 
 	.left-panel {
+		width: 180px;
+		flex-shrink: 0;
+		display: flex;
+		flex-direction: column;
+		gap: 10px;
+		height: 100%;
+	}
+
+	.main-content {
+		flex: 1;
+		display: flex;
+		flex-direction: column;
+		min-width: 400px;
+		max-width: 600px;
+		height: 100%;
+	}
+
+	// Console intégrée à droite de l'éditeur
+	.right-panel {
 		width: 250px;
 		flex-shrink: 0;
 		display: flex;
 		flex-direction: column;
-		gap: 20px;
+		gap: 10px;
+		height: 100%;
 	}
 
-	.right-panel {
-		display: flex;
-		flex-direction: column;
-		gap: 20px;
-	}
-
-	.main-content {
-		flex-grow: 1;
-		display: flex;
-		flex-direction: column;
-	}
-
-	// Tile selector
+	// Tile selector - Plus compact
 	.tile-selector {
 		display: grid;
 		grid-template-columns: repeat(2, 1fr);
-		gap: 8px;
-		max-height: 400px;
+		gap: 4px;
+		max-height: 280px;
 		overflow-y: auto;
 
 		.tile-option {
 			@include tile-option-style;
+			padding: 3px;
 
 			.tile {
-				width: 20px;
-				height: 20px;
+				width: 16px;
+				height: 16px;
 				position: relative;
-				margin-bottom: 5px;
+				margin-bottom: 3px;
 
 				// Tile types
 				&.wall {
 					background-color: #0000ff;
-					border-radius: 3px;
+					border-radius: 2px;
 				}
 
 				&.empty {
@@ -603,11 +662,11 @@ $spawn-clyde: orange;
 				}
 
 				.dot {
-					@include dot-style(6px);
+					@include dot-style(4px);
 				}
 
 				.big-dot {
-					@include dot-style(10px);
+					@include dot-style(7px);
 				}
 
 				.door-line {
@@ -618,15 +677,14 @@ $spawn-clyde: orange;
 				}
 
 				&.tunnel {
-					border: 2px solid #0066ff;
+					border: 1px solid #0066ff;
 					border-radius: 50%;
 					display: flex;
 					justify-content: center;
 					align-items: center;
 					color: #0066ff;
 					font-weight: bold;
-					font-size: 12px;
-
+					font-size: 8px;
 				}
 
 				// Spawn points
@@ -715,39 +773,30 @@ $spawn-clyde: orange;
 		}
 	}
 
-	// Preview and console
-	.map-preview {
-		margin-top: 20px;
-		width: 300px;
-		flex-shrink: 0;
-		display: flex;
-		flex-direction: column;
-		@include panel-style;
-		flex-grow: 1;
-
-		.map-code {
-			@include code-style;
-		}
-
-		.map-info {
-			font-size: 0.7rem;
-			line-height: 1.5;
-			color: #aaa;
-
-			p {
-				margin-bottom: 10px;
-			}
-		}
-	}
-
+	// Console styles pour l'intérieur du composant
 	.map-console {
-		margin-top: 20px;
+		width: 100%;
+		max-width: 1000px;
+		margin: 30px auto 20px auto;
+		align-self: center;
+		z-index: 10;
+		min-height: 200px;
 		@include panel-style;
+
+		h3 {
+			color: #3b82f6;
+			font-size: 0.9rem;
+			margin-bottom: 12px;
+			font-family: 'Press Start 2P', cursive;
+			text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+		}
 
 		.console-output {
 			@include code-style;
 			color: #0f0;
-			min-height: 60px;
+			min-height: 120px;
+			max-height: 300px;
+			overflow-y: auto;
 		}
 	}
 
@@ -831,5 +880,20 @@ $spawn-clyde: orange;
 
 	100% {
 		transform: translate(-50%, -50%) scale(1);
+	}
+}
+
+@keyframes neon-pulse {
+	from {
+		text-shadow: 
+			2px 2px 0px #000,
+			0 0 10px $accent-color;
+	}
+	to {
+		text-shadow: 
+			2px 2px 0px #000,
+			0 0 20px $accent-color, 
+			0 0 30px $accent-color, 
+			0 0 40px $accent-color;
 	}
 }

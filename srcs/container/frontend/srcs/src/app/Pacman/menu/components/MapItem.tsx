@@ -1,5 +1,6 @@
 import React from 'react';
 import { PacmanMap } from '../../../types/pacmanTypes';
+import { useLanguage } from '../../../../contexts/LanguageContext';
 
 interface MapItemProps {
 	map: PacmanMap;
@@ -9,6 +10,8 @@ interface MapItemProps {
 }
 
 const MapItem: React.FC<MapItemProps> = ({ map, onTogglePublic, onEdit, onDelete }) => {
+	const { t } = useLanguage();
+	
 	return (
 		<li className="map-item">
 			<div className="map-info">
@@ -29,11 +32,11 @@ const MapItem: React.FC<MapItemProps> = ({ map, onTogglePublic, onEdit, onDelete
 						<span className="slider round"></span>
 					</label>
 					<span className="switch-label" style={{color: map.is_public ? "#ffd700" : "#aaa"}}>
-						{map.is_public ? 'Public' : 'Privé'}
+						{map.is_public ? t('pacman.menu.maps.public') : t('pacman.menu.maps.private')}
 					</span>
 				</span>
 				<span className={`map-validity ${map.is_valid ? 'valid' : 'invalid'}`}>
-					{map.is_valid ? 'Valide' : 'Invalide'}
+					{map.is_valid ? t('pacman.menu.maps.valid') : t('pacman.menu.maps.invalid')}
 				</span>
 			</div>
 			<div className="map-actions">
@@ -47,7 +50,7 @@ const MapItem: React.FC<MapItemProps> = ({ map, onTogglePublic, onEdit, onDelete
 							}}
 						>
 							<span className="icon">🗑️</span>
-							<span className="text">Supprimer</span>
+							<span className="text">{t('pacman.menu.maps.suppress')}</span>
 						</button>
 						<button
 							className="edit-btn"
@@ -59,7 +62,7 @@ const MapItem: React.FC<MapItemProps> = ({ map, onTogglePublic, onEdit, onDelete
 							}}
 						>
 							<span className="icon">✏️</span>
-							<span className="text">Éditer</span>
+							<span className="text">{t('pacman.menu.maps.edit')}</span>
 						</button>
 					</>
 				)}

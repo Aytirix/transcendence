@@ -1,5 +1,6 @@
 import React from 'react';
 import { room } from '../../../types/pacmanTypes';
+import { useLanguage } from '../../../../contexts/LanguageContext';
 
 interface ActiveRoomsListProps {
 	rooms: room[];
@@ -7,8 +8,10 @@ interface ActiveRoomsListProps {
 }
 
 const ActiveRoomsList: React.FC<ActiveRoomsListProps> = ({ rooms, onJoinSpectator }) => {
+	const { t } = useLanguage();
+
 	if (rooms.length === 0) {
-		return <p className="no-room">Aucune partie en cours</p>;
+		return <p className="no-room">{t("pacman.menu.liveGames.noGamesFound")}</p>;
 	}
 
 	return (
@@ -23,7 +26,7 @@ const ActiveRoomsList: React.FC<ActiveRoomsListProps> = ({ rooms, onJoinSpectato
 						className="join-btn"
 						onClick={() => onJoinSpectator(room.id)}
 					>
-						Spectateur
+						{t("pacman.menu.liveGames.spectate")}
 					</button>
 				</div>
 			))}

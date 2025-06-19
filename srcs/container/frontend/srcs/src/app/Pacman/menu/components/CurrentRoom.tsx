@@ -3,6 +3,8 @@ import { room } from '../../../types/pacmanTypes';
 import { MapOption } from './MapSelector';
 import MapSelector from './MapSelector';
 import PlayersList from './PlayersList';
+import { useLanguage } from '../../../../contexts/LanguageContext';
+
 
 interface CurrentRoomProps {
 	currentRoom: room;
@@ -32,7 +34,9 @@ const CurrentRoom: React.FC<CurrentRoomProps> = ({
 	onLeave,
 	onLaunch,
 	selectedMap
+	
 }) => {
+	const { t } = useLanguage();
 	const currentMapValue = currentRoom.map_id
 		? String(currentRoom.map_id)
 		: currentRoom.map || selectedMap;
@@ -65,14 +69,14 @@ const CurrentRoom: React.FC<CurrentRoomProps> = ({
 					className="leave-btn"
 					onClick={onLeave}
 				>
-					Quitter la salle
+					{t("pacman.menu.lobby.gameForm.quit")}
 				</button>
 				{isOwner && (
 					<button
 						className="launch-btn"
 						onClick={onLaunch}
 					>
-						Lancer la partie
+						{t("pacman.menu.lobby.gameForm.startGame")}
 					</button>
 				)}
 			</div>

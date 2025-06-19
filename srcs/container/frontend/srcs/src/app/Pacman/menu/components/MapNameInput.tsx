@@ -1,4 +1,5 @@
 import React from 'react';
+import { useLanguage } from '../../../../contexts/LanguageContext';
 
 interface MapNameInputProps {
 	mapName: string;
@@ -16,6 +17,8 @@ const MapNameInput: React.FC<MapNameInputProps> = ({
 	const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
 		onNameChange(event.target.value);
 	};
+	const { t } = useLanguage();
+	
 
 	return (
 		<div 
@@ -25,13 +28,13 @@ const MapNameInput: React.FC<MapNameInputProps> = ({
 				pointerEvents: blurred ? 'none' : undefined 
 			}}
 		>
-			<label htmlFor="mapName">Nom de la carte:</label>
+			<label htmlFor="mapName">{t("pacman.menu.maps.mapEditor.mapName")}</label>
 			<input
 				type="text"
 				id="mapName"
 				value={mapName}
 				onChange={handleChange}
-				placeholder="Nom de la carte"
+				placeholder={t("pacman.menu.maps.mapEditor.mapNamePlaceholder")}
 				disabled={disabled}
 			/>
 		</div>

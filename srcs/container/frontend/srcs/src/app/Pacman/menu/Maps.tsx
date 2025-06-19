@@ -4,6 +4,7 @@ import { state, PacmanMap } from '../../types/pacmanTypes';
 import { useMapsManagement } from './hooks/useMapsManagement';
 import MapEditor from './components/MapEditor';
 import MapsList from './components/MapsList';
+import { useLanguage } from '../../../contexts/LanguageContext';
 
 interface MapsProps {
 	onCreateMap?: () => void;
@@ -13,6 +14,7 @@ interface MapsProps {
 
 const Maps: React.FC<MapsProps> = ({ onCreateMap, onEditMap, state }) => {
 	const { deleteMap, toggleMapPublic } = useMapsManagement(state);
+	const { t } = useLanguage();
 
 	const handleEditMap = (map: PacmanMap) => {
 		if (onEditMap) {
@@ -22,9 +24,9 @@ const Maps: React.FC<MapsProps> = ({ onCreateMap, onEditMap, state }) => {
 
 	return (
 		<div className="maps">
-			<h2 className="maps-title">Cartes</h2>
+			<h2 className="maps-title">{t("pacman.menu.maps.title")}</h2>
 			<p className="maps-description">
-				Créez et partagez vos propres cartes avec la communauté.
+				{t("pacman.menu.maps.descriptionEditor")}
 			</p>
 			
 			<MapEditor onCreateMap={onCreateMap} />

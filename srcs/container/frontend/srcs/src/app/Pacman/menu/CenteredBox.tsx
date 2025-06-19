@@ -8,14 +8,15 @@ import Maps from './Maps';
 import { state, PacmanMap } from '../../types/pacmanTypes';
 import '../../assets/styles/pacman/CenteredBox.scss';
 import { useNavigate } from 'react-router-dom';
+import { useLanguage } from '../../../contexts/LanguageContext';
 
 
 const TABS = [
-	{ id: 'WaitingRooms', label: 'Lobby' },
-	{ id: 'ActiveRooms', label: 'En direct' },
-	{ id: 'Rules', label: 'Règles' },
-	{ id: 'Statistics', label: 'Statistique' },
-	{ id: 'Maps', label: 'Carte' },
+	{ id: 'WaitingRooms', label: 'lobby' },
+	{ id: 'ActiveRooms', label: 'liveGames' },
+	{ id: 'Rules', label: 'rules' },
+	{ id: 'Statistics', label: 'statistics' },
+	{ id: 'Maps', label: 'maps' },
 ];
 
 interface CenteredBoxProps {
@@ -27,6 +28,7 @@ interface CenteredBoxProps {
 export const CenteredBox: React.FC<CenteredBoxProps> = ({ state, onCreateMap, onEditMap }) => {
 	const [currentPage, setCurrentPage] = useState<string>('WaitingRooms');
 	const navigate = useNavigate();
+	const { t } = useLanguage();
 	
 	return (
 		<>
@@ -38,12 +40,12 @@ export const CenteredBox: React.FC<CenteredBoxProps> = ({ state, onCreateMap, on
 					title="Retour à l'accueil"
 				>
 					<img src="/avatars/ironman.svg" alt="Iron Man home icon" />
-					<span className="home-label">Accueil</span>
+					<span className="home-label">{t("pacman.menu.home")}</span>
 				</button>
 			</div>
 			<div className="centered-box">
 				<div className='title-container'>
-					<h1>PACMAN</h1>
+					<h1>{t("pacman.title")}</h1>
 				</div>
 				{/* Conteneur Principal */}
 				<div className="main-content">
@@ -55,7 +57,7 @@ export const CenteredBox: React.FC<CenteredBoxProps> = ({ state, onCreateMap, on
 							className={`menu-button ${currentPage === tab.id ? 'selected' : ''}`}
 							onClick={() => setCurrentPage(tab.id)}
 							>
-								{tab.label}
+								{t(`pacman.menu.${tab.label}.button`)}
 							</button>
 						))}
 					</div>
@@ -76,7 +78,7 @@ export const CenteredBox: React.FC<CenteredBoxProps> = ({ state, onCreateMap, on
 									Statistics: <Statistics />,
 									Rules: <Rules />,
 									Maps: <Maps onCreateMap={onCreateMap} onEditMap={onEditMap} state={state} />,
-								}[currentPage] || <p>Page non trouvée</p>}
+								}[currentPage] || <p>{t("pacman.pageNotFound.title")}</p>}
 							</motion.div>
 						</AnimatePresence>
 					</div>

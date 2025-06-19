@@ -108,7 +108,8 @@
 			"liveGames" : {
 				"button": "Live",
 				"title": "Ongoing games",
-				"noGamesFound": "No ongoing games"
+				"noGamesFound": "No ongoing games",
+				"spectate": "Spectate"
 			},
 			"rules": {
 				"button": "Rules",
@@ -129,8 +130,10 @@
 				"winRate": "Win rate",
 				"bestScore": "Best score",
 				"averageScore": "Average score",
-				"ranking": "Ranking",
-				"noStats": "No statistics available"
+				"leaderboard": "Ranking",
+				"noStats": "No statistics available",
+				"loading": "Loading statistics...",
+				"error": "Error loading statistics :"
 			},
 			"maps": {
 				"button": "Map",
@@ -141,6 +144,8 @@
 				"create": "Create new map",
 				"public": "Public",
 				"private": "Private",
+				"valid": "Valid",
+				"invalid": "Invalid",
 				"noMapsFound": "No maps found",
 				"suppress" : "Delete",
 				"edit": "Edit",
@@ -149,11 +154,15 @@
 					"mapName": "Map name",
 					"validate": "Validate",
 					"mapNamePlaceholder": "Enter map name",
+					"nameExists": "Map name already exists",
+					"mapNameTooShort": "Map name must be at least 3 characters",
+					"mapNameTooLong": "Map name must be less than 30 characters",
 					"save": "Save map",
 					"mapPreview": "Map preview",
 					"console": "Console",
 					"errors": "❌ Errors in the map",
 					"tiles": {
+						"title": "Tiles",
 						"wall": "Wall",
 						"empty": "Empty",
 						"pellet": "Pellet",
@@ -175,5 +184,10 @@
 			"quit": "Leave game",
 			"pacmanLife": "Pacman life"
 		}
+	},
+	"pageNotFound": {
+		"title": "Page Not Found",
+		"message": "The page you are looking for does not exist.",
+		"backToHome": "Back to Home"
 	}
 }

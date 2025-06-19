@@ -1,5 +1,6 @@
 import React from 'react';
 import { PacmanMap } from '../../../types/pacmanTypes';
+import { useLanguage } from '../../../../contexts/LanguageContext';
 
 interface MapNameModalProps {
 	isOpen: boolean;
@@ -16,6 +17,8 @@ const MapNameModal: React.FC<MapNameModalProps> = ({
 	existingMaps = [],
 	onSubmit
 }) => {
+	const { t } = useLanguage();
+
 	if (!isOpen) return null;
 
 	const nameExists = existingMaps.some(map => map.name === tempMapName.trim());
@@ -28,27 +31,28 @@ const MapNameModal: React.FC<MapNameModalProps> = ({
 			onSubmit(name);
 		}
 	};
+	
 
 	return (
 		<div className="modal-overlay">
 			<div className="modal-content">
-				<h3>Nom de la carte</h3>
+				<h3>{t("pacman.menu.maps.mapEditor.mapName")}</h3>
 				<form onSubmit={handleSubmit}>
 					<input
 						type="text"
 						value={tempMapName}
 						onChange={e => setTempMapName(e.target.value)}
-						placeholder="Entrez le nom de la carte"
+						placeholder={t("pacman.menu.maps.mapEditor.mapNamePlaceholder")}
 						autoFocus
 					/>
 					{nameExists && (
 						<div className='error_name' style={{ color: 'red', fontSize: 15, marginBottom: 8 }}>
-							Ce nom existe déjà. Choisissez un autre nom.
+							{t("pacman.menu.maps.mapEditor.nameExists")}
 						</div>
 					)}
 					<br />
 					<button type="submit" disabled={!isValidName}>
-						Valider
+						{t("pacman.menu.maps.mapEditor.validate")}
 					</button>
 				</form>
 			</div>

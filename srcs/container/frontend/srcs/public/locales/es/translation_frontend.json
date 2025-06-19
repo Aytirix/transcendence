@@ -109,7 +109,8 @@
 			"liveGames": {
 				"button": "En vivo",
 				"title": "Partidas en curso",
-				"noGamesFound": "No hay partidas en curso"
+				"noGamesFound": "No hay partidas en curso",
+				"spectate": "Espectar"
 			},
 			"rules": {
 				"button": "Reglas",
@@ -130,8 +131,10 @@
 				"winRate": "Tasa de victoria",
 				"bestScore": "Mejor puntuación",
 				"averageScore": "Puntuación media",
-				"ranking": "Clasificación",
-				"noStats": "No hay estadísticas disponibles"
+				"leaderboard": "Clasificación",
+				"noStats": "No hay estadísticas disponibles",
+				"loading": "Cargando estadísticas...",
+				"error": "Error al cargar las estadísticas:"
 			},
 			"maps": {
 				"button": "Mapa",
@@ -142,6 +145,8 @@
 				"create": "Crear un nuevo mapa",
 				"public": "Público",
 				"private": "Privado",
+				"valid": "Válido",
+				"invalid": "Inválido",
 				"noMapsFound": "No se encontraron mapas",
 				"suppress": "Eliminar",
 				"edit": "Editar",
@@ -150,11 +155,15 @@
 					"mapName": "Nombre del mapa",
 					"validate": "Validar",
 					"mapNamePlaceholder": "Ingrese el nombre del mapa",
+					"nameExists": "El nombre del mapa ya existe",
+					"mapNameTooShort": "El nombre del mapa es demasiado corto",
+					"mapNameTooLong": "El nombre del mapa es demasiado largo",
 					"save": "Guardar mapa",
 					"mapPreview": "Vista previa del mapa",
 					"console": "Consola",
 					"errors": "❌ Errores en el mapa",
 					"tiles": {
+						"title": "Azulejos",
 						"wall": "Muro",
 						"empty": "Vacío",
 						"pellet": "Píldora",
@@ -176,5 +185,10 @@
 			"quit": "Salir de la partida",
 			"pacmanLife": "Vida de Pacman"
 		}
+	},
+	"pageNotFound": {
+		"title": "Página no encontrada",
+		"message": "Lo sentimos, la página que buscas no existe.",
+		"backToHome": "Volver a la página de inicio"
 	}
 }

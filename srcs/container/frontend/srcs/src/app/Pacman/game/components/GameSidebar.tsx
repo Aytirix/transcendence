@@ -1,5 +1,6 @@
 import React from 'react';
 import { player, state } from '../../../types/pacmanTypes';
+import { useLanguage } from '../../../../contexts/LanguageContext';
 
 interface GameSidebarProps {
 	players: player[];
@@ -7,10 +8,12 @@ interface GameSidebarProps {
 }
 
 const GameSidebar: React.FC<GameSidebarProps> = ({ players, state }) => {
+	const { t } = useLanguage();
+
 	return (
 		<div className="column-right">
 			<div className="life">
-				<span className="life-text">Lives : {state.game?.pacmanLife || 0}</span>
+				<span className="life-text">{t("pacman.game.pacmanLife")} : {state.game?.pacmanLife || 0}</span>
 			</div>
 
 			{/* Scores des joueurs */}
@@ -65,7 +68,7 @@ const GameSidebar: React.FC<GameSidebarProps> = ({ players, state }) => {
 					}
 				}}
 			>
-				Quitter la partie
+				{t("pacman.game.quit")}
 			</button>
 		</div>
 	);
