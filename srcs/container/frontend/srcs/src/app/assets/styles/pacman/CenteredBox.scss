@@ -65,7 +65,8 @@
 	overflow: hidden;
 	font-family: 'Press Start 2P', cursive;
 	z-index: 10;
-    position: relative;      // Added relative positioning
+    position: relative;
+    box-sizing: border-box;
 
 	.title-container {
 		padding: 2rem 0;

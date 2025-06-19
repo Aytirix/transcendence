@@ -1,5 +1,6 @@
 import React from 'react';
 import { room } from '../../../types/pacmanTypes';
+import { useLanguage } from '../../../../contexts/LanguageContext';
 
 interface RoomsListProps {
 	rooms: room[];
@@ -7,8 +8,10 @@ interface RoomsListProps {
 }
 
 const RoomsList: React.FC<RoomsListProps> = ({ rooms, onJoinRoom }) => {
+	const { t } = useLanguage();
+	
 	if (rooms.length === 0) {
-		return <p className="no-room">Aucune salle d'attente disponible.</p>;
+		return <p className="no-room">{t("pacman.menu.lobby.noGamesFound")}</p>;
 	}
 
 	return (
@@ -23,7 +26,7 @@ const RoomsList: React.FC<RoomsListProps> = ({ rooms, onJoinRoom }) => {
 						className="join-btn"
 						onClick={() => onJoinRoom(room.id)}
 					>
-						Rejoindre
+						{t("pacman.menu.lobby.join")}
 					</button>
 				</div>
 			))}

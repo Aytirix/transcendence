@@ -1,4 +1,5 @@
 import React from 'react';
+import { useLanguage } from '../../../../contexts/LanguageContext';
 
 export interface MapOption {
 	value: string;
@@ -27,12 +28,14 @@ const MapSelector: React.FC<MapSelectorProps> = ({
 	filteredMaps,
 	allMaps
 }) => {
+	const { t } = useLanguage();
+	
 	if (isOwner) {
 		return (
 			<>
 				<input
 					type="text"
-					placeholder="Rechercher..."
+					placeholder={t("pacman.menu.lobby.gameForm.mapPlaceholder")}
 					value={mapSearch}
 					onChange={onMapSearchChange}
 					className="map-search"

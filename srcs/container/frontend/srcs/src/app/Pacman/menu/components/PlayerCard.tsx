@@ -1,5 +1,6 @@
 import React from 'react';
 import { player } from '../../../types/pacmanTypes';
+import { useLanguage } from '../../../../contexts/LanguageContext';
 
 interface PlayerCardProps {
 	player?: player;
@@ -16,10 +17,12 @@ const PlayerCard: React.FC<PlayerCardProps> = ({
 	onKick,
 	onSetOwner
 }) => {
+	const { t } = useLanguage();
+	
 	if (!player) {
 		return (
 			<div className="player-card">
-				<span className="waiting-slot">En attente d'un joueur</span>
+				<span className="waiting-slot">{t("pacman.menu.lobby.gameForm.waitingForPlayers")}</span>
 			</div>
 		);
 	}

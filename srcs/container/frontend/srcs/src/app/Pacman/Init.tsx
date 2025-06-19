@@ -281,7 +281,7 @@ export default function WebSocketPacman() {
 					<span></span><span></span><span></span><span></span><span></span>
 				</div>
 			</div>
-			<div className="bg-gray-200 text-white flex flex-col items-center justify-center">
+			<div className="pacman-content-wrapper">
 				<div className="flex items-center gap-4 mb-4">
 					<VolumeControl />
 					<button

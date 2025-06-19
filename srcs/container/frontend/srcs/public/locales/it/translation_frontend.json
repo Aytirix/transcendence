@@ -26,7 +26,6 @@
 
 	"project_credits": "Crediti del Progetto",
 	"project_transcendence": "Progetto Transcendence",
-	
 	"home": {
 		"welcome_to_transcendence": "Benvenuto in Transcendence",
 		"experience_classic_games": "Vivi i giochi classici reinventati con tecnologia moderna",
@@ -87,5 +86,109 @@
 			"gameLobbySystem": "Sistema lobby di gioco",
 			"playerProgressionTracking": "Tracciamento progressione giocatore"
 		}
+	},
+
+	"pacman": {
+		"title": "Pacman",
+		"menu" : {
+			"home": "Home",
+			"lobby": {
+				"button": "Lobby",
+				"gameNamePlaceholder": "Nome della stanza",
+				"create": "Crea una stanza",
+				"join": "Unisciti",
+				"noGamesFound": "Nessuna stanza trovata",
+				"gameForm": {
+					"map": "Mappa:",
+					"mapPlaceholder": "Seleziona una mappa",
+					"quit": "Esci dalla stanza",
+					"startGame": "Avvia partita",
+					"waitingForPlayers": "In attesa di giocatori"
+				}
+			},
+			"liveGames" : {
+				"button": "In diretta",
+				"title": "Partite in corso",
+				"noGamesFound": "Nessuna partita in corso",
+				"spectate": "Spettatore"
+			},
+			"rules": {
+				"button": "Regole",
+				"title": "Regole del gioco",
+				"content1": "Pacman è un classico gioco arcade in cui il giocatore controlla Pacman, una creatura gialla che si muove in un labirinto per mangiare le palline evitando i fantasmi.",
+				"content2": "Questa versione di Pacman reinterpreta il classico in modalità multiplayer (da 2 a 5 giocatori).",
+				"content3": "Quando ci sono meno di 5 giocatori, il computer completa la partita.",
+				"content4": "Ogni giocatore controlla un personaggio diverso: Pacman, Clyde, Pinky, Inky o Blinky.",
+				"content5": "L'obiettivo di Pacman è mangiare tutte le palline per vincere (ha tre vite), mentre i fantasmi devono cooperare per eliminarlo.",
+				"footer": "Divertiti!"
+			},
+			"statistics": {
+				"button": "Statistiche",
+				"title": "Statistiche giocatore",
+				"gamesPlayed": "Partite giocate",
+				"gamesWon": "Partite vinte",
+				"gamesLost": "Partite perse",
+				"winRate": "Percentuale di vittorie",
+				"bestScore": "Miglior punteggio",
+				"averageScore": "Punteggio medio",
+				"leaderboard": "Classifica",
+				"noStats": "Nessuna statistica disponibile",
+				"loading": "Caricamento statistiche...",
+				"error": "Errore nel caricamento delle statistiche :"
+			},
+			"maps": {
+				"button": "Mappa",
+				"title": "Mappe",
+				"content": "Seleziona una mappa per iniziare la partita.",
+				"descriptionEditor": "Crea e condividi le tue mappe con la comunità.",
+				"editor": "Editor di mappe",
+				"create": "Crea una nuova mappa",
+				"public": "Pubblica",
+				"private": "Privata",
+				"valid": "Valida",
+				"invalid": "Non valida",
+				"noMapsFound": "Nessuna mappa trovata",
+				"suppress" : "Elimina",
+				"edit": "Modifica",
+				"mapEditor": {
+					"title": "Crea una mappa Pacman",
+					"mapName": "Nome della mappa",
+					"validate": "Valida",
+					"mapNamePlaceholder": "Inserisci il nome della mappa",
+					"nameExists": "Il nome della mappa esiste già",
+					"mapNameTooShort": "Il nome della mappa deve essere lungo almeno 3 caratteri",
+					"mapNameTooLong": "Il nome della mappa non deve superare i 30 caratteri",
+					"save": "Salva la mappa",
+					"mapPreview": "Anteprima mappa",
+					"console": "Console",
+					"errors": "❌ Errori nella mappa",
+					"tiles": {
+						"title": "Tessere",
+						"wall": "Muro",
+						"empty": "Vuoto",
+						"pellet": "Pallina",
+						"superPellet": "Super pallina",
+						"door": "Porta",
+						"tunnel": "Tunnel",
+						"pacmanSpawn": "Spawn Pacman",
+						"blinkySpawn": "Spawn Blinky",
+						"inkySpawn": "Spawn Inky",
+						"pinkySpawn": "Spawn Pinky",
+						"clydeSpawn": "Spawn Clyde"
+					},
+					"addBorders": "Aggiungi bordi",
+					"back": "Indietro"
+				}
+			}
+		},
+		"game": {
+			"quit": "Esci dalla partita",
+			"pacmanLife": "Vita Pacman"
+		}
+	},
+	"pageNotFound": {
+		"title": "Pagina non trovata",
+		"message": "La pagina che stai cercando non esiste.",
+		"backToHome": "Torna alla home"
 	}
 }

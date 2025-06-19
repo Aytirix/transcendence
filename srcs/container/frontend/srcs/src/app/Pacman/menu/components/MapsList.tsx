@@ -1,6 +1,7 @@
 import React from 'react';
 import { PacmanMap } from '../../../types/pacmanTypes';
 import MapItem from './MapItem';
+import { useLanguage } from '../../../../contexts/LanguageContext';
 
 interface MapsListProps {
 	maps: PacmanMap[];
@@ -10,10 +11,10 @@ interface MapsListProps {
 }
 
 const MapsList: React.FC<MapsListProps> = ({ maps, onTogglePublic, onEdit, onDelete }) => {
+	const { t } = useLanguage();
 	if (!maps || maps.length === 0) {
-		return <p>Aucune carte disponible</p>;
+		return <p>{t("pacman.menu.maps.noMapsFound")}</p>;
 	}
-
 	return (
 		<div className="maps-list">
 			<ul>

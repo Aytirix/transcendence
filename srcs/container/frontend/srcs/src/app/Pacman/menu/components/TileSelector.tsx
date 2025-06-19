@@ -1,4 +1,5 @@
 import React from 'react';
+import { useLanguage } from '../../../../contexts/LanguageContext';
 
 interface TileSelectorProps {
 	selectedTile: string;
@@ -6,23 +7,25 @@ interface TileSelectorProps {
 }
 
 const TileSelector: React.FC<TileSelectorProps> = ({ selectedTile, onTileSelect }) => {
+	const { t } = useLanguage();
 	const tiles = [
-		{ value: '#', name: 'Mur', className: 'tile wall' },
-		{ value: ' ', name: 'Vide', className: 'tile empty' },
-		{ value: '.', name: 'Pastille', className: 'tile pellet', content: <div className="dot"></div> },
-		{ value: 'o', name: 'Super pastille', className: 'tile power-pellet', content: <div className="big-dot"></div> },
-		{ value: '-', name: 'Porte', className: 'tile door', content: <div className="door-line"></div> },
-		{ value: 'T', name: 'Tunnel', className: 'tile tunnel', content: 'T' },
-		{ value: 'P', name: 'Spawn Pacman', className: 'tile spawn spawn-pacman', content: 'P' },
-		{ value: 'B', name: 'Spawn Blinky', className: 'tile spawn spawn-blinky', content: 'B' },
-		{ value: 'I', name: 'Spawn Inky', className: 'tile spawn spawn-inky', content: 'I' },
-		{ value: 'Y', name: 'Spawn Pinky', className: 'tile spawn spawn-pinky', content: 'Y' },
-		{ value: 'C', name: 'Spawn Clyde', className: 'tile spawn spawn-clyde', content: 'C' },
+		{ value: '#', name: t("pacman.menu.maps.mapEditor.tiles.wall"), className: 'tile wall' },
+		{ value: ' ', name: t("pacman.menu.maps.mapEditor.tiles.empty"), className: 'tile empty' },
+		{ value: '.', name: t("pacman.menu.maps.mapEditor.tiles.pellet"), className: 'tile pellet', content: <div className="dot"></div> },
+		{ value: 'o', name: t("pacman.menu.maps.mapEditor.tiles.superPellet"), className: 'tile power-pellet', content: <div className="big-dot"></div> },
+		{ value: '-', name: t("pacman.menu.maps.mapEditor.tiles.door"), className: 'tile door', content: <div className="door-line"></div> },
+		{ value: 'T', name: t("pacman.menu.maps.mapEditor.tiles.tunnel"), className: 'tile tunnel', content: 'T' },
+		{ value: 'P', name: t("pacman.menu.maps.mapEditor.tiles.pacmanSpawn"), className: 'tile spawn spawn-pacman', content: 'P' },
+		{ value: 'B', name: t("pacman.menu.maps.mapEditor.tiles.blinkySpawn"), className: 'tile spawn spawn-blinky', content: 'B' },
+		{ value: 'I', name: t("pacman.menu.maps.mapEditor.tiles.inkySpawn"), className: 'tile spawn spawn-inky', content: 'I' },
+		{ value: 'Y', name: t("pacman.menu.maps.mapEditor.tiles.pinkySpawn"), className: 'tile spawn spawn-pinky', content: 'Y' },
+		{ value: 'C', name: t("pacman.menu.maps.mapEditor.tiles.clydeSpawn"), className: 'tile spawn spawn-clyde', content: 'C' },
 	];
+	
 
 	return (
 		<div className="left-panel">
-			<h3>Tiles</h3>
+			<h3>{t("pacman.menu.maps.mapEditor.tiles.title")}</h3>
 			<div className="tile-selector">
 				{tiles.map((tile) => (
 					<div

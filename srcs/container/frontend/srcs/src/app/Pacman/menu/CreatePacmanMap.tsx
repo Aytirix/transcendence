@@ -7,11 +7,11 @@ import {
 	TileSelector, 
 	MapNameModal, 
 	MapToolbar, 
-	MapPreview, 
 	MapConsole,
 	MapNameInput
 } from './components';
 import { useMapEditor, useMapDrawing } from './hooks';
+import { useLanguage } from '../../../contexts/LanguageContext';
 
 interface CreatePacmanMapProps {
 	state: state;
@@ -24,6 +24,7 @@ interface CreatePacmanMapProps {
 
 const CreatePacmanMap: React.FC<CreatePacmanMapProps> = ({ state, onSave, onCancel, initialMap, editingMap }) => {
 	const DEFAULT_TILE_SIZE = 15;
+	const { t } = useLanguage();
 
 	// Utilisation des hooks modulaires
 	const mapEditor = useMapEditor({ state, initialMap, editingMap, onSave });
@@ -62,8 +63,8 @@ const CreatePacmanMap: React.FC<CreatePacmanMapProps> = ({ state, onSave, onCanc
 
 	return (
 		<div className="create-pacman-map">
-			<h2>Créer une carte Pacman</h2>
-			
+			<h2>{t("pacman.menu.maps.mapEditor.title")}</h2>
+
 			<MapNameModal
 				isOpen={!mapEditor.mapName}
 				tempMapName={mapEditor.tempMapName}
@@ -106,10 +107,10 @@ const CreatePacmanMap: React.FC<CreatePacmanMapProps> = ({ state, onSave, onCanc
 					/>
 				</div>
 
-				<MapPreview grid={mapEditor.grid} />
+				<div className="right-panel">
+					<MapConsole maps={state?.maps} mapId={mapEditor.id} />
+				</div>
 			</div>
-
-			<MapConsole maps={state?.maps} mapId={mapEditor.id} />
 		</div>
 	);
 };
