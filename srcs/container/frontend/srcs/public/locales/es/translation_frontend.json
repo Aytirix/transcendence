@@ -2,7 +2,97 @@
 	"hello": "Hola",
 	"test": "El sitio web actual ofrece una interfaz moderna y adaptable, que permite a cada usuario navegar fácilmente y gestionar su perfil de forma segura. Las funciones básicas están disponibles: registro, inicio de sesión y visualización de información de usuario. El proyecto Transcendence, desarrollado en la escuela 42, se integra en esta plataforma añadiendo una dimensión innovadora e interactiva. Su objetivo principal es crear, directamente en el sitio, un juego de Pong multijugador accesible para todos, con partidas gestionadas en tiempo real gracias a los websockets. También incluye funciones sociales como chat, invitaciones, torneos entre usuarios y gestión personalizada de perfiles. Este proyecto no solo enriquece la experiencia del usuario, sino que también moderniza el sitio fomentando la interacción y la competencia amistosa. Finalmente, Transcendence brinda un entorno ideal para la colaboración y el dominio de las herramientas de desarrollo web, fortaleciendo el espíritu comunitario dentro de la plataforma.",
 	"logout": "Logout",
-	"profile": "Profile",
-	"username": "nom utilisateur",
-	"password": "Mot de passe"
+	"profile": "Perfil",
+	"username": "Nombre de usuario",
+	"password": "Contraseña",
+
+	"pacman": {
+		"title": "Pacman",
+		"menu": {
+			"home": "Inicio",
+			"lobby": {
+				"button": "Lobby",
+				"gameNamePlaceholder": "Nombre de la sala",
+				"create": "Crear sala",
+				"join": "Unirse",
+				"noGamesFound": "No se encontraron salas",
+				"gameForm": {
+					"map": "Mapa:",
+					"mapPlaceholder": "Seleccione un mapa",
+					"quit": "Salir de la sala",
+					"startGame": "Iniciar partida",
+					"waitingForPlayers": "Esperando jugadores"
+				}
+			},
+			"liveGames": {
+				"button": "En vivo",
+				"title": "Partidas en curso",
+				"noGamesFound": "No hay partidas en curso"
+			},
+			"rules": {
+				"button": "Reglas",
+				"title": "Reglas del juego",
+				"content1": "Pacman es un juego de arcade clásico donde el jugador controla a Pacman, una criatura amarilla que se mueve por un laberinto para comer píldoras mientras evita a los fantasmas.",
+				"content2": "Esta versión de Pacman reinventa el clásico en modo multijugador (de 2 a 5 jugadores).",
+				"content3": "Cuando hay menos de 5 jugadores, computadoras completan la partida.",
+				"content4": "Cada jugador controla un personaje diferente: Pacman, Clyde, Pinky, Inky o Blinky.",
+				"content5": "El objetivo de Pacman es comer todas las píldoras para ganar (tiene tres vidas), mientras que los fantasmas deben cooperar para eliminarlo.",
+				"footer": "¡Diviértete!"
+			},
+			"statistics": {
+				"button": "Estadísticas",
+				"title": "Estadísticas del jugador",
+				"gamesPlayed": "Partidas jugadas",
+				"gamesWon": "Partidas ganadas",
+				"gamesLost": "Partidas perdidas",
+				"winRate": "Tasa de victoria",
+				"bestScore": "Mejor puntuación",
+				"averageScore": "Puntuación media",
+				"ranking": "Clasificación",
+				"noStats": "No hay estadísticas disponibles"
+			},
+			"maps": {
+				"button": "Mapa",
+				"title": "Mapas",
+				"content": "Seleccione un mapa para comenzar la partida.",
+				"descriptionEditor": "Crea y comparte tus propios mapas con la comunidad.",
+				"editor": "Editor de mapas",
+				"create": "Crear un nuevo mapa",
+				"public": "Público",
+				"private": "Privado",
+				"noMapsFound": "No se encontraron mapas",
+				"suppress": "Eliminar",
+				"edit": "Editar",
+				"mapEditor": {
+					"title": "Crear un mapa de Pacman",
+					"mapName": "Nombre del mapa",
+					"validate": "Validar",
+					"mapNamePlaceholder": "Ingrese el nombre del mapa",
+					"save": "Guardar mapa",
+					"mapPreview": "Vista previa del mapa",
+					"console": "Consola",
+					"errors": "❌ Errores en el mapa",
+					"tiles": {
+						"wall": "Muro",
+						"empty": "Vacío",
+						"pellet": "Píldora",
+						"superPellet": "Súper píldora",
+						"door": "Puerta",
+						"tunnel": "Túnel",
+						"pacmanSpawn": "Aparición Pacman",
+						"blinkySpawn": "Aparición Blinky",
+						"inkySpawn": "Aparición Inky",
+						"pinkySpawn": "Aparición Pinky",
+						"clydeSpawn": "Aparición Clyde"
+					},
+					"addBorders": "Agregar bordes",
+					"back": "Atrás"
+				}
+			}
+		},
+		"game": {
+			"quit": "Salir de la partida",
+			"pacmanLife": "Vida de Pacman"
+		}
+	}
 }
