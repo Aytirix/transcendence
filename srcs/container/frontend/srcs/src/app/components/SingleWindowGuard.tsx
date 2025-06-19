@@ -1,7 +1,9 @@
 import React, { useEffect, useState, ReactNode } from 'react';
+import { useLocation } from 'react-router-dom';
 
 const CHANNEL_NAME = 'Trascendence';
 const APP_WINDOW_NAME = 'TrascendenceApp';
+const IGNORE_PATH = ['/auth/checkCode', '/login', '/register', '/api/docs'];
 
 type Message = 'HELLO' | 'OCCUPIED' | 'FOCUS';
 
@@ -12,6 +14,8 @@ interface SingletonGuardProps {
 const SingletonGuard: React.FC<SingletonGuardProps> = ({ children }) => {
 	const [isPrimary, setIsPrimary] = useState<boolean | null>(null);
 	const [channel] = useState(() => new BroadcastChannel(CHANNEL_NAME));
+	const location = useLocation();
+	const ignored = IGNORE_PATH.includes(location.pathname);
 
 	useEffect(() => {
 		window.name = APP_WINDOW_NAME;
@@ -22,26 +26,28 @@ const SingletonGuard: React.FC<SingletonGuardProps> = ({ children }) => {
 		channel.onmessage = (ev: MessageEvent<Message>) => {
 			switch (ev.data) {
 				case 'HELLO':
-					if (localIsPrimary && decisionTaken) {
+					if (localIsPrimary && decisionTaken && !ignored) {
 						channel.postMessage('OCCUPIED');
 					}
 					break;
 				case 'OCCUPIED':
-					if (!decisionTaken) {
+					if (!decisionTaken && !ignored) {
 						localIsPrimary = false;
 						setIsPrimary(false);
 						decisionTaken = true;
 					}
 					break;
 				case 'FOCUS':
-					if (localIsPrimary) {
+					if (localIsPrimary && !ignored) {
 						window.focus();
 					}
 					break;
 			}
 		};
 
-		channel.postMessage('HELLO');
+		if (!ignored) {
+			channel.postMessage('HELLO');
+		}
 
 		const to = setTimeout(() => {
 			if (!decisionTaken) {
@@ -55,6 +61,10 @@ const SingletonGuard: React.FC<SingletonGuardProps> = ({ children }) => {
 			channel.close();
 		};
 	}, [channel]);
+
+	if (ignored) {
+		return <>{children}</>;
+	}
 
 	if (isPrimary === null) return null;
 

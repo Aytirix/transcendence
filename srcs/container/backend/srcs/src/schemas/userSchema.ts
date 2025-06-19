@@ -51,7 +51,7 @@ export const register = {
 			username: { type: 'string', minLength: 3, maxLength: 15, pattern: '^[a-zA-Z0-9]+$' },
 			confirmPassword: { type: 'string', minLength: 3 },
 			// confirmPassword: { type: 'string', minLength: 8, maxLength: 25, pattern: '^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,25}$' },
-			lang: { type: 'string', enum: ['fr', 'en', 'it'] },
+			lang: { type: 'string', enum: ['fr', 'en', 'it', 'es'] },
 		},
 		required: [...login.body.required, 'username', 'confirmPassword'],
 		errorMessage: {
@@ -99,7 +99,7 @@ export const update = {
 						id: { type: 'number', minLength: 3, maxLength: 5 },
 						email: { type: 'string', format: 'email' },
 						username: { type: 'string', minLength: 3, maxLength: 15, pattern: '^[a-zA-Z0-9]+$' },
-						lang: { type: 'string', enum: ['fr', 'en', 'it'] },
+						lang: { type: 'string', enum: ['fr', 'en', 'it', 'es'] },
 						avatar: { type: 'string' },
 					},
 					required: ['id', 'email', 'username', 'lang', 'avatar'],
@@ -129,7 +129,6 @@ export const logout = {
 	},
 }
 
-
 export const isAuth = {
 	description: 'Vérification de l\'authentification. Appeler depuis le frontend pour savoir si l\'utilisateur est connecté.',
 	tags: ['Authentification'],
@@ -145,7 +144,7 @@ export const isAuth = {
 						id: { type: 'number', minLength: 3, maxLength: 5 },
 						email: { type: 'string', format: 'email' },
 						username: { type: 'string', minLength: 3, maxLength: 15, pattern: '^[a-zA-Z0-9]+$' },
-						lang: { type: 'string', enum: ['fr', 'en', 'it'] },
+						lang: { type: 'string', enum: ['fr', 'en', 'it', 'es'] },
 						avatar: { type: 'string' },
 					},
 				},
@@ -186,7 +185,7 @@ export const authGoogleCallback = {
 						id: { type: 'number', minLength: 3, maxLength: 5 },
 						email: { type: 'string', format: 'email' },
 						username: { type: 'string', minLength: 3, maxLength: 15, pattern: '^[a-zA-Z0-9]+$' },
-						lang: { type: 'string', enum: ['fr', 'en', 'it'] },
+						lang: { type: 'string', enum: ['fr', 'en', 'it', 'es'] },
 						avatar: { type: 'string' },
 					},
 				},
@@ -243,6 +242,42 @@ export const UploadAvatar = {
 	},
 };
 
+export const verifyCode = {
+	description: 'Vérification d\'un code',
+	tags: ['Authentification'],
+	body: {
+		type: 'object',
+		properties: {
+			code: { type: 'string', minLength: 25 },
+		},
+		required: ['code'],
+		additionalProperties: false,
+		errorMessage: {
+			required: {
+				code: 'errors.code.required',
+			},
+			properties: {
+				code: 'errors.code.invalid',
+			},
+			additionalProperties: 'errors.NoadditionalProperties',
+		}
+	},
+	response: {
+		200: {
+			description: 'Code vérifié avec succès',
+			...messageResponse,
+		},
+		400: {
+			description: 'Code invalide',
+			...messageResponse,
+		},
+		401: {
+			description: 'Non autorisé',
+			...messageResponse,
+		},
+	},
+};
+
 export default {
 	login,
 	register,
@@ -250,5 +285,6 @@ export default {
 	logout,
 	isAuth,
 	authGoogleCallback,
-	UploadAvatar
+	UploadAvatar,
+	verifyCode,
 };

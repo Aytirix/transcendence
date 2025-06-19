@@ -81,7 +81,7 @@ async function executeReq(req: string, data: Array<string | number> = []) {
 	return new Promise(async (resolve, reject) => {
 		try {
 			db = await createDbConnection();
-			db.query(req, data, (err: { sqlMessage: any; }, results: unknown) => {
+			db.query(req, data, (err: { sqlMessage: any; }, results: any) => {
 				if (err) {
 					reject(err.sqlMessage);
 				} else {

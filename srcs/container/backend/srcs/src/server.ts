@@ -77,6 +77,7 @@ app.register(fileRoutes);
 initWebSocket(app);  // Appel de la fonction initWebSocket
 
 app.get('*', (req, res) => {
+	console.error(`404 Not Found: ${req.raw.url}`);
 	res.status(404).send('{ "success": false, "message": "The endpoint you are looking for might have been removed, had its name changed, or is temporarily unavailable." }');
 });
 

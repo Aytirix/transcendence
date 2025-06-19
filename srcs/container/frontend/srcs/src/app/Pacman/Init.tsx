@@ -7,6 +7,7 @@ import PacmanGame from './game/PacmanGame';
 import CreatePacmanMap from './menu/CreatePacmanMap'; // Import the map editor
 import '../assets/styles/Star.scss';
 import { VolumeControl } from './components/VolumeControl';
+import { SoundManager } from './utils/SoundManager';
 
 function initState(): state {
 	const state: state = {
@@ -281,7 +282,20 @@ export default function WebSocketPacman() {
 				</div>
 			</div>
 			<div className="bg-gray-200 text-white flex flex-col items-center justify-center">
-				<VolumeControl />
+				<div className="flex items-center gap-4 mb-4">
+					<VolumeControl />
+					<button
+						onClick={() => {
+							const sm = SoundManager.getInstance();
+							if (sm.isAudioEnabled()) {
+								sm.playGameStart();
+							}
+						}}
+						className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
+					>
+						Test Sound
+					</button>
+				</div>
 				{showMapEditor ? (
 					<CreatePacmanMap
 						state={state}

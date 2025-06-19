@@ -24,16 +24,16 @@ function DisableNativeContextMenu({ children }: { children: React.ReactNode }) {
 
 createRoot(document.getElementById('root')!).render(
 	<DisableNativeContextMenu>
-	<SingletonGuard>
-			<ToastContainer />
-			<BrowserRouter>
+		<ToastContainer />
+		<BrowserRouter>
+			<SingletonGuard>
 				<LanguageProvider>
 					<AuthProvider>
 						<IronManNavBar />
 						<AppRouter />
 					</AuthProvider>
 				</LanguageProvider>
-			</BrowserRouter>
-	</SingletonGuard>
+			</SingletonGuard>
+		</BrowserRouter>
 	</DisableNativeContextMenu>
 );

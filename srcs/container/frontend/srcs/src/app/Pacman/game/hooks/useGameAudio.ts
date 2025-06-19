@@ -16,82 +16,142 @@ export function useGameAudio(gameState: GameState, playerId?: number) {
 	const [audioEnabled, setAudioEnabled] = useState(false);
 	const previousScore = useRef<number>(0);
 	const previousLife = useRef<number>(gameState.pacmanLife);
-	const previousFrightened = useRef<boolean>(gameState.frightenedState.active);
+	const previousFrightened = useRef<boolean>(false);
 	const gameStarted = useRef<boolean>(false);
+	const lastEatingTime = useRef<number>(0);
+	const soundManager = SoundManager.getInstance();
 
 	const handleFirstInteraction = useCallback(async () => {
 		if (!audioEnabled) {
-			console.log('🔊 Tentative d\'activation de l\'audio...');
-			try {
-				await SoundManager.getInstance().enableAudio();
-				setAudioEnabled(true);
-				console.log('✅ Audio activé avec succès !');
-			} catch (error) {
-				console.warn('⚠️ Échec de l\'activation audio', error);
+			console.log('🔊 Attempting to enable audio...');
+			const success = await soundManager.enableAudio();
+			setAudioEnabled(success);
+			if (success) {
+				console.log('✅ Audio enabled successfully!');
+			} else {
+				console.warn('⚠️ Failed to enable audio');
 			}
 		}
-	}, [audioEnabled]);
+	}, [audioEnabled, soundManager]);
 
-	// Surveiller les changements d'état du jeu pour déclencher les sons
+	// Initialize refs when game state changes
 	useEffect(() => {
-		if (!audioEnabled) return;
-
-		// Initialiser les refs au premier rendu
 		const currentPlayer = gameState.players.find(p => p.id === playerId);
 		const currentScore = currentPlayer?.score || 0;
-		
-		// Si c'est la première fois ou si le jeu vient de commencer
-		if (!gameStarted.current && gameState.launch) {
-			console.log('🎵 Début de partie - Son Start');
-			SoundManager.getInstance().forcePlay('start');
-			gameStarted.current = true;
+
+		// Initialize on first render
+		if (previousScore.current === 0 && currentScore > 0) {
 			previousScore.current = currentScore;
 			previousLife.current = gameState.pacmanLife;
-			previousFrightened.current = gameState.frightenedState.active;
-			return;
+			previousFrightened.current = gameState.frightenedState.active || false;
 		}
+	}, [gameState.players, playerId, gameState.pacmanLife, gameState.frightenedState]);
 
-		// Vérifier les changements de score (pastille mangée)
+	// Handle game start
+	useEffect(() => {
+		if (!audioEnabled || gameStarted.current) return;
+
+		if (gameState.launch && gameState.players.length > 0) {
+			console.log('🎵 Game starting - Playing ready sound');
+			soundManager.playGameStart();
+			gameStarted.current = true;
+			
+			// Start background siren after ready sound
+			setTimeout(() => {
+				soundManager.startSiren();
+			}, 2000);
+		}
+	}, [audioEnabled, gameState.launch, gameState.players.length, soundManager]);
+
+	// Handle score changes with better sound logic
+	useEffect(() => {
+		if (!audioEnabled || !gameStarted.current) return;
+
+		const currentPlayer = gameState.players.find(p => p.id === playerId);
+		const currentScore = currentPlayer?.score || 0;
+
 		if (currentScore > previousScore.current) {
 			const scoreDifference = currentScore - previousScore.current;
-			console.log(`📊 Score: ${previousScore.current} → ${currentScore} (diff: +${scoreDifference})`);
-			
-			if (scoreDifference >= 200 && gameState.frightenedState.active) {
-				console.log('🎵 Fantôme mangé - Son GhostEat');
-				SoundManager.getInstance().forcePlay('ghostEat');
+			const now = Date.now();
+
+			console.log(`📊 Score change: ${previousScore.current} → ${currentScore} (+${scoreDifference})`);
+
+			if (scoreDifference >= 200) {
+				// Ghost eaten
+				console.log('🎵 Ghost eaten');
+				soundManager.playGhostEaten();
 			} else if (scoreDifference >= 50) {
-				console.log('🎵 Power Pellet détecté via score');
-			} else if (scoreDifference >= 5) {
-				console.log('🎵 Pastille mangée - Son Chomp');
-				SoundManager.getInstance().forcePlay('chomp');
+				// Power pill or fruit
+				console.log('🎵 Power pill eaten');
+				soundManager.playPowerPill();
+				soundManager.playWaza(); // Play waza sound for power mode
+			} else if (scoreDifference >= 10) {
+				// Regular pellet - with throttling
+				if (now - lastEatingTime.current > 100) { // Throttle eating sounds
+					console.log('🎵 Pellet eaten');
+					soundManager.playEating();
+					lastEatingTime.current = now;
+				}
 			}
-			
+
+			// Check for extra life (typically at 10,000 points)
+			if (Math.floor(currentScore / 10000) > Math.floor(previousScore.current / 10000)) {
+				console.log('🎵 Extra life!');
+				soundManager.playExtraLife();
+			}
+
 			previousScore.current = currentScore;
 		}
+	}, [audioEnabled, gameState.players, playerId, soundManager]);
 
-		// Vérifier les changements de vie (mort)
+	// Handle life changes (death)
+	useEffect(() => {
+		if (!audioEnabled || !gameStarted.current) return;
+
 		if (gameState.pacmanLife < previousLife.current) {
-			console.log(`💀 Vies: ${previousLife.current} → ${gameState.pacmanLife}`);
-			console.log('🎵 Vie perdue - Son Death');
-			SoundManager.getInstance().forcePlay('death');
+			console.log(`💀 Life lost: ${previousLife.current} → ${gameState.pacmanLife}`);
+			console.log('🎵 Death sound');
+			soundManager.playDeath();
 			previousLife.current = gameState.pacmanLife;
+			
+			// Restart siren after death sound
+			setTimeout(() => {
+				if (gameState.pacmanLife > 0) {
+					soundManager.startSiren();
+				}
+			}, 3000);
 		}
+	}, [audioEnabled, gameState.pacmanLife, soundManager, gameState]);
 
-		// Vérifier l'activation du mode frightened (power pellet)
-		if (gameState.frightenedState.active && !previousFrightened.current) {
-			console.log('⚡ Mode Frightened activé');
-			console.log('🎵 Power Pellet - Son PowerUp');
-			SoundManager.getInstance().forcePlay('powerUp');
+	// Handle frightened state changes
+	useEffect(() => {
+		if (!audioEnabled || !gameStarted.current) return;
+
+		const currentFrightened = gameState.frightenedState.active || false;
+
+		if (currentFrightened && !previousFrightened.current) {
+			console.log('⚡ Frightened mode activated');
+			soundManager.stopSiren(); // Stop normal siren during frightened mode
 			previousFrightened.current = true;
-		} else if (!gameState.frightenedState.active && previousFrightened.current) {
-			console.log('⚡ Mode Frightened désactivé');
+		} else if (!currentFrightened && previousFrightened.current) {
+			console.log('⚡ Frightened mode deactivated');
+			soundManager.startSiren(); // Resume normal siren
 			previousFrightened.current = false;
 		}
+	}, [audioEnabled, gameState.frightenedState, soundManager]);
 
-	}, [audioEnabled, gameState.players, gameState.pacmanLife, gameState.frightenedState, playerId, gameState.launch]);
+	// Reset when game ends
+	useEffect(() => {
+		if (!gameState.launch && gameStarted.current) {
+			console.log('🎮 Game ended - Resetting audio state');
+			gameStarted.current = false;
+			soundManager.stopAll();
+		}
+	}, [gameState.launch, soundManager]);
 
 	return {
 		audioEnabled,
-		handleFirstInteraction
+		handleFirstInteraction,
+		soundManager
 	};
 }
