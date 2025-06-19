@@ -118,6 +118,7 @@ const IronManNavBar: React.FC = () => {
 						<Link to="/Pacman" className="btn btn-ghost text-xl" >Pacman</Link>
 						<Link to="/Pong" className="btn btn-ghost text-xl">Pong</Link>
 						<Link to="/Chat" className="btn btn-ghost text-xl">Chat</Link>
+						<Link to="/Credits" className="btn btn-ghost text-xl">Crédits</Link>
 					</div>
 					<div className="navbar-end">
 						{/* Bouton de changement de langue */}

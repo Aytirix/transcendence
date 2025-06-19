@@ -3,7 +3,7 @@ import ApiService from '../../api/ApiService';
 import { useNavigate } from 'react-router-dom';
 import { useLanguage } from '../../contexts/LanguageContext';
 
-const GOOGLE_CLIENT_ID = '235494829152-rogrpto31jsvp0ml7qp16ncuvge7msmv.apps.googleusercontent.com';
+const GOOGLE_CLIENT_ID = '834516330904-orrkp9jgjbfv9vsao2tr7qlkqgl39oas.apps.googleusercontent.com';
 
 export default function GoogleLoginButton({textbtn = "login"}) {
   const buttonDiv = useRef<HTMLDivElement>(null);
@@ -28,6 +28,7 @@ export default function GoogleLoginButton({textbtn = "login"}) {
 		  if(resp?.isAuthenticated)
         	navigate('/');
         },
+		auto_select: false,
       });
       
       renderGoogleButton();

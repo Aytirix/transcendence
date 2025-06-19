@@ -53,7 +53,7 @@ function Intro() {
                         onClick={() => navigateToGame('pong')}
                     >
                         <div className="game-icon">🏓</div>
-                        <h3 className="game-title">PONG</h3>
+                        <h3 className="game-title">IRON PONG</h3>
                         <p className="game-description">{t('home.classic_pong_description')}</p>
                         <div className="game-features">
                             <span className="feature">• {t('home.pong.multiplayer')}</span>
