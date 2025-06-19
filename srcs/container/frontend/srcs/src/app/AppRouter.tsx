@@ -1,5 +1,5 @@
 import { Component } from 'react';
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, Navigate } from 'react-router-dom';
 
 
 // import WebSocketTest from './users/WebSocketTest';
@@ -42,6 +42,9 @@ class AppRouter extends Component {
 
 					{/* Route Redirection email */}
 					<Route path="/auth/checkCode" element={<CheckRedirectEmail />} />
+
+					{/* Route de redirection par défaut */}
+					<Route path="*" element={<Navigate to="/" replace />} />
 				</Route>
 			</Routes>
 		);
