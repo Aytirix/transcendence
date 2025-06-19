@@ -12,7 +12,7 @@ http {
     include       /etc/nginx/mime.types;
     default_type  application/octet-stream;
 
-    include /etc/nginx/conf.d/backend.conf;
+    # Plus besoin de backend.conf séparé, tout passe par frontend
 	include /etc/nginx/conf.d/frontend_${NODE_PROJET}.conf;
 
     sendfile      on;
