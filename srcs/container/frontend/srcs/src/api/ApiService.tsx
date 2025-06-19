@@ -1,8 +1,8 @@
 import notification from '../app/components/Notifications';
 
 class ApiService {
-	private static apiURL = `https://${window.location.hostname}:7000`;
-	private static url = `https://${window.location.hostname}:3000`;
+	private static apiURL = `${window.location.protocol}//${window.location.host}/api`;
+	private static url = `${window.location.protocol}//${window.location.host}`;
 
 	static async request(path: string, method: string, body: any = null, notif: boolean = true) : Promise<any> {
 		const headers = new Headers({
