@@ -14,7 +14,6 @@ const SearchResults: React.FC<SearchResultsProps> = ({
   searchResults,
   currentUserId,
   getFriendshipStatus,
-  // handleInvite, // Conservé au cas où l'on souhaite réintroduire l'invitation de groupe depuis la recherche globale
   handleAddFriend,
 }) => {
   if (searchResults.length === 0) {
@@ -24,33 +23,20 @@ const SearchResults: React.FC<SearchResultsProps> = ({
   }
 
   return (
-    <div className="flex-1 overflow-auto p-4 space-y-2 bg-gray-50">
+    <ul className="list bg-base-100 rounded-box shadow-md">
       {searchResults.map(user => {
         const friendshipStatus = getFriendshipStatus(user.id);
         const isCurrentUser = user.id === currentUserId;
 
         return (
-          <div
-            key={user.id}
-            className="p-2 bg-white rounded shadow flex items-center space-x-2"
-          >
-            {user.avatar
-              ? (<img src={user.avatar} alt={user.username} className="w-8 h-8 rounded-full" />)
-              : (<div className="w-8 h-8 rounded-full bg-gray-300 flex items-center justify-center text-xs font-semibold">{user.username[0]?.toUpperCase()}</div>)
-            }
+          <li className="list-row flex justify-between w-full items-center" key={user.id}>
+            <div className="flex gap-4 items-center">
+            <div className="avatar">
+             <div className="w-18 rounded-full"><img src={`https://${window.location.hostname}:3000/avatars/${user.avatar}`} alt="A" /></div></div>
+              <div className="w-20 text-left">{user.username}</div>
+              <div className="w-6 rounded-full"><img src={`https://${window.location.hostname}:3000/flags/${user.lang}_flat.png`} alt="A" /></div>
+              </div>
             <div className="flex-1">
-              <div className="font-semibold">
-                {user.username}
-                {isCurrentUser && <span className="text-xs text-gray-500 ml-2">(Vous)</span>}
-              </div>
-              <div className="text-xs text-gray-500">
-                Langue : {user.lang ?? "?"}
-                {friendshipStatus !== "none" && (
-                  <span className="ml-2">
-                    • {friendshipStatus === "pending" ? "Demande en attente" : "Déjà ami"}
-                  </span>
-                )}
-              </div>
             </div>
             {/* BOUTONS ACTIONS */}
             <div className="flex space-x-2">
@@ -72,10 +58,10 @@ const SearchResults: React.FC<SearchResultsProps> = ({
                 </button>
               )} */}
             </div>
-          </div>
+          </li>
         );
       })}
-    </div>
+    </ul>
   );
 };
 

@@ -1,10 +1,92 @@
 {
 	"hello": "Hola",
-	"test": "El sitio web actual ofrece una interfaz moderna y adaptable, que permite a cada usuario navegar fácilmente y gestionar su perfil de forma segura. Las funciones básicas están disponibles: registro, inicio de sesión y visualización de información de usuario. El proyecto Transcendence, desarrollado en la escuela 42, se integra en esta plataforma añadiendo una dimensión innovadora e interactiva. Su objetivo principal es crear, directamente en el sitio, un juego de Pong multijugador accesible para todos, con partidas gestionadas en tiempo real gracias a los websockets. También incluye funciones sociales como chat, invitaciones, torneos entre usuarios y gestión personalizada de perfiles. Este proyecto no solo enriquece la experiencia del usuario, sino que también moderniza el sitio fomentando la interacción y la competencia amistosa. Finalmente, Transcendence brinda un entorno ideal para la colaboración y el dominio de las herramientas de desarrollo web, fortaleciendo el espíritu comunitario dentro de la plataforma.",
-	"logout": "Logout",
+	"test": "El sitio web actual ofrece una interfaz moderna y responsiva, permitiendo a cada usuario navegar fácilmente y gestionar su perfil de forma segura. Las funcionalidades básicas están en su lugar: registro, inicio de sesión y visualización de información de usuarios. El proyecto Transcendence, desarrollado en la escuela 42, se integra en esta plataforma añadiendo una dimensión innovadora e interactiva. Su objetivo principal es crear, directamente en el sitio, un juego Pong multijugador accesible para todos, con gestión en tiempo real de las partidas a través de websockets. También integra funcionalidades sociales como chat, invitaciones, torneos entre usuarios y gestión de perfiles personalizados. Este proyecto no solo enriquece la experiencia del usuario, sino que también moderniza el sitio promoviendo el intercambio y la competencia amistosa. Finalmente, Transcendence ofrece un entorno propicio para la colaboración y el dominio de las herramientas de desarrollo web, fortaleciendo el espíritu comunitario dentro de la plataforma.",
+	"logout": "Cerrar sesión",
 	"profile": "Perfil",
-	"username": "Nombre de usuario",
+	"username": "nombre de usuario",
 	"password": "Contraseña",
+	"login": {
+		"title": "Iniciar sesión",
+		"email": "Email",
+		"password": "Contraseña",
+		"submit": "Iniciar sesión",
+		"loading": "Conectando...",
+		"registerLink": "¿Nuevo héroe? Crear una cuenta"
+	},
+	"register": {
+		"title": "Registro",
+		"email": "Email",
+		"username": "Nombre de usuario",
+		"password": "Contraseña",
+		"confirmPassword": "Confirmar contraseña",
+		"language": "Idioma",
+		"submit": "Crear mi cuenta",
+		"loginLink": "¿Ya eres miembro? Iniciar sesión"
+	},
+	
+	"project_credits": "Créditos del proyecto",
+	"project_transcendence": "Proyecto Transcendence",
+	"home": {
+		"welcome_to_transcendence": "Bienvenido a Transcendence",
+		"experience_classic_games": "Experimenta juegos clásicos reimaginados con tecnología moderna",
+		"epic_games": "Juegos Épicos",
+		"hours_of_fun": "Horas de Diversión",
+		"school_spirit": "Espíritu Escolar",
+		
+		"choose_your_adventure": "Elige tu Aventura",
+		"classic_pong_description": "El clásico juego Pong con un toque moderno y multijugador",
+		"classic_pacman_description": "El icónico Pac-Man con características mejoradas",
+		"multiplayer": "Multiplayer",
+		"real_time": "Tiempo real",
+		"competitive": "Competitivo",
+		"retro_arcade": "Arcade retro",
+		"high_scores": "Puntuaciones altas",
+		"nostalgic": "Nostálgico",
+		"play_now": "Jugar ahora",
+		
+		"made_with": "Hecho con",
+		"at_42_school": "en la escuela 42",
+		"developed_by": "Desarrollado por"
+	},
+	
+	"credits": {
+		"contributions_title": "Contribuciones",
+		"role" : {
+			"lead": "Desarrollador principal",
+			"pongFullstack": "Desarrollador Fullstack de Pong",
+			"generalFrontend": "Desarrollador Frontend general",
+			"pacManFrontend": "Desarrollador Frontend de Pac-Man"
+		},
+		"contributions": {
+			"projectArchitecture": "Arquitectura del proyecto (excepto Pong)",
+			"userAuthentication": "Autenticación de usuario (registro, inicio de sesión)",
+			"googleOAuthIntegration": "Integración con Google OAuth",
+			"twoFAImplementation": "Implementación de 2FA",
+			"pacManBackend": "Backend de Pac-Man",
+			"chatSystemBackend": "Backend del sistema de chat",
+			"projectConfiguration": "Configuración del proyecto (Docker)",
+			"databaseDesign": "Diseño y gestión de la base de datos",
+			"avatarManagementSystem": "Sistema de gestión de avatares",
+			"completePongDevelopment": "Desarrollo completo del juego Pong",
+			"pongFrontendInterface": "Interfaz frontend de Pong",
+			"pongBackendLogic": "Lógica backend de Pong",
+			"realTimeMultiplayerSystem": "Sistema multijugador en tiempo real",
+			"uiUxDesign": "Diseño UI/UX",
+			"gameMatchmaking": "Emparejamiento de partidas",
+			"pongStatisticsScoring": "Estadísticas y puntuación de Pong",
+			"loginRegisterInterfaces": "Interfaces de inicio de sesión/registro",
+			"userProfileManagement": "Gestión de perfil de usuario",
+			"avatarUploadSystem": "Sistema de subida de avatares",
+			"navigationBar": "Barra de navegación",
+			"chatSystemFrontend": "Frontend del sistema de chat",
+			"pacManGameInterface": "Interfaz del juego Pac-Man",
+			"interactiveMapCreation": "Creación de mapas interactivos",
+			"gameMechanicsImplementation": "Implementación de mecánicas de juego",
+			"statisticsDashboard": "Panel de estadísticas",
+			"gameLobbySystem": "Sistema de lobby de juego",
+			"playerProgressionTracking": "Seguimiento de la progresión del jugador"
+		}
+	},
 
 	"pacman": {
 		"title": "Pacman",

@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Confirmación de dirección de email</title>
+	<style>
+		body {
+			margin: 0;
+			padding: 0;
+			font-family: Arial, sans-serif;
+			background-color: #f4f4f4;
+		}
+
+		.container {
+			max-width: 600px;
+			margin: 0 auto;
+			background-color: #ffffff;
+			padding: 20px;
+		}
+
+		.header {
+			background-color: #007bff;
+			color: white;
+			text-align: center;
+			padding: 30px 20px;
+			border-radius: 8px 8px 0 0;
+		}
+
+		.content {
+			padding: 30px 20px;
+			text-align: center;
+		}
+
+		.footer {
+			background-color: #6c757d;
+			color: white;
+			text-align: center;
+			padding: 20px;
+			border-radius: 0 0 8px 8px;
+			font-size: 14px;
+		}
+
+		.button {
+			display: inline-block;
+			background-color: #28a745;
+			color: white;
+			padding: 15px 40px;
+			text-decoration: none;
+			border-radius: 5px;
+			margin: 30px 0;
+			font-weight: bold;
+			font-size: 18px;
+		}
+
+		.button:hover {
+			background-color: #218838;
+		}
+	</style>
+</head>
+
+<body>
+	<div class="container">
+		<div class="header">
+			<h1>Confirmación de dirección de email</h1>
+		</div>
+
+		<div class="content">
+			<h2>¡Bienvenido a Transcendence!</h2>
+			<p>Estamos encantados de recibirte en nuestra comunidad.</p>
+			<p>Para activar tu cuenta, haz clic en el botón de abajo:</p>
+
+			<a href="{{verificationLink}}" class="button">Confirmar mi cuenta</a>
+
+			<p>Este enlace es válido durante <strong>{{expiryTime}}</strong>.</p>
+			<p>Si no has creado una cuenta en Transcendence, puedes ignorar este email.</p>
+		</div>
+
+		<div class="footer">
+			<p>© 2024 Transcendence - Todos los derechos reservados</p>
+			<p>Este email se ha enviado automáticamente, por favor no respondas.</p>
+		</div>
+	</div>
+</body>
+
+</html>

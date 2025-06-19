@@ -1,4 +1,5 @@
 /* src/assets/styles/pacman/PacmanMap.scss */
+@import './general_pacman.scss';
 
 .PacmanGame {
   z-index:  10;
@@ -87,8 +88,8 @@
 	position: relative;
 	overflow: hidden;
 	display: flex;
-	width: 709px;           /* Taille fixe en pixels */
-  	height: 761px;          /* Taille fixe en pixels */
+	width: 721px;           /* Taille fixe en pixels */
+  	height: 771px;          /* Taille fixe en pixels */
 	  //margin: 0 auto;
 	  border: 5px solid #222;    /* bordure sombre */
 	  border-radius: 20px;      /* coins arrondis */
@@ -121,6 +122,14 @@
 .tile.wall:hover {
 	box-shadow: 0 0 16px #00f, 0 0 2px #00f inset;
 	z-index: 2;
+}
+
+.wall-single {
+	border-radius: 20px;
+	border: 4px solid #0000ff; /* Couleur bleue */
+	background-color: #06070a; /* Fond sombre */
+	box-shadow: 0 0 8px #0000ff55, 0 0 2px #00f inset; /* Légère lueur bleue */
+	transition: box-shadow 0.2s;
 }
 
   /* Wall corner variants */
@@ -226,7 +235,7 @@
   
   /* COULOIR VIDE (espace) */
   .tile.empty {
-	//background-color: #000;     /* noir */
+	background-color: #000;     /* noir */
   }
   
   /* TUNNEL (caractère 'T') */
@@ -253,6 +262,9 @@
 	display: flex;
 	justify-content: center;
 	align-items: center;
+  }
+  .tile.tile.empty {
+	background-color: #000;     /* fond noir */
   }
   .tile.pellet .dot {
 	width: 12%;

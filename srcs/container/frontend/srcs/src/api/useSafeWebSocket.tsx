@@ -2,7 +2,7 @@ import { useEffect, useRef } from 'react';
 import notification from '../app/components/Notifications';
 
 
-const url = `wss://${window.location.hostname}:7000`;
+const url = `wss://${window.location.host}/api`;
 
 export type WebSocketStatus = 'Connecting...' | 'Connected' | 'Closed' | 'Error' | 'Reconnecting';
 
@@ -27,11 +27,14 @@ export function useSafeWebSocket({ endpoint, onMessage, onStatusChange, reconnec
 			return;
 		}
 
-		const socket = new WebSocket(`${url}${endpoint}`);
+		const wsUrl = `${url}${endpoint}`;
+		console.log('Attempting WebSocket connection to:', wsUrl);
+		const socket = new WebSocket(wsUrl);
 		socketRef.current = socket;
 		onStatusChange?.('Connecting...');
 
 		socket.onopen = () => {
+			console.log('WebSocket connected successfully to:', wsUrl);
 			reconnectAttemptsRef.current = 0;
 			onStatusChange?.('Connected');
 			heartbeatRef.current = setInterval(() => {
@@ -68,8 +71,20 @@ export function useSafeWebSocket({ endpoint, onMessage, onStatusChange, reconnec
 			}
 		};
 
-		socket.onclose = () => handleCloseOrError('Closed');
-		socket.onerror = () => handleCloseOrError('Error');
+		socket.onclose = (event) => {
+			console.log('WebSocket closed:', {
+				code: event.code,
+				reason: event.reason,
+				wasClean: event.wasClean,
+				url: wsUrl
+			});
+			handleCloseOrError('Closed');
+		};
+		
+		socket.onerror = (error) => {
+			console.error('WebSocket error:', error, 'URL:', wsUrl);
+			handleCloseOrError('Error');
+		};
 	};
 
 	const handleCloseOrError = (type: 'Closed' | 'Error') => {

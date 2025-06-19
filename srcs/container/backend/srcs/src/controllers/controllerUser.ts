@@ -1,5 +1,6 @@
 import { FastifyRequest, FastifyReply } from 'fastify';
 import userModel from '@models/modelUser';
+import controller2FA from '@controllers/controller2FA';
 import tools from '@tools';
 import i18n from '@i18n';
 import { IdentityPoolClient, OAuth2Client } from 'google-auth-library';
@@ -7,6 +8,7 @@ import path from 'path';
 import fs from "fs";
 import { promisify } from "util";
 import { pipeline } from "stream";
+import { User } from '@types';
 
 require('dotenv').config();
 
@@ -30,7 +32,9 @@ export const Login = async (request: FastifyRequest, reply: FastifyReply) => {
 		});
 	}
 
-	request.session.user = user;
+	request.i18n.changeLanguage(user.lang || 'fr');
+
+	controller2FA.sendRegisterVerifyEmail(request, user.email, "loginAccount_confirm_email", user);
 
 	return reply.send({
 		message: request.i18n.t('login.welcome'),
@@ -60,10 +64,17 @@ export const Register = async (request: FastifyRequest, reply: FastifyReply) => 
 
 	const defaultAvatar = ['avatar1.png', 'avatar2.png', 'avatar3.png', 'avatar4.png'][Math.floor(Math.random() * 4)];
 
-	const user = await userModel.Register(email, username, password, defaultAvatar, lang || 'fr');
+	const user = {
+		email,
+		username,
+		password,
+		lang: lang || 'fr',
+		avatar: defaultAvatar,
+	}
 
-	request.i18n.changeLanguage(lang);
-	request.session.user = user;
+	request.i18n.changeLanguage(user.lang || 'fr');
+
+	controller2FA.sendRegisterVerifyEmail(request, email, "createAccount_confirm_email", user);
 
 	return reply.send({
 		message: request.i18n.t('login.welcome'),
@@ -130,14 +141,18 @@ export const UpdateUser = async (request: FastifyRequest, reply: FastifyReply) =
 		}
 	}
 
-	await userModel.UpdateUser(user.id.toString(), email, username, password, lang, avatar);
+	if (email && email !== user.email) {
+		await controller2FA.sendUpdateVerifyEmail(request, email);
+	}
+
+	await userModel.UpdateUser(user.id.toString(), null, username, password, lang, avatar);
 	request.session.user = {
 		...user,
-		email: email || user.email,
 		username: username || user.username,
 		lang: lang || user.lang,
 		avatar: avatar || user.avatar,
 	};
+
 	return reply.send({
 		message: `Vos informations ont été mises à jour avec succès.`,
 		user: {

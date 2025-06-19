@@ -1,5 +1,7 @@
 // src/types.ts
 
+
+
 export type Member = {
   id: number;
   username: string;
@@ -18,7 +20,7 @@ export type Group = {
 
 export type Message = {
   id: number;
-  sender_id: number;
+  sender_id: string | number;
   message: string;
   sent_at: string;
 };
@@ -29,7 +31,7 @@ export type Friend = {
   avatar?: string;
   lang?: string;
   relation: {
-    status: "pending" | "friend";
+    status: "pending" | "friend" | "blocked";
     target: number; // user_id ciblé par la demande
     privmsg_id?: number | null; // ID du groupe privé si relation est "friend"
   };
