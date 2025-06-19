@@ -1,0 +1,70 @@
+/* Chat Page Styles - Fix scroll issues */
+
+/* Ensure chat page uses full height without overflow */
+.chat-page {
+  height: 100vh;
+  overflow: hidden;
+  display: flex;
+}
+
+.chat-sidebar {
+  width: 16rem; /* w-64 */
+  flex-shrink: 0;
+  height: 100vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.chat-content {
+  flex: 1;
+  height: 100vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.chat-header {
+  flex-shrink: 0;
+}
+
+.chat-messages-container {
+  flex: 1;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.chat-messages {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.chat-input {
+  flex-shrink: 0;
+  border-top: 1px solid #e5e7eb;
+}
+
+/* Hide horizontal scrollbar */
+.chat-messages::-webkit-scrollbar-x {
+  display: none;
+}
+
+/* Custom scrollbar for messages */
+.chat-messages::-webkit-scrollbar {
+  width: 8px;
+}
+
+.chat-messages::-webkit-scrollbar-track {
+  background: #f1f5f9;
+}
+
+.chat-messages::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
+}
+
+.chat-messages::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}

@@ -59,7 +59,7 @@ function getBaseUrlFromRequest(request: FastifyRequest): string {
 	// Récupérer le host depuis les headers (peut déjà contenir le port)
 	const host = request.headers['x-forwarded-host'] || request.headers.host;
 
-	return `${protocol}://${host}:3000`;
+	return `${protocol}://${host}`;
 }
 
 /**

@@ -1,4 +1,5 @@
 /* src/assets/styles/pacman/PacmanMap.scss */
+@import './general_pacman.scss';
 
 .PacmanGame {
   z-index:  10;
@@ -234,7 +235,7 @@
   
   /* COULOIR VIDE (espace) */
   .tile.empty {
-	//background-color: #000;     /* noir */
+	background-color: #000;     /* noir */
   }
   
   /* TUNNEL (caractère 'T') */
