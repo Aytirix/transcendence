@@ -84,55 +84,6 @@ function Intro() {
                 </div>
             </section>
 
-            {/* Features Section */}
-            <section className="features-section">
-                <h2 className="section-title">{t('home.why_transcendence')}</h2>
-                <div className="features-grid">
-                    <div className="feature-card">
-                        <div className="feature-icon">⚡</div>
-                        <h3>{t('home.real_time_gaming')}</h3>
-                        <p>{t('home.real_time_description')}</p>
-                    </div>
-                    <div className="feature-card">
-                        <div className="feature-icon">🏆</div>
-                        <h3>{t('home.competitive_play')}</h3>
-                        <p>{t('home.competitive_description')}</p>
-                    </div>
-                    <div className="feature-card">
-                        <div className="feature-icon">👥</div>
-                        <h3>{t('home.social_features')}</h3>
-                        <p>{t('home.social_description')}</p>
-                    </div>
-                    <div className="feature-card">
-                        <div className="feature-icon">🎮</div>
-                        <h3>{t('home.retro_experience')}</h3>
-                        <p>{t('home.retro_description')}</p>
-                    </div>
-                </div>
-            </section>
-
-            {/* Call to Action */}
-            <section className="cta-section">
-                <div className="cta-content">
-                    <h2>{t('home.ready_to_play')}</h2>
-                    <p>{t('home.join_the_fun')}</p>
-                    <div className="cta-buttons">
-                        <button 
-                            className="cta-button primary"
-                            onClick={() => navigateToGame('pong')}
-                        >
-                            {t('home.start_with_pong')}
-                        </button>
-                        <button 
-                            className="cta-button secondary"
-                            onClick={() => navigateToGame('pacman')}
-                        >
-                            {t('home.try_pacman')}
-                        </button>
-                    </div>
-                </div>
-            </section>
-
             {/* Footer */}
             <footer className="intro-footer">
                 <div className="footer-content">
@@ -141,13 +92,6 @@ function Intro() {
                         <span className="current-time">
                             {currentTime.toLocaleTimeString()}
                         </span>
-                         | 
-                        <button 
-                            className="credits-link"
-                            onClick={() => navigate('/credits')}
-                        >
-                            {t('project_credits')}
-                        </button>
                     </p>
                 </div>
             </footer>
@@ -156,5 +100,3 @@ function Intro() {
 }
 
 export default Intro;
-
-

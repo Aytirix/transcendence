@@ -47,6 +47,7 @@ const IronManNavBar: React.FC = () => {
              <Link to="/Pong" className="btn btn-ghost sm:text-lg md:text-xl lg:text-2xl">Pong</Link>
             <Link to="/Chat" className="btn btn-ghost sm:text-lg md:text-xl lg:text-2xl">Chat</Link>
             <Link to="/friend" className="btn btn-ghost sm:text-lg md:text-xl lg:text-2xl">Ami</Link>
+            <Link to="/credits" className="btn btn-ghost sm:text-lg md:text-xl lg:text-2xl">Crédits</Link>
            </div>
           <div className="navbar-end">
             <div className="dropdown dropdown-end">

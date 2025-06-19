@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import ApiService from '../api/ApiService';
 import { useLanguage } from '../contexts/LanguageContext';
 import GoogleLoginButton from './components/GoogleLoginButton';
@@ -14,18 +14,23 @@ interface RegisterSchema {
 }
 
 const IronManRegister: React.FC = () => {
-  const { t } = useLanguage();
+  const { t, currentLanguage } = useLanguage();
   const [form, setForm] = useState<RegisterSchema>({
     email: '',
     password: '',
     username: '',
     confirmPassword: '',
-    lang: 'fr',
+    lang: currentLanguage,
   });
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
+
+  // Synchroniser la langue du formulaire avec le changement de langue global
+  useEffect(() => {
+    setForm(prev => ({ ...prev, lang: currentLanguage }));
+  }, [currentLanguage]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -111,24 +116,13 @@ const IronManRegister: React.FC = () => {
               required
             />
             
-            <select
-              className="input input-a"
-              name="lang"
-              value={form.lang}
-              onChange={handleChange}
-              required
-            >
-              <option value="fr">Français</option>
-              <option value="en">English</option>
-              <option value="es">Español</option>
-              <option value="it">Italiano</option>
-            </select>
-            
-            <button className="btn btn-neutral mt-4" type="submit" disabled={loading}>
+            <button className="btn btn-neutral mt-4 text-black" type="submit" disabled={loading}>
               {loading ? "Création..." : t('register.submit')}
             </button>
             
-            <GoogleLoginButton textbtn="signup"/>
+            <div className="flex justify-center mt-4">
+              <GoogleLoginButton textbtn="signup"/>
+            </div>
             
             <Link to="/login">{t('register.loginLink')}</Link>
             

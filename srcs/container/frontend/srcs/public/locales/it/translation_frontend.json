@@ -45,21 +45,6 @@
 		"nostalgic": "Nostalgico",
 		"play_now": "Gioca ora",
 		
-		"why_transcendence": "Perché Transcendence?",
-		"real_time_gaming": "Giochi in tempo reale",
-		"real_time_description": "Goditi un gameplay fluido con la nostra tecnologia WebSocket avanzata",
-		"competitive_play": "Gioco competitivo",
-		"competitive_description": "Sfida altri giocatori e scala le classifiche",
-		"social_features": "Funzionalità sociali",
-		"social_description": "Chatta, sfida gli amici e costruisci comunità di gioco",
-		"retro_experience": "Esperienza retrò",
-		"retro_description": "Riscopri i classici con estetica pixel-perfect",
-		
-		"ready_to_play": "Pronto a giocare?",
-		"join_the_fun": "Unisciti all'avventura e mostra le tue abilità!",
-		"start_with_pong": "Inizia con Pong",
-		"try_pacman": "Prova Pac-Man",
-		
 		"made_with": "Fatto con",
 		"at_42_school": "alla scuola 42",
 		"developed_by": "Sviluppato da"

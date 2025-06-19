@@ -13,7 +13,7 @@ interface LoginSchema {
 }
 
 const IronManLogin: React.FC = () => {
-	const { t } = useLanguage();
+	const { t, currentLanguage } = useLanguage();
 	const [form, setForm] = useState<LoginSchema>({ email: '', password: '' });
 	const [loading, setLoading] = useState(false);
 	const [error, setError] = useState<string | null>(null);
@@ -81,10 +81,14 @@ const IronManLogin: React.FC = () => {
 						required
 					/>
 
-					<button className="btn btn-neutral mt-4" type="submit" disabled={loading}>
+					<button className="btn btn-neutral mt-4 text-black" type="submit" disabled={loading}>
 						{loading ? t('login.loading') : t('login.submit')}
 					</button>
-					<GoogleLoginButton textbtn="login" />
+					
+					<div className="flex justify-center mt-4">
+						<GoogleLoginButton textbtn="login" />
+					</div>
+
 					<div className="w-full justify-center items-center">
 						<Link to="/register" className="w-full justify-center items-center">
 							{t('login.registerLink')}
