@@ -129,7 +129,20 @@ const MultiPlayers: React.FC = () => {
 					}
 					if (data.type === "assign") {
 						assignPlayer.current = data.value;
-						// localStorage.setItem("assign", data.value);
+						if (assignPlayer.current === "p2" && camera.current) {
+							camera.current.position.x = -19.203;
+							camera.current.position.y = 28.187;
+							camera.current.position.z = -0.804;
+							camera.current.rotation.x = 0.363
+							camera.current.rotation.y = 1.570;
+						}
+						else if (assignPlayer.current === "p1" && camera.current){
+							camera.current.position.x = 130.38;
+							camera.current.position.y = 32.81;
+							camera.current.position.z = -1.33;
+							camera.current.rotation.x = 0.478
+							camera.current.rotation.y = -1.581;
+						}
 						setWaitingPlayers(true);
 					}
 					if (data.type === "FINISHED") {
@@ -159,8 +172,9 @@ const MultiPlayers: React.FC = () => {
 					}
 					if (data.ball && data.player1 && data.player2) {
 						waitFrame.current.push(data)
-						if (!namePlayer1.current)
+						if (!namePlayer1.current) {
 							namePlayer1.current = (data.player1.userName);
+						}
 						if (!namePlayer2.current)
 							namePlayer2.current = data.player2.userName;
 						if (data.ball.pos_x < 778 && data.ball.pos_x > 775 
@@ -296,11 +310,11 @@ const MultiPlayers: React.FC = () => {
 							i++;
 						}
 						else if (i >= 200) {
-							camera.current.position.x = 130.38;
-							camera.current.position.y = 32.81;
-							camera.current.position.z = -1.33;
-							camera.current.rotation.x = 0.478
-							camera.current.rotation.y = -1.581;
+							camera.current.position.x = 338.131;
+							camera.current.position.y = 136.188;
+							camera.current.position.z = -481.417;
+							camera.current.rotation.x = 0.280;
+							camera.current.rotation.y = -0.561;
 							clearInterval(interval);
 							setIscinematic(true)
 						}
