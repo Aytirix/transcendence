@@ -1,0 +1,275 @@
+.module-manager {
+	font-family: sans-serif;
+	height: auto;
+	width: auto;
+	display: flex;
+	flex-direction: column;
+	margin: 1rem;
+
+
+	.stats {
+		background: #1f2937;
+		border: 1px solid #374151;
+		border-radius: 0.8rem;
+		padding: 0.5rem;
+		font-size: 0.875rem;
+		color: #e5e7eb;
+		margin-bottom: 1rem;
+	}
+
+	.lists {
+		flex: 1;
+		display: flex;
+		gap: 1rem;
+		justify-content: center;
+		align-items: flex-start; // Alignement en haut pour même hauteur
+		width: 100%;
+		height: 75vh; // Augmenter légèrement la hauteur
+
+		.list-box {
+			flex: 1;
+			display: flex;
+			flex-direction: column;
+			background: #1f2937;
+			border: 1px solid #374151;
+			border-radius: 0.8rem;
+			padding: 0.5rem;
+			max-width: 100%;
+			overflow: hidden; // Pas de scroll général sur la list-box
+			box-shadow: 10px 10px 40px rgba(0, 0, 0, 0.25);
+			height: 75vh; // Hauteur fixe pour toutes les colonnes
+			min-height: 80vh; // Hauteur minimale identique
+
+			h3 {
+				font-size: 1rem;
+				color: #e5e7eb;
+				margin-bottom: 0.5rem;
+				text-align: center;
+			}
+
+			.sublists {
+				width: 100%;
+				display: flex;
+				gap: 0.5rem;
+				flex: 1;
+				justify-content: space-around;
+				min-width: 50px;
+				overflow: hidden;
+				height: calc(75vh - 80px); // Hauteur fixe moins l'espace pour le titre
+
+				.sublist {
+					flex: 1;
+					width: 100%; // Prendre toute la largeur disponible
+					display: flex;
+					align-items: center;
+					flex-direction: column;
+					border-radius: 0.8rem;
+					padding: 0.3rem; // Réduire le padding
+					padding-right: 0; // Supprimer le padding à droite
+					overflow-y: auto;
+					overflow-x: hidden;
+					height: 100%;
+					max-height: calc(74vh); // Hauteur maximale fixe
+
+					h3 {
+						margin-bottom: 0.5rem;
+						font-size: 0.9rem;
+					}
+
+					&.major h3 {
+						color: #dc2626;
+					}
+					&.minor h3 {
+						color: #2563eb;
+					}
+
+					&.empty {
+						min-height: 100px; // Hauteur minimale pour les colonnes vides
+					}
+
+					// Style personnalisé pour la scrollbar
+					&::-webkit-scrollbar {
+						width: 4px; // Scrollbar plus fine
+					}
+
+					&::-webkit-scrollbar-track {
+						background: transparent;
+						border-radius: 2px;
+						margin: 4px; // Marge pour éviter que la scrollbar touche les bords
+					}
+
+					&::-webkit-scrollbar-thumb {
+						background: #4b5563;
+						border-radius: 2px;
+						min-height: 20px; // Hauteur minimale du thumb
+					}
+
+					&::-webkit-scrollbar-thumb:hover {
+						background: #6b7280;
+					}
+
+					// Styles pour Firefox
+					scrollbar-width: thin;
+					scrollbar-color: #4b5563 transparent;
+
+					.module-item {
+						z-index: 100;
+						display: flex;
+						justify-content: center;
+						align-items: center;
+						background: #374151;
+						border-radius: 0.8rem;
+						padding: 0.5rem;
+						color: #e5e7eb;
+						cursor: grab;
+						margin-bottom: 0.5rem;
+						margin-right: 0.3rem; // Marge à droite pour éviter le chevauchement avec la scrollbar
+						width: calc(100% - 0.6rem); // Largeur ajustée pour tenir compte des marges
+						min-width: 120px;
+						box-sizing: border-box;
+
+						&:hover {
+							background: #4b5563;
+						}
+					 }
+				}
+			}
+		}
+	}
+
+	.dragging-overlay {
+		background: #4b5563;
+		border-radius: 0.8rem;
+		padding: 0.5rem;
+		color: #e5e7eb;
+		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+		cursor: grabbing;
+		z-index: 101;
+	}
+}
+
+.modal-backdrop {
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100vw;
+	height: 100vh;
+	background: rgba(0, 0, 0, 0.5);
+	backdrop-filter: blur(4px);
+	-webkit-backdrop-filter: blur(4px);
+	z-index: 1000;
+	will-change: backdrop-filter;
+}
+
+.modal-content-center {
+	position: fixed;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	background: #ffffff;
+	border-radius: 0.5rem;
+	padding: 2rem;
+	max-width: 90%;
+	max-height: 80%;
+	overflow-y: auto;
+	box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+	z-index: 1001;
+	filter: none !important;
+	will-change: transform;
+}
+
+.modal-content-center h2 {
+	margin-top: 0;
+	margin-bottom: 1rem;
+	font-size: 1.5rem;
+	color: #1f2937;
+}
+
+.modal-content-center pre {
+	white-space: pre-wrap;
+	margin-bottom: 1.5rem;
+	color: #374151;
+	font-family: inherit;
+	background-color: #f3f4f6;
+	padding: 1rem;
+	border-radius:1rem;
+	overflow-x: auto;
+	text-align: left;
+	font-size: 0.9rem;
+	line-height: 1.5;
+	max-height: 600px;
+}
+
+.modal-content-center button {
+	background: #3b82f6;
+	color: #fff;
+	border: none;
+	padding: 0.5rem 1rem;
+	border-radius: 0.8rem;
+	cursor: pointer;
+	font-size: 1rem;
+}
+
+.modal-content-center button:hover {
+	background: #2563eb;
+}
+
+// Animation pour le backdrop du modal
+.modal-backdrop.fade-in {
+  animation: fadeIn 0.3s ease forwards;
+}
+
+// Animation pour le contenu du modal
+.modal-content-center.slide-in {
+  animation: slideIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  transform-origin: center;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+
+.modal-backdrop.fade-out {
+	animation: fadeOut 0.3s ease forwards;
+}
+
+// Animation de sortie pour le contenu
+.modal-content-center.slide-out {
+	animation: slideOut 0.3s ease forwards;
+}
+
+@keyframes fadeOut {
+	from {
+		opacity: 1;
+	}
+	to {
+		opacity: 0;
+	}
+}
+
+@keyframes slideOut {
+	from {
+		opacity: 1;
+		transform: translate(-50%, -50%) scale(1);
+	}
+	to {
+		opacity: 0;
+		transform: translate(-50%, -50%) scale(0.95);
+	}
+}

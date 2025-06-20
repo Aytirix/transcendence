@@ -187,7 +187,6 @@ export async function registerSession(app: FastifyInstance) {
 			path: '/',
 		},
 		idGenerator: (req: FastifyRequest) => {
-			console.log('user-agent:', req.headers['user-agent']);
 			const initialUserInfo: sessionPayload = {
 				userAgent: req.headers['user-agent'],
 			};
