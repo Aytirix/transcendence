@@ -25,13 +25,13 @@ async function chatWebSocket(ws: WebSocket, user: User): Promise<void> {
 		try {
 			text = JSON.parse(message.toString().trim());
 		} catch (e) {
-			ws.send(JSON.stringify({ action: 'error', result: 'error', notification: ['Veuillez envoyer une réponse au format JSON'] })); // to close
+			ws.send(JSON.stringify({ action: 'error', result: 'error', notification: [ws.i18n.t('errors.JSONParseError')] })); // to close
 			return true;
 		}
 
 		const action = text.action;
 		if (!action) {
-			ws.send(JSON.stringify({ action: 'error', result: 'error', notification: ['Veuillez spécifier une action'] })); // to close
+			ws.send(JSON.stringify({ action: 'error', result: 'error', notification: [ws.i18n.t('pacman.error.actionNotFound')] })); // to close
 			return true;
 		}
 
@@ -88,7 +88,7 @@ async function chatWebSocket(ws: WebSocket, user: User): Promise<void> {
 				controllerFriends.unBlockFriend(ws, user, state, (text as req_block_user));
 				break;
 			default:
-				ws.send(JSON.stringify({ action: 'error', result: 'error', notification: ['Action non reconnue'] })); // to close
+				ws.send(JSON.stringify({ action: 'error', result: 'error', notification: [ws.i18n.t('pacman.error.actionNotFound')] })); // to close
 				break;
 		}
 
@@ -113,7 +113,7 @@ async function chatWebSocket(ws: WebSocket, user: User): Promise<void> {
 		controllersChat.removeOnlineUser(state, user);
 		console.error('Erreur WebSocket:', error);
 		if (ws.readyState === WebSocket.OPEN) {
-			ws.close(1008, JSON.stringify({ action: 'error', result: 'error', notification: ['Erreur WebSocket'] }));
+			ws.close(1008, JSON.stringify({ action: 'error', result: 'error', notification: [ws.i18n.t('errors.wsError')] }));
 		}
 	});
 }
