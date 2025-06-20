@@ -3,8 +3,10 @@ import { waitingID, waitingMulti } from "../state/serverState";
 
 export function handleClose(playerInfos: playerStat) {
 	if (!playerInfos.game) {
-		if (playerInfos.mode === "Multi")
-			waitingMulti.delete(playerInfos);
+		if (playerInfos.mode === "Multi") {
+			if (waitingMulti.has(playerInfos)) //if
+				waitingMulti.delete(playerInfos);
+		}
 		return;
 	}
 	playerInfos.game.setStatus("KICKOFF") //deconnexion
