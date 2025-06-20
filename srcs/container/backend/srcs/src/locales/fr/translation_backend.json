@@ -141,6 +141,44 @@
 		"noRelationWithUser": "Cet utilisateur n'a pas de lien avec vous",
 		"cannotUnblockUserWhoBlockedYou": "Vous ne pouvez pas débloquer un utilisateur qui vous a bloqué"
 	},
+	"Chat": {
+		"groupNotFound": "Groupe non trouvé",
+		"notMemberOfGroup": "Vous n'êtes pas membre de ce groupe",
+		"notOwnerOfGroup": "Vous n'êtes pas owner de ce groupe",
+		"messageMissing": "Message manquant",
+		"messageTooLong": "Message trop long",
+		"errorSendingMessage": "Erreur lors de l'envoi du message",
+		"messageIdMissing": "ID du message manquant",
+		"messageNotFound": "Message non trouvé",
+		"groupNameMissing": "Nom de groupe manquant ou trop long",
+		"groupNameTooLong": "Nom de groupe trop long, 25 caractères maximum",
+		"mustAddAtLeastOneUser": "Vous devez ajouter au moins un utilisateur au groupe",
+		"errorCreatingGroup": "Erreur lors de la création du groupe",
+		"groupCreated": "Vous avez créé le groupe {{groupName}}",
+		"addedToGroup": "{{username}} vous a ajouté au groupe {{groupName}}",
+		"cannotAddToPrivateGroup": "Vous ne pouvez pas ajouter d'utilisateur à un groupe privé",
+		"userIdMissing": "ID de l'utilisateur manquant",
+		"userNotFound": "Utilisateur non trouvé",
+		"userAlreadyInGroup": "{{username}} est déjà dans le groupe {{groupName}}",
+		"errorAddingUserToGroup": "Erreur lors de l'ajout de l'utilisateur {{username}} au groupe",
+		"userAddedToGroup": "Vous avez ajouté {{username}} au groupe {{groupName}}",
+		"userAddedToGroupNotification": "{{username}} a été ajouté au groupe {{groupName}}",
+		"cannotRemoveYourself": "Vous ne pouvez pas vous supprimer du groupe",
+		"cannotRemoveFromPrivateGroup": "Vous ne pouvez pas supprimer d'utilisateur d'un groupe privé",
+		"userNotInGroup": "{{username}} n'est pas dans le groupe {{groupName}}",
+		"errorRemovingUserFromGroup": "Erreur lors de la suppresion de l'utilisateur {{username}} au groupe {{groupName}}",
+		"userRemovedFromGroup": "Vous avez supprimé {{username}} du groupe {{groupName}}",
+		"userRemovedFromGroupNotification": "{{username}} a été supprimé  du groupe {{groupName}}",
+		"removedFromGroup": "{{username}} vous a supprimé du groupe {{groupName}}",
+		"cannotLeaveAsOnlyOwner": "Vous ne pouvez pas quitter un groupe dont vous êtes le seul owner",
+		"errorLeavingGroup": "Erreur pour vous retirer du groupe {{groupName}}",
+		"leftGroup": "Vous avez quitté le groupe {{groupName}}",
+		"userLeftGroup": "{{username}} a quitté le groupe {{groupName}}",
+		"cannotDeletePrivateGroup": "Vous ne pouvez pas supprimer un groupe privé",
+		"errorDeletingGroup": "Erreur pour supprimer le groupe {{groupName}}",
+		"groupDeleted": "Le groupe {{groupName}} a été supprimé",
+		"groupDeletedByUser": "{{username}} a supprimé le groupe {{groupName}}"
+	},
 	"email": {
 		"verificationCode": {
 			"subjectCreateAccount": "Transcendence - Confirmez la création de votre compte",
@@ -148,6 +186,7 @@
 			"CreateAccountOk": "Votre compte a été créé avec succès.",
 			"LoginAccountOk": "Vous êtes maintenant connecté.",
 			"UpdateEmailOk": "Votre adresse e-mail a été mise à jour avec succès."
+			
 		}
 	}
 }
