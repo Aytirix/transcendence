@@ -76,7 +76,6 @@ const MultiPlayers: React.FC = () => {
 						localStorage.removeItem("data")
 					}
 				}
-		
 				const setup = async () => {
 						
 					const result = await initBabylon(canvas);
