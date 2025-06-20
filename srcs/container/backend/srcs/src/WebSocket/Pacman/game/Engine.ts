@@ -724,6 +724,7 @@ export default class Engine {
 	private addStatistics() {
 		if (this.room.settings.map.id === -1) {
 			for (const player of this.players.values()) {
+				if (!player.player || player.player.id < 0) continue;
 				const win = player instanceof Pacman ? (this.win === 'pacman') : (this.win === 'ghosts');
 				modelPacman.insertStatistic(player.player.id, "P" === player.nameChar ? "Pacman" : "Ghost", player.score, player.death_count, win);
 			}
