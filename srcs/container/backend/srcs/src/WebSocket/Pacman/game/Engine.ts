@@ -4,6 +4,7 @@ import { WebSocket } from 'ws';
 import PacmanMap from './map/Map';
 import Ghost from "./Character/Ghost";
 import Pacman from "./Character/Pacman";
+import modelPacman from "@models/modelPacman";
 
 export const TILE_SIZE = 50;
 export const PACMAN_SPEED = 3;
@@ -27,6 +28,7 @@ export default class Engine {
 	private trainingLastPause = Date.now() - 10000; // Pour éviter de bloquer l'IA au démarrage
 	private win: 'pacman' | 'ghosts' | null = null;
 	private reward: number = 0;
+	private room: room | null = null;
 
 	// Ajout des propriétés pour le mode effrayé
 	private isFrightened: boolean = false;
@@ -37,6 +39,7 @@ export default class Engine {
 
 	constructor(room: room, initialPlayerSockets: Map<number, WebSocket>) {
 
+		this.room = room;
 		this.map = new PacmanMap(room.settings.map.map);
 		this.sockets = initialPlayerSockets;
 
@@ -74,20 +77,20 @@ export default class Engine {
 			let spawns: vector2[] = [];
 			let player: Ghost | Pacman;
 			let characterType: CharacterType;
-			
+
 			// CORRECTION 1 : Vérifier que realPlayer n'est pas vide
-			if ((this.trainingAI && p.username.startsWith('PacmanAI')) || 
+			if ((this.trainingAI && p.username.startsWith('PacmanAI')) ||
 				(realPlayer.length > 0 && p.username === realPlayer[0].username)) {
-				
+
 				characterType = CharacterType.Pacman;
 				spawns = this.map.getSpawnPositions()[CharacterType.Pacman];
-				
+
 				// CORRECTION 2 : Vérifier que spawns existe
 				if (!spawns || spawns.length === 0) {
 					console.error(`No spawn positions found for Pacman`);
 					return;
 				}
-				
+
 				// CORRECTION 3 : Utiliser spawns.length au lieu de availableCharacters.length
 				spawnIndex = this.players.size % spawns.length;
 				availableCharacters = availableCharacters.filter(c => c !== CharacterType.Pacman);
@@ -103,13 +106,13 @@ export default class Engine {
 				}
 
 				spawns = this.map.getSpawnPositions()[characterType];
-				
+
 				// CORRECTION 5 : Vérifier que spawns existe
 				if (!spawns || spawns.length === 0) {
 					console.error(`No spawn positions found for character: ${characterType}`);
 					return;
 				}
-				
+
 				spawnIndex = this.players.size % spawns.length;
 				availableCharacters = availableCharacters.filter(c => c !== characterType);
 			}
@@ -631,6 +634,7 @@ export default class Engine {
 			const pacmanId = Array.from(this.players.values()).find(p => p instanceof Pacman)?.player.id;
 			this.reward += 50000;
 			this.pause("Game finished!\nPacman wins!");
+			this.addStatistics();
 			this.broadcastState();
 
 			// Après un délai, marquer la partie comme terminée
@@ -659,6 +663,7 @@ export default class Engine {
 				if (ghost.isFrightened && !ghost.isReturningToSpawn) {
 					this.pacmanKillFrightened += 1;
 					ghost.respawn();
+					ghost.death_count += 1;
 					pacman.score += 200 * this.pacmanKillFrightened;
 					this.reward += 200 * this.pacmanKillFrightened;
 					ghost.score -= 100;
@@ -673,6 +678,7 @@ export default class Engine {
 	private deadPacman(pacman: Pacman, ghost: Ghost): void {
 		this.stop();
 		pacman.life -= 1;
+		pacman.death_count += 1;
 		if (pacman.life >= 0) {
 			const pacmanId = Array.from(this.players.values()).find(p => p instanceof Pacman)?.player.id;
 			this.reward += -200;
@@ -701,6 +707,7 @@ export default class Engine {
 			const pacmanId = Array.from(this.players.values()).find(p => p instanceof Pacman)?.player.id;
 			this.reward += -500;
 			this.pause("Game finished! Ghosts win!");
+			this.addStatistics();
 			this.win = 'ghosts';
 			this.broadcastState();
 			if (this.trainingAI) {
@@ -711,6 +718,15 @@ export default class Engine {
 				this.stop('Game finished! Ghosts win!');
 				this.Finished = true;
 			}, 5000);
+		}
+	}
+
+	private addStatistics() {
+		if (this.room.settings.map.id === -1) {
+			for (const player of this.players.values()) {
+				const win = player instanceof Pacman ? (this.win === 'pacman') : (this.win === 'ghosts');
+				modelPacman.insertStatistic(player.player.id, "P" === player.nameChar ? "Pacman" : "Ghost", player.score, player.death_count, win);
+			}
 		}
 	}
 
