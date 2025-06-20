@@ -236,6 +236,18 @@ async function getStatisticsForUser(userId: number): Promise<userStatsPacman> {
 	};
 }
 
+async function insertStatistic(userId: number, type: string, score: number, deathCount: number, win: boolean): Promise<boolean> {
+	const query = `
+		INSERT INTO pacman_stat (user_id, type, score, death_count, win) 
+		VALUES (?, ?, ?, ?, ?)
+	`;
+	const result: any = await executeReq(query, [userId, type, score, deathCount, win ? 1 : 0]);
+	if (!result || result.affectedRows === 0) {
+		return false;
+	}
+	return true;
+}
+
 export default {
 	getAllMapsForUser,
 	getMapForUserByName,
@@ -246,4 +258,5 @@ export default {
 	deleteMap,
 	searchMap,
 	getStatisticsForUser,
+	insertStatistic,
 }

@@ -14,6 +14,7 @@ export default class Character {
 	public score: number;
 	public teleport: boolean;
 	public spawnTarget: vector2 | null = null;
+	public death_count: number = 0;
 
 	constructor(player: player, position: vector2, spawnTarget: vector2, nameChar: CharacterType) {
 		this.player = player;
