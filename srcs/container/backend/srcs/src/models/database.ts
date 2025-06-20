@@ -36,7 +36,7 @@ async function createDbConnection(): Promise<mysql.Connection> {
 				} else if (err.code === 'ER_DBACCESS_DENIED_ERROR') {
 					reject(new Error('Accès refusé à la base de données.'));
 				} else {
-					reject(err);
+					reject(`Erreur connection à la base de données: ${err}`);
 				}
 			} else {
 				resolve(db);
@@ -83,13 +83,12 @@ async function executeReq(req: string, data: Array<string | number> = []) {
 			db = await createDbConnection();
 			db.query(req, data, (err: { sqlMessage: any; }, results: any) => {
 				if (err) {
-					reject(err.sqlMessage);
+					reject(`Erreur SQL: req: ${req}, data: ${data}, message: ${err.sqlMessage}`);
 				} else {
 					resolve(results);
 				}
 			});
 		} catch (error) {
-			console.error('Database connection error:', error);
 			reject(error);
 		}
 	}).finally(async () => {
