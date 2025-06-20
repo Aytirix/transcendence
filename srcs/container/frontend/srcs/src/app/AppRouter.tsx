@@ -18,6 +18,7 @@ import CheckRedirectEmail from './CheckRedirectEmail';
 import FriendPage from './chat/FriendPage';
 import IronManForgetPass from './IronManForgetPass';
 import MinSizeGuard from './components/MinSizeGuard';
+import ModuleManager from './ModuleManager/ModuleManager';
 
 // PAGES
 
@@ -63,6 +64,13 @@ class AppRouter extends Component {
 
 					{/* Route Redirection email */}
 					<Route path="/auth/checkCode" element={<CheckRedirectEmail />} />
+
+					{/* Route pour le module de gestion des modules */}
+					<Route path="/module-manager" element={
+						<MinSizeGuard minWidth={1200} minHeight={870} message="Écran trop petit">
+							<ModuleManager />
+						</MinSizeGuard>
+					} />
 
 					{/* Route de redirection par défaut */}
 					<Route path="*" element={<Navigate to="/" replace />} />

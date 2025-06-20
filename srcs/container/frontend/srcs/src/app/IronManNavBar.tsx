@@ -53,6 +53,9 @@ const IronManNavBar: React.FC = () => {
 						<Link to="/Chat" className="btn btn-ghost sm:text-lg md:text-xl lg:text-2xl">Chat</Link>
 						<Link to="/friend" className="btn btn-ghost sm:text-lg md:text-xl lg:text-2xl">Ami</Link>
 						<Link to="/credits" className="btn btn-ghost sm:text-lg md:text-xl lg:text-2xl">Crédits</Link>
+						<MinSizeGuard minWidth={1200} minHeight={870} hideWhenBlocked={true}>
+							<Link to="/module-manager" className="btn btn-ghost sm:text-lg md:text-xl lg:text-2xl">Modules</Link>
+						</MinSizeGuard>
 					</div>
 					<div className="navbar-end mr-2">
 						<div className="dropdown dropdown-end">

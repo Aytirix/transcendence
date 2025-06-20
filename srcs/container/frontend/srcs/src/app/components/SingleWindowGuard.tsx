@@ -3,7 +3,7 @@ import { useLocation } from 'react-router-dom';
 
 const CHANNEL_NAME = 'Trascendence';
 const APP_WINDOW_NAME = 'TrascendenceApp';
-const IGNORE_PATH = ['/auth/checkCode', '/login', '/register', '/forget-password', '/api/docs'];
+const IGNORE_PATH = ['/auth/checkCode', '/login', '/register', '/forget-password', '/api/docs', '/module-manager'];
 
 type Message = 'HELLO' | 'OCCUPIED' | 'FOCUS';
 
