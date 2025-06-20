@@ -6,9 +6,10 @@ import { playerStat } from '../types/playerStat';
 export function handleReconnection(socket: WebSocket, user: User) : boolean {
 	// console.log("avant user id", user.id);
 	if (waitingID.has(user.id)) {
-			console.log("wqiting")
+			console.log("waiting", user.id)
 			const tempPlayer = waitingID.get(user.id);
 			if (tempPlayer.inGame === false) {
+				console.log("suppresdsion")
 				waitingID.delete(user.id);
 			}
 			else if (tempPlayer.mode === "SameKeyboard") {

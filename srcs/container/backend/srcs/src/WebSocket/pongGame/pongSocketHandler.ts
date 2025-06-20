@@ -83,10 +83,12 @@ export function pongWebSocket(socket: WebSocket, user: User) {
 		console.log("close");
 		if (playerInfos) handleClose(playerInfos);
 		if (playerInfos && playerInfos.mode === "Multi") {
-			if (playerInfos && playerInfos.name !== playerInfos.game.getPlayer1().getPlayerInfos().name) //if multi
-				playerInfos.game.getPlayer1().getPlayerInfos().socket.send(JSON.stringify({type: "Pause", value: true}))
-			else
-				playerInfos.game.getPlayer2().getPlayerInfos().socket.send(JSON.stringify({type: "Pause", value: true}))
+			if (playerInfos && playerInfos.game) {
+				if (playerInfos.name !== playerInfos.game.getPlayer1().getPlayerInfos().name) //if multi
+					playerInfos.game.getPlayer1().getPlayerInfos().socket.send(JSON.stringify({type: "Pause", value: true}))
+				else
+					playerInfos.game.getPlayer2().getPlayerInfos().socket.send(JSON.stringify({type: "Pause", value: true}))
+			}
 		}
 	});
 }
