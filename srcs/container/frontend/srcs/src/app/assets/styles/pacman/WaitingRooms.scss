@@ -1,6 +1,9 @@
+@import './general_pacman.scss';
+
 .waiting-rooms {
 	max-width: 600px;
 	margin: 0 auto;
+	z-index: 10;
 
 	button {
 		&:focus {
@@ -24,7 +27,7 @@
 			border-radius: 0.5rem;
 			background-color: #1f2937;
 			color: white;
-			font-size: 1rem;
+			font-size: small;
 		}
 
 		button {
@@ -34,6 +37,7 @@
 			border-radius: 0.5rem;
 			color: white;
 			font-size: 1rem;
+			font-size: small;
 			cursor: pointer;
 			transition: background 0.2s;
 
@@ -87,32 +91,22 @@
 	}
 
 	.rooms-title {
-		text-align: left;
+		text-align: center;
 		margin: 0 0 15px 0;
 		padding-top: 10px;
 		position: relative;
 		top: 0;
-	}
-
-	h2.rooms-title {
-		position: absolute !important;
-		top: 20px !important;
-		left: 20px !important;
-		transform: none !important;
-		text-align: left !important;
-		margin: 0 !important;
 		font-size: 1.5rem;
-		z-index: 25;
-		color: white;
+		color: #e5e7eb;
+		font-family: 'Press Start 2P', cursive;
 	}
 
 	.current-room {
-		display: flex;
 		flex-direction: column;
 		align-items: center;
 		justify-content: space-between;
 		min-height: 400px; // Ajuster selon vos besoins
-		//padding: 1rem;
+		padding: 1rem;
 	}
 
 	.room-item {
@@ -308,6 +302,7 @@
 				outline: none;
 			}
 		}
+
 		.leave-btn {
 			background-color: #ef4444;
 			color: white;
@@ -316,6 +311,7 @@
 				background-color: #dc2626;
 			}
 		}
+
 		.launch-btn {
 			background-color: #3b82f6;
 			color: white;
@@ -325,4 +321,75 @@
 			}
 		}
 	}
+
+	.room-map {
+		position: relative;
+		display: flex;
+		justify-content: center;
+		gap: 1rem;
+		margin: 1rem 0;
+		width: 100%;
+		max-width: 600px;
+
+		.map-search {
+			flex: 1;
+			//min-width: 300px;
+			//max-width: 200px;
+			padding: 0.5rem 1rem;
+			border-radius: 0.5rem;
+			border: 2px solid #374151;
+			background-color: #111827;
+			color: #e5e7eb;
+			font-size: 0.9rem;
+			transition: all 0.2s ease;
+
+			&:focus {
+				border-color: #2563eb;
+				outline: none;
+				box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
+			}
+
+			&::placeholder {
+				color: #9ca3af;
+			}
+		}
+
+		select {
+			min-width: 250px;
+			padding: 0.5rem 1rem;
+			border-radius: 0.5rem;
+			border: 2px solid #374151;
+			background-color: #111827;
+			color: #e5e7eb;
+			transition: all 0.2s ease;
+			cursor: pointer;
+
+			&:focus {
+				border-color: #2563eb;
+				outline: none;
+				box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
+			}
+
+			option[disabled] {
+				color: #6b7280;
+				font-style: italic;
+				background: #1f2937;
+			}
+		}
+	}
+}
+
+@keyframes fadeIn {
+	from {
+		opacity: 0;
+		transform: translateY(20px);
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}
+
+.waiting-rooms {
+	animation: fadeIn 0.5s ease-in-out;
 }

@@ -1,10 +1,9 @@
 import { Link } from 'react-router-dom';
-import { useLanguage } from '../contexts/LanguageContext';
-import React, { useState } from 'react';
-import './assets/styles/IronManTheme.css';
+import React, { useState, useEffect } from 'react';
 import ApiService from '../api/ApiService';
-import { useNavigate } from 'react-router-dom';
+import { useLanguage } from '../contexts/LanguageContext';
 import GoogleLoginButton from './components/GoogleLoginButton';
+import LanguageToggle from './components/LanguageToggle';
 
 interface RegisterSchema {
   email: string;
@@ -15,22 +14,27 @@ interface RegisterSchema {
 }
 
 const IronManRegister: React.FC = () => {
+  const { t, currentLanguage } = useLanguage();
   const [form, setForm] = useState<RegisterSchema>({
     email: '',
     password: '',
     username: '',
     confirmPassword: '',
-    lang: 'fr',
+    lang: currentLanguage,
   });
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
-  };
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
-  const navigate = useNavigate();
+
+  // Synchroniser la langue du formulaire avec le changement de langue global
+  useEffect(() => {
+    setForm(prev => ({ ...prev, lang: currentLanguage }));
+  }, [currentLanguage]);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    setForm({ ...form, [e.target.name]: e.target.value });
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -42,18 +46,16 @@ const IronManRegister: React.FC = () => {
       return;
     }
     setLoading(true);
-    // const {...toSend } = form;
 
     try {
-      console.log("form",form);
-      const resp = await ApiService.post('/register', form) as ApiService;
+      console.log("form", form);
+      const resp: any = await ApiService.post('/register', form) as ApiService;
 
       if (!resp.ok) {
         const data = await resp.json();
         setError(data.message || 'Erreur lors de la création du compte.');
       } else {
         setSuccess("Compte créé avec succès ! Bienvenue dans l'équipe Iron Man.");
-        navigate('/');
       }
     } catch (err: any) {
       setError("Erreur réseau ou serveur.");
@@ -63,78 +65,73 @@ const IronManRegister: React.FC = () => {
   };
 
   return (
-    <div className="ironman-container">
-      <form className="ironman-card" onSubmit={handleSubmit}>
-        <div className="ironman-icon">
-          {/* Iron Man SVG Mini-Face */}
-          <svg width="54" height="54" viewBox="0 0 54 54">
-            <ellipse cx="27" cy="27" rx="25" ry="25" fill="#c20000" stroke="#ffd700" strokeWidth="2"/>
-            <rect x="15" y="20" width="24" height="18" rx="6" fill="#ffd700"/>
-            <rect x="21" y="31" width="3" height="7" rx="1.5" fill="#c20000"/>
-            <rect x="30" y="31" width="3" height="7" rx="1.5" fill="#c20000"/>
-            <rect x="21" y="24" width="12" height="3" fill="#222"/>
-          </svg>
+    <>
+      <div className="min-h-screen flex items-center justify-center relative">
+        {/* Bouton de changement de langue en haut à droite */}
+        <div className="absolute top-4 right-4">
+          <LanguageToggle />
         </div>
-        <h2 className="ironman-title">Rejoindre les Avengers</h2>
-        <input
-          className="ironman-input"
-          type="email"
-          name="email"
-          placeholder="E-mail"
-          value={form.email}
-          onChange={handleChange}
-          required
-        />
-        <input
-          className="ironman-input"
-          type="text"
-          name="username"
-          placeholder="Nom d'utilisateur"
-          value={form.username}
-          onChange={handleChange}
-          required
-        />
-        <input
-          className="ironman-input"
-          type="password"
-          name="password"
-          placeholder="Mot de passe"
-          value={form.password}
-          onChange={handleChange}
-          required
-        />
-        <input
-          className="ironman-input"
-          type="password"
-          name="confirmPassword"
-          placeholder="Confirmez le mot de passe"
-          value={form.confirmPassword}
-          onChange={handleChange}
-          required
-        />
-        <select
-          className="ironman-input"
-          name="lang"
-          value={form.lang}
-          onChange={handleChange}
-          required
-        >
-          <option value="fr">Français</option>
-          <option value="en">English</option>
-          <option value="es">Español</option>
-          <option value="it">Italia</option>
-        </select>
-        <button className="ironman-btn" type="submit">
-          Créer mon compte
-        </button>
-        {error && <div style={{ color: '#c20000', marginTop: '16px', textAlign: 'center' }}>{error}</div>}
-        {success && <div style={{ color: '#52ff52', marginTop: '16px', textAlign: 'center' }}>{success}</div>}
-        <span className="ironman-switch-link">
-                  <GoogleLoginButton/>
-          <Link to="/login">Déjà membre ? Se connecter</Link>
-        </span>
-      </form>
-    </div>
+
+        <form className=" " onSubmit={handleSubmit}>
+          <fieldset className="fieldset bg-base-200 border-base-300 rounded-box w-xs border p-4">
+            <legend className="fieldset-legend">{t('register.title')}</legend>
+            
+            <input
+              className="input input-a"
+              type="email"
+              name="email"
+              placeholder={t('register.email')}
+              value={form.email}
+              onChange={handleChange}
+              required
+            />
+            
+            <input
+              className="input input-a"
+              type="text"
+              name="username"
+              placeholder={t('register.username')}
+              value={form.username}
+              onChange={handleChange}
+              required
+            />
+            
+            <input
+              className="input input-a"
+              type="password"
+              name="password"
+              placeholder={t('register.password')}
+              value={form.password}
+              onChange={handleChange}
+              required
+            />
+            
+            <input
+              className="input input-a"
+              type="password"
+              name="confirmPassword"
+              placeholder={t('register.confirmPassword')}
+              value={form.confirmPassword}
+              onChange={handleChange}
+              required
+            />
+            
+            <button className="btn btn-neutral mt-4 text-black" type="submit" disabled={loading}>
+              {loading ? "Création..." : t('register.submit')}
+            </button>
+            
+            <div className="flex justify-center mt-4">
+              <GoogleLoginButton textbtn="signup"/>
+            </div>
+            
+            <Link to="/login">{t('register.loginLink')}</Link>
+            
+            {error && <div style={{ color: '#c20000', marginTop: '16px', textAlign: 'center' }}>{error}</div>}
+            {success && <div style={{ color: '#28a745', marginTop: '16px', textAlign: 'center' }}>{success}</div>}
+          </fieldset>
+        </form>
+      </div>
+    </>
   );
 };
 

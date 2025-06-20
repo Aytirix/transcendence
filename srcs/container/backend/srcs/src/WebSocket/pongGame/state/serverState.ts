@@ -1,4 +1,4 @@
-import { playerStat } from "../types/playerStat";
+import { playerStat, Tournament } from "../types/playerStat";
 import { WebSocket } from "ws";
 
 //information general : Map -> socket , players information
@@ -9,3 +9,7 @@ export const waitingID = new Map<number, playerStat>();
 
 //information : set -> player waiting for multi
 export const waitingMulti = new Set<playerStat>();
+
+//information : set -> player waiting for tournament
+export const listTournament = new Map<number, Tournament>();
+

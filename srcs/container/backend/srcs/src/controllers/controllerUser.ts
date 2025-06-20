@@ -1,9 +1,18 @@
 import { FastifyRequest, FastifyReply } from 'fastify';
 import userModel from '@models/modelUser';
+import controller2FA from '@controllers/controller2FA';
+import tools from '@tools';
 import i18n from '@i18n';
 import { IdentityPoolClient, OAuth2Client } from 'google-auth-library';
+import path from 'path';
+import fs from "fs";
+import { promisify } from "util";
+import { pipeline } from "stream";
+import { User } from '@types';
 
-const Auth2Client = new OAuth2Client('235494829152-rogrpto31jsvp0ml7qp16ncuvge7msmv.apps.googleusercontent.com');
+require('dotenv').config();
+
+const Auth2Client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
 export const Login = async (request: FastifyRequest, reply: FastifyReply) => {
 	const { email, password } = request.body as { email: string; password: string };
@@ -23,7 +32,9 @@ export const Login = async (request: FastifyRequest, reply: FastifyReply) => {
 		});
 	}
 
-	request.session.user = user;
+	request.i18n.changeLanguage(user.lang || 'fr');
+
+	controller2FA.sendRegisterVerifyEmail(request, user.email, "loginAccount_confirm_email", user);
 
 	return reply.send({
 		message: request.i18n.t('login.welcome'),
@@ -39,7 +50,7 @@ export const Register = async (request: FastifyRequest, reply: FastifyReply) => 
 		});
 	}
 
-	if ((await userModel.usernameAlreadyExists(email))) {
+	if (username.startsWith('PacmanAI') || await userModel.usernameAlreadyExists(username)) {
 		return reply.status(409).send({
 			message: request.i18n.t('errors.username.alreadyExists'),
 		});
@@ -51,10 +62,19 @@ export const Register = async (request: FastifyRequest, reply: FastifyReply) => 
 		});
 	}
 
-	const user = await userModel.Register(email, username, password, lang);
+	const defaultAvatar = ['avatar1.png', 'avatar2.png', 'avatar3.png', 'avatar4.png'][Math.floor(Math.random() * 4)];
 
-	request.i18n.changeLanguage(lang);
-	request.session.user = user;
+	const user = {
+		email,
+		username,
+		password,
+		lang: lang || 'fr',
+		avatar: defaultAvatar,
+	}
+
+	request.i18n.changeLanguage(user.lang || 'fr');
+
+	controller2FA.sendRegisterVerifyEmail(request, email, "createAccount_confirm_email", user);
 
 	return reply.send({
 		message: request.i18n.t('login.welcome'),
@@ -92,7 +112,7 @@ export const UpdateUser = async (request: FastifyRequest, reply: FastifyReply) =
 		});
 	}
 
-	if (username && username !== user.username && await userModel.usernameAlreadyExists(username)) {
+	if (username && username !== user.username && (username.startsWith('PacmanAI') || await userModel.usernameAlreadyExists(username))) {
 		return reply.status(409).send({
 			message: request.i18n.t('errors.username.alreadyExists'),
 		});
@@ -108,15 +128,40 @@ export const UpdateUser = async (request: FastifyRequest, reply: FastifyReply) =
 		request.i18n.changeLanguage(lang);
 	}
 
-	await userModel.UpdateUser(user.id.toString(), email, username, password, lang, avatar);
+	if (avatar && !['avatar1.png', 'avatar2.png', 'avatar3.png', 'avatar4.png'].includes(avatar)) {
+		return reply.status(400).send({
+			message: request.i18n.t('user.file.invalidname'),
+		});
+	}
+
+	if (avatar && request.session.user.avatar && !['avatar1.png', 'avatar2.png', 'avatar3.png', 'avatar4.png'].includes(request.session.user.avatar)) {
+		const avatarPath = path.join(__dirname, '..', '..', 'uploads', request.session.user.avatar);
+		if (fs.existsSync(avatarPath)) {
+			fs.unlinkSync(avatarPath);
+		}
+	}
+
+	if (email && email !== user.email) {
+		await controller2FA.sendUpdateVerifyEmail(request, email);
+	}
+
+	await userModel.UpdateUser(user.id.toString(), null, username, password, lang, avatar);
 	request.session.user = {
 		...user,
-		email: email || user.email,
 		username: username || user.username,
 		lang: lang || user.lang,
+		avatar: avatar || user.avatar,
 	};
+
 	return reply.send({
-		message: `email: ${email || user.email}, username: ${username || user.username}, lang: ${lang || user.lang}`,
+		message: `Vos informations ont été mises à jour avec succès.`,
+		user: {
+			id: request.session.user.id,
+			email: request.session.user.email,
+			username: request.session.user.username,
+			lang: request.session.user.lang,
+			avatar: request.session.user.avatar || null,
+		},
 	});
 }
 
@@ -132,10 +177,9 @@ export const Logout = async (request: FastifyRequest, reply: FastifyReply, msg: 
 export async function authGoogleCallback(request: FastifyRequest, reply: FastifyReply) {
 	const { jwt } = request.body as { jwt: string };
 	try {
-		console.log(`JWT ; ${jwt}`);
 		const ticket = await Auth2Client.verifyIdToken({
 			idToken: jwt,
-			audience: '235494829152-rogrpto31jsvp0ml7qp16ncuvge7msmv.apps.googleusercontent.com',
+			audience: process.env.GOOGLE_CLIENT_ID
 		});
 		const payload = ticket.getPayload();
 		if (!payload) {
@@ -164,7 +208,7 @@ export async function authGoogleCallback(request: FastifyRequest, reply: Fastify
 					email: user.email,
 					username: user.username,
 					lang: user.lang,
-					avatar: user.avatar || null,
+					avatar: user.avatar,
 				},
 			});
 		}
@@ -174,7 +218,7 @@ export async function authGoogleCallback(request: FastifyRequest, reply: Fastify
 			email: payload['email'],
 			username: payload['name'].replace(/[^a-zA-Z0-9]/g, '').toLowerCase().slice(0, 10) || payload['email'].split('@')[0].toLowerCase().slice(0, 10),
 			lang: 'fr',
-			avatar: payload['picture'] || null,
+			avatar: payload['picture'] || ['avatar1.png', 'avatar2.png', 'avatar3.png', 'avatar4.png'][Math.floor(Math.random() * 4)],
 		};
 
 		let addnum = 0;
@@ -202,7 +246,7 @@ export async function authGoogleCallback(request: FastifyRequest, reply: Fastify
 			user.id = userExist.id;
 			await userModel.addRelationGoogleToken(userExist.id, payload['sub']);
 		} else {
-			user = await userModel.Register(user.email, user.username, null, user.lang);
+			user = await userModel.Register(user.email, user.username, null, user.avatar, user.lang);
 			await userModel.addRelationGoogleToken(user.id, payload['sub']);
 		}
 
@@ -227,10 +271,68 @@ export async function authGoogleCallback(request: FastifyRequest, reply: Fastify
 	}
 }
 
+export const UploadAvatar = async (request: FastifyRequest, reply: FastifyReply) => {
+	// Gérer les requêtes OPTIONS (preflight)
+	if (request.method === 'OPTIONS') {
+		return reply
+			.code(200)
+			.header('Access-Control-Allow-Origin', request.headers.origin || '*')
+			.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS')
+			.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, Cookie')
+			.header('Access-Control-Allow-Credentials', 'true')
+			.send();
+	}
+
+	const file = await request.file();
+
+	if (!file) {
+		return reply.code(400).send({ success: false, message: request.i18n.t('user.file.missing') });
+	}
+
+	// Vérifier que le fichier a un nom
+	if (!file.filename) {
+		return reply.code(400).send({ success: false, message: request.i18n.t('user.file.invalidname') });
+	}
+
+	// Taille maximum (multi-part gère l'arrêt, mais on vérifie)
+	if (file.file.truncated) {
+		return reply.code(413).send({ success: false, message: request.i18n.t('user.file.tooLarge') });
+	}
+
+	// Contrôle du format
+	const ALLOWED_MIME = ['image/jpg', 'image/jpeg', 'image/png', 'image/webp'];
+	if (!ALLOWED_MIME.includes(file.mimetype)) {
+		return reply.code(400).send({ success: false, message: request.i18n.t('user.file.invalidFormat') });
+	}
+
+	const pipelineAsync = promisify(pipeline);
+
+	const AVATAR_DIR = path.join(__dirname, "..", "..", "uploads");
+
+	const fileExtension = path.extname(file.filename);
+	const safeFilename = `profile_${request.session.user.id}.jpg`;
+	const safeFilePath = path.join(AVATAR_DIR, safeFilename);
+
+	try {
+		await pipelineAsync(file.file, fs.createWriteStream(safeFilePath));
+		await userModel.UpdateUser(request.session.user.id.toString(), null, null, null, null, safeFilename);
+		request.session.user.avatar = safeFilename;
+		return reply.code(200).send({
+			success: true,
+			url: `/avatars/${safeFilename}`,
+			fileName: safeFilename,
+		});
+	} catch (error) {
+		console.error('Error processing file upload:', error);
+		return reply.code(500).send({ success: false, message: request.i18n.t('user.file.uploadError') });
+	}
+}
+
 export default {
 	Login,
 	Register,
 	UpdateUser,
 	Logout,
 	authGoogleCallback,
+	UploadAvatar
 };

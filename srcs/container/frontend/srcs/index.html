@@ -1,27 +1,28 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-theme="cupcake">
 
 <head>
 	<meta charset="UTF-8" />
 	<link rel="icon" type="image/svg+xml" href="/vite.svg" />
 	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-	<!-- <script src="https://apis.google.com/js/platform.js" async defer></script> -->
-	 <script src="https://accounts.google.com/gsi/client" async defer></script>
-	<meta name="google-signin-client_id" content="235494829152-rogrpto31jsvp0ml7qp16ncuvge7msmv.apps.googleusercontent.com">
-	<title>Vite + React + TS</title>
+	<script src="https://accounts.google.com/gsi/client" async defer></script>
+	<meta name="google-signin-client_id"
+		content="834516330904-orrkp9jgjbfv9vsao2tr7qlkqgl39oas.apps.googleusercontent.com">
+	<title>Iron Transcendence</title>
 </head>
 
 <body>
-	<div id="stars-bright"></div>
-	<div id="shooting-stars">
-		<span></span>
-		<span></span>
-		<span></span>
-		<span></span>
-		<span></span>
+
+	<!-- Background Video -->
+	<!-- <video autoplay loop muted class="fixed inset-0 w-full h-full object-cover -z-10">
+		<source src="src/app/assets/videoplayback2.mp4" type="video/mp4">
+	</video> -->
+
+	<!-- Main Content -->
+	<div id="root" class="relative z-10 min-w-screen">
+		<!-- React will mount here -->
 	</div>
-	<div id="root"></div>
-	<!-- <div class="g-signin2" data-onsuccess="onSignIn"></div> -->
+
 	<script type="module" src="/src/main.tsx"></script>
 </body>
 

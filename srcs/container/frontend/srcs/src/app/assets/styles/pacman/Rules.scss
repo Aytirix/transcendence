@@ -1,8 +1,26 @@
-.rules {
-	max-width: 800px;
-	padding: 0 2rem;
-	margin: 0 auto;
+@import './general_pacman.scss';
 
+.rules {
+	max-width: 600px;
+	z-index: 10;
+
+	.rules-title {
+		text-align: center;
+		margin: 0 0 15px 0;
+		padding-top: 10px;
+		position: relative;
+		top: 0;
+		font-size: 1.5rem;
+		color: #e5e7eb;
+		font-family: 'Press Start 2P', cursive;
+	}
+
+	.rules-description {
+		color: #9ca3af;
+		font-size: 1rem;
+		margin-bottom: 1.2rem;
+		text-align: left;
+	}
 
 	.rules-content {
 		background-color: #1f2937;
@@ -33,5 +51,34 @@
 				background: rgba(0, 0, 0, 0.5);
 			}
 		}
+
+		p {
+			color: #9ca3af;
+			margin: 0.7rem 0;
+		}
+
+		ul {
+			color: #e5e7eb;
+			margin: 0.7rem 0 0.7rem 1.2rem;
+			padding: 0;
+			list-style: disc;
+			font-size: 1rem;
+		}
 	}
+}
+
+
+@keyframes fadeIn {
+	from {
+		opacity: 0;
+		transform: translateY(20px);
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}
+
+.rules {
+	animation: fadeIn 0.5s ease-in-out;
 }

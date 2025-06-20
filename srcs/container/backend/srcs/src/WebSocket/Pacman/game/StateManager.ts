@@ -216,17 +216,17 @@ class StateManager {
 			for (const player of game.players) {
 				const ws = this.PlayerGameWs.get(player.id);
 				player.room = null;
-				this.PlayerGame.delete(player.id);
-				this.PlayerGameWs.delete(player.id);
 				this.PlayerRoom.set(player.id, player);
 				this.PlayerRoomWs.set(player.id, this.PlayerGameWs.get(player.id));
+				this.PlayerGame.delete(player.id);
+				this.PlayerGameWs.delete(player.id);
 				tmp.set(player.id, ws);
 			}
 			for (const [spectator, ws] of game.engine?.Spectators || []) {
-				this.PlayerGame.delete(spectator.id);
-				this.PlayerGameWs.delete(spectator.id);
 				this.PlayerRoom.set(spectator.id, spectator);
 				this.PlayerRoomWs.set(spectator.id, ws);
+				this.PlayerGame.delete(spectator.id);
+				this.PlayerGameWs.delete(spectator.id);
 				spectator.gameId = null;
 				spectator.room = null;
 				spectator.isSpectator = false;
@@ -256,9 +256,9 @@ class StateManager {
 			});
 			// enlever les joueurs de la liste des joueurs
 			for (const player of room.players) {
-				this.PlayerRoom.delete(player.id);
 				this.PlayerGame.set(player.id, player);
 				this.PlayerGameWs.set(player.id, this.PlayerRoomWs.get(player.id));
+				this.PlayerRoom.delete(player.id);
 				this.PlayerRoomWs.delete(player.id);
 			}
 		}

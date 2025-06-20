@@ -5,7 +5,7 @@ import { pingMonitoring } from "../pongSocketHandler";
 
 export function handlePing(playerInfos: playerStat) {
 	playerInfos.lastping = Date.now();
-	playerInfos.socket.send("Pong");
+	playerInfos.socket.send(JSON.stringify({type: "pong"}));
 }
 
 export function startingPing(sockets: Map<WebSocket, playerStat>) {

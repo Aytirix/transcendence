@@ -1,23 +1,22 @@
 import React, { useState } from 'react';
-import { Tab } from '@headlessui/react';
 import { motion, AnimatePresence } from 'framer-motion';
 import WaitingRooms from './WaitingRooms';
 import ActiveRooms from './ActiveRooms';
 import Rules from './Rules';
-import Maps from './Maps'; // Adjusted the path to point to the correct location
-import Settings from './Settings';
 import Statistics from './Statistics';
+import Maps from './Maps';
 import { state, PacmanMap } from '../../types/pacmanTypes';
-// import '@styles/pacman/CenteredBox.scss';
 import '../../assets/styles/pacman/CenteredBox.scss';
+import { useNavigate } from 'react-router-dom';
+import { useLanguage } from '../../../contexts/LanguageContext';
+
 
 const TABS = [
-	{ id: 'WaitingRooms', label: 'Lobby' },
-	{ id: 'ActiveRooms', label: 'En direct' },
-	{ id: 'Rules', label: 'Règles' },
-	{ id: 'Maps', label: 'Carte' },
-	{ id: 'Statistics', label: 'Statistiques' },
-	{ id: 'Settings', label: 'Paramètres' },
+	{ id: 'WaitingRooms', label: 'lobby' },
+	{ id: 'ActiveRooms', label: 'liveGames' },
+	{ id: 'Rules', label: 'rules' },
+	{ id: 'Statistics', label: 'statistics' },
+	{ id: 'Maps', label: 'maps' },
 ];
 
 interface CenteredBoxProps {
@@ -28,59 +27,64 @@ interface CenteredBoxProps {
 
 export const CenteredBox: React.FC<CenteredBoxProps> = ({ state, onCreateMap, onEditMap }) => {
 	const [currentPage, setCurrentPage] = useState<string>('WaitingRooms');
-
+	const navigate = useNavigate();
+	const { t } = useLanguage();
+	
 	return (
-		<div className="centered-box">
-			<div className='title-container'>
-				<h1>PACMAN</h1>
+		<>
+			<div className='home-button'>
+				<button
+					className="home-icon-btn"
+					onClick={async () => {navigate('/');}}
+					aria-label="Retour à l'accueil"
+					title="Retour à l'accueil"
+				>
+					<img src="/avatars/ironman.svg" alt="Iron Man home icon" />
+					<span className="home-label">{t("pacman.menu.home")}</span>
+				</button>
 			</div>
-			{/* Conteneur Principal */}
-			<div className="main-content">
-				{/* Colonne gauche - Menu */}
-				<div className='menu-column'>
-					{TABS.map((tab) => (
-						<button
+			<div className="centered-box">
+				<div className='title-container'>
+					<h1>{t("pacman.title")}</h1>
+				</div>
+				{/* Conteneur Principal */}
+				<div className="main-content">
+					{/* Colonne gauche - Menu */}
+					<div className='menu-column'>
+						{TABS.map((tab) => (
+							<button
 							key={tab.id}
 							className={`menu-button ${currentPage === tab.id ? 'selected' : ''}`}
 							onClick={() => setCurrentPage(tab.id)}
-						>
-							{tab.label}
-						</button>
-					))}
-				</div>
-				{/* Colonne droite - Contenu */}
-				<div className='content-column'>
-					<AnimatePresence mode="wait">
-						<motion.div
-							key={currentPage}
-							initial={{ opacity: 0, y: 10 }}
-							animate={{ opacity: 1, y: 0 }}
-							exit={{ opacity: 0, y: 10 }}
-							transition={{ duration: 0.3 }}
-							className="content-wrapper"
-						>
-							{{
-								WaitingRooms: <WaitingRooms state={state} />,
-								ActiveRooms: <ActiveRooms state={state} />,
-								Rules: <Rules />,
-								Maps: <Maps onCreateMap={onCreateMap} onEditMap={onEditMap} state={state} />,
-								Settings: <Settings />,
-								Statistics: <Statistics />,
-							}[currentPage] || <p>Page non trouvée</p>}
-						</motion.div>
-					</AnimatePresence>
+							>
+								{t(`pacman.menu.${tab.label}.button`)}
+							</button>
+						))}
+					</div>
+					{/* Colonne droite - Contenu */}
+					<div className='content-column'>
+						<AnimatePresence mode="wait">
+							<motion.div
+								key={currentPage}
+								initial={{ opacity: 0, y: 10 }}
+								animate={{ opacity: 1, y: 0 }}
+								exit={{ opacity: 0, y: 10 }}
+								transition={{ duration: 0.3 }}
+								className="content-wrapper"
+								>
+								{{
+									WaitingRooms: <WaitingRooms state={state} />,
+									ActiveRooms: <ActiveRooms state={state} />,
+									Statistics: <Statistics />,
+									Rules: <Rules />,
+									Maps: <Maps onCreateMap={onCreateMap} onEditMap={onEditMap} state={state} />,
+								}[currentPage] || <p>{t("pacman.pageNotFound.title")}</p>}
+							</motion.div>
+						</AnimatePresence>
+					</div>
 				</div>
 			</div>
-			{/* Add a button for creating maps */}
-			{/* {onCreateMap && (
-				<button 
-					className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded mt-4"
-					onClick={onCreateMap}
-				>
-					Create Custom Map
-				</button>
-			)} */}
-		</div>
+		</>
 	)
 };
 

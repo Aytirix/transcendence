@@ -7,9 +7,7 @@ import { WebSocket } from 'ws'
 import { room, player } from "@Pacman/TypesPacman";
 import StateManager from '@wsPacman/game/StateManager';
 
-
 export function sendResponse(ws: WebSocket, action: string, result: string, notification: string | string[], data: any = null): void {
-	console.log(`Sending response to action: ${action}, result: ${result}, notification: ${notification}`);
 	ws?.send(JSON.stringify({ action, result, notification, data }));
 }
 
@@ -39,8 +37,7 @@ export const insertOrUpdateMap = async (ws: WebSocket, user_id: number, request:
 	if (!map || !Array.isArray(map) || map.length === 0 || !map[0] || !Array.isArray(map[0])) return sendResponse(ws, 'insertOrUpdateMap', 'error', [ws.i18n.t('pacman.error.map.required')]);
 	if (is_public === undefined) return sendResponse(ws, 'insertOrUpdateMap', 'error', [ws.i18n.t('pacman.error.is_public.required')]);
 	if (name.length < 3 || name.length > 20 || !/^[a-zA-Z0-9 _-]+$/.test(name)) return sendResponse(ws, 'insertOrUpdateMap', 'error', [ws.i18n.t('pacman.error.name.invalid')]);
-	console.log(`Map length: ${map.length}, Map row length: ${map[0].length} - Map some row length: ${map.some(row => row.length)}`);
-	if (map.length < 29 || map.length > 29 || map.some(row => row.length !== 31 || !/^[#ToPBICY\-. ]+$/.test(row.join('')))) return sendResponse(ws, 'insertOrUpdateMap', 'error', [ws.i18n.t('pacman.error.map.invalid')]);
+	if (map.length < 31 || map.length > 31 || map.some(row => row.length !== 29 || !/^[#ToPBICY\-. ]+$/.test(row.join('')))) return sendResponse(ws, 'insertOrUpdateMap', 'error', [ws.i18n.t('pacman.error.map.invalid')]);
 
 	if (id) {
 		const existingMap = await pacmanModel.getMapForUserById(id, user_id);
@@ -65,12 +62,10 @@ export const insertOrUpdateMap = async (ws: WebSocket, user_id: number, request:
 	}
 
 	if (id && !(await pacmanModel.updateMap(infoMap))) {
-		console.log('Map updated:', infoMap);
 		return sendResponse(ws, 'insertOrUpdateMap', 'error', [ws.i18n.t('errors.pacman.updateMapError')]);
 	}
 	else if (!id && !(await pacmanModel.insertMap(infoMap))) {
 		infoMap.isCreated = true;
-		console.log('Map inserted:', infoMap);
 		return sendResponse(ws, 'insertOrUpdateMap', 'error', [ws.i18n.t('errors.pacman.insertMapError')]);
 	}
 
@@ -87,6 +82,15 @@ export const deleteMap = async (ws: WebSocket, user_id: number, request: any) =>
 	if (!(await pacmanModel.deleteMap(id))) return sendResponse(ws, 'deleteMap', 'error', [ws.i18n.t('pacman.error.deleteMapError')]);
 	return sendResponse(ws, 'deleteMap', 'success', [ws.i18n.t('pacman.success.mapDeleted')], { id: id });
 };
+
+export const searchMap = async (ws: WebSocket, player: player, request: any): Promise<void> => {
+	const { text: name } = request as { text: string };
+	const maps = await pacmanModel.searchMap(player.id, name);
+	if (!maps || maps.length === 0) {
+		return sendResponse(ws, 'searchMap', 'error', [ws.i18n.t('pacman.error.searchMap.noResults')]);
+	}
+	sendResponse(ws, 'searchMap', 'success', [], { maps });
+}
 
 export function createTestRoom(player: player, room: room): void {
 	const player2: player = {
@@ -151,6 +155,7 @@ export function handleAddUser(ws: WebSocket, player: player): void {
 
 export function handleCreateRoom(ws: WebSocket, player: player, json: any): void {
 	if (!json.name) return sendResponse(ws, 'error', 'error', ['Veuillez spécifier un nom de salle']);
+	StateManager.sendRooms();
 	if (player.room) return sendResponse(ws, 'error', 'error', ['Vous êtes déjà dans une salle']);
 	if (json.name.length < 3 || json.name.length > 15) return sendResponse(ws, 'error', 'error', ['Le nom de la salle doit faire entre 3 et 15 caractères']);
 	if (StateManager.RoomManager.getRoomByName(json.name)) return sendResponse(ws, 'error', 'error', ['Le nom de la salle est déjà utilisé']);
@@ -207,8 +212,10 @@ export function handleSetOwnerRoom(ws: WebSocket, player: player, json: any): vo
 export function handleLaunchRoom(ws: WebSocket, player: player): void {
 	if (player.room.state == 'active') return sendResponse(ws, 'error', 'error', [ws.i18n.t('pacman.already_active')]);
 	if (player.room.owner_id !== player.id) return sendResponse(ws, 'error', 'error', [ws.i18n.t('pacman.not_owner')]);
-	// if (player.room.players.length < 2) return sendResponse(ws, 'error', 'error', [ws.i18n.t('pacman.too_few_players')]);
 	if (player.room.players.length > 5) return sendResponse(ws, 'error', 'error', [ws.i18n.t('pacman.too_many_players')]);
+	if (player.room.settings.map.id > 0 && PacmanMap.validateMap(player.room.settings.map.map).is_valid === false) {
+		return sendResponse(ws, 'error', 'error', [ws.i18n.t('pacman.map_invalid')]);
+	}
 	createTestRoom(player, player.room);
 	StateManager.startGame(player.room);
 	StateManager.sendRooms();
@@ -232,11 +239,39 @@ export function handleJoinRoomSpectator(ws: WebSocket, player: player, json: any
 	StateManager.joinRoomSpectator(room, player, ws);
 }
 
+export async function setRoomMap(ws: WebSocket, player: player, json: any): Promise<void> {
+	if (!json.map_id) return sendResponse(ws, 'error', 'error', [ws.i18n.t('pacman.map_id_required')]);
+	if (!player.room) return sendResponse(ws, 'error', 'error', [ws.i18n.t('pacman.not_in_game')]);
+	if (player.room.state !== 'waiting') return sendResponse(ws, 'error', 'error', [ws.i18n.t('pacman.not_waiting')]);
+	if (player.room.owner_id !== player.id) return sendResponse(ws, 'error', 'error', [ws.i18n.t('pacman.not_owner')]);
+
+	const map = await pacmanModel.getMapById(json.map_id);
+	if (!map) return sendResponse(ws, 'error', 'error', [ws.i18n.t('pacman.map_not_found')]);
+
+	if (map.user_id !== player.id) {
+		if (!map.is_public) return sendResponse(ws, 'error', 'error', [ws.i18n.t('pacman.map_not_public')]);
+	}
+
+	if (!map.is_valid) return sendResponse(ws, 'error', 'error', [ws.i18n.t('pacman.map_invalid')]);
+	player.room.settings.map = map;
+	if (PacmanMap.validateMap(player.room.settings.map.map).is_valid === false) {
+		return sendResponse(ws, 'error', 'error', [ws.i18n.t('pacman.map_invalid')]);
+	}
+	sendResponse(ws, 'setRoomMap', 'success', [ws.i18n.t('pacman.map_set')], { map: player.room.settings.map });
+	StateManager.sendRooms();
+}
+
+export const getStatisticsForUser = async (request: FastifyRequest, reply: FastifyReply) => {
+	const stats = await pacmanModel.getStatisticsForUser(request.session.user.id);
+	return reply.status(200).send({ success: true, stats });
+}
+
 export default {
 	sendResponse,
 	getAllMapForUser,
 	insertOrUpdateMap,
 	deleteMap,
+	searchMap,
 	createTestRoom,
 	handleAddUser,
 	handleCreateRoom,
@@ -246,5 +281,7 @@ export default {
 	handleSetOwnerRoom,
 	handleLaunchRoom,
 	handlePlayerMove,
-	handleJoinRoomSpectator
+	handleJoinRoomSpectator,
+	setRoomMap,
+	getStatisticsForUser
 };

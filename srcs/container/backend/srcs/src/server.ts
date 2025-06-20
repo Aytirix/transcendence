@@ -14,9 +14,11 @@ import addFormats from 'ajv-formats';
 import ajvErrors from 'ajv-errors';
 import dotenv from 'dotenv';
 import pacmanRoutes from './routes/pacmanRoutes';
+import fileRoutes from './routes/fileRoutes';
+
 dotenv.config();
 
-const app = fastify({ trustProxy: true });
+const app = fastify({ trustProxy: true, bodyLimit: 5242880 }); // 5MB
 
 (async () => { await setupSwagger(app); })();
 
@@ -60,17 +62,22 @@ app.register(fastifyHelmet, {
 app.register(fastifyCors, {
 	origin: (origin, cb) => cb(null, true),
 	methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+	allowedHeaders: ['Content-Type', 'Authorization', 'Cookie'],
 	credentials: true,
+	preflightContinue: false,
+	optionsSuccessStatus: 204,
 });
 
 // Enregistrement des routes
 app.register(userRoutes);
 app.register(pacmanRoutes);
+app.register(fileRoutes);
 
 // Intégration de WebSocket
 initWebSocket(app);  // Appel de la fonction initWebSocket
 
 app.get('*', (req, res) => {
+	console.error(`404 Not Found: ${req.raw.url}`);
 	res.status(404).send('{ "success": false, "message": "The endpoint you are looking for might have been removed, had its name changed, or is temporarily unavailable." }');
 });
 

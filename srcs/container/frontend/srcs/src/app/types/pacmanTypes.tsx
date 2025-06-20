@@ -34,6 +34,7 @@ export interface state {
 	game: {
 		launch: boolean;
 		frightenedState: {
+			active: boolean;
 			remainingTime: number;
 		}
 		isSpectator: boolean;

@@ -29,15 +29,15 @@ export const Login = async (email: string, password: string): Promise<User | nul
 	};
 };
 
-export const Register = async (email: string, username: string, password: string, lang: string): Promise<User> => {
+export const Register = async (email: string, username: string, password: string, avatar: string, lang: string): Promise<User> => {
 	let hashedPassword = null;
-	if (password)
-	{
+	if (password) {
 		hashedPassword = await tools.hashPassword(password);
 	}
+
 	const result: any = await executeReq(
-		'INSERT INTO users (email, username, password, lang) VALUES (?, ?, ?, ?)',
-		[email, username, hashedPassword, lang],
+		'INSERT INTO users (email, username, password, avatar, lang) VALUES (?, ?, ?, ?, ?)',
+		[email, username, hashedPassword, avatar, lang],
 	);
 	if (result.affectedRows === 0) {
 		throw new Error('Failed to register user');
@@ -46,12 +46,13 @@ export const Register = async (email: string, username: string, password: string
 		id: result.insertId,
 		username,
 		email,
+		avatar,
 		lang,
 	};
 };
 
 export const emailAlreadyExists = async (email: string): Promise<boolean> => {
-	const result: any = await executeReq('SELECT * FROM users WHERE email = ?', [email]);
+	const result: any = await executeReq('SELECT email FROM users WHERE email = ? UNION SELECT email FROM verification_codes WHERE email = ? LIMIT 1', [email, email]);
 	if (result.length === 0) {
 		return false;
 	}
@@ -59,7 +60,7 @@ export const emailAlreadyExists = async (email: string): Promise<boolean> => {
 };
 
 export const usernameAlreadyExists = async (username: string): Promise<boolean> => {
-	const result: any = await executeReq('SELECT * FROM users WHERE username = ?', [username]);
+	const result: any = await executeReq('SELECT username FROM users WHERE username = ? UNION SELECT username FROM verification_codes WHERE username = ? LIMIT 1', [username, username]);
 	if (result.length === 0) {
 		return false;
 	}
