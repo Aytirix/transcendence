@@ -1,6 +1,5 @@
 import path from 'path';
-import { Connection } from 'mysql2';
-const mysql = require('mysql2');
+import mysql, { Connection } from 'mysql2';
 require('dotenv').config();
 
 
@@ -18,7 +17,7 @@ require('dotenv').config();
  * - `ER_DBACCESS_DENIED_ERROR` : Accès refusé à la base de données.
  * - Toute autre erreur renvoyée par MySQL.
  */
-async function createDbConnection() {
+async function createDbConnection(): Promise<mysql.Connection> {
 	return new Promise((resolve, reject) => {
 		const db = mysql.createConnection({
 			host: process.env.DB_HOST,
@@ -82,7 +81,7 @@ async function executeReq(req: string, data: Array<string | number> = []) {
 	return new Promise(async (resolve, reject) => {
 		try {
 			db = await createDbConnection();
-			db.query(req, data, (err: { sqlMessage: any; }, results: unknown) => {
+			db.query(req, data, (err: { sqlMessage: any; }, results: any) => {
 				if (err) {
 					reject(err.sqlMessage);
 				} else {
@@ -90,6 +89,7 @@ async function executeReq(req: string, data: Array<string | number> = []) {
 				}
 			});
 		} catch (error) {
+			console.error('Database connection error:', error);
 			reject(error);
 		}
 	}).finally(async () => {

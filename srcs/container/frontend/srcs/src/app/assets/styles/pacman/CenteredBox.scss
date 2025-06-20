@@ -1,5 +1,59 @@
 @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+@import './general_pacman.scss';
 
+.home-button {
+    position: fixed;          // Changed back to fixed for consistent left positioning
+    top: 5px;
+    left: 4px;
+    z-index: 1000;           // Increased z-index to ensure visibility
+    min-height: 52px;         // Added minimum height
+    width: fit-content;       // Added width control
+    display: block;           // Ensure block display
+    pointer-events: all;     // Ensure clickability
+
+    .home-icon-btn {
+        display: flex;
+        align-items: center;
+        gap: 0.4em;
+        border: none;
+        background: rgba(20, 20, 20, 0.75);
+        padding: 8px 12px;
+        cursor: pointer;
+        border-radius: 2em;
+        box-shadow: 0 2px 8px #0003;
+        transition: box-shadow 0.2s, background 0.2s, transform 0.2s;
+        touch-action: manipulation;
+        height: 100%;         // Ensure full height usage
+
+        &:hover, &:focus {
+            background: rgba(34, 34, 34, 0.92);
+            box-shadow: 0 4px 16px #ffd70055, 0 2px 8px #0005;
+            transform: translateY(-2px) scale(1.04);
+            outline: none;
+        }
+
+        .home-label {
+            color: #ffd700;
+            font-weight: 600;
+            font-size: 1em;
+            letter-spacing: 0.01em;
+            padding-left: 0.15em;
+            opacity: 0.85;
+            transition: color 0.2s, opacity 0.2s;
+            @media (max-width: 600px) {
+                display: none;
+            }
+        }
+        img {
+            display: block;
+            width: 38px;
+			height: 38px;
+            border-radius: 50%;
+            transition: filter 0.2s, transform 0.2s;
+            filter: drop-shadow(0 0 2px #ffd70055);
+        }
+    }
+}
 
 .centered-box {
 	display: grid;
@@ -7,35 +61,36 @@
 	grid-template-rows: auto 1fr;
 	height: 100vh;
 	width: 100vw;
-	color: white;
+	color: #f3f3f3;
 	overflow: hidden;
 	font-family: 'Press Start 2P', cursive;
-		
+	z-index: 10;
+    position: relative;
+    box-sizing: border-box;
 
 	.title-container {
 		padding: 2rem 0;
-		
 		text-align: center;
+		h1 {
+			font-size: 3rem;
+			color: #FFEE00;
+			text-shadow: 0 0 15px rgba(255, 238, 0, 0.7);
+			animation: neon-pulse 1.5s infinite alternate;
+		}
 	}
 
-	.title-container h1 {
-		font-size: 3rem;
-		color: #FFEE00;
-		text-shadow: 0 0 15px rgba(255, 238, 0, 0.7);
-		animation: neon-pulse 1.5s infinite alternate;
-	}
 
 	.menu-button {
 		font-size: 0.8rem;
 		cursor: pointer;
 		margin: 0.1rem;
+		color: #0A0A0A;
+
 		//background: #FFF;
-		
 		&:hover {
 			background-color: #FFEE00;
 			color: #0A0A0A;
 			box-shadow: 0 0 15px, #FFEE00;
-
 			transition: all 0.3s ease;
 			border: none;
 		}

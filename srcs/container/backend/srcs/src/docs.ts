@@ -8,35 +8,12 @@ export async function setupSwagger(app: FastifyInstance) {
 		await app.register(fastifySwagger, {
 			openapi: {
 				info: {
-					title: 'Mon API',
+					title: 'Transcendence API',
 					version: '1.0.0',
-					description: 'Documentation auto-générée',
+					description: 'Documentation API pour l\'application Transcendence',
 				},
-				servers: [
-					{
-						url: 'https://localhost:7000/',
-						description: 'Serveur de développement',
-					},
-					{
-						url: 'https://c4r2p1:7000/',
-						description: 'Serveur de développement',
-					}
-				],
-				components: {
-					securitySchemes: {
-						apiKeyAuth: {
-							name: 'sessionId',
-							in: 'cookie',
-							type: 'apiKey',
-							description: 'Passez le token d\'authentification dans l\'en-tête de la requête',
-						},
-					},
-				},
-				security: [
-					{
-						apiKeyAuth: [],
-					},
-				],
+				// Les serveurs seront configurés dynamiquement dans transformSpecification
+				servers: [],
 			},
 		});
 
@@ -45,14 +22,31 @@ export async function setupSwagger(app: FastifyInstance) {
 			routePrefix: '/docs',
 			uiConfig: {
 				docExpansion: 'list',
-				deepLinking: true, // Permet les liens profonds vers des sections spécifiques de la doc
-				defaultModelsExpandDepth: -1, // Cache les modèles par défaut
+				deepLinking: true,
+				defaultModelsExpandDepth: -1,
 			},
-			staticCSP: true, // Active le CSP pour une sécurité accrue
-			transformSpecification: (swaggerObject) => {
-				// Transformation du Swagger pour ajouter des informations supplémentaires
-				swaggerObject.info.version = '1.0.0'; // Version dynamique si besoin
-				return swaggerObject;
+			staticCSP: false,
+			// Configuration pour corriger les chemins des ressources statiques
+			theme: {
+				title: 'Transcendence API Documentation'
+			},
+			transformStaticCSP: (header: string) => header,
+			transformSpecification: (swaggerObject: any, request: any) => {
+				// Créer une copie modifiable de l'objet
+				const modifiedSpec = JSON.parse(JSON.stringify(swaggerObject));
+				
+				// Construire l'URL de base dynamiquement
+				const protocol = request.headers['x-forwarded-proto'] || 'https';
+				const host = request.headers['x-forwarded-host'] || request.headers.host;
+				const baseUrl = `${protocol}://${host}/api`;
+				
+				modifiedSpec.servers = [
+					{
+						url: baseUrl,
+						description: 'API Server',
+					},
+				];
+				return modifiedSpec;
 			},
 		});
 	} catch (err) {

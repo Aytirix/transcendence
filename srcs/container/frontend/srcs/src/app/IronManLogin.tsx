@@ -1,103 +1,106 @@
 import { Link } from 'react-router-dom';
-import { useLanguage } from '../contexts/LanguageContext';
 import React, { useState } from 'react';
 import ApiService from '../api/ApiService';
-import './assets/styles/IronManTheme.css';
 import { useNavigate } from 'react-router-dom';
+import { useLanguage } from '../contexts/LanguageContext';
+
 import GoogleLoginButton from './components/GoogleLoginButton';
-// import { User } from '../app/types/userTypes';
+import LanguageToggle from './components/LanguageToggle';
 
 interface LoginSchema {
-  email: string;
-  password: string;
+	email: string;
+	password: string;
 }
 
 const IronManLogin: React.FC = () => {
-  const [form, setForm] = useState<LoginSchema>({ email: '', password: '' });
+	const { t, currentLanguage } = useLanguage();
+	const [form, setForm] = useState<LoginSchema>({ email: '', password: '' });
+	const [loading, setLoading] = useState(false);
+	const [error, setError] = useState<string | null>(null);
+	const navigate = useNavigate();
 
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const navigate = useNavigate();
+	const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+		setForm({ ...form, [e.target.name]: e.target.value });
+	};
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
-  };
+	const handleSubmit = async (e: React.FormEvent) => {
+		e.preventDefault();
+		setError(null);
+		setLoading(true);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError(null);
-    setLoading(true);
+		try {
+			console.log("test0");
+			const resp: any = await ApiService.post('/login', form) as ApiService;
+			console.log("test1", form);
+			console.log(resp.ok);
+			if (!resp.ok) {
+				console.log("test2");
+				console.log(resp.ok);
+				const data = await resp.json();
+				setError(data.message || 'Erreur lors de la connexion.');
+			} else {
+				navigate('/');
+			}
 
-    try {
-      console.log("test0");
-      const resp = await ApiService.post('/login', form) as ApiService;
-      console.log("test1");
-      console.log(resp.ok);
-      if (!resp.ok) {
-        console.log("test2");
-        console.log(resp.ok);
-        const data = await resp.json();
-        setError(data.message || 'Erreur lors de la connexion.');
-      } else {
-        navigate('/');
-      }
-      
-      console.log("test4");
-    } catch (err) {
-      setError('Erreur réseau ou serveur.');
-    } finally {
-      setLoading(false);
-    }
-  };
+			console.log("test4");
+		} catch (err) {
+			setError('Erreur réseau ou serveur.');
+		} finally {
+			setLoading(false);
+		}
+	};
 
-  return (
-    <div className="ironman-container">
-      <form className="ironman-card" onSubmit={handleSubmit}>
-        <div className="ironman-icon">
-          {/* Iron Man SVG Mini-Face */}
-          <svg width="54" height="54" viewBox="0 0 54 54">
-            <ellipse cx="27" cy="27" rx="25" ry="25" fill="#c20000" stroke="#ffd700" strokeWidth="2"/>
-            <rect x="15" y="20" width="24" height="18" rx="6" fill="#ffd700"/>
-            <rect x="21" y="31" width="3" height="7" rx="1.5" fill="#c20000"/>
-            <rect x="30" y="31" width="3" height="7" rx="1.5" fill="#c20000"/>
-            <rect x="21" y="24" width="12" height="3" fill="#222"/>
-          </svg>
-        </div>
-        <h2 className="ironman-title">Connexion</h2>
-        <input
-          className="ironman-input"
-          name="email"
-          placeholder="E-mail"
-          value={form.email}
-          onChange={handleChange}
-          required
-        />
-        <input
-          className="ironman-input"
-          type="password"
-          name="password"
-          placeholder="Mot de passe"
-          value={form.password}
-          onChange={handleChange}
-          required
-        />
-        <button className="ironman-btn" type="submit" disabled={loading}>
-          {loading ? "Connexion..." : "Se connecter"}
-        </button>
-        {/* <a href="http://localhost:3000/auth/google">
-          <img src="https://developers.google.com/identity/images/btn_google_signin_dark_normal_web.png" alt="Sign in with Google" />
-        </a> */}
-        {error && <div style={{ color: '#c20000', marginTop: '16px', textAlign: 'center' }}>{error}</div>}
-        <span className="ironman-switch-link">
-          <GoogleLoginButton />
-          <Link to="/register">Nouveau héros ? Créer un compte</Link>
-        </span>
-      </form>
-    </div>
-  );
+	return (
+		<div className="min-h-screen flex items-center justify-center relative">
+			{/* Bouton de changement de langue en haut à droite */}
+			<div className="absolute top-4 right-4">
+				<LanguageToggle />
+			</div>
+
+			<form className=" " onSubmit={handleSubmit}>
+				<fieldset className="fieldset bg-base-200 border-base-300 rounded-box w-xs border p-4">
+					<legend className="fieldset-legend">{t('login.title')}</legend>
+
+					<label className="label">{t('login.email')}</label>
+					<input
+						type="text"
+						name="email"
+						className="input input-a"
+						placeholder={`  ${t('login.email')}`}
+						onChange={handleChange}
+						required
+					/>
+
+					<label className="label">{t('login.password')}</label>
+					<input
+						type="password"
+						name="password"
+						className="input input-a"
+						placeholder={`  ${t('login.password')}`}
+						onChange={handleChange}
+						required
+					/>
+
+					<button className="btn btn-neutral mt-4 text-black" type="submit" disabled={loading}>
+						{loading ? t('login.loading') : t('login.submit')}
+					</button>
+					
+					<div className="flex justify-center mt-4">
+						<GoogleLoginButton textbtn="login" />
+					</div>
+
+					<div className="w-full justify-center items-center">
+						<Link to="/register" className="w-full justify-center items-center">
+							{t('login.registerLink')}
+						</Link>
+					</div>
+					{error && <div style={{ color: '#c20000', marginTop: '16px', textAlign: 'center' }}>{error}</div>}
+				</fieldset>
+			</form>
+		</div>
+	);
 };
 
 export default IronManLogin;
-
 
 

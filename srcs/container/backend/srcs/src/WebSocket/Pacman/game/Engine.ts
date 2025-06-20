@@ -4,6 +4,7 @@ import { WebSocket } from 'ws';
 import PacmanMap from './map/Map';
 import Ghost from "./Character/Ghost";
 import Pacman from "./Character/Pacman";
+import modelPacman from "@models/modelPacman";
 
 export const TILE_SIZE = 50;
 export const PACMAN_SPEED = 3;
@@ -27,6 +28,7 @@ export default class Engine {
 	private trainingLastPause = Date.now() - 10000; // Pour éviter de bloquer l'IA au démarrage
 	private win: 'pacman' | 'ghosts' | null = null;
 	private reward: number = 0;
+	private room: room | null = null;
 
 	// Ajout des propriétés pour le mode effrayé
 	private isFrightened: boolean = false;
@@ -37,6 +39,7 @@ export default class Engine {
 
 	constructor(room: room, initialPlayerSockets: Map<number, WebSocket>) {
 
+		this.room = room;
 		this.map = new PacmanMap(room.settings.map.map);
 		this.sockets = initialPlayerSockets;
 
@@ -59,16 +62,14 @@ export default class Engine {
 	 * Ajout d'un joueur au moteur
 	 */
 	private addPlayers(players: player[]): void {
-		// Déterminer les personnages disponibles: Pacman et fantômes
 		const characters = [CharacterType.Pacman, CharacterType.Blinky, CharacterType.Inky, CharacterType.Pinky, CharacterType.Clyde];
 		const usedCharacters = new Set<string>(
 			Array.from(this.players.values()).map(p => p.nameChar)
 		);
 
-		// Si c'est le mode entraînement, on force PacmanAI à être Pacman
-		if (this.trainingAI) usedCharacters.add(CharacterType.Pacman);
+		let realPlayer = Array.from(players.values()).filter(p => p.id > 0);
+		realPlayer = realPlayer.sort(() => Math.random() - 0.5);
 
-		// Filtrer les personnages disponibles
 		let availableCharacters = characters.filter(c => !usedCharacters.has(c));
 
 		players.forEach(p => {
@@ -76,22 +77,56 @@ export default class Engine {
 			let spawns: vector2[] = [];
 			let player: Ghost | Pacman;
 			let characterType: CharacterType;
-			if ((this.trainingAI && p.username.startsWith('PacmanAI')) || p.username === 'user1') {
+
+			// CORRECTION 1 : Vérifier que realPlayer n'est pas vide
+			if ((this.trainingAI && p.username.startsWith('PacmanAI')) ||
+				(realPlayer.length > 0 && p.username === realPlayer[0].username)) {
+
 				characterType = CharacterType.Pacman;
 				spawns = this.map.getSpawnPositions()[CharacterType.Pacman];
-				spawnIndex = this.players.size % availableCharacters.length;
+
+				// CORRECTION 2 : Vérifier que spawns existe
+				if (!spawns || spawns.length === 0) {
+					console.error(`No spawn positions found for Pacman`);
+					return;
+				}
+
+				// CORRECTION 3 : Utiliser spawns.length au lieu de availableCharacters.length
+				spawnIndex = this.players.size % spawns.length;
 				availableCharacters = availableCharacters.filter(c => c !== CharacterType.Pacman);
 			} else {
-				const randomIndex = Math.floor(Math.random() * availableCharacters.length);
-				characterType = availableCharacters[randomIndex];
+				// CORRECTION 4 : Vérifier que availableCharacters n'est pas vide
+				if (availableCharacters.length === 0) {
+					console.error('No available characters left, falling back to default');
+					// Fallback vers un personnage par défaut
+					characterType = CharacterType.Blinky;
+				} else {
+					const randomIndex = Math.floor(Math.random() * availableCharacters.length);
+					characterType = availableCharacters[randomIndex];
+				}
 
 				spawns = this.map.getSpawnPositions()[characterType];
+
+				// CORRECTION 5 : Vérifier que spawns existe
+				if (!spawns || spawns.length === 0) {
+					console.error(`No spawn positions found for character: ${characterType}`);
+					return;
+				}
+
 				spawnIndex = this.players.size % spawns.length;
 				availableCharacters = availableCharacters.filter(c => c !== characterType);
 			}
 
+			// CORRECTION 6 : Double vérification avant gridToPixel
+			if (!spawns[spawnIndex]) {
+				console.error(`Spawn position is undefined for character ${characterType} at index ${spawnIndex}`);
+				return;
+			}
+
 			// Conversion grille → pixel en centrant
 			const position = this.gridToPixel(spawns[spawnIndex]);
+
+			usedCharacters.add(characterType);
 
 			if (characterType === CharacterType.Pacman) player = new Pacman(p, position, characterType);
 			else player = new Ghost(p, position, characterType, this.map);
@@ -597,8 +632,9 @@ export default class Engine {
 			// Afficher un message de victoire
 			this.win = 'pacman';
 			const pacmanId = Array.from(this.players.values()).find(p => p instanceof Pacman)?.player.id;
-			this.reward += 500;
+			this.reward += 50000;
 			this.pause("Game finished!\nPacman wins!");
+			this.addStatistics();
 			this.broadcastState();
 
 			// Après un délai, marquer la partie comme terminée
@@ -627,6 +663,7 @@ export default class Engine {
 				if (ghost.isFrightened && !ghost.isReturningToSpawn) {
 					this.pacmanKillFrightened += 1;
 					ghost.respawn();
+					ghost.death_count += 1;
 					pacman.score += 200 * this.pacmanKillFrightened;
 					this.reward += 200 * this.pacmanKillFrightened;
 					ghost.score -= 100;
@@ -641,6 +678,7 @@ export default class Engine {
 	private deadPacman(pacman: Pacman, ghost: Ghost): void {
 		this.stop();
 		pacman.life -= 1;
+		pacman.death_count += 1;
 		if (pacman.life >= 0) {
 			const pacmanId = Array.from(this.players.values()).find(p => p instanceof Pacman)?.player.id;
 			this.reward += -200;
@@ -669,6 +707,7 @@ export default class Engine {
 			const pacmanId = Array.from(this.players.values()).find(p => p instanceof Pacman)?.player.id;
 			this.reward += -500;
 			this.pause("Game finished! Ghosts win!");
+			this.addStatistics();
 			this.win = 'ghosts';
 			this.broadcastState();
 			if (this.trainingAI) {
@@ -679,6 +718,15 @@ export default class Engine {
 				this.stop('Game finished! Ghosts win!');
 				this.Finished = true;
 			}, 5000);
+		}
+	}
+
+	private addStatistics() {
+		if (this.room.settings.map.id === -1) {
+			for (const player of this.players.values()) {
+				const win = player instanceof Pacman ? (this.win === 'pacman') : (this.win === 'ghosts');
+				modelPacman.insertStatistic(player.player.id, "P" === player.nameChar ? "Pacman" : "Ghost", player.score, player.death_count, win);
+			}
 		}
 	}
 
@@ -812,12 +860,12 @@ export default class Engine {
 		if (pacmanPlayer) {
 			const ws = this.sockets.get(pacmanPlayer.player.id);
 			if (ws && ws.readyState === WebSocket.OPEN) {
-				console.log(`Broadcasting state to AI pause: ${this.isPaused}, finished: ${this.Finished} diff: ${diff}ms`);
+				// console.log(`Broadcasting state to AI pause: ${this.isPaused}, finished: ${this.Finished} diff: ${diff}ms`);
 				ws.send(JSON.stringify(state));
 			} else {
-				console.warn(`WebSocket is not open for player ID ${pacmanPlayer.player.id}, removing from sockets.`);
+				// console.warn(`WebSocket is not open for player ID ${pacmanPlayer.player.id}, removing from sockets.`);
 				this.sockets.delete(pacmanPlayer.player.id);
-				this.stop(`WebSocket closed for player ID ${pacmanPlayer.player.id}, stopping the game.`);
+				// this.stop(`WebSocket closed for player ID ${pacmanPlayer.player.id}, stopping the game.`);
 				this.Finished = true;
 			}
 		}

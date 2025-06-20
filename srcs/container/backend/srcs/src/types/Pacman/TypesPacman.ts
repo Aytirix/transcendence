@@ -76,3 +76,32 @@ export interface map {
 	updated_at?: Date;
 	created_at?: Date;
 }
+
+export interface userStatsPacman {
+	pacman: {
+		games_played: number;
+		games_won: number;
+		games_lost: number;
+		win_rate: number;
+		best_score: number;
+		average_score: number;
+	};
+	ghosts: {
+		games_played: number;
+		games_won: number;
+		games_lost: number;
+		win_rate: number;
+		best_score: number;
+		average_score: number;
+	};
+	record_pacman: {
+		id: number;
+		username: string;
+		score: number;
+	}[];
+	record_ghost: {
+		id: number;
+		username: string;
+		score: number;
+	}[];
+}

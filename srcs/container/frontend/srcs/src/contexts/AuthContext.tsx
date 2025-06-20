@@ -7,11 +7,13 @@ import { User } from '../app/types/userTypes';
 interface AuthContextType {
 	user: User | null;
 	loading: boolean;
+	setUser: React.Dispatch<React.SetStateAction<User | null>>;
 }
 
 const IsAuthenticated = createContext<AuthContextType>({
 	user: null,
-	loading: true
+	loading: true,
+	setUser: () => {},
 });
 
 export const useAuth = (): AuthContextType => {
@@ -37,10 +39,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 				const res = await ApiService.get('/isAuth');
 				if (isMounted) {
 					setUser(res.user)
-					if (res.isAuthenticated) setLanguage(res.user.lang);
+					if (res.isAuthenticated) setLanguage(res.user.lang, false);
 					if (res.isAuthenticated && (window.location.pathname == "/login" || window.location.pathname == "/register")) {
 						navigate('/');
-					} else if (!res.isAuthenticated && (window.location.pathname !== "/login" && window.location.pathname !== "/register")) {
+					} else if (!res.isAuthenticated && (!["/login", "/register", "/auth/checkCode"].includes(window.location.pathname))) {
 						navigate('/login');
 					}
 				}
@@ -62,7 +64,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 	}, [navigate]);
 
 	return (
-		<IsAuthenticated.Provider value={{ user, loading }}>
+		<IsAuthenticated.Provider value={{ user, loading, setUser }}>
 			{loading ? (
 				<></>
 			) : (

@@ -25,9 +25,17 @@ async function PacManWebSocket(ws: WebSocket, user: User): Promise<void> {
 		room: room,
 		isSpectator: false,
 	};
+
 	if (room) {
 		StateManager.RoomManager.updatePlayerInRoom(room, player);
-		room.engine?.updatePlayer(player, ws);
+		if (room.engine) {
+			room.engine.updatePlayer(player, ws);
+		} else {
+			StateManager.addPlayer(ws, player);
+			const playerMap = new Map<number, WebSocket>();
+			playerMap.set(player.id, ws);
+			StateManager.sendRooms(playerMap);
+		}
 	}
 
 	controllerPacman.handleAddUser(ws, player);
@@ -96,6 +104,12 @@ async function PacManWebSocket(ws: WebSocket, user: User): Promise<void> {
 				break;
 			case 'deleteMap':
 				controllerPacman.deleteMap(ws, player.id, text);
+				break;
+			case 'searchMap':
+				controllerPacman.searchMap(ws, player, text);
+				break;
+			case 'setRoomMap':
+				controllerPacman.setRoomMap(ws, player, text);
 				break;
 			default:
 				ws.send(JSON.stringify({ action: 'error', result: 'error', notification: 'Action non reconnue' })); // to close

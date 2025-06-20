@@ -51,7 +51,7 @@ export const register = {
 			username: { type: 'string', minLength: 3, maxLength: 15, pattern: '^[a-zA-Z0-9]+$' },
 			confirmPassword: { type: 'string', minLength: 3 },
 			// confirmPassword: { type: 'string', minLength: 8, maxLength: 25, pattern: '^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,25}$' },
-			lang: { type: 'string', enum: ['fr', 'en', 'it'] },
+			lang: { type: 'string', enum: ['fr', 'en', 'it', 'es'] },
 		},
 		required: [...login.body.required, 'username', 'confirmPassword'],
 		errorMessage: {
@@ -79,7 +79,6 @@ export const update = {
 	body: {
 		properties: {
 			...register.body.properties,
-			avatar: { type: 'string', format: 'uri', nullable: true },
 		},
 		required: [],
 		errorMessage: {
@@ -87,6 +86,35 @@ export const update = {
 				...register.body.errorMessage.properties,
 			},
 		}
+	},
+	response: {
+		200: {
+			description: 'Mise à jour réussie',
+			type: 'object',
+			properties: {
+				message: { type: 'string' },
+				user: {
+					type: 'object',
+					properties: {
+						id: { type: 'number', minLength: 3, maxLength: 5 },
+						email: { type: 'string', format: 'email' },
+						username: { type: 'string', minLength: 3, maxLength: 15, pattern: '^[a-zA-Z0-9]+$' },
+						lang: { type: 'string', enum: ['fr', 'en', 'it', 'es'] },
+						avatar: { type: 'string' },
+					},
+					required: ['id', 'email', 'username', 'lang', 'avatar'],
+				},
+			},
+			required: ['user'],
+		},
+		400: {
+			description: 'Format des données incorrect',
+			...messageResponse,
+		},
+		409: {
+			description: 'Conflit de données (email ou nom d\'utilisateur déjà utilisé)',
+			...messageResponse,
+		},
 	},
 }
 
@@ -100,7 +128,6 @@ export const logout = {
 		}
 	},
 }
-
 
 export const isAuth = {
 	description: 'Vérification de l\'authentification. Appeler depuis le frontend pour savoir si l\'utilisateur est connecté.',
@@ -117,8 +144,8 @@ export const isAuth = {
 						id: { type: 'number', minLength: 3, maxLength: 5 },
 						email: { type: 'string', format: 'email' },
 						username: { type: 'string', minLength: 3, maxLength: 15, pattern: '^[a-zA-Z0-9]+$' },
-						lang: { type: 'string', enum: ['fr', 'en', 'it'] },
-						avatar: { type: 'string', format: 'uri' },
+						lang: { type: 'string', enum: ['fr', 'en', 'it', 'es'] },
+						avatar: { type: 'string' },
 					},
 				},
 			},
@@ -158,8 +185,8 @@ export const authGoogleCallback = {
 						id: { type: 'number', minLength: 3, maxLength: 5 },
 						email: { type: 'string', format: 'email' },
 						username: { type: 'string', minLength: 3, maxLength: 15, pattern: '^[a-zA-Z0-9]+$' },
-						lang: { type: 'string', enum: ['fr', 'en', 'it'] },
-						avatar: { type: 'string', format: 'uri' },
+						lang: { type: 'string', enum: ['fr', 'en', 'it', 'es'] },
+						avatar: { type: 'string' },
 					},
 				},
 			},
@@ -180,11 +207,84 @@ export const authGoogleCallback = {
 	},
 };
 
+export const UploadAvatar = {
+	description: 'Upload d\'avatar utilisateur',
+	tags: ['user'],
+	consumes: ['multipart/form-data'],
+	body: {
+		properties: {
+			avatar: {
+				type: 'string',
+				format: 'binary'
+			}
+		},
+		required: ['avatar']
+	},
+	response: {
+		200: {
+			description: 'Avatar uploadé avec succès',
+			type: 'object',
+			properties: {
+				success: { type: 'boolean', const: true },
+				message: { type: 'string' },
+				url: { type: 'string', format: 'uri' },
+				fileName: { type: 'string' },
+			}
+		},
+		400: {
+			description: 'Fichier invalide',
+			...messageResponse,
+		},
+		401: {
+			description: 'Non authentifié',
+			...messageResponse,
+		},
+	},
+};
+
+export const verifyCode = {
+	description: 'Vérification d\'un code',
+	tags: ['Authentification'],
+	body: {
+		type: 'object',
+		properties: {
+			code: { type: 'string', minLength: 25 },
+		},
+		required: ['code'],
+		additionalProperties: false,
+		errorMessage: {
+			required: {
+				code: 'errors.code.required',
+			},
+			properties: {
+				code: 'errors.code.invalid',
+			},
+			additionalProperties: 'errors.NoadditionalProperties',
+		}
+	},
+	response: {
+		200: {
+			description: 'Code vérifié avec succès',
+			...messageResponse,
+		},
+		400: {
+			description: 'Code invalide',
+			...messageResponse,
+		},
+		401: {
+			description: 'Non autorisé',
+			...messageResponse,
+		},
+	},
+};
+
 export default {
 	login,
 	register,
 	update,
 	logout,
 	isAuth,
-	authGoogleCallback
+	authGoogleCallback,
+	UploadAvatar,
+	verifyCode,
 };

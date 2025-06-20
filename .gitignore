@@ -4,6 +4,8 @@
 **/dist
 srcs/container/backend/srcs/logs
 srcs/build/**
+PacmanAI/__pycache__
+PacmanAI/venv
 srcs/container/backend/srcs/sqlite/sessions.sqlite
-PacmanAI/venv/bin/activate.csh
+srcs/container/backend/srcs/sqlite/transcendence.sqlite
 PacmanAI/venv

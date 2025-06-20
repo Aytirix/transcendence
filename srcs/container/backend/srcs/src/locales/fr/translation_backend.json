@@ -4,6 +4,11 @@
 		"wsError": "Erreur WebSocket",
 		"JSONParseError": "Veuillez envoyer une réponse au format JSON.",
 		"NoadditionalProperties": "Aucune propriété supplémentaire n'est autorisée.",
+		"code": {
+			"required": "Le code de vérification est requis.",
+			"invalid": "Le code de vérification est invalide ou a expiré.",
+			"notMatching": "Le code de vérification ne correspond pas."
+		},
 		"user": {
 			"noChanges": "Aucun changement a été détecté."
 		},
@@ -24,7 +29,7 @@
 		},
 		"lang": {
 			"required": "La langue est requise.",
-			"invalid": "La langue doit être fr, en ou es."
+			"invalid": "La langue doit être fr, en, it ou es."
 		}
 	},
 	"login": {
@@ -37,11 +42,20 @@
 		"success": "Vous êtes maintenant connecté.",
 		"alreadyLoggedIn": "Vous êtes déjà connecté.",
 		"notLoggedIn": "Veuillez vous connecter pour accéder à cette ressource.",
-		"welcome": "Bienvenue !",
+		"welcome": "Merci de consulter votre e-mail pour valider votre compte.",
 		"logout": "Déconnexion réussie."
 	},
 	"user": {
-		"updateSuccess": "Utilisateur mis à jour avec succès."
+		"updateSuccess": "Utilisateur mis à jour avec succès.",
+		"file": {
+			"missing": "Aucun fichier reçu.",
+			"tooLarge": "Fichier trop volumineux (max 3Mo) !",
+			"invalidFormat": "Format de fichier invalide. Formats acceptés : JPEG, PNG, WEBP.",
+			"uploadSuccess": "Avatar mis à jour avec succès.",
+			"uploadError": "Erreur lors de l'upload de l'avatar.",
+			"failedSave": "Échec de l'enregistrement de l'avatar dans la base de données.",
+			"invalidname": "Le nom de l'avatar est invalide. Veuillez choisir parmi les avatars prédéfinis."
+		}
 	},
 	"pacman": {
 		"name_required": "Veuillez spécifier un nom de salle",
@@ -126,5 +140,14 @@
 		"notBlocked": "L'utilisateur {{username}} n'est pas bloqué",
 		"noRelationWithUser": "Cet utilisateur n'a pas de lien avec vous",
 		"cannotUnblockUserWhoBlockedYou": "Vous ne pouvez pas débloquer un utilisateur qui vous a bloqué"
+	},
+	"email": {
+		"verificationCode": {
+			"subjectCreateAccount": "Transcendence - Confirmez la création de votre compte",
+			"subjectUpdateEmail": "Transcendence - Confirmez votre nouvelle adresse e-mail",
+			"CreateAccountOk": "Votre compte a été créé avec succès.",
+			"LoginAccountOk": "Vous êtes maintenant connecté.",
+			"UpdateEmailOk": "Votre adresse e-mail a été mise à jour avec succès."
+		}
 	}
 }

@@ -4,6 +4,8 @@ import fastifyCookie from '@fastify/cookie';
 import dotenv from 'dotenv';
 import sqlite3 from 'sqlite3';
 import crypto from 'crypto';
+import fs from 'fs';
+import path from 'path';
 import { encrypt, decrypt } from '@tools';
 import { sessionPayload } from '@types';
 
@@ -13,10 +15,34 @@ let store: CustomSQLiteStore = null;
 
 class CustomSQLiteStore {
 	private db: sqlite3.Database;
+	private dbPath: string = './sqlite/sessions.sqlite';
 
 	constructor() {
-		this.db = new sqlite3.Database('./sqlite/sessions.sqlite', sqlite3.OPEN_READWRITE | sqlite3.OPEN_CREATE);
+		this.ensureDirectoryExists();
+		this.db = new sqlite3.Database(this.dbPath, sqlite3.OPEN_READWRITE | sqlite3.OPEN_CREATE, (err) => {
+			if (err) {
+				console.error('Erreur lors de l\'ouverture de la base de données:', err);
+				// Tentative avec un fichier temporaire si problème de permissions
+				this.dbPath = '/tmp/sessions.sqlite';
+				this.db = new sqlite3.Database(this.dbPath, sqlite3.OPEN_READWRITE | sqlite3.OPEN_CREATE);
+			}
+		});
 		this.initTable();
+	}
+
+	private ensureDirectoryExists() {
+		const dir = path.dirname(this.dbPath);
+		try {
+			if (!fs.existsSync(dir)) {
+				fs.mkdirSync(dir, { recursive: true, mode: 0o755 });
+				console.log(`Répertoire créé : ${dir}`);
+			}
+			fs.accessSync(dir, fs.constants.W_OK);
+		} catch (error) {
+			console.warn(`Impossible de créer/accéder au répertoire ${dir}:`, error.message);
+			console.log('Utilisation du répertoire temporaire /tmp');
+			this.dbPath = './sqlite/tmp_sessions.sqlite';
+		}
 	}
 
 	private initTable() {
@@ -125,6 +151,9 @@ export function decodeSessionId(playload: sessionPayload, sessionId: string): bo
 
 		if (signature !== expectedSignature) {
 			console.warn('Signature invalide pour l\'ID de session');
+			console.warn('ID de session:', sessionId);
+			console.warn('Signature attendue:', expectedSignature);
+			console.warn('Signature reçue:', signature);
 			return null;
 		}
 

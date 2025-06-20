@@ -1,4 +1,194 @@
 {
 	"hello": "Bonjour",
-	"test": "Le site web actuel propose une interface moderne et responsive, permettant à chaque utilisateur de naviguer facilement et de gérer son profil en toute sécurité. Les fonctionnalités de base sont en place : inscription, connexion, et visualisation des informations utilisateurs. Le projet Transcendence, développé à l’école 42, s’intègre à cette plateforme en ajoutant une dimension innovante et interactive. Son objectif principal est de créer, directement sur le site, un jeu de Pong multijoueur accessible à tous, avec gestion en temps réel des parties grâce aux websockets. Il intègre aussi des fonctionnalités sociales comme le chat, les invitations, les tournois entre utilisateurs et la gestion de profils personnalisés. Ce projet permet non seulement d’enrichir l’expérience utilisateur, mais aussi de moderniser le site en promouvant l’échange et la compétition amicale. Enfin, Transcendence offre un environnement propice à la collaboration et à la maîtrise des outils de développement web, tout en renforçant l’esprit communautaire au sein de la plateforme."
+	"test": "Le site web actuel propose une interface moderne et responsive, permettant à chaque utilisateur de naviguer facilement et de gérer son profil en toute sécurité. Les fonctionnalités de base sont en place : inscription, connexion, et visualisation des informations utilisateurs. Le projet Transcendence, développé à l'école 42, s'intègre à cette plateforme en ajoutant une dimension innovante et interactive. Son objectif principal est de créer, directement sur le site, un jeu de Pong multijoueur accessible à tous, avec gestion en temps réel des parties grâce aux websockets. Il intègre aussi des fonctionnalités sociales comme le chat, les invitations, les tournois entre utilisateurs et la gestion de profils personnalisés. Ce projet permet non seulement d'enrichir l'expérience utilisateur, mais aussi de moderniser le site en promouvant l'échange et la compétition amicale. Enfin, Transcendence offre un environnement propice à la collaboration et à la maîtrise des outils de développement web, tout en renforçant l'esprit communautaire au sein de la plateforme.",
+	"logout": "Déconnexion",
+	"profile": "Profile",
+	"username": "nom utilisateur",
+	"password": "Mot de passe",
+	"login": {
+		"title": "Connexion",
+		"email": "Email",
+		"password": "Mot de passe",
+		"submit": "Se connecter",
+		"loading": "Connexion...",
+		"registerLink": "Nouveau héros ? Créer un compte"
+	},
+	"register": {
+		"title": "Inscription",
+		"email": "E-mail",
+		"username": "Nom d'utilisateur",
+		"password": "Mot de passe",
+		"confirmPassword": "Confirmez le mot de passe",
+		"language": "Langue",
+		"submit": "Créer mon compte",
+		"loginLink": "Déjà membre ? Se connecter"
+	},
+	
+	"project_credits": "Crédits du Projet",
+	"project_transcendence": "Projet Transcendence",
+	"home": {
+		"welcome_to_transcendence": "Bienvenue sur Transcendence",
+		"experience_classic_games": "Découvrez des jeux classiques réinventés avec une technologie moderne",
+		"epic_games": "Jeux Épiques",
+		"hours_of_fun": "Heures de Plaisir",
+		"school_spirit": "Esprit 42",
+		
+		"choose_your_adventure": "Choisissez votre aventure",
+		"classic_pong_description": "Le classique jeu de Pong avec une touche moderne et multijoueur",
+		"classic_pacman_description": "L'iconique Pac-Man avec des fonctionnalités améliorées",
+		"multiplayer": "Multijoueur",
+		"real_time": "Temps réel",
+		"competitive": "Compétitif",
+		"retro_arcade": "Arcade rétro",
+		"high_scores": "Meilleurs scores",
+		"nostalgic": "Nostalgique",
+		"play_now": "Jouer maintenant",
+		
+		"made_with": "Fait avec",
+		"at_42_school": "à l'école 42",
+		"developed_by": "Développé par"
+	},
+	
+	"credits": {
+		"contributions_title": "Contributions",
+		"role" : {
+			"lead": "Développeur principal",
+			"pongFullstack": "Développeur Fullstack Pong",
+			"generalFrontend": "Développeur Frontend général",
+			"pacManFrontend": "Développeur Frontend Pac-Man"
+		},
+		"contributions": {
+			"projectArchitecture": "Architecture du projet (sauf Pong)",
+			"userAuthentication": "Authentification utilisateur (inscription, connexion)",
+			"googleOAuthIntegration": "Intégration Google OAuth",
+			"twoFAImplementation": "Mise en place de la 2FA",
+			"pacManBackend": "Backend Pac-Man",
+			"chatSystemBackend": "Backend du système de chat",
+			"projectConfiguration": "Configuration du projet (Docker)",
+			"databaseDesign": "Conception et gestion de la base de données",
+			"avatarManagementSystem": "Système de gestion des avatars",
+			"completePongDevelopment": "Développement complet du jeu Pong",
+			"pongFrontendInterface": "Interface frontend Pong",
+			"pongBackendLogic": "Logique backend Pong",
+			"realTimeMultiplayerSystem": "Système multijoueur en temps réel",
+			"uiUxDesign": "Conception UI/UX",
+			"gameMatchmaking": "Système de matchmaking",
+			"pongStatisticsScoring": "Statistiques et score Pong",
+			"loginRegisterInterfaces": "Interfaces de connexion/inscription",
+			"userProfileManagement": "Gestion du profil utilisateur",
+			"avatarUploadSystem": "Système de téléchargement d'avatar",
+			"navigationBar": "Barre de navigation",
+			"chatSystemFrontend": "Frontend du système de chat",
+			"pacManGameInterface": "Interface du jeu Pac-Man",
+			"interactiveMapCreation": "Création de cartes interactives",
+			"gameMechanicsImplementation": "Implémentation des mécaniques de jeu",
+			"statisticsDashboard": "Tableau de bord des statistiques",
+			"gameLobbySystem": "Système de lobby de jeu",
+			"playerProgressionTracking": "Suivi de la progression des joueurs"
+		}
+	},
+
+	"pacman": {
+		"title": "Pacman",
+		"menu" : {
+			"home": "Accueil",
+			"lobby": {
+				"button": "Lobby",
+				"gameNamePlaceholder": "Nom de la salle",
+				"create": "Créer une salle",
+				"join": "Rejoindre",
+				"noGamesFound": "Aucune salle trouvée",
+				"gameForm": {
+					"map": "Carte :",
+					"mapPlaceholder": "Sélectionnez une carte",
+					"quit": "Quitter la salle",
+					"startGame": "Lancer la partie",
+					"waitingForPlayers": "En attente de joueurs"
+				}
+			},
+			"liveGames" : {
+				"button": "En direct",
+				"title": "Parties en cours",
+				"noGamesFound": "Aucune partie en cours",
+				"spectate": "Spectateur"
+			},
+			"rules": {
+				"button": "Règles",
+				"title": "Règles du jeu",
+				"content1": "Pacman est un jeu d'arcade classique où le joueur contrôle Pacman, une créature jaune qui se déplace dans un labyrinthe pour manger des pastilles tout en évitant les fantômes.",
+				"content2": "Cette version de Pacman revisite le classique en mode multijoueur (de 2 à 5 joueurs).",
+				"content3": "Lorsque moins de 5 joueurs sont présents, des ordinateurs complètent la partie.",
+				"content4": "Chaque joueur contrôle un personnage différent : Pacman, Clyde, Pinky, Inky ou Blinky.",
+				"content5": "L'objectif de Pacman est de manger toutes les pastilles pour gagner (il dispose de trois vies), tandis que les fantômes doivent coopérer pour l'éliminer.",
+				"footer": "Amusez-vous bien !"
+			},
+			"statistics": {
+				"button": "Statistiques",
+				"title": "Statistiques du joueur",
+				"gamesPlayed": "Parties jouées",
+				"gamesWon": "Parties gagnées",
+				"gamesLost": "Parties perdues",
+				"winRate": "Taux de victoire",
+				"bestScore": "Meilleur score",
+				"averageScore": "Score moyen",
+				"leaderboard": "Classement",
+				"noStats": "Aucune statistique disponible",
+				"loading": "Chargement des statistiques...",
+				"error": "Erreur lors du chargement des statistiques :"
+			},
+			"maps": {
+				"button": "Carte",
+				"title": "Cartes",
+				"content": "Sélectionnez une carte pour commencer la partie.",
+				"descriptionEditor": "Créez et partagez vos propres cartes avec la communauté.",
+				"editor": "Éditeur de carte",
+				"create": "Créer une nouvelle carte",
+				"public": "Public",
+				"private": "Privé",
+				"valid": "Valide",
+				"invalid": "Invalide",
+				"noMapsFound": "Aucune carte trouvée",
+				"suppress" : "Supprimer",
+				"edit": "Éditer",
+				"mapEditor": {
+					"title": "Créer une carte Pacman",
+					"mapName": "Nom de la carte :",
+					"validate": "Valider",
+					"mapNamePlaceholder": "Entrez le nom de la carte",
+					"nameExists": "Le nom de la carte existe déjà",
+					"mapNameTooShort": "Le nom de la carte doit comporter au moins 3 caractères",
+					"mapNameTooLong": "Le nom de la carte ne doit pas dépasser 30 caractères",
+					"save": "Sauvegarder la carte",
+					"mapPreview": "Aperçu de la carte",
+					"console": "Console",
+					"errors": "❌ Erreurs dans la carte",
+					"tiles": {
+						"title": "Tuiles",
+						"wall": "Mur",
+						"empty": "Vide",
+						"pellet": "Pastille",
+						"superPellet": "Super pastille",
+						"door": "Porte",
+						"tunnel": "Tunnel",
+						"pacmanSpawn": "Spawn Pacman",
+						"blinkySpawn": "Spawn Blinky",
+						"inkySpawn": "Spawn Inky",
+						"pinkySpawn": "Spawn Pinky",
+						"clydeSpawn": "Spawn Clyde"
+					},
+					"addBorders": "Ajouter bordures",
+					"back": "Retour"
+				}
+			}
+		},
+		"game": {
+			"quit": "Quitter la partie",
+			"pacmanLife": "Vie Pacman"
+		}
+	},
+	"pageNotFound": {
+		"title": "Page non trouvée",
+		"message": "Désolé, la page que vous cherchez n'existe pas.",
+		"backToHome": "Retour à l'accueil"
+	}
 }
