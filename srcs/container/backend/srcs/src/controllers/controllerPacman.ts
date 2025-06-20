@@ -8,7 +8,6 @@ import { room, player } from "@Pacman/TypesPacman";
 import StateManager from '@wsPacman/game/StateManager';
 
 export function sendResponse(ws: WebSocket, action: string, result: string, notification: string | string[], data: any = null): void {
-	console.log(`Sending response to action: ${action}, result: ${result}, notification: ${notification}`);
 	ws?.send(JSON.stringify({ action, result, notification, data }));
 }
 
@@ -38,7 +37,6 @@ export const insertOrUpdateMap = async (ws: WebSocket, user_id: number, request:
 	if (!map || !Array.isArray(map) || map.length === 0 || !map[0] || !Array.isArray(map[0])) return sendResponse(ws, 'insertOrUpdateMap', 'error', [ws.i18n.t('pacman.error.map.required')]);
 	if (is_public === undefined) return sendResponse(ws, 'insertOrUpdateMap', 'error', [ws.i18n.t('pacman.error.is_public.required')]);
 	if (name.length < 3 || name.length > 20 || !/^[a-zA-Z0-9 _-]+$/.test(name)) return sendResponse(ws, 'insertOrUpdateMap', 'error', [ws.i18n.t('pacman.error.name.invalid')]);
-	console.log(`Map length: ${map.length}, Map row length: ${map[0].length} - Map some row length: ${map.some(row => row.length)}`);
 	if (map.length < 31 || map.length > 31 || map.some(row => row.length !== 29 || !/^[#ToPBICY\-. ]+$/.test(row.join('')))) return sendResponse(ws, 'insertOrUpdateMap', 'error', [ws.i18n.t('pacman.error.map.invalid')]);
 
 	if (id) {
@@ -64,12 +62,10 @@ export const insertOrUpdateMap = async (ws: WebSocket, user_id: number, request:
 	}
 
 	if (id && !(await pacmanModel.updateMap(infoMap))) {
-		console.log('Map updated:', infoMap);
 		return sendResponse(ws, 'insertOrUpdateMap', 'error', [ws.i18n.t('errors.pacman.updateMapError')]);
 	}
 	else if (!id && !(await pacmanModel.insertMap(infoMap))) {
 		infoMap.isCreated = true;
-		console.log('Map inserted:', infoMap);
 		return sendResponse(ws, 'insertOrUpdateMap', 'error', [ws.i18n.t('errors.pacman.insertMapError')]);
 	}
 

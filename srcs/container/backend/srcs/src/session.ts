@@ -151,6 +151,9 @@ export function decodeSessionId(playload: sessionPayload, sessionId: string): bo
 
 		if (signature !== expectedSignature) {
 			console.warn('Signature invalide pour l\'ID de session');
+			console.warn('ID de session:', sessionId);
+			console.warn('Signature attendue:', expectedSignature);
+			console.warn('Signature reçue:', signature);
 			return null;
 		}
 

@@ -157,7 +157,6 @@ async function searchMap(player_id: number, query: string): Promise<map[]> {
 		created_at: new Date(row.created_at),
 		updated_at: new Date(row.updated_at),
 	}));
-	console.log('Search results:', maps);
 	return maps;
 }
 
