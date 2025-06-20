@@ -118,6 +118,7 @@ const SameKeyboard: React.FC = () => {
 
 			}
 			if (data.type === "Pause") {
+				console.log(camera.current)
 				setIsPause(data.value);
 			}
 			if (data.type === "FINISHED") {
@@ -274,11 +275,11 @@ const SameKeyboard: React.FC = () => {
 					i++;
 				}
 				else if (i >= 200) {
-					camera.current.position.x = 71.376;
+					camera.current.position.x = 60.300;
 					camera.current.position.y = 91.805;
-					camera.current.position.z = -67.399;
+					camera.current.position.z = -67.41;
 					camera.current.rotation.x = 0.908;
-					camera.current.rotation.y = -0.136;
+					camera.current.rotation.y = -0.0084;
 					clearInterval(interval);
 					setIscinematic(true)
 				}
