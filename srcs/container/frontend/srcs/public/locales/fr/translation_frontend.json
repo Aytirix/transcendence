@@ -356,5 +356,12 @@
 		"gameEnded": "Partie terminée",
 		"tournamentStarted": "Tournoi commencé",
 		"achievementUnlocked": "Succès débloqué"
+	},
+	"minSizeGuard": {
+		"title": "Écran trop petit",
+		"defaultMessage": "Cette application nécessite une résolution minimale pour fonctionner correctement.",
+		"currentSize": "Taille actuelle",
+		"requiredSize": "Taille requise",
+		"goHome": "Retour à l'accueil"
 	}
 }

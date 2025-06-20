@@ -356,5 +356,12 @@
 		"gameEnded": "Game ended",
 		"tournamentStarted": "Tournament started",
 		"achievementUnlocked": "Achievement unlocked"
+	},
+	"minSizeGuard": {
+		"title": "Screen too small",
+		"defaultMessage": "This application requires a minimum resolution to function properly.",
+		"currentSize": "Current size",
+		"requiredSize": "Required size",
+		"goHome": "Go home"
 	}
 }

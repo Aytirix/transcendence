@@ -1,4 +1,4 @@
-import { FastifyInstance, FastifyRequest, Session } from 'fastify';
+import { FastifyInstance, FastifyRequest, FastifyReply, Session } from 'fastify';
 import fastifySession, { FastifySessionOptions } from '@fastify/session';
 import fastifyCookie from '@fastify/cookie';
 import dotenv from 'dotenv';
@@ -118,7 +118,7 @@ export async function getStore() {
  */
 export function createSessionId(userInfo: Record<string, any> = {}): string {
 	// Encodage des informations utilisateur en Base64
-	const randomValue = crypto.randomBytes(16).toString('hex');
+	const randomValue = crypto.randomBytes(64).toString('hex');
 
 	const payload = Buffer.from(encrypt(JSON.stringify(userInfo))).toString('base64url');
 
@@ -134,10 +134,13 @@ export function createSessionId(userInfo: Record<string, any> = {}): string {
 
 /**
  * Décode un ID de session pour extraire les informations utilisateur
+ * @param request La requête Fastify
+ * @param reply La réponse Fastify pour pouvoir supprimer le cookie
+ * @param playload Les informations de session à vérifier
  * @param sessionId L'ID de session à décoder
- * @returns Les informations utilisateur décodées ou null si invalide
+ * @returns true si valide, false si invalide
  */
-export function decodeSessionId(playload: sessionPayload, sessionId: string): boolean {
+export async function decodeSessionId(request: FastifyRequest, reply: FastifyReply, playload: sessionPayload, sessionId: string): Promise<boolean> {
 	try {
 		const [signature, randomValue] = sessionId.split('.');
 
@@ -150,11 +153,16 @@ export function decodeSessionId(playload: sessionPayload, sessionId: string): bo
 			.digest('base64url');
 
 		if (signature !== expectedSignature) {
-			console.warn('Signature invalide pour l\'ID de session');
-			console.warn('ID de session:', sessionId);
-			console.warn('Signature attendue:', expectedSignature);
-			console.warn('Signature reçue:', signature);
-			return null;
+			if (request.session) {
+				await request.session.destroy();
+			}
+			reply.clearCookie('sessionId', {
+				path: '/',
+				httpOnly: true,
+				secure: true,
+				sameSite: 'none'
+			});
+			return false;
 		}
 
 		return true;
@@ -179,6 +187,7 @@ export async function registerSession(app: FastifyInstance) {
 			path: '/',
 		},
 		idGenerator: (req: FastifyRequest) => {
+			console.log('user-agent:', req.headers['user-agent']);
 			const initialUserInfo: sessionPayload = {
 				userAgent: req.headers['user-agent'],
 			};

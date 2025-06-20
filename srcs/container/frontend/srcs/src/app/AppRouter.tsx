@@ -17,6 +17,7 @@ import GroupChatPage from './chat/GroupChatPage';
 import CheckRedirectEmail from './CheckRedirectEmail';
 import FriendPage from './chat/FriendPage';
 import IronManForgetPass from './IronManForgetPass';
+import MinSizeGuard from './components/MinSizeGuard';
 
 // PAGES
 
@@ -39,10 +40,26 @@ class AppRouter extends Component {
 					<Route path="/chat" element={<GroupChatPage />} />
 					<Route path="/friend" element={<FriendPage />} />
 					<Route path="/register" element={<IronManRegister />} />
-					<Route path="/Pong" element={<Pong />} />
-					<Route path="/Pong/menu" element={<GameMenu />} />
-					<Route path="/Pong/menu/SameKeyboard" element={<SameKeyboard />} />
-					<Route path="/Pacman" element={<WebSocketPacman />} />
+					<Route path="/Pong" element={
+						<MinSizeGuard minWidth={1200} minHeight={870} message="Écran trop petit">
+							<Pong />
+						</MinSizeGuard>
+					} />
+					<Route path="/Pong/menu" element={
+						<MinSizeGuard minWidth={1200} minHeight={870} message="Écran trop petit">
+							<GameMenu />
+						</MinSizeGuard>
+					} />
+					<Route path="/Pong/menu/SameKeyboard" element={
+						<MinSizeGuard minWidth={1200} minHeight={870} message="Écran trop petit">
+							<SameKeyboard />
+						</MinSizeGuard>
+					} />
+					<Route path="/Pacman" element={
+						<MinSizeGuard minWidth={1200} minHeight={870} message="Écran trop petit">
+							<WebSocketPacman />
+						</MinSizeGuard>
+					} />
 
 					{/* Route Redirection email */}
 					<Route path="/auth/checkCode" element={<CheckRedirectEmail />} />

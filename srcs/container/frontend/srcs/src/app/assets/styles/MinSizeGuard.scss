@@ -1,0 +1,316 @@
+// Variables
+$min-size-guard-bg: rgba(0, 0, 0, 0.95);
+$min-size-guard-content-bg: #1a1a1a;
+$min-size-guard-border: #333;
+$min-size-guard-text-primary: #ffffff;
+$min-size-guard-text-secondary: #cccccc;
+$min-size-guard-text-muted: #999999;
+$min-size-guard-icon-color: #ff6b6b;
+$min-size-guard-border-radius: 12px;
+$min-size-guard-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+
+// Animations
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+}
+
+// Component styles
+.min-size-guard {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: $min-size-guard-bg;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  padding: 20px;
+  box-sizing: border-box;
+
+  &-home-btn {
+    position: absolute;
+    top: 15px;
+    left: 4px;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    gap: 0.4em;
+    border: none;
+    background: rgba(20, 20, 20, 0.75);
+    padding: 8px 12px;
+    cursor: pointer;
+    border-radius: 2em;
+    box-shadow: 0 2px 8px #0003;
+    transition: box-shadow 0.2s, background 0.2s, transform 0.2s;
+    touch-action: manipulation;
+    color: #ffffff;
+    font-weight: 600;
+    font-size: 1em;
+    letter-spacing: 0.01em;
+    min-height: 52px;
+    max-height: 52px;
+    width: fit-content;
+    overflow: hidden;
+
+    &:hover, &:focus {
+      background: rgba(34, 34, 34, 0.92);
+      box-shadow: 0 4px 16px #ffffff55, 0 2px 8px #0005;
+      transform: translateY(-2px) scale(1.04);
+      outline: none;
+    }
+
+    .home-label {
+      color: #ffffff;
+      font-weight: 600;
+      font-size: 1em;
+      letter-spacing: 0.01em;
+      padding-left: 0.15em;
+      opacity: 0.85;
+      transition: color 0.2s, opacity 0.2s;
+    }
+
+    img {
+      display: block !important;
+      width: 38px !important;
+      height: 38px !important;
+      border-radius: 50%;
+      transition: filter 0.2s, transform 0.2s;
+      filter: drop-shadow(0 0 2px #ffffff55);
+      object-fit: cover;
+      flex-shrink: 0;
+    }
+
+    @media (max-width: 480px) {
+      top: 20px;
+      left: 15px;
+      padding: 6px 10px;
+      min-height: 44px;
+      max-height: 44px;
+      font-size: 0.9em;
+      
+      img {
+        width: 32px !important;
+        height: 32px !important;
+      }
+    }
+  }
+
+  &-content {
+    background: $min-size-guard-content-bg;
+    border: 2px solid $min-size-guard-border;
+    border-radius: $min-size-guard-border-radius;
+    padding: 2rem;
+    text-align: center;
+    max-width: 500px;
+    width: 100%;
+    box-shadow: $min-size-guard-shadow;
+    animation: fadeIn 0.3s ease-out;
+
+    @media (max-width: 480px) {
+      padding: 1.5rem;
+      margin: 1rem;
+    }
+  }
+
+  &-icon {
+    margin-bottom: 1.5rem;
+    
+    svg {
+      color: $min-size-guard-icon-color;
+      animation: pulse 2s infinite;
+      filter: drop-shadow(0 0 10px rgba(255, 107, 107, 0.3));
+    }
+  }
+
+  &-title {
+    color: $min-size-guard-text-primary;
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin: 0 0 1rem 0;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+
+    @media (max-width: 480px) {
+      font-size: 1.25rem;
+    }
+  }
+
+  &-message {
+    color: $min-size-guard-text-secondary;
+    font-size: 1rem;
+    line-height: 1.6;
+    margin: 0 0 1.5rem 0;
+    opacity: 0.9;
+
+    @media (max-width: 480px) {
+      font-size: 0.9rem;
+    }
+  }
+
+  &-details {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 8px;
+    padding: 1rem;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+
+    p {
+      color: $min-size-guard-text-muted;
+      font-size: 0.875rem;
+      margin: 0.5rem 0;
+      font-family: 'Courier New', monospace;
+
+      &:first-child {
+        margin-top: 0;
+      }
+
+      &:last-child {
+        margin-bottom: 0;
+      }
+
+      @media (max-width: 480px) {
+        font-size: 0.8rem;
+      }
+    }
+  }
+}
+
+// Dark theme variations
+.dark-theme .min-size-guard {
+  &-home-btn {
+    background: rgba(20, 20, 20, 0.85);
+    
+    &:hover, &:focus {
+      background: rgba(34, 34, 34, 0.95);
+      box-shadow: 0 4px 16px #ffffff65, 0 2px 8px #0005;
+    }
+  }
+
+  &-content {
+    background: #0a0a0a;
+    border-color: #444;
+  }
+
+  &-details {
+    background: rgba(255, 255, 255, 0.03);
+    border-color: rgba(255, 255, 255, 0.05);
+  }
+}
+
+// Light theme variations
+.light-theme .min-size-guard {
+  background: rgba(255, 255, 255, 0.95);
+
+  &-home-btn {
+    background: rgba(20, 20, 20, 0.75);
+    color: #ffffff;
+    
+    &:hover, &:focus {
+      background: rgba(34, 34, 34, 0.92);
+      box-shadow: 0 4px 16px #ffffff55, 0 2px 8px #0005;
+    }
+  }
+
+  &-content {
+    background: #ffffff;
+    border-color: #e0e0e0;
+    color: #333333;
+  }
+
+  &-title {
+    color: #333333;
+  }
+
+  &-message {
+    color: #666666;
+  }
+
+  &-details {
+    background: rgba(0, 0, 0, 0.05);
+    border-color: rgba(0, 0, 0, 0.1);
+
+    p {
+      color: #777777;
+    }
+  }
+}
+
+// Responsive adjustments
+@media (max-width: 320px) {
+  .min-size-guard {
+    &-content {
+      padding: 1rem;
+    }
+
+    &-title {
+      font-size: 1.1rem;
+    }
+
+    &-message {
+      font-size: 0.85rem;
+    }
+
+    &-details p {
+      font-size: 0.75rem;
+    }
+  }
+}
+
+// High contrast mode
+@media (prefers-contrast: high) {
+  .min-size-guard {
+    background: #000000;
+
+    &-content {
+      background: #000000;
+      border-color: #ffffff;
+      border-width: 3px;
+    }
+
+    &-title {
+      color: #ffffff;
+    }
+
+    &-message {
+      color: #ffffff;
+    }
+
+    &-details {
+      background: #333333;
+      border-color: #ffffff;
+
+      p {
+        color: #ffffff;
+      }
+    }
+  }
+}
+
+// Reduced motion preference
+@media (prefers-reduced-motion: reduce) {
+  .min-size-guard {
+    &-content {
+      animation: none;
+    }
+
+    &-icon svg {
+      animation: none;
+    }
+  }
+}
