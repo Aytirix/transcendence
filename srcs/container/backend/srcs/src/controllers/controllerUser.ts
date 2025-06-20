@@ -34,7 +34,11 @@ export const Login = async (request: FastifyRequest, reply: FastifyReply) => {
 
 	request.i18n.changeLanguage(user.lang || 'fr');
 
-	controller2FA.sendRegisterVerifyEmail(request, user.email, "loginAccount_confirm_email", user);
+	if (process.env.TWO_FACTOR_ACTIF === 'true') {
+		controller2FA.sendRegisterVerifyEmail(request, user.email, "loginAccount_confirm_email", user);
+	} else {
+		request.session.user = user;
+	}
 
 	return reply.send({
 		message: request.i18n.t('login.welcome'),
@@ -74,7 +78,12 @@ export const Register = async (request: FastifyRequest, reply: FastifyReply) => 
 
 	request.i18n.changeLanguage(user.lang || 'fr');
 
-	controller2FA.sendRegisterVerifyEmail(request, email, "createAccount_confirm_email", user);
+	if (process.env.TWO_FACTOR_ACTIF === 'true') {
+		controller2FA.sendRegisterVerifyEmail(request, email, "createAccount_confirm_email", user);
+	} else {
+		const tmp = await userModel.Register(email, username, password, defaultAvatar, user.lang);
+		request.session.user = tmp;
+	}
 
 	return reply.send({
 		message: request.i18n.t('login.welcome'),
