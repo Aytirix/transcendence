@@ -1,16 +1,15 @@
 {
 	"hello": "Hello",
-	"test": "The current website offers a modern and responsive interface, allowing each user to navigate easily and manage their profile securely. The basic features are in place: registration, login, and user information display. The Transcendence project, developed at school 42, integrates into this platform by adding an innovative and interactive dimension. Its main objective is to create, directly on the site, a multiplayer Pong game accessible to all, with real-time game management through websockets. It also integrates social features like chat, invitations, tournaments between users and personalized profile management. This project not only enriches the user experience, but also modernizes the site by promoting exchange and friendly competition. Finally, Transcendence offers an environment conducive to collaboration and mastery of web development tools, while strengthening the community spirit within the platform.",
 	"logout": "Logout",
-	"profile": "Profile",
-	"username": "username",
+	"username": "Username",
 	"password": "Password",
 	"login": {
 		"title": "Login",
 		"email": "Email",
 		"password": "Password",
-		"submit": "Sign in",
-		"loading": "Connecting...",
+		"submit": "Login",
+		"loading": "Logging in...",
+		"forgetPassword": "Forgot password?",
 		"registerLink": "New hero? Create an account"
 	},
 	"register": {
@@ -21,9 +20,36 @@
 		"confirmPassword": "Confirm password",
 		"language": "Language",
 		"submit": "Create my account",
-		"loginLink": "Already a member? Sign in"
+		"loginLink": "Already a member? Login"
 	},
-	
+	"forgetPassword": {
+		"title": "Forgot password",
+		"email": "Email",
+		"submit": "Send",
+		"loading": "Sending...",
+		"success": "A reset email has been sent to your address.",
+		"backToLogin": "Back to login",
+		"error": "Error sending email",
+		"networkError": "Network or server error",
+		"resetPassword": {
+			"title": "Reset password",
+			"password": "New password",
+			"confirmPassword": "Confirm password",
+			"submit": "Reset",
+			"loading": "Resetting...",
+			"success": "Password reset successfully",
+			"passwordMismatch": "Passwords do not match",
+			"error": "Error during reset",
+			"passwordRequirements": {
+				"title": "Password must contain:",
+				"length": "Between 8 and 25 characters",
+				"lowercase": "At least one lowercase letter",
+				"uppercase": "At least one uppercase letter",
+				"number": "At least one number",
+				"special": "At least one special character (@$!%*?&.)"
+			}
+		}
+	},
 	"project_credits": "Project Credits",
 	"project_transcendence": "Transcendence Project",
 	"home": {
@@ -31,18 +57,18 @@
 		"experience_classic_games": "Experience classic games reimagined with modern technology",
 		"epic_games": "Epic Games",
 		"hours_of_fun": "Hours of Fun",
-		"school_spirit": "School Spirit",
+		"school_spirit": "42 Spirit",
 		
-		"choose_your_adventure": "Choose Your Adventure",
-		"classic_pong_description": "The classic Pong game with a modern multiplayer twist",
+		"choose_your_adventure": "Choose your adventure",
+		"classic_pong_description": "The classic Pong game with a modern and multiplayer twist",
 		"classic_pacman_description": "The iconic Pac-Man with enhanced features",
 		"multiplayer": "Multiplayer",
 		"real_time": "Real-time",
 		"competitive": "Competitive",
-		"retro_arcade": "Retro Arcade",
-		"high_scores": "High Scores",
+		"retro_arcade": "Retro arcade",
+		"high_scores": "High scores",
 		"nostalgic": "Nostalgic",
-		"play_now": "Play Now",
+		"play_now": "Play now",
 		
 		"made_with": "Made with",
 		"at_42_school": "at 42 school",
@@ -58,8 +84,8 @@
 			"pacManFrontend": "Pac-Man Frontend Developer"
 		},
 		"contributions": {
-			"projectArchitecture": "Project Architecture (except Pong)",
-			"userAuthentication": "User authentication (register, login)",
+			"projectArchitecture": "Project architecture (except Pong)",
+			"userAuthentication": "User authentication (registration, login)",
 			"googleOAuthIntegration": "Google OAuth integration",
 			"twoFAImplementation": "2FA implementation",
 			"pacManBackend": "Pac-Man backend",
@@ -72,9 +98,9 @@
 			"pongBackendLogic": "Pong backend logic",
 			"realTimeMultiplayerSystem": "Real-time multiplayer system",
 			"uiUxDesign": "UI/UX design",
-			"gameMatchmaking": "Game matchmaking",
+			"gameMatchmaking": "Game matchmaking system",
 			"pongStatisticsScoring": "Pong statistics and scoring",
-			"loginRegisterInterfaces": "Login/Register interfaces",
+			"loginRegisterInterfaces": "Login/register interfaces",
 			"userProfileManagement": "User profile management",
 			"avatarUploadSystem": "Avatar upload system",
 			"navigationBar": "Navigation bar",
@@ -87,6 +113,7 @@
 			"playerProgressionTracking": "Player progression tracking"
 		}
 	},
+
 	"pacman": {
 		"title": "Pacman",
 		"menu" : {
@@ -94,7 +121,7 @@
 			"lobby": {
 				"button": "Lobby",
 				"gameNamePlaceholder": "Room name",
-				"create": "Create room",
+				"create": "Create a room",
 				"join": "Join",
 				"noGamesFound": "No rooms found",
 				"gameForm": {
@@ -114,11 +141,11 @@
 			"rules": {
 				"button": "Rules",
 				"title": "Game rules",
-				"content1": "Pacman is a classic arcade game where the player controls Pacman, a yellow creature moving through a maze to eat pellets while avoiding ghosts.",
-				"content2": "This version of Pacman revisits the classic in multiplayer mode (2 to 5 players).",
-				"content3": "When fewer than 5 players are present, computers fill the remaining spots.",
+				"content1": "Pacman is a classic arcade game where the player controls Pacman, a yellow creature that moves through a maze to eat pellets while avoiding ghosts.",
+				"content2": "This version of Pacman reinvents the classic in multiplayer mode (2 to 5 players).",
+				"content3": "When fewer than 5 players are present, computers fill the game.",
 				"content4": "Each player controls a different character: Pacman, Clyde, Pinky, Inky, or Blinky.",
-				"content5": "Pacman's goal is to eat all the pellets to win (he has three lives), while the ghosts must cooperate to eliminate him.",
+				"content5": "Pacman's goal is to eat all the pellets to win (has three lives), while the ghosts must cooperate to eliminate him.",
 				"footer": "Have fun!"
 			},
 			"statistics": {
@@ -130,10 +157,10 @@
 				"winRate": "Win rate",
 				"bestScore": "Best score",
 				"averageScore": "Average score",
-				"leaderboard": "Ranking",
+				"leaderboard": "Leaderboard",
 				"noStats": "No statistics available",
 				"loading": "Loading statistics...",
-				"error": "Error loading statistics :"
+				"error": "Error loading statistics:"
 			},
 			"maps": {
 				"button": "Map",
@@ -141,7 +168,7 @@
 				"content": "Select a map to start the game.",
 				"descriptionEditor": "Create and share your own maps with the community.",
 				"editor": "Map editor",
-				"create": "Create new map",
+				"create": "Create a new map",
 				"public": "Public",
 				"private": "Private",
 				"valid": "Valid",
@@ -151,16 +178,16 @@
 				"edit": "Edit",
 				"mapEditor": {
 					"title": "Create a Pacman map",
-					"mapName": "Map name",
+					"mapName": "Map name:",
 					"validate": "Validate",
 					"mapNamePlaceholder": "Enter map name",
 					"nameExists": "Map name already exists",
 					"mapNameTooShort": "Map name must be at least 3 characters",
-					"mapNameTooLong": "Map name must be less than 30 characters",
+					"mapNameTooLong": "Map name must not exceed 30 characters",
 					"save": "Save map",
 					"mapPreview": "Map preview",
 					"console": "Console",
-					"errors": "❌ Errors in the map",
+					"errors": "❌ Errors in map",
 					"tiles": {
 						"title": "Tiles",
 						"wall": "Wall",
@@ -181,13 +208,153 @@
 			}
 		},
 		"game": {
-			"quit": "Leave game",
+			"quit": "Quit game",
 			"pacmanLife": "Pacman life"
 		}
 	},
 	"pageNotFound": {
-		"title": "Page Not Found",
-		"message": "The page you are looking for does not exist.",
-		"backToHome": "Back to Home"
+		"title": "Page not found",
+		"message": "Sorry, the page you are looking for does not exist.",
+		"backToHome": "Back to home"
+	},
+	"nav": {
+		"home": "Home",
+		"games": "Games",
+		"pong": "Pong",
+		"pacman": "Pac-Man",
+		"profile": "Profile",
+		"chat": "Chat",
+		"logout": "Logout"
+	},
+	"profile": {
+		"title": "Profile",
+		"edit": "Edit profile",
+		"save": "Save",
+		"cancel": "Cancel",
+		"avatar": "Avatar",
+		"changeAvatar": "Change avatar",
+		"uploadAvatar": "Upload an avatar",
+		"username": "Username",
+		"email": "Email",
+		"language": "Language",
+		"twoFA": "Two-factor authentication",
+		"enable2FA": "Enable 2FA",
+		"disable2FA": "Disable 2FA",
+		"statistics": "Statistics",
+		"matchHistory": "Match history",
+		"friends": "Friends",
+		"achievements": "Achievements"
+	},
+	"chat": {
+		"title": "Chat",
+		"sendMessage": "Send message",
+		"messagePlaceholder": "Type your message...",
+		"send": "Send",
+		"online": "Online",
+		"offline": "Offline",
+		"typing": "typing...",
+		"channels": "Channels",
+		"directMessages": "Direct messages",
+		"createChannel": "Create a channel",
+		"joinChannel": "Join a channel",
+		"leaveChannel": "Leave channel",
+		"inviteToGame": "Invite to game",
+		"blockUser": "Block user",
+		"unblockUser": "Unblock user"
+	},
+	"pong": {
+		"title": "Pong",
+		"menu": {
+			"play": "Play",
+			"quickMatch": "Quick match",
+			"createRoom": "Create a room",
+			"joinRoom": "Join a room",
+			"tournament": "Tournament",
+			"statistics": "Statistics",
+			"rules": "Rules"
+		},
+		"game": {
+			"waitingForPlayer": "Waiting for a player...",
+			"gameStarting": "Game starting...",
+			"score": "Score",
+			"pause": "Pause",
+			"resume": "Resume",
+			"quit": "Quit",
+			"winner": "Winner",
+			"loser": "Loser",
+			"draw": "Draw"
+		},
+		"rules": {
+			"title": "Pong Rules",
+			"objective": "Objective: Score points by sending the ball into the opponent's goal",
+			"controls": "Controls: Use up/down arrows or W/S to move your paddle",
+			"scoring": "Scoring: First to 11 points wins",
+			"powerUps": "Power-ups: Collect bonuses for special effects"
+		},
+		"statistics": {
+			"title": "Pong Statistics",
+			"gamesPlayed": "Games played",
+			"gamesWon": "Games won",
+			"gamesLost": "Games lost",
+			"winRate": "Win rate",
+			"totalScore": "Total score",
+			"averageScore": "Average score",
+			"bestStreak": "Best streak",
+			"ranking": "Ranking"
+		}
+	},
+	"common": {
+		"loading": "Loading...",
+		"error": "Error",
+		"success": "Success",
+		"warning": "Warning",
+		"info": "Information",
+		"confirm": "Confirm",
+		"cancel": "Cancel",
+		"save": "Save",
+		"delete": "Delete",
+		"edit": "Edit",
+		"view": "View",
+		"close": "Close",
+		"back": "Back",
+		"next": "Next",
+		"previous": "Previous",
+		"refresh": "Refresh",
+		"search": "Search",
+		"filter": "Filter",
+		"sort": "Sort",
+		"yes": "Yes",
+		"no": "No",
+		"ok": "OK"
+	},
+	"errors": {
+		"networkError": "Network error",
+		"serverError": "Server error",
+		"unknownError": "Unknown error",
+		"validationError": "Validation error",
+		"authenticationError": "Authentication error",
+		"authorizationError": "Authorization error",
+		"notFound": "Not found",
+		"timeout": "Timeout exceeded",
+		"connectionLost": "Connection lost"
+	},
+	"validation": {
+		"required": "This field is required",
+		"email": "Invalid email",
+		"minLength": "Minimum {{min}} characters",
+		"maxLength": "Maximum {{max}} characters",
+		"passwordMismatch": "Passwords do not match",
+		"invalidCharacters": "Invalid characters",
+		"usernameTaken": "Username already taken",
+		"emailTaken": "Email already used"
+	},
+	"notifications": {
+		"gameInvitation": "Game invitation",
+		"friendRequest": "Friend request",
+		"messageReceived": "New message",
+		"gameStarted": "Game started",
+		"gameEnded": "Game ended",
+		"tournamentStarted": "Tournament started",
+		"achievementUnlocked": "Achievement unlocked"
 	}
 }

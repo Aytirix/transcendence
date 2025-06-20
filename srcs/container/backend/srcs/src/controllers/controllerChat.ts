@@ -110,7 +110,7 @@ export const filterBlockedUserMessages = (messages: Map<number, Message>, user: 
 }
 
 export const init_connexion = async (ws: WebSocket, user: User, state: State) => {
-	console.log('Nouvelle connexion de l\'utilisateur:', user.id);
+	console.log('User connected:', user.id);
 	addOnlineUser(state, ws, user);
 	await modelsChat.getAllGroupsFromUser(user, state);
 
@@ -153,7 +153,7 @@ export const init_connexion = async (ws: WebSocket, user: User, state: State) =>
 };
 
 export const user_disconnected = async (ws: WebSocket, user: User, state: State) => {
-	console.log('Déconnexion de l\'utilisateur:', user.id);
+	console.log('User disconnected:', user.id);
 	broadcastAllGroupUsers(user, state, null, JSON.stringify({ action: 'friend_disconnected', user_id: user.id } as res_disconnect));
 	removeOnlineUser(state, user);
 };

@@ -17,6 +17,12 @@ export default async (fastify: FastifyInstance) => {
 		handler: userController.Register
 	});
 
+	fastify.post('/forget-password', {
+		preHandler: [Middleware.isNotAuthenticated],
+		schema: userSchema.forgetPassword,
+		handler: userController.ForgetPassword
+	});
+
 	fastify.put('/update-user', {
 		preHandler: [Middleware.isAuthenticated],
 		schema: userSchema.update,

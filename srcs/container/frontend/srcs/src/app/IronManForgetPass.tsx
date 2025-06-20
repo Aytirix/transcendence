@@ -4,19 +4,18 @@ import ApiService from '../api/ApiService';
 import { useNavigate } from 'react-router-dom';
 import { useLanguage } from '../contexts/LanguageContext';
 
-import GoogleLoginButton from './components/GoogleLoginButton';
 import LanguageToggle from './components/LanguageToggle';
 
-interface LoginSchema {
+interface ForgetPasswordSchema {
 	email: string;
-	password: string;
 }
 
-const IronManLogin: React.FC = () => {
+const IronManForgetPass: React.FC = () => {
 	const { t, currentLanguage } = useLanguage();
-	const [form, setForm] = useState<LoginSchema>({ email: '', password: '' });
+	const [form, setForm] = useState<ForgetPasswordSchema>({ email: '' });
 	const [loading, setLoading] = useState(false);
 	const [error, setError] = useState<string | null>(null);
+	const [success, setSuccess] = useState<string | null>(null);
 	const navigate = useNavigate();
 
 	const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -26,25 +25,20 @@ const IronManLogin: React.FC = () => {
 	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault();
 		setError(null);
+		setSuccess(null);
 		setLoading(true);
 
 		try {
-			console.log("test0");
-			const resp: any = await ApiService.post('/login', form) as ApiService;
-			console.log("test1", form);
-			console.log(resp.ok);
-			if (!resp.ok) {
-				console.log("test2");
-				console.log(resp.ok);
-				const data = await resp.json();
-				setError(data.message || 'Erreur lors de la connexion.');
+			const data: any = await ApiService.post('/forget-password', form, false) as ApiService;
+			console.log('Response from forget-password:', data);
+			if (!data.ok) {
+				setError(data.message || t('forgetPassword.error'));
 			} else {
-				navigate('/');
+				setSuccess(data.message || t('forgetPassword.success'));
 			}
-
-			console.log("test4");
 		} catch (err) {
-			setError('Erreur réseau ou serveur.');
+			console.error('Error during password reset:', err);
+			setError(t('forgetPassword.networkError'));
 		} finally {
 			setLoading(false);
 		}
@@ -59,54 +53,36 @@ const IronManLogin: React.FC = () => {
 
 			<form className=" " onSubmit={handleSubmit}>
 				<fieldset className="fieldset bg-base-200 border-base-300 rounded-box w-xs border p-4">
-					<legend className="fieldset-legend">{t('login.title')}</legend>
+					<legend className="fieldset-legend">{t('forgetPassword.title')}</legend>
 
-					<label className="label">{t('login.email')}</label>
+					<label className="label">{t('forgetPassword.email')}</label>
 					<input
-						type="text"
+						type="email"
 						name="email"
 						className="input input-a"
-						placeholder={`  ${t('login.email')}`}
-						onChange={handleChange}
-						required
-					/>
-
-					<label className="label">{t('login.password')}</label>
-					<input
-						type="password"
-						name="password"
-						className="input input-a"
-						placeholder={`  ${t('login.password')}`}
+						placeholder={`  ${t('forgetPassword.email')}`}
 						onChange={handleChange}
 						required
 					/>
 
 					<button className="btn btn-neutral mt-4 text-black" type="submit" disabled={loading}>
-						{loading ? t('login.loading') : t('login.submit')}
+						{loading ? t('forgetPassword.loading') : t('forgetPassword.submit')}
 					</button>
 
 					<div className="flex justify-center mt-4">
-						<Link to="/forget-password" className="link link-hover">
-							{t('login.forgetPassword')}
+						<Link to="/login" className="link link-hover">
+							{t('forgetPassword.backToLogin')}
 						</Link>
-					</div>
-					
-					<div className="flex justify-center mt-4">
-						<GoogleLoginButton textbtn="login" />
 					</div>
 
-					<div className="w-full justify-center items-center">
-						<Link to="/register" className="w-full justify-center items-center">
-							{t('login.registerLink')}
-						</Link>
-					</div>
 					{error && <div style={{ color: '#c20000', marginTop: '16px', textAlign: 'center' }}>{error}</div>}
+					{success && <div style={{ color: '#00c200', marginTop: '16px', textAlign: 'center' }}>{success}</div>}
 				</fieldset>
 			</form>
 		</div>
 	);
 };
 
-export default IronManLogin;
+export default IronManForgetPass;
 
 

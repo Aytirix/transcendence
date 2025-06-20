@@ -154,11 +154,11 @@ export function handleAddUser(ws: WebSocket, player: player): void {
 }
 
 export function handleCreateRoom(ws: WebSocket, player: player, json: any): void {
-	if (!json.name) return sendResponse(ws, 'error', 'error', ['Veuillez spécifier un nom de salle']);
+	if (!json.name) return sendResponse(ws, 'error', 'error', [ws.i18n.t('pacman.error.room.nameRequired')]);
 	StateManager.sendRooms();
-	if (player.room) return sendResponse(ws, 'error', 'error', ['Vous êtes déjà dans une salle']);
-	if (json.name.length < 3 || json.name.length > 15) return sendResponse(ws, 'error', 'error', ['Le nom de la salle doit faire entre 3 et 15 caractères']);
-	if (StateManager.RoomManager.getRoomByName(json.name)) return sendResponse(ws, 'error', 'error', ['Le nom de la salle est déjà utilisé']);
+	if (player.room) return sendResponse(ws, 'error', 'error', [ws.i18n.t('pacman.error.room.alreadyInRoom')]);
+	if (json.name.length < 3 || json.name.length > 15) return sendResponse(ws, 'error', 'error', [ws.i18n.t('pacman.error.room.nameLength')]);
+	if (StateManager.RoomManager.getRoomByName(json.name)) return sendResponse(ws, 'error', 'error', [ws.i18n.t('pacman.error.room.nameAlreadyUsed')]);
 	const room = StateManager.RoomManager.createRoom(player, json.name);
 	player.room = room;
 	StateManager.sendRooms();

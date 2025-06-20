@@ -46,7 +46,7 @@
 		"logout": "Déconnexion réussie."
 	},
 	"user": {
-		"updateSuccess": "Utilisateur mis à jour avec succès.",
+		"updateSuccess": "Vos informations ont été mises à jour avec succès.",
 		"file": {
 			"missing": "Aucun fichier reçu.",
 			"tooLarge": "Fichier trop volumineux (max 3Mo) !",
@@ -99,6 +99,12 @@
 			},
 			"is_public": {
 				"required": "La visibilité de la map est requise."
+			},
+			"room": {
+				"nameRequired": "Veuillez spécifier un nom de salle",
+				"alreadyInRoom": "Vous êtes déjà dans une salle",
+				"nameLength": "Le nom de la salle doit faire entre 3 et 15 caractères",
+				"nameAlreadyUsed": "Le nom de la salle est déjà utilisé"
 			}
 		},
 		"rooms": {
@@ -185,8 +191,10 @@
 			"subjectUpdateEmail": "Transcendence - Confirmez votre nouvelle adresse e-mail",
 			"CreateAccountOk": "Votre compte a été créé avec succès.",
 			"LoginAccountOk": "Vous êtes maintenant connecté.",
-			"UpdateEmailOk": "Votre adresse e-mail a été mise à jour avec succès."
-			
+			"UpdateEmailOk": "Votre adresse e-mail a été mise à jour avec succès.",
+			"forgetPassword": "La demande de réinitialisation de mot de passe a été envoyée à votre adresse e-mail.",
+			"ForgetPasswordOk": "La réinitialisation de votre mot de passe a été effectuée avec succès.",
+			"expiryTime": "minutes"
 		}
 	}
 }

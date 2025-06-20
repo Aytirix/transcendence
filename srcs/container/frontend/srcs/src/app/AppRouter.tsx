@@ -16,6 +16,7 @@ import IronManRegister from './IronManRegister';
 import GroupChatPage from './chat/GroupChatPage';
 import CheckRedirectEmail from './CheckRedirectEmail';
 import FriendPage from './chat/FriendPage';
+import IronManForgetPass from './IronManForgetPass';
 
 // PAGES
 
@@ -34,6 +35,7 @@ class AppRouter extends Component {
 					<Route path="/credits" element={<Credits />} />
 					<Route path="/profile" element={<IronManProfile />} />
 					<Route path="/login" element={<IronManLogin />} />
+					<Route path="/forget-password" element={<IronManForgetPass />} />
 					<Route path="/chat" element={<GroupChatPage />} />
 					<Route path="/friend" element={<FriendPage />} />
 					<Route path="/register" element={<IronManRegister />} />

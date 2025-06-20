@@ -8,7 +8,7 @@ export const login = {
 		properties: {
 			email: { type: 'string', minLength: 3, maxLength: 50 },
 			password: { type: 'string', minLength: 3 },
-			// password: { type: 'string', minLength: 8, maxLength: 25, pattern: '^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,25}$' },
+			// password: { type: 'string', minLength: 8, maxLength: 25, pattern: '^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&.])[A-Za-z\\d@$!%*?&.]{8,25}$' },
 		},
 		required: ['email', 'password'],
 		additionalProperties: false,
@@ -50,7 +50,7 @@ export const register = {
 			email: { type: 'string', minLength: 3, maxLength: 50, format: 'email' },
 			username: { type: 'string', minLength: 3, maxLength: 15, pattern: '^[a-zA-Z0-9]+$' },
 			confirmPassword: { type: 'string', minLength: 3 },
-			// confirmPassword: { type: 'string', minLength: 8, maxLength: 25, pattern: '^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,25}$' },
+			// confirmPassword: { type: 'string', minLength: 8, maxLength: 25, pattern: '^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&.])[A-Za-z\\d@$!%*?&.]{8,25}$' },
 			lang: { type: 'string', enum: ['fr', 'en', 'it', 'es'] },
 		},
 		required: [...login.body.required, 'username', 'confirmPassword'],
@@ -249,15 +249,21 @@ export const verifyCode = {
 		type: 'object',
 		properties: {
 			code: { type: 'string', minLength: 25 },
+			password: { type: 'string', minLength: 8, maxLength: 25, pattern: '^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&.])[A-Za-z\\d@$!%*?&.]{8,25}$' },
+			confirmPassword: { type: 'string', minLength: 8, maxLength: 25, pattern: '^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&.])[A-Za-z\\d@$!%*?&.]{8,25}$' },
 		},
 		required: ['code'],
 		additionalProperties: false,
 		errorMessage: {
 			required: {
 				code: 'errors.code.required',
+				password: 'errors.password.required',
+				confirmPassword: 'errors.password.required',
 			},
 			properties: {
 				code: 'errors.code.invalid',
+				password: 'errors.password.invalid',
+				confirmPassword: '',
 			},
 			additionalProperties: 'errors.NoadditionalProperties',
 		}
@@ -278,6 +284,46 @@ export const verifyCode = {
 	},
 };
 
+export const forgetPassword = {
+	description: 'Réinitialisation du mot de passe',
+	tags: ['Authentification'],
+	body: {
+		type: 'object',
+		properties: {
+			email: { type: 'string', format: 'email', minLength: 3, maxLength: 50 },
+		},
+		required: ['email'],
+		additionalProperties: false,
+		errorMessage: {
+			required: {
+				email: 'errors.email.required',
+			},
+			properties: {
+				email: 'errors.email.invalid',
+			},
+			additionalProperties: 'errors.NoadditionalProperties',
+		}
+	},
+	response: {
+		200: {
+			description: 'Email de réinitialisation envoyé',
+			type: 'object',
+			properties: {
+				message: { type: 'string' },
+			},
+			required: ['message'],
+		},
+		400: {
+			description: 'Format des données incorrect',
+			type: 'object',
+			properties: {
+				message: { type: 'string' },
+			},
+			required: ['message'],
+		},
+	},
+};
+
 export default {
 	login,
 	register,
@@ -287,4 +333,5 @@ export default {
 	authGoogleCallback,
 	UploadAvatar,
 	verifyCode,
+	forgetPassword,
 };

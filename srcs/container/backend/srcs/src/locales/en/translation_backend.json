@@ -1,0 +1,200 @@
+{
+	"required": "Please fill in all required fields.",
+	"errors": {
+		"wsError": "WebSocket Error",
+		"JSONParseError": "Please send a response in JSON format.",
+		"NoadditionalProperties": "No additional properties are allowed.",
+		"code": {
+			"required": "The verification code is required.",
+			"invalid": "The verification code is invalid or has expired.",
+			"notMatching": "The verification code does not match."
+		},
+		"user": {
+			"noChanges": "No changes have been detected."
+		},
+		"email": {
+			"required": "The email address is required.",
+			"alreadyExists": "This email address is already in use.",
+			"invalid": "Please enter a valid email address."
+		},
+		"username": {
+			"required": "The username is required.",
+			"invalid": "The username must contain between 3 and 15 characters, without spaces or special characters.",
+			"alreadyExists": "This username is already taken."
+		},
+		"password": {
+			"required": "The password is required.",
+			"invalid": "The password must contain between 8 and 25 characters, at least one uppercase letter, one lowercase letter, one number and one special character.",
+			"notMatching": "The password and password confirmation do not match."
+		},
+		"lang": {
+			"required": "The language is required.",
+			"invalid": "The language must be fr, en, it or es."
+		}
+	},
+	"login": {
+		"googleAuthFailed": "Google authentication failed, please try again later...",
+		"invalidJwt": "The JWT for Google login is invalid",
+		"missingPayloadData": "The Payload is missing",
+		"passwordNotSet": "Please log in with Google and set a password to use this feature.",
+		"usernameGenerationFailed": "Username generation failed.",
+		"failed": "The email address or password is incorrect.",
+		"success": "You are now logged in.",
+		"alreadyLoggedIn": "You are already logged in.",
+		"notLoggedIn": "Please log in to access this resource.",
+		"welcome": "Please check your email to validate your account.",
+		"logout": "Logout successful."
+	},
+	"user": {
+		"updateSuccess": "Your information has been updated successfully.",
+		"file": {
+			"missing": "No file received.",
+			"tooLarge": "File too large (max 3MB)!",
+			"invalidFormat": "Invalid file format. Accepted formats: JPEG, PNG, WEBP.",
+			"uploadSuccess": "Avatar updated successfully.",
+			"uploadError": "Error uploading avatar.",
+			"failedSave": "Failed to save avatar to database.",
+			"invalidname": "The avatar name is invalid. Please choose from predefined avatars."
+		}
+	},
+	"pacman": {
+		"name_required": "Please specify a room name",
+		"already_in_room": "You are already in a room",
+		"name_length": "The room name must be between 3 and 15 characters",
+		"name_taken": "The room name is already in use",
+		"id_required": "Please specify a room id",
+		"not_found": "The room does not exist",
+		"already_active": "The room is already started",
+		"room_full": "The room is full",
+		"user_id_required_kick": "Please specify the id of the person to kick",
+		"not_owner": "You are not the owner of the room",
+		"user_kicked": "You have been kicked from the room",
+		"kick_success": "The player has been kicked",
+		"user_id_required_set_owner": "Please specify the id of the person to promote",
+		"user_not_in_room": "The player is not in the room",
+		"already_owner": "The player is already the owner",
+		"promoted": "You have been promoted to owner",
+		"promoted_success": "The player has been promoted to owner",
+		"too_many_players": "There cannot be more than 5 players",
+		"direction_required": "Please specify a direction",
+		"invalid_direction": "Direction must be UP, DOWN, LEFT or RIGHT",
+		"not_in_game": "You are not in game",
+		"not_started": "The game is not started",
+		"too_few_players": "At least 2 players are needed to start a game",
+		"success": {
+			"mapDeleted": "The map has been deleted successfully."
+		},
+		"error": {
+			"insertMapError": "Error saving the map to the database.",
+			"mapNotFound": "Unable to find the requested map.",
+			"updateMapError": "Error updating the map in the database.",
+			"deleteMapError": "Error deleting the map from the database.",
+			"name": {
+				"required": "A name for your map is required.",
+				"invalid": "The name must contain between 3 and 20 characters, and can only contain letters, numbers, spaces, hyphens and underscores."
+			},
+			"map": {
+				"idRequired": "A map id is required.",
+				"required": "A map is required."
+			},
+			"is_public": {
+				"required": "Map visibility is required."
+			},
+			"room": {
+				"nameRequired": "Please specify a room name",
+				"alreadyInRoom": "You are already in a room",
+				"nameLength": "The room name must be between 3 and 15 characters",
+				"nameAlreadyUsed": "The room name is already in use"
+			}
+		},
+		"rooms": {
+			"actionNotFound": "Please specify an action.",
+			"YourModeSpectator": "You are in spectator mode",
+			"mustBeInRoom": "You must be in a room"
+		}
+	},
+	"RelationFriends": {
+		"errorSpecifyUserId": "Please specify a user id",
+		"userNotExist": "This user does not exist",
+		"cannotAddYourself": "You cannot send a friend request to yourself",
+		"alreadyFriends": "You are already friends",
+		"userBlockedYou": "{{username}} has blocked you",
+		"youBlockedUser": "You have blocked this user",
+		"friendAlreadySentRequest": "This user has already sent you a friend request",
+		"youAlreadySentRequest": "You have already sent a friend request to this user",
+		"sentFriendRequest": "You have sent a friend request to {{username}}",
+		"receivedFriendRequest": "{{username}} has sent you a friend request",
+		"errorSendingRequest": "Error sending friend request",
+		"errorRemoveFriend": "Error removing friend",
+		"friendRemovedYou": "{{username}} has removed you from their friends",
+		"youRemovedFriend": "You have removed {{username}} from your friends",
+		"errorAcceptRequest": "Error accepting friend request",
+		"errorCreatePrivateGroup": "Error creating private group",
+		"acceptedFriendRequestYou": "You have accepted {{username}}'s friend request",
+		"acceptedFriendRequest": "{{username}} has accepted your friend request",
+		"errorRefuseRequest": "Error refusing friend request",
+		"refusedFriendRequestYou": "You have refused {{username}}'s friend request",
+		"refusedFriendRequest": "{{username}} has refused your friend request",
+		"canceledRequestYou": "You have canceled the friend request to {{username}}",
+		"canceledRequest": "{{username}} has canceled the friend request",
+		"errorBlockingUser": "Error blocking {{username}}",
+		"youBlockedUserNotification": "You have blocked {{username}}",
+		"userBlockedYouNotification": "User {{username}} has blocked you",
+		"errorUnblockingUser": "Error unblocking {{username}}",
+		"youUnblockedUserNotification": "You have unblocked {{username}}",
+		"userUnblockedYouNotification": "{{username}} has unblocked you",
+		"notBlocked": "User {{username}} is not blocked",
+		"noRelationWithUser": "This user has no relationship with you",
+		"cannotUnblockUserWhoBlockedYou": "You cannot unblock a user who has blocked you"
+	},
+	"Chat": {
+		"groupNotFound": "Group not found",
+		"notMemberOfGroup": "You are not a member of this group",
+		"notOwnerOfGroup": "You are not the owner of this group",
+		"messageMissing": "Message missing",
+		"messageTooLong": "Message too long",
+		"errorSendingMessage": "Error sending message",
+		"messageIdMissing": "Message ID missing",
+		"messageNotFound": "Message not found",
+		"groupNameMissing": "Group name missing or too long",
+		"groupNameTooLong": "Group name too long, 25 characters maximum",
+		"mustAddAtLeastOneUser": "You must add at least one user to the group",
+		"errorCreatingGroup": "Error creating group",
+		"groupCreated": "You have created the group {{groupName}}",
+		"addedToGroup": "{{username}} has added you to the group {{groupName}}",
+		"cannotAddToPrivateGroup": "You cannot add users to a private group",
+		"userIdMissing": "User ID missing",
+		"userNotFound": "User not found",
+		"userAlreadyInGroup": "{{username}} is already in the group {{groupName}}",
+		"errorAddingUserToGroup": "Error adding user {{username}} to the group",
+		"userAddedToGroup": "You have added {{username}} to the group {{groupName}}",
+		"userAddedToGroupNotification": "{{username}} has been added to the group {{groupName}}",
+		"cannotRemoveYourself": "You cannot remove yourself from the group",
+		"cannotRemoveFromPrivateGroup": "You cannot remove users from a private group",
+		"userNotInGroup": "{{username}} is not in the group {{groupName}}",
+		"errorRemovingUserFromGroup": "Error removing user {{username}} from group {{groupName}}",
+		"userRemovedFromGroup": "You have removed {{username}} from the group {{groupName}}",
+		"userRemovedFromGroupNotification": "{{username}} has been removed from the group {{groupName}}",
+		"removedFromGroup": "{{username}} has removed you from the group {{groupName}}",
+		"cannotLeaveAsOnlyOwner": "You cannot leave a group where you are the only owner",
+		"errorLeavingGroup": "Error leaving the group {{groupName}}",
+		"leftGroup": "You have left the group {{groupName}}",
+		"userLeftGroup": "{{username}} has left the group {{groupName}}",
+		"cannotDeletePrivateGroup": "You cannot delete a private group",
+		"errorDeletingGroup": "Error deleting the group {{groupName}}",
+		"groupDeleted": "The group {{groupName}} has been deleted",
+		"groupDeletedByUser": "{{username}} has deleted the group {{groupName}}"
+	},
+	"email": {
+		"verificationCode": {
+			"subjectCreateAccount": "Transcendence - Confirm your account creation",
+			"subjectUpdateEmail": "Transcendence - Confirm your new email address",
+			"CreateAccountOk": "Your account has been created successfully.",
+			"LoginAccountOk": "You are now logged in.",
+			"UpdateEmailOk": "Your email address has been successfully updated.",
+			"forgetPassword": "The password reset request has been sent to your email address.",
+			"ForgetPasswordOk": "Your password has been successfully reset.",
+			"expiryTime": "minutes"
+		}
+	}
+}

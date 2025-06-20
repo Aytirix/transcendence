@@ -1,0 +1,200 @@
+{
+	"required": "Si prega di compilare tutti i campi obbligatori.",
+	"errors": {
+		"wsError": "Errore WebSocket",
+		"JSONParseError": "Si prega di inviare una risposta in formato JSON.",
+		"NoadditionalProperties": "Non sono consentite proprietà aggiuntive.",
+		"code": {
+			"required": "Il codice di verifica è obbligatorio.",
+			"invalid": "Il codice di verifica non è valido o è scaduto.",
+			"notMatching": "Il codice di verifica non corrisponde."
+		},
+		"user": {
+			"noChanges": "Non sono state rilevate modifiche."
+		},
+		"email": {
+			"required": "L'indirizzo email è obbligatorio.",
+			"alreadyExists": "Questo indirizzo email è già in uso.",
+			"invalid": "Si prega di inserire un indirizzo email valido."
+		},
+		"username": {
+			"required": "Il nome utente è obbligatorio.",
+			"invalid": "Il nome utente deve contenere tra 3 e 15 caratteri, senza spazi o caratteri speciali.",
+			"alreadyExists": "Questo nome utente è già preso."
+		},
+		"password": {
+			"required": "La password è obbligatoria.",
+			"invalid": "La password deve contenere tra 8 e 25 caratteri, almeno una lettera maiuscola, una lettera minuscola, un numero e un carattere speciale.",
+			"notMatching": "La password e la conferma password non corrispondono."
+		},
+		"lang": {
+			"required": "La lingua è obbligatoria.",
+			"invalid": "La lingua deve essere fr, en, it o es."
+		}
+	},
+	"login": {
+		"googleAuthFailed": "L'autenticazione con Google è fallita, si prega di riprovare più tardi...",
+		"invalidJwt": "Il JWT per l'accesso Google non è valido",
+		"missingPayloadData": "Il Payload è mancante",
+		"passwordNotSet": "Si prega di accedere con Google e impostare una password per utilizzare questa funzionalità.",
+		"usernameGenerationFailed": "Generazione del nome utente fallita.",
+		"failed": "L'indirizzo email o la password è incorretta.",
+		"success": "Ora sei connesso.",
+		"alreadyLoggedIn": "Sei già connesso.",
+		"notLoggedIn": "Si prega di accedere per accedere a questa risorsa.",
+		"welcome": "Si prega di controllare la tua email per convalidare il tuo account.",
+		"logout": "Disconnessione riuscita."
+	},
+	"user": {
+		"updateSuccess": "Le tue informazioni sono state aggiornate con successo.",
+		"file": {
+			"missing": "Nessun file ricevuto.",
+			"tooLarge": "File troppo grande (max 3MB)!",
+			"invalidFormat": "Formato file non valido. Formati accettati: JPEG, PNG, WEBP.",
+			"uploadSuccess": "Avatar aggiornato con successo.",
+			"uploadError": "Errore durante il caricamento dell'avatar.",
+			"failedSave": "Impossibile salvare l'avatar nel database.",
+			"invalidname": "Il nome dell'avatar non è valido. Si prega di scegliere tra gli avatar predefiniti."
+		}
+	},
+	"pacman": {
+		"name_required": "Si prega di specificare un nome della stanza",
+		"already_in_room": "Sei già in una stanza",
+		"name_length": "Il nome della stanza deve essere tra 3 e 15 caratteri",
+		"name_taken": "Il nome della stanza è già in uso",
+		"id_required": "Si prega di specificare un id della stanza",
+		"not_found": "La stanza non esiste",
+		"already_active": "La stanza è già avviata",
+		"room_full": "La stanza è piena",
+		"user_id_required_kick": "Si prega di specificare l'id della persona da espellere",
+		"not_owner": "Non sei il proprietario della stanza",
+		"user_kicked": "Sei stato espulso dalla stanza",
+		"kick_success": "Il giocatore è stato espulso",
+		"user_id_required_set_owner": "Si prega di specificare l'id della persona da promuovere",
+		"user_not_in_room": "Il giocatore non è nella stanza",
+		"already_owner": "Il giocatore è già proprietario",
+		"promoted": "Sei stato promosso proprietario",
+		"promoted_success": "Il giocatore è stato promosso proprietario",
+		"too_many_players": "Non possono esserci più di 5 giocatori",
+		"direction_required": "Si prega di specificare una direzione",
+		"invalid_direction": "La direzione deve essere UP, DOWN, LEFT o RIGHT",
+		"not_in_game": "Non sei in gioco",
+		"not_started": "Il gioco non è iniziato",
+		"too_few_players": "Servono almeno 2 giocatori per iniziare un gioco",
+		"success": {
+			"mapDeleted": "La mappa è stata eliminata con successo."
+		},
+		"error": {
+			"insertMapError": "Errore nel salvataggio della mappa nel database.",
+			"mapNotFound": "Impossibile trovare la mappa richiesta.",
+			"updateMapError": "Errore nell'aggiornamento della mappa nel database.",
+			"deleteMapError": "Errore nell'eliminazione della mappa dal database.",
+			"name": {
+				"required": "È richiesto un nome per la tua mappa.",
+				"invalid": "Il nome deve contenere tra 3 e 20 caratteri, e può contenere solo lettere, numeri, spazi, trattini e underscore."
+			},
+			"map": {
+				"idRequired": "È richiesto un id della mappa.",
+				"required": "È richiesta una mappa."
+			},
+			"is_public": {
+				"required": "La visibilità della mappa è obbligatoria."
+			},
+			"room": {
+				"nameRequired": "Si prega di specificare un nome della stanza",
+				"alreadyInRoom": "Sei già in una stanza",
+				"nameLength": "Il nome della stanza deve essere tra 3 e 15 caratteri",
+				"nameAlreadyUsed": "Il nome della stanza è già in uso"
+			}
+		},
+		"rooms": {
+			"actionNotFound": "Si prega di specificare un'azione.",
+			"YourModeSpectator": "Sei in modalità spettatore",
+			"mustBeInRoom": "Devi essere in una stanza"
+		}
+	},
+	"RelationFriends": {
+		"errorSpecifyUserId": "Si prega di specificare un id utente",
+		"userNotExist": "Questo utente non esiste",
+		"cannotAddYourself": "Non puoi inviare una richiesta di amicizia a te stesso",
+		"alreadyFriends": "Siete già amici",
+		"userBlockedYou": "{{username}} ti ha bloccato",
+		"youBlockedUser": "Hai bloccato questo utente",
+		"friendAlreadySentRequest": "Questo utente ti ha già inviato una richiesta di amicizia",
+		"youAlreadySentRequest": "Hai già inviato una richiesta di amicizia a questo utente",
+		"sentFriendRequest": "Hai inviato una richiesta di amicizia a {{username}}",
+		"receivedFriendRequest": "{{username}} ti ha inviato una richiesta di amicizia",
+		"errorSendingRequest": "Errore nell'invio della richiesta di amicizia",
+		"errorRemoveFriend": "Errore nella rimozione dell'amico",
+		"friendRemovedYou": "{{username}} ti ha rimosso dai suoi amici",
+		"youRemovedFriend": "Hai rimosso {{username}} dai tuoi amici",
+		"errorAcceptRequest": "Errore nell'accettazione della richiesta di amicizia",
+		"errorCreatePrivateGroup": "Errore nella creazione del gruppo privato",
+		"acceptedFriendRequestYou": "Hai accettato la richiesta di amicizia di {{username}}",
+		"acceptedFriendRequest": "{{username}} ha accettato la tua richiesta di amicizia",
+		"errorRefuseRequest": "Errore nel rifiuto della richiesta di amicizia",
+		"refusedFriendRequestYou": "Hai rifiutato la richiesta di amicizia di {{username}}",
+		"refusedFriendRequest": "{{username}} ha rifiutato la tua richiesta di amicizia",
+		"canceledRequestYou": "Hai annullato la richiesta di amicizia a {{username}}",
+		"canceledRequest": "{{username}} ha annullato la richiesta di amicizia",
+		"errorBlockingUser": "Errore nel bloccare {{username}}",
+		"youBlockedUserNotification": "Hai bloccato {{username}}",
+		"userBlockedYouNotification": "L'utente {{username}} ti ha bloccato",
+		"errorUnblockingUser": "Errore nello sbloccare {{username}}",
+		"youUnblockedUserNotification": "Hai sbloccato {{username}}",
+		"userUnblockedYouNotification": "{{username}} ti ha sbloccato",
+		"notBlocked": "L'utente {{username}} non è bloccato",
+		"noRelationWithUser": "Questo utente non ha alcuna relazione con te",
+		"cannotUnblockUserWhoBlockedYou": "Non puoi sbloccare un utente che ti ha bloccato"
+	},
+	"Chat": {
+		"groupNotFound": "Gruppo non trovato",
+		"notMemberOfGroup": "Non sei membro di questo gruppo",
+		"notOwnerOfGroup": "Non sei proprietario di questo gruppo",
+		"messageMissing": "Messaggio mancante",
+		"messageTooLong": "Messaggio troppo lungo",
+		"errorSendingMessage": "Errore nell'invio del messaggio",
+		"messageIdMissing": "ID del messaggio mancante",
+		"messageNotFound": "Messaggio non trovato",
+		"groupNameMissing": "Nome del gruppo mancante o troppo lungo",
+		"groupNameTooLong": "Nome del gruppo troppo lungo, massimo 25 caratteri",
+		"mustAddAtLeastOneUser": "Devi aggiungere almeno un utente al gruppo",
+		"errorCreatingGroup": "Errore nella creazione del gruppo",
+		"groupCreated": "Hai creato il gruppo {{groupName}}",
+		"addedToGroup": "{{username}} ti ha aggiunto al gruppo {{groupName}}",
+		"cannotAddToPrivateGroup": "Non puoi aggiungere utenti a un gruppo privato",
+		"userIdMissing": "ID dell'utente mancante",
+		"userNotFound": "Utente non trovato",
+		"userAlreadyInGroup": "{{username}} è già nel gruppo {{groupName}}",
+		"errorAddingUserToGroup": "Errore nell'aggiungere l'utente {{username}} al gruppo",
+		"userAddedToGroup": "Hai aggiunto {{username}} al gruppo {{groupName}}",
+		"userAddedToGroupNotification": "{{username}} è stato aggiunto al gruppo {{groupName}}",
+		"cannotRemoveYourself": "Non puoi rimuovere te stesso dal gruppo",
+		"cannotRemoveFromPrivateGroup": "Non puoi rimuovere utenti da un gruppo privato",
+		"userNotInGroup": "{{username}} non è nel gruppo {{groupName}}",
+		"errorRemovingUserFromGroup": "Errore nella rimozione dell'utente {{username}} dal gruppo {{groupName}}",
+		"userRemovedFromGroup": "Hai rimosso {{username}} dal gruppo {{groupName}}",
+		"userRemovedFromGroupNotification": "{{username}} è stato rimosso dal gruppo {{groupName}}",
+		"removedFromGroup": "{{username}} ti ha rimosso dal gruppo {{groupName}}",
+		"cannotLeaveAsOnlyOwner": "Non puoi lasciare un gruppo di cui sei l'unico proprietario",
+		"errorLeavingGroup": "Errore nel lasciare il gruppo {{groupName}}",
+		"leftGroup": "Hai lasciato il gruppo {{groupName}}",
+		"userLeftGroup": "{{username}} ha lasciato il gruppo {{groupName}}",
+		"cannotDeletePrivateGroup": "Non puoi eliminare un gruppo privato",
+		"errorDeletingGroup": "Errore nell'eliminazione del gruppo {{groupName}}",
+		"groupDeleted": "Il gruppo {{groupName}} è stato eliminato",
+		"groupDeletedByUser": "{{username}} ha eliminato il gruppo {{groupName}}"
+	},
+	"email": {
+		"verificationCode": {
+			"subjectCreateAccount": "Transcendence - Conferma la creazione del tuo account",
+			"subjectUpdateEmail": "Transcendence - Conferma il tuo nuovo indirizzo email",
+			"CreateAccountOk": "Il tuo account è stato creato con successo.",
+			"LoginAccountOk": "Ora sei connesso.",
+			"UpdateEmailOk": "Il tuo indirizzo email è stato aggiornato con successo.",
+			"forgetPassword": "La richiesta di reimpostazione password è stata inviata al tuo indirizzo email.",
+			"ForgetPasswordOk": "La reimpostazione della tua password è stata completata con successo.",
+			"expiryTime": "minuti"
+		}
+	}
+}

@@ -163,7 +163,7 @@ export const UpdateUser = async (request: FastifyRequest, reply: FastifyReply) =
 	};
 
 	return reply.send({
-		message: `Vos informations ont été mises à jour avec succès.`,
+		message: request.i18n.t('user.updateSuccess'),
 		user: {
 			id: request.session.user.id,
 			email: request.session.user.email,
@@ -337,11 +337,25 @@ export const UploadAvatar = async (request: FastifyRequest, reply: FastifyReply)
 	}
 }
 
+export const ForgetPassword = async (request: FastifyRequest, reply: FastifyReply) => {
+	const { email } = request.body as { email: string };
+	const user = await userModel.getUserByEmail(email);
+	if (user) {
+		user.email = email;
+		request.i18n.changeLanguage(user.lang);
+		await controller2FA.sendForgotPassword(request, user);
+	}
+	return reply.status(200).send({
+		message: request.i18n.t('email.verificationCode.forgetPassword'),
+	});
+}
+
 export default {
 	Login,
 	Register,
 	UpdateUser,
 	Logout,
 	authGoogleCallback,
-	UploadAvatar
+	UploadAvatar,
+	ForgetPassword
 };
