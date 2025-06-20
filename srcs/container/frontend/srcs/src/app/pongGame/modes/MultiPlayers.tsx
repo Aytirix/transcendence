@@ -33,8 +33,6 @@ const MultiPlayers: React.FC = () => {
 			const [isCinematic, setIscinematic] = useState(false);
 			const [parsedData, setParsedData] = useState<Parse | null>(null);
 			const [count, setCount] = useState(3);
-			// const [namePlayer1, setNamePlayer1] = useState();
-			// const [namePlayer2, setNamePlayer2] = useState();
 			const [startReco, setStartReco] = useState(false);
 			const [isWinner, setisWinner] = useState(false);
 			const [waitingPlayers, setWaitingPlayers] = useState(false);
@@ -331,18 +329,18 @@ const MultiPlayers: React.FC = () => {
 							)}
 		
 							{/* Compte à rebours */}
-							{!deleteGo.current && isCinematic && !startReco && (
+							{!deleteGo.current && isCinematic && !startReco && waitingPlayers &&(
 								count > 0 
 									? <h1 className="Start-go">{count}</h1>
 									: <h1 className="Start-go">Go</h1>
 							)}
 
 							{/* waiting Players */}
-							{/* {isCinematic && !startReco && !waitingPlayers && (
+							{isCinematic && !startReco && !waitingPlayers && (
 								<>
 									<h1 className='Start-go' > attente du second joueur </h1>
 								</>
-							)} */}
+							)}
 							{/* Dashboard des scores et exit */}
 							{isCinematic && !isWinner && (
 								<>

@@ -4,8 +4,8 @@ import { WebSocket } from "ws";
 import { pingMonitoring } from "../pongSocketHandler";
 
 export function handlePing(playerInfos: playerStat) {
-	playerInfos.lastping = Date.now();
-	playerInfos.socket.send(JSON.stringify({type: "pong"}));
+		playerInfos.lastping = Date.now();
+		playerInfos.socket.send(JSON.stringify({type: "pong"}));
 }
 
 export function startingPing(sockets: Map<WebSocket, playerStat>) {
@@ -17,11 +17,13 @@ export function startingPing(sockets: Map<WebSocket, playerStat>) {
 				console.log(`Deconnection of player username => ${playerInfos.name}`);
 				playerInfos.resultMatch = "Loose"
 				if (playerInfos.mode === "Multi") {
-					if (playerInfos.name !== playerInfos.game.getPlayer1().getPlayerInfos().name) {
-						playerInfos.game.getPlayer1().getPlayerInfos().resultMatch = "win"
-					}
-					else {
-						playerInfos.game.getPlayer2().getPlayerInfos().resultMatch = "win"
+					if (playerInfos && playerInfos.game) {
+						if (playerInfos.name !== playerInfos.game.getPlayer1().getPlayerInfos().name) {
+							playerInfos.game.getPlayer1().getPlayerInfos().resultMatch = "win"
+						}
+						else {
+							playerInfos.game.getPlayer2().getPlayerInfos().resultMatch = "win"
+						}
 					}
 				}
 				if (playerInfos.game)

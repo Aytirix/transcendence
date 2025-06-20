@@ -2,7 +2,11 @@ import { playerStat } from "../types/playerStat";
 import { waitingID, waitingMulti } from "../state/serverState";
 
 export function handleClose(playerInfos: playerStat) {
-	if (!playerInfos.game) return ;
+	if (!playerInfos.game) {
+		if (playerInfos.mode === "Multi")
+			waitingMulti.delete(playerInfos);
+		return;
+	}
 	playerInfos.game.setStatus("KICKOFF") //deconnexion
 	playerInfos.pauseGame = true;
 	if (playerInfos.mode === "Multi") {
