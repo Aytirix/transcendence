@@ -59,17 +59,14 @@ export default class Engine {
 	 * Ajout d'un joueur au moteur
 	 */
 	private addPlayers(players: player[]): void {
-		// Déterminer les personnages disponibles: Pacman et fantômes
 		const characters = [CharacterType.Pacman, CharacterType.Blinky, CharacterType.Inky, CharacterType.Pinky, CharacterType.Clyde];
 		const usedCharacters = new Set<string>(
 			Array.from(this.players.values()).map(p => p.nameChar)
 		);
 
-		// Forcer l'hote à jouer Pacman si c'est une partie d'entraînement ou s'il n'y a qu'un seul joueur réel
 		let realPlayer = Array.from(players.values()).filter(p => p.id > 0);
 		realPlayer = realPlayer.sort(() => Math.random() - 0.5);
 
-		// Filtrer les personnages disponibles
 		let availableCharacters = characters.filter(c => !usedCharacters.has(c));
 
 		players.forEach(p => {
@@ -77,18 +74,50 @@ export default class Engine {
 			let spawns: vector2[] = [];
 			let player: Ghost | Pacman;
 			let characterType: CharacterType;
-			if ((this.trainingAI && p.username.startsWith('PacmanAI')) || (p.username === realPlayer[0].username)) {
+			
+			// CORRECTION 1 : Vérifier que realPlayer n'est pas vide
+			if ((this.trainingAI && p.username.startsWith('PacmanAI')) || 
+				(realPlayer.length > 0 && p.username === realPlayer[0].username)) {
+				
 				characterType = CharacterType.Pacman;
 				spawns = this.map.getSpawnPositions()[CharacterType.Pacman];
-				spawnIndex = this.players.size % availableCharacters.length;
+				
+				// CORRECTION 2 : Vérifier que spawns existe
+				if (!spawns || spawns.length === 0) {
+					console.error(`No spawn positions found for Pacman`);
+					return;
+				}
+				
+				// CORRECTION 3 : Utiliser spawns.length au lieu de availableCharacters.length
+				spawnIndex = this.players.size % spawns.length;
 				availableCharacters = availableCharacters.filter(c => c !== CharacterType.Pacman);
 			} else {
-				const randomIndex = Math.floor(Math.random() * availableCharacters.length);
-				characterType = availableCharacters[randomIndex];
+				// CORRECTION 4 : Vérifier que availableCharacters n'est pas vide
+				if (availableCharacters.length === 0) {
+					console.error('No available characters left, falling back to default');
+					// Fallback vers un personnage par défaut
+					characterType = CharacterType.Blinky;
+				} else {
+					const randomIndex = Math.floor(Math.random() * availableCharacters.length);
+					characterType = availableCharacters[randomIndex];
+				}
 
 				spawns = this.map.getSpawnPositions()[characterType];
+				
+				// CORRECTION 5 : Vérifier que spawns existe
+				if (!spawns || spawns.length === 0) {
+					console.error(`No spawn positions found for character: ${characterType}`);
+					return;
+				}
+				
 				spawnIndex = this.players.size % spawns.length;
 				availableCharacters = availableCharacters.filter(c => c !== characterType);
+			}
+
+			// CORRECTION 6 : Double vérification avant gridToPixel
+			if (!spawns[spawnIndex]) {
+				console.error(`Spawn position is undefined for character ${characterType} at index ${spawnIndex}`);
+				return;
 			}
 
 			// Conversion grille → pixel en centrant
