@@ -1,6 +1,6 @@
 import { User, Friends, Group } from '@types';
 import executeReq from '@models/database';
-import { map } from '@Pacman/TypesPacman';
+import { map, userStatsPacman } from '@Pacman/TypesPacman';
 import { WebSocketServer, WebSocket } from 'ws';
 
 async function getAllMapsForUser(userId: number): Promise<map[]> {
@@ -160,6 +160,82 @@ async function searchMap(player_id: number, query: string): Promise<map[]> {
 	return maps;
 }
 
+async function getStatisticsForUser(userId: number): Promise<userStatsPacman> {
+	const query = `SELECT id, type, score, death_count, win FROM pacman_stat WHERE user_id = ?`;
+	const statUser: any = await executeReq(query, [userId]);
+
+	// Séparer les stats par type
+	const pacmanStats = statUser.filter((row: any) => row.type === 'pacman');
+	const ghostStats = statUser.filter((row: any) => row.type === 'ghost');
+
+	// Calculer les statistiques agrégées pour Pacman
+	const pacmanGamesPlayed = pacmanStats.length;
+	const pacmanGamesWon = pacmanStats.filter((row: any) => row.win === 1).length;
+	const pacmanGamesLost = pacmanGamesPlayed - pacmanGamesWon;
+	const pacmanWinRate = pacmanGamesPlayed > 0 ? Math.round((pacmanGamesWon / pacmanGamesPlayed) * 100 * 100) / 100 : 0;
+	const pacmanBestScore = pacmanStats.length > 0 ? Math.max(...pacmanStats.map((row: any) => row.score)) : 0;
+	const pacmanAverageScore = pacmanStats.length > 0 ? Math.round((pacmanStats.reduce((sum: number, row: any) => sum + row.score, 0) / pacmanStats.length) * 100) / 100 : 0;
+
+	// Calculer les statistiques agrégées pour Ghost
+	const ghostGamesPlayed = ghostStats.length;
+	const ghostGamesWon = ghostStats.filter((row: any) => row.win === 1).length;
+	const ghostGamesLost = ghostGamesPlayed - ghostGamesWon;
+	const ghostWinRate = ghostGamesPlayed > 0 ? Math.round((ghostGamesWon / ghostGamesPlayed) * 100 * 100) / 100 : 0;
+	const ghostBestScore = ghostStats.length > 0 ? Math.max(...ghostStats.map((row: any) => row.score)) : 0;
+	const ghostAverageScore = ghostStats.length > 0 ? Math.round((ghostStats.reduce((sum: number, row: any) => sum + row.score, 0) / ghostStats.length) * 100) / 100 : 0;
+
+	// Top 3 joueurs pacman
+	const queryPacmanRecords = `
+        SELECT ps.id, ps.score, u.username
+        FROM pacman_stat ps
+        JOIN users u ON ps.user_id = u.id
+        WHERE ps.win = 1 AND ps.type = 'pacman'
+        ORDER BY ps.score DESC
+        LIMIT 3
+    `;
+	const recordPacman: any = await executeReq(queryPacmanRecords);
+
+	// Top 3 joueurs ghost  
+	const queryGhostRecords = `
+        SELECT ps.id, ps.score, u.username
+        FROM pacman_stat ps
+        JOIN users u ON ps.user_id = u.id
+        WHERE ps.win = 1 AND ps.type = 'ghost'
+        ORDER BY ps.score DESC
+        LIMIT 3
+    `;
+	const recordGhost: any = await executeReq(queryGhostRecords);
+
+	return {
+		pacman: {
+			games_played: pacmanGamesPlayed,
+			games_won: pacmanGamesWon,
+			games_lost: pacmanGamesLost,
+			win_rate: pacmanWinRate,
+			best_score: pacmanBestScore,
+			average_score: pacmanAverageScore,
+		},
+		ghosts: {
+			games_played: ghostGamesPlayed,
+			games_won: ghostGamesWon,
+			games_lost: ghostGamesLost,
+			win_rate: ghostWinRate,
+			best_score: ghostBestScore,
+			average_score: ghostAverageScore,
+		},
+		record_pacman: recordPacman.map((row: any) => ({
+			id: row.id,
+			username: row.username,
+			score: row.score,
+		})),
+		record_ghost: recordGhost.map((row: any) => ({
+			id: row.id,
+			username: row.username,
+			score: row.score,
+		})),
+	};
+}
+
 export default {
 	getAllMapsForUser,
 	getMapForUserByName,
@@ -169,4 +245,5 @@ export default {
 	updateMap,
 	deleteMap,
 	searchMap,
+	getStatisticsForUser,
 }
