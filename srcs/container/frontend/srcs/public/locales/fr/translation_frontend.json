@@ -1,9 +1,7 @@
 {
 	"hello": "Bonjour",
-	"test": "Le site web actuel propose une interface moderne et responsive, permettant à chaque utilisateur de naviguer facilement et de gérer son profil en toute sécurité. Les fonctionnalités de base sont en place : inscription, connexion, et visualisation des informations utilisateurs. Le projet Transcendence, développé à l'école 42, s'intègre à cette plateforme en ajoutant une dimension innovante et interactive. Son objectif principal est de créer, directement sur le site, un jeu de Pong multijoueur accessible à tous, avec gestion en temps réel des parties grâce aux websockets. Il intègre aussi des fonctionnalités sociales comme le chat, les invitations, les tournois entre utilisateurs et la gestion de profils personnalisés. Ce projet permet non seulement d'enrichir l'expérience utilisateur, mais aussi de moderniser le site en promouvant l'échange et la compétition amicale. Enfin, Transcendence offre un environnement propice à la collaboration et à la maîtrise des outils de développement web, tout en renforçant l'esprit communautaire au sein de la plateforme.",
 	"logout": "Déconnexion",
-	"profile": "Profile",
-	"username": "nom utilisateur",
+	"username": "Nom d'utilisateur",
 	"password": "Mot de passe",
 	"login": {
 		"title": "Connexion",
@@ -11,6 +9,7 @@
 		"password": "Mot de passe",
 		"submit": "Se connecter",
 		"loading": "Connexion...",
+		"forgetPassword": "Mot de passe oublié ?",
 		"registerLink": "Nouveau héros ? Créer un compte"
 	},
 	"register": {
@@ -23,7 +22,34 @@
 		"submit": "Créer mon compte",
 		"loginLink": "Déjà membre ? Se connecter"
 	},
-	
+	"forgetPassword": {
+		"title": "Mot de passe oublié",
+		"email": "Email",
+		"submit": "Envoyer",
+		"loading": "Envoi en cours...",
+		"success": "Un email de réinitialisation a été envoyé à votre adresse.",
+		"backToLogin": "Retour à la connexion",
+		"error": "Erreur lors de l'envoi de l'email",
+		"networkError": "Erreur réseau ou serveur",
+		"resetPassword": {
+			"title": "Réinitialiser le mot de passe",
+			"password": "Nouveau mot de passe",
+			"confirmPassword": "Confirmer le mot de passe",
+			"submit": "Réinitialiser",
+			"loading": "Réinitialisation en cours...",
+			"success": "Mot de passe réinitialisé avec succès",
+			"passwordMismatch": "Les mots de passe ne correspondent pas",
+			"error": "Erreur lors de la réinitialisation",
+			"passwordRequirements": {
+				"title": "Le mot de passe doit contenir :",
+				"length": "Entre 8 et 25 caractères",
+				"lowercase": "Au moins une minuscule",
+				"uppercase": "Au moins une majuscule",
+				"number": "Au moins un chiffre",
+				"special": "Au moins un caractère spécial (@$!%*?&.)"
+			}
+		}
+	},
 	"project_credits": "Crédits du Projet",
 	"project_transcendence": "Projet Transcendence",
 	"home": {
@@ -190,5 +216,145 @@
 		"title": "Page non trouvée",
 		"message": "Désolé, la page que vous cherchez n'existe pas.",
 		"backToHome": "Retour à l'accueil"
+	},
+	"nav": {
+		"home": "Accueil",
+		"games": "Jeux",
+		"pong": "Pong",
+		"pacman": "Pac-Man",
+		"profile": "Profil",
+		"chat": "Chat",
+		"logout": "Déconnexion"
+	},
+	"profile": {
+		"title": "Profil",
+		"edit": "Modifier le profil",
+		"save": "Sauvegarder",
+		"cancel": "Annuler",
+		"avatar": "Avatar",
+		"changeAvatar": "Changer d'avatar",
+		"uploadAvatar": "Télécharger un avatar",
+		"username": "Nom d'utilisateur",
+		"email": "Email",
+		"language": "Langue",
+		"twoFA": "Authentification à deux facteurs",
+		"enable2FA": "Activer la 2FA",
+		"disable2FA": "Désactiver la 2FA",
+		"statistics": "Statistiques",
+		"matchHistory": "Historique des matchs",
+		"friends": "Amis",
+		"achievements": "Succès"
+	},
+	"chat": {
+		"title": "Chat",
+		"sendMessage": "Envoyer un message",
+		"messagePlaceholder": "Tapez votre message...",
+		"send": "Envoyer",
+		"online": "En ligne",
+		"offline": "Hors ligne",
+		"typing": "en train d'écrire...",
+		"channels": "Canaux",
+		"directMessages": "Messages privés",
+		"createChannel": "Créer un canal",
+		"joinChannel": "Rejoindre un canal",
+		"leaveChannel": "Quitter le canal",
+		"inviteToGame": "Inviter au jeu",
+		"blockUser": "Bloquer l'utilisateur",
+		"unblockUser": "Débloquer l'utilisateur"
+	},
+	"pong": {
+		"title": "Pong",
+		"menu": {
+			"play": "Jouer",
+			"quickMatch": "Match rapide",
+			"createRoom": "Créer une salle",
+			"joinRoom": "Rejoindre une salle",
+			"tournament": "Tournoi",
+			"statistics": "Statistiques",
+			"rules": "Règles"
+		},
+		"game": {
+			"waitingForPlayer": "En attente d'un joueur...",
+			"gameStarting": "La partie commence...",
+			"score": "Score",
+			"pause": "Pause",
+			"resume": "Reprendre",
+			"quit": "Quitter",
+			"winner": "Gagnant",
+			"loser": "Perdant",
+			"draw": "Match nul"
+		},
+		"rules": {
+			"title": "Règles du Pong",
+			"objective": "Objectif : Marquer des points en envoyant la balle dans le but adverse",
+			"controls": "Contrôles : Utilisez les flèches haut/bas ou W/S pour déplacer votre raquette",
+			"scoring": "Score : Premier à 11 points gagne",
+			"powerUps": "Power-ups : Collectez les bonus pour des effets spéciaux"
+		},
+		"statistics": {
+			"title": "Statistiques Pong",
+			"gamesPlayed": "Parties jouées",
+			"gamesWon": "Parties gagnées",
+			"gamesLost": "Parties perdues",
+			"winRate": "Taux de victoire",
+			"totalScore": "Score total",
+			"averageScore": "Score moyen",
+			"bestStreak": "Meilleure série",
+			"ranking": "Classement"
+		}
+	},
+	"common": {
+		"loading": "Chargement...",
+		"error": "Erreur",
+		"success": "Succès",
+		"warning": "Attention",
+		"info": "Information",
+		"confirm": "Confirmer",
+		"cancel": "Annuler",
+		"save": "Sauvegarder",
+		"delete": "Supprimer",
+		"edit": "Modifier",
+		"view": "Voir",
+		"close": "Fermer",
+		"back": "Retour",
+		"next": "Suivant",
+		"previous": "Précédent",
+		"refresh": "Actualiser",
+		"search": "Rechercher",
+		"filter": "Filtrer",
+		"sort": "Trier",
+		"yes": "Oui",
+		"no": "Non",
+		"ok": "OK"
+	},
+	"errors": {
+		"networkError": "Erreur réseau",
+		"serverError": "Erreur serveur",
+		"unknownError": "Erreur inconnue",
+		"validationError": "Erreur de validation",
+		"authenticationError": "Erreur d'authentification",
+		"authorizationError": "Erreur d'autorisation",
+		"notFound": "Non trouvé",
+		"timeout": "Délai d'attente dépassé",
+		"connectionLost": "Connexion perdue"
+	},
+	"validation": {
+		"required": "Ce champ est requis",
+		"email": "Email invalide",
+		"minLength": "Minimum {{min}} caractères",
+		"maxLength": "Maximum {{max}} caractères",
+		"passwordMismatch": "Les mots de passe ne correspondent pas",
+		"invalidCharacters": "Caractères non autorisés",
+		"usernameTaken": "Nom d'utilisateur déjà pris",
+		"emailTaken": "Email déjà utilisé"
+	},
+	"notifications": {
+		"gameInvitation": "Invitation de jeu",
+		"friendRequest": "Demande d'ami",
+		"messageReceived": "Nouveau message",
+		"gameStarted": "Partie commencée",
+		"gameEnded": "Partie terminée",
+		"tournamentStarted": "Tournoi commencé",
+		"achievementUnlocked": "Succès débloqué"
 	}
 }

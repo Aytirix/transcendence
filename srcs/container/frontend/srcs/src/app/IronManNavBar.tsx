@@ -26,7 +26,7 @@ const IronManNavBar: React.FC = () => {
 		return () => document.removeEventListener('mousedown', handleClickOutside);
 	}, [logoMenuOpen]);
 
-	const hideOnPaths = ['/Pacman', '/login', '/register', '/auth/checkCode'];
+	const hideOnPaths = ['/Pacman', '/login', '/register', '/forget-password', '/auth/checkCode'];
 	const loadNavBar = !hideOnPaths.includes(location.pathname) && !location.pathname.startsWith('/Pong');
 
   return (
@@ -62,7 +62,7 @@ const IronManNavBar: React.FC = () => {
                 tabIndex={0}
                 className="menu menu-sm dropdown-content bg-base-300 rounded-box z-1 mt-3 w-30 p-2 shadow">
                 <li>
-                  <a className="justify-between" onClick={() => navigate('/profile')}>{t('profile')}</a>
+                  <a className="justify-between" onClick={() => navigate('/profile')}>{t('profile.title')}</a>
                 </li>
                 <li><a onClick={async () => {
                      await ApiService.get('/logout');

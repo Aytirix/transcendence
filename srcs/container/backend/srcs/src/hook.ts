@@ -28,8 +28,9 @@ export async function registerHook(app: FastifyInstance) {
 				return request.i18n.t(code);
 			});
 
+			const validMessages = messages.filter(msg => msg !== '');
 			return reply.status(400).send({
-				message: messages.join(" | ")
+				message: validMessages.join(" | ")
 			});
 		}
 

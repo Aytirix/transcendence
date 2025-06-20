@@ -1,21 +1,20 @@
 {
 	"hello": "Hola",
-	"test": "El sitio web actual ofrece una interfaz moderna y responsiva, permitiendo a cada usuario navegar fácilmente y gestionar su perfil de forma segura. Las funcionalidades básicas están en su lugar: registro, inicio de sesión y visualización de información de usuarios. El proyecto Transcendence, desarrollado en la escuela 42, se integra en esta plataforma añadiendo una dimensión innovadora e interactiva. Su objetivo principal es crear, directamente en el sitio, un juego Pong multijugador accesible para todos, con gestión en tiempo real de las partidas a través de websockets. También integra funcionalidades sociales como chat, invitaciones, torneos entre usuarios y gestión de perfiles personalizados. Este proyecto no solo enriquece la experiencia del usuario, sino que también moderniza el sitio promoviendo el intercambio y la competencia amistosa. Finalmente, Transcendence ofrece un entorno propicio para la colaboración y el dominio de las herramientas de desarrollo web, fortaleciendo el espíritu comunitario dentro de la plataforma.",
 	"logout": "Cerrar sesión",
-	"profile": "Perfil",
-	"username": "nombre de usuario",
+	"username": "Nombre de usuario",
 	"password": "Contraseña",
 	"login": {
 		"title": "Iniciar sesión",
-		"email": "Email",
+		"email": "Correo electrónico",
 		"password": "Contraseña",
 		"submit": "Iniciar sesión",
-		"loading": "Conectando...",
+		"loading": "Iniciando sesión...",
+		"forgetPassword": "¿Olvidaste tu contraseña?",
 		"registerLink": "¿Nuevo héroe? Crear una cuenta"
 	},
 	"register": {
 		"title": "Registro",
-		"email": "Email",
+		"email": "Correo electrónico",
 		"username": "Nombre de usuario",
 		"password": "Contraseña",
 		"confirmPassword": "Confirmar contraseña",
@@ -23,24 +22,51 @@
 		"submit": "Crear mi cuenta",
 		"loginLink": "¿Ya eres miembro? Iniciar sesión"
 	},
-	
-	"project_credits": "Créditos del proyecto",
+	"forgetPassword": {
+		"title": "Contraseña olvidada",
+		"email": "Correo electrónico",
+		"submit": "Enviar",
+		"loading": "Enviando...",
+		"success": "Se ha enviado un correo de restablecimiento a tu dirección.",
+		"backToLogin": "Volver al inicio de sesión",
+		"error": "Error al enviar el correo",
+		"networkError": "Error de red o servidor",
+		"resetPassword": {
+			"title": "Restablecer contraseña",
+			"password": "Nueva contraseña",
+			"confirmPassword": "Confirmar contraseña",
+			"submit": "Restablecer",
+			"loading": "Restableciendo...",
+			"success": "Contraseña restablecida con éxito",
+			"passwordMismatch": "Las contraseñas no coinciden",
+			"error": "Error al restablecer",
+			"passwordRequirements": {
+				"title": "La contraseña debe contener:",
+				"length": "Entre 8 y 25 caracteres",
+				"lowercase": "Al menos una minúscula",
+				"uppercase": "Al menos una mayúscula",
+				"number": "Al menos un número",
+				"special": "Al menos un carácter especial (@$!%*?&.)"
+			}
+		}
+	},
+	"project_credits": "Créditos del Proyecto",
 	"project_transcendence": "Proyecto Transcendence",
 	"home": {
 		"welcome_to_transcendence": "Bienvenido a Transcendence",
-		"experience_classic_games": "Experimenta juegos clásicos reimaginados con tecnología moderna",
+		"experience_classic_games": "Descubre juegos clásicos reinventados con tecnología moderna",
 		"epic_games": "Juegos Épicos",
 		"hours_of_fun": "Horas de Diversión",
-		"school_spirit": "Espíritu Escolar",
+		"school_spirit": "Espíritu 42",
 		
-		"choose_your_adventure": "Elige tu Aventura",
-		"classic_pong_description": "El clásico juego Pong con un toque moderno y multijugador",
-		"classic_pacman_description": "El icónico Pac-Man con características mejoradas",
-		"multiplayer": "Multiplayer",
+		"choose_your_adventure": "Elige tu aventura",
+		"classic_pong_description": "El clásico juego de Pong con un toque moderno y multijugador",
+		"classic_pacman_description": "El icónico Pac-Man con funcionalidades mejoradas",
+		"multiplayer": "Multijugador",
 		"real_time": "Tiempo real",
 		"competitive": "Competitivo",
 		"retro_arcade": "Arcade retro",
-		"high_scores": "Puntuaciones altas",
+		"high_scores": "Mejores puntuaciones",
 		"nostalgic": "Nostálgico",
 		"play_now": "Jugar ahora",
 		
@@ -53,30 +79,30 @@
 		"contributions_title": "Contribuciones",
 		"role" : {
 			"lead": "Desarrollador principal",
-			"pongFullstack": "Desarrollador Fullstack de Pong",
+			"pongFullstack": "Desarrollador Fullstack Pong",
 			"generalFrontend": "Desarrollador Frontend general",
-			"pacManFrontend": "Desarrollador Frontend de Pac-Man"
+			"pacManFrontend": "Desarrollador Frontend Pac-Man"
 		},
 		"contributions": {
 			"projectArchitecture": "Arquitectura del proyecto (excepto Pong)",
 			"userAuthentication": "Autenticación de usuario (registro, inicio de sesión)",
-			"googleOAuthIntegration": "Integración con Google OAuth",
+			"googleOAuthIntegration": "Integración Google OAuth",
 			"twoFAImplementation": "Implementación de 2FA",
-			"pacManBackend": "Backend de Pac-Man",
+			"pacManBackend": "Backend Pac-Man",
 			"chatSystemBackend": "Backend del sistema de chat",
 			"projectConfiguration": "Configuración del proyecto (Docker)",
 			"databaseDesign": "Diseño y gestión de la base de datos",
 			"avatarManagementSystem": "Sistema de gestión de avatares",
 			"completePongDevelopment": "Desarrollo completo del juego Pong",
-			"pongFrontendInterface": "Interfaz frontend de Pong",
-			"pongBackendLogic": "Lógica backend de Pong",
+			"pongFrontendInterface": "Interfaz frontend Pong",
+			"pongBackendLogic": "Lógica backend Pong",
 			"realTimeMultiplayerSystem": "Sistema multijugador en tiempo real",
 			"uiUxDesign": "Diseño UI/UX",
-			"gameMatchmaking": "Emparejamiento de partidas",
-			"pongStatisticsScoring": "Estadísticas y puntuación de Pong",
+			"gameMatchmaking": "Sistema de emparejamiento",
+			"pongStatisticsScoring": "Estadísticas y puntuación Pong",
 			"loginRegisterInterfaces": "Interfaces de inicio de sesión/registro",
-			"userProfileManagement": "Gestión de perfil de usuario",
-			"avatarUploadSystem": "Sistema de subida de avatares",
+			"userProfileManagement": "Gestión del perfil de usuario",
+			"avatarUploadSystem": "Sistema de carga de avatar",
 			"navigationBar": "Barra de navegación",
 			"chatSystemFrontend": "Frontend del sistema de chat",
 			"pacManGameInterface": "Interfaz del juego Pac-Man",
@@ -84,42 +110,42 @@
 			"gameMechanicsImplementation": "Implementación de mecánicas de juego",
 			"statisticsDashboard": "Panel de estadísticas",
 			"gameLobbySystem": "Sistema de lobby de juego",
-			"playerProgressionTracking": "Seguimiento de la progresión del jugador"
+			"playerProgressionTracking": "Seguimiento del progreso de jugadores"
 		}
 	},
 
 	"pacman": {
 		"title": "Pacman",
-		"menu": {
+		"menu" : {
 			"home": "Inicio",
 			"lobby": {
 				"button": "Lobby",
 				"gameNamePlaceholder": "Nombre de la sala",
-				"create": "Crear sala",
+				"create": "Crear una sala",
 				"join": "Unirse",
 				"noGamesFound": "No se encontraron salas",
 				"gameForm": {
 					"map": "Mapa:",
-					"mapPlaceholder": "Seleccione un mapa",
+					"mapPlaceholder": "Selecciona un mapa",
 					"quit": "Salir de la sala",
 					"startGame": "Iniciar partida",
 					"waitingForPlayers": "Esperando jugadores"
 				}
 			},
-			"liveGames": {
+			"liveGames" : {
 				"button": "En vivo",
 				"title": "Partidas en curso",
 				"noGamesFound": "No hay partidas en curso",
-				"spectate": "Espectar"
+				"spectate": "Espectador"
 			},
 			"rules": {
 				"button": "Reglas",
 				"title": "Reglas del juego",
-				"content1": "Pacman es un juego de arcade clásico donde el jugador controla a Pacman, una criatura amarilla que se mueve por un laberinto para comer píldoras mientras evita a los fantasmas.",
+				"content1": "Pacman es un juego de arcade clásico donde el jugador controla a Pacman, una criatura amarilla que se mueve por un laberinto para comer pastillas mientras evita a los fantasmas.",
 				"content2": "Esta versión de Pacman reinventa el clásico en modo multijugador (de 2 a 5 jugadores).",
-				"content3": "Cuando hay menos de 5 jugadores, computadoras completan la partida.",
+				"content3": "Cuando hay menos de 5 jugadores presentes, las computadoras completan la partida.",
 				"content4": "Cada jugador controla un personaje diferente: Pacman, Clyde, Pinky, Inky o Blinky.",
-				"content5": "El objetivo de Pacman es comer todas las píldoras para ganar (tiene tres vidas), mientras que los fantasmas deben cooperar para eliminarlo.",
+				"content5": "El objetivo de Pacman es comer todas las pastillas para ganar (tiene tres vidas), mientras que los fantasmas deben cooperar para eliminarlo.",
 				"footer": "¡Diviértete!"
 			},
 			"statistics": {
@@ -130,7 +156,7 @@
 				"gamesLost": "Partidas perdidas",
 				"winRate": "Tasa de victoria",
 				"bestScore": "Mejor puntuación",
-				"averageScore": "Puntuación media",
+				"averageScore": "Puntuación promedio",
 				"leaderboard": "Clasificación",
 				"noStats": "No hay estadísticas disponibles",
 				"loading": "Cargando estadísticas...",
@@ -139,7 +165,7 @@
 			"maps": {
 				"button": "Mapa",
 				"title": "Mapas",
-				"content": "Seleccione un mapa para comenzar la partida.",
+				"content": "Selecciona un mapa para comenzar la partida.",
 				"descriptionEditor": "Crea y comparte tus propios mapas con la comunidad.",
 				"editor": "Editor de mapas",
 				"create": "Crear un nuevo mapa",
@@ -148,47 +174,187 @@
 				"valid": "Válido",
 				"invalid": "Inválido",
 				"noMapsFound": "No se encontraron mapas",
-				"suppress": "Eliminar",
+				"suppress" : "Eliminar",
 				"edit": "Editar",
 				"mapEditor": {
-					"title": "Crear un mapa de Pacman",
-					"mapName": "Nombre del mapa",
+					"title": "Crear un mapa Pacman",
+					"mapName": "Nombre del mapa:",
 					"validate": "Validar",
-					"mapNamePlaceholder": "Ingrese el nombre del mapa",
+					"mapNamePlaceholder": "Ingresa el nombre del mapa",
 					"nameExists": "El nombre del mapa ya existe",
-					"mapNameTooShort": "El nombre del mapa es demasiado corto",
-					"mapNameTooLong": "El nombre del mapa es demasiado largo",
-					"save": "Guardar mapa",
+					"mapNameTooShort": "El nombre del mapa debe tener al menos 3 caracteres",
+					"mapNameTooLong": "El nombre del mapa no debe exceder 30 caracteres",
+					"save": "Guardar el mapa",
 					"mapPreview": "Vista previa del mapa",
 					"console": "Consola",
 					"errors": "❌ Errores en el mapa",
 					"tiles": {
-						"title": "Azulejos",
-						"wall": "Muro",
+						"title": "Fichas",
+						"wall": "Pared",
 						"empty": "Vacío",
-						"pellet": "Píldora",
-						"superPellet": "Súper píldora",
+						"pellet": "Pastilla",
+						"superPellet": "Super pastilla",
 						"door": "Puerta",
 						"tunnel": "Túnel",
-						"pacmanSpawn": "Aparición Pacman",
-						"blinkySpawn": "Aparición Blinky",
-						"inkySpawn": "Aparición Inky",
-						"pinkySpawn": "Aparición Pinky",
-						"clydeSpawn": "Aparición Clyde"
+						"pacmanSpawn": "Spawn Pacman",
+						"blinkySpawn": "Spawn Blinky",
+						"inkySpawn": "Spawn Inky",
+						"pinkySpawn": "Spawn Pinky",
+						"clydeSpawn": "Spawn Clyde"
 					},
-					"addBorders": "Agregar bordes",
+					"addBorders": "Añadir bordes",
 					"back": "Atrás"
 				}
 			}
 		},
 		"game": {
 			"quit": "Salir de la partida",
-			"pacmanLife": "Vida de Pacman"
+			"pacmanLife": "Vida Pacman"
 		}
 	},
 	"pageNotFound": {
 		"title": "Página no encontrada",
-		"message": "Lo sentimos, la página que buscas no existe.",
-		"backToHome": "Volver a la página de inicio"
+		"message": "Lo siento, la página que buscas no existe.",
+		"backToHome": "Volver al inicio"
+	},
+	"nav": {
+		"home": "Inicio",
+		"games": "Juegos",
+		"pong": "Pong",
+		"pacman": "Pac-Man",
+		"profile": "Perfil",
+		"chat": "Chat",
+		"logout": "Cerrar sesión"
+	},
+	"profile": {
+		"title": "Perfil",
+		"edit": "Editar perfil",
+		"save": "Guardar",
+		"cancel": "Cancelar",
+		"avatar": "Avatar",
+		"changeAvatar": "Cambiar avatar",
+		"uploadAvatar": "Subir un avatar",
+		"username": "Nombre de usuario",
+		"email": "Correo electrónico",
+		"language": "Idioma",
+		"twoFA": "Autenticación de dos factores",
+		"enable2FA": "Activar 2FA",
+		"disable2FA": "Desactivar 2FA",
+		"statistics": "Estadísticas",
+		"matchHistory": "Historial de partidas",
+		"friends": "Amigos",
+		"achievements": "Logros"
+	},
+	"chat": {
+		"title": "Chat",
+		"sendMessage": "Enviar mensaje",
+		"messagePlaceholder": "Escribe tu mensaje...",
+		"send": "Enviar",
+		"online": "En línea",
+		"offline": "Desconectado",
+		"typing": "escribiendo...",
+		"channels": "Canales",
+		"directMessages": "Mensajes privados",
+		"createChannel": "Crear un canal",
+		"joinChannel": "Unirse a un canal",
+		"leaveChannel": "Salir del canal",
+		"inviteToGame": "Invitar al juego",
+		"blockUser": "Bloquear usuario",
+		"unblockUser": "Desbloquear usuario"
+	},
+	"pong": {
+		"title": "Pong",
+		"menu": {
+			"play": "Jugar",
+			"quickMatch": "Partida rápida",
+			"createRoom": "Crear una sala",
+			"joinRoom": "Unirse a una sala",
+			"tournament": "Torneo",
+			"statistics": "Estadísticas",
+			"rules": "Reglas"
+		},
+		"game": {
+			"waitingForPlayer": "Esperando a un jugador...",
+			"gameStarting": "La partida está comenzando...",
+			"score": "Puntuación",
+			"pause": "Pausa",
+			"resume": "Reanudar",
+			"quit": "Salir",
+			"winner": "Ganador",
+			"loser": "Perdedor",
+			"draw": "Empate"
+		},
+		"rules": {
+			"title": "Reglas del Pong",
+			"objective": "Objetivo: Anotar puntos enviando la bola a la portería contraria",
+			"controls": "Controles: Usa las flechas arriba/abajo o W/S para mover tu raqueta",
+			"scoring": "Puntuación: El primero en llegar a 11 puntos gana",
+			"powerUps": "Power-ups: Recoge los bonos para efectos especiales"
+		},
+		"statistics": {
+			"title": "Estadísticas Pong",
+			"gamesPlayed": "Partidas jugadas",
+			"gamesWon": "Partidas ganadas",
+			"gamesLost": "Partidas perdidas",
+			"winRate": "Tasa de victoria",
+			"totalScore": "Puntuación total",
+			"averageScore": "Puntuación promedio",
+			"bestStreak": "Mejor racha",
+			"ranking": "Clasificación"
+		}
+	},
+	"common": {
+		"loading": "Cargando...",
+		"error": "Error",
+		"success": "Éxito",
+		"warning": "Advertencia",
+		"info": "Información",
+		"confirm": "Confirmar",
+		"cancel": "Cancelar",
+		"save": "Guardar",
+		"delete": "Eliminar",
+		"edit": "Editar",
+		"view": "Ver",
+		"close": "Cerrar",
+		"back": "Atrás",
+		"next": "Siguiente",
+		"previous": "Anterior",
+		"refresh": "Actualizar",
+		"search": "Buscar",
+		"filter": "Filtrar",
+		"sort": "Ordenar",
+		"yes": "Sí",
+		"no": "No",
+		"ok": "OK"
+	},
+	"errors": {
+		"networkError": "Error de red",
+		"serverError": "Error del servidor",
+		"unknownError": "Error desconocido",
+		"validationError": "Error de validación",
+		"authenticationError": "Error de autenticación",
+		"authorizationError": "Error de autorización",
+		"notFound": "No encontrado",
+		"timeout": "Tiempo de espera agotado",
+		"connectionLost": "Conexión perdida"
+	},
+	"validation": {
+		"required": "Este campo es obligatorio",
+		"email": "Correo electrónico inválido",
+		"minLength": "Mínimo {{min}} caracteres",
+		"maxLength": "Máximo {{max}} caracteres",
+		"passwordMismatch": "Las contraseñas no coinciden",
+		"invalidCharacters": "Caracteres no permitidos",
+		"usernameTaken": "Nombre de usuario ya tomado",
+		"emailTaken": "Correo electrónico ya utilizado"
+	},
+	"notifications": {
+		"gameInvitation": "Invitación de juego",
+		"friendRequest": "Solicitud de amistad",
+		"messageReceived": "Nuevo mensaje",
+		"gameStarted": "Partida iniciada",
+		"gameEnded": "Partida terminada",
+		"tournamentStarted": "Torneo iniciado",
+		"achievementUnlocked": "Logro desbloqueado"
 	}
 }

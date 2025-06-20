@@ -112,7 +112,7 @@ export const sendRegisterVerifyEmail = async (request: FastifyRequest, email: st
 		// Préparer les variables pour le template
 		const templateReplacements = {
 			verificationLink: `${baseUrl}/auth/checkCode?code=${encryptedData}&type=${type}&redirectUrl=/`,
-			expiryTime: '15 minutes',
+			expiryTime: `15 ${request.i18n.t('email.verificationCode.expiryTime')}`,
 		};
 
 		// Envoyer l'email en utilisant la fonction générale
@@ -124,6 +124,35 @@ export const sendRegisterVerifyEmail = async (request: FastifyRequest, email: st
 			request
 		);
 
+		return true;
+	} catch (error) {
+		console.error('Error sending verification code:', error);
+		return false;
+	}
+};
+
+export const sendForgotPassword = async (request: FastifyRequest, user: User): Promise<boolean> => {
+	try {
+		const type = 'forget_password';
+		// Sauvegarder le code en base de données
+		const userCode = await createVerificationCode(user.email, user.username, type, user);
+		if (!userCode) return false;
+		const encryptedData = tools.encrypt(JSON.stringify({ userCode, email: user.email, type, timestamp: Date.now() }));
+		// Récupérer l'URL de base depuis la requête
+		const baseUrl = getBaseUrlFromRequest(request);
+		// Préparer les variables pour le template
+		const templateReplacements = {
+			verificationLink: `${baseUrl}/auth/checkCode?code=${encryptedData}&type=${type}&redirectUrl=/`,
+			expiryTime: `15 ${request.i18n.t('email.verificationCode.expiryTime')}`,
+		};
+		// Envoyer l'email en utilisant la fonction générale
+		await sendTemplateEmail(
+			type,
+			user.email,
+			request.i18n.t('email.verificationCode.subjectForgetPassword'),
+			templateReplacements,
+			request
+		);
 		return true;
 	} catch (error) {
 		console.error('Error sending verification code:', error);
@@ -187,7 +216,7 @@ export async function createVerificationCode(email: string, username: string = n
 }
 
 export async function verifyCode(req: FastifyRequest, reply: FastifyReply) {
-	const { code } = req.body as { code: string };
+	const { code, password, confirmPassword } = req.body as { code: string, password?: string, confirmPassword?: string };
 	const json = tools.decrypt(code);
 	if (!json) {
 		return reply.status(400).send({ success: false, message: i18n.t('errors.code.invalid') });
@@ -207,6 +236,9 @@ export async function verifyCode(req: FastifyRequest, reply: FastifyReply) {
 		if (originalEmail && originalEmail !== req.session.user.email) {
 			return reply.status(400).send({ success: false, message: i18n.t('errors.code.invalid') });
 		}
+	} else if (['forget_password'].includes(type)) {
+		if (!password || !confirmPassword) return reply.status(400).send({ success: false, message: i18n.t('errors.password.missing') });
+		if (password !== confirmPassword) return reply.status(400).send({ success: false, message: i18n.t('errors.password.mismatch') });
 	}
 
 	const isValid = await model2FA.verifyCode(originalEmail || email, type, userCode);
@@ -227,6 +259,15 @@ export async function verifyCode(req: FastifyRequest, reply: FastifyReply) {
 		} else if (type == 'loginAccount_confirm_email' && typeof isValid === 'object') {
 			req.session.user = isValid as User;
 			return reply.status(200).send({ success: true, message: i18n.t('email.verificationCode.LoginAccountOk'), isValid });
+		} else if (type == 'forget_password') {
+			let user = await userModel.getUserByEmail(email);
+			if (!user) {
+				return reply.status(400).send({ success: false, message: i18n.t('errors.code.invalid') });
+			}
+			await userModel.UpdateUser(user.id.toString(), null, null, password);
+			user.email = email;
+			req.session.user = user;
+			return reply.status(200).send({ success: true, message: i18n.t('email.verificationCode.ForgetPasswordOk') });
 		}
 	}
 	return reply.status(400).send({ success: false, message: i18n.t('errors.code.invalid') });
@@ -237,6 +278,7 @@ export default {
 	createVerificationCode,
 	verifyCode,
 	sendRegisterVerifyEmail,
+	sendForgotPassword,
 	sendUpdateVerifyEmail,
 	processTemplate,
 	sendTemplateEmail
