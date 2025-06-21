@@ -74,8 +74,12 @@ const GamePlayers: React.FC<GamePlayersProps> = ({
 					const isBlinking = isFrightened && 
 									   frightenedState?.active && 
 									   frightenedState?.remainingTime !== undefined &&
-									   frightenedState?.remainingTime <= 5 && 
-									   frightenedState?.remainingTime > 0;
+									   (() => {
+									   	   // Support pour millisecondes (>1000) et secondes (<=1000)
+									   	   const time = frightenedState.remainingTime;
+									   	   //const thresholdMs = time > 1000 ? 3000 : 3; // 3000ms ou 3s
+									   	   return time <= 3000;
+									   })();
 					const isReturningToSpawn = gamePlayer.returnToSpawn === true;
 
 					// Sélection du GIF approprié

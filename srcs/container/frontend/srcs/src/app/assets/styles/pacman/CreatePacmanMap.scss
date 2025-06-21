@@ -1,55 +1,8 @@
-// src/components/pacman/CreatePacmanMap.scss
-
-// ========== Variables ==========
-$primary-color: #0000ff;
-$accent-color: #FFEE00;
-$background-dark: #121212;
-$background-darker: #111;
-$background-light: #222;
-$text-color: white;
-$error-color: #ff3333;
-$success-color: #00ff99;
-$tunnel-color: #0066ff;
-
-// Spawn colors
-$spawn-pacman: yellow;
-$spawn-blinky: red;
-$spawn-inky: blue;
-$spawn-pinky: pink;
-$spawn-clyde: orange;
-
-// ========== Mixins ==========
-@mixin button-style {
-	background: linear-gradient(135deg, #333 0%, #555 100%);
-	color: $text-color;
-	border: 1px solid $primary-color;
-	border-radius: 6px;
-	padding: 6px 12px;
-	font-family: inherit;
-	font-size: 0.7rem;
-	cursor: pointer;
-	transition: all 0.3s ease;
-	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-}
-
-@mixin tile-option-style {
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-	cursor: pointer;
-	border: 1px solid transparent;
-	border-radius: 4px;
-	padding: 5px;
-	transition: all 0.2s;
-
-	&:hover {
-		background-color: rgba(255, 255, 255, 0.1);
-	}
-
-	&.selected {
-		border-color: $accent-color;
-		background-color: rgba($accent-color, 0.1);
-	}
+@mixin local-center-absolute {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
 }
 
 @mixin dot-style($size, $color: #ffb8ae) {
@@ -57,843 +10,633 @@ $spawn-clyde: orange;
 	height: $size;
 	background-color: $color;
 	border-radius: 50%;
-	@include center-absolute;
 }
 
-@mixin center-absolute {
-	position: absolute;
-	top: 50%;
-	left: 50%;
-	transform: translate(-50%, -50%);
-}
-
-@mixin panel-style {
-	background: linear-gradient(135deg, rgba(18, 18, 18, 0.95) 0%, rgba(30, 30, 30, 0.9) 100%);
-	border: 1px solid rgba($accent-color, 0.2);
-	border-radius: 8px;
-	padding: 12px;
-	box-shadow: 
-		0 4px 20px rgba(0, 0, 0, 0.5),
-		0 0 0 1px rgba(255, 255, 255, 0.05);
-	backdrop-filter: blur(10px);
-}
-
-@mixin code-style {
-	font-family: 'Courier New', monospace;
-	background-color: #000;
-	padding: 10px;
-	border-radius: 3px;
-	white-space: pre-wrap;
-	overflow-x: auto;
-	font-size: 0.7rem;
-	line-height: 1.2;
-	margin-bottom: 15px;
-}
-
-@mixin grid-cell-style {
-	border: 1px solid #333;
-	display: flex;
-	justify-content: center;
-	align-items: center;
-	position: relative;
-	width: 20px;
-	height: 20px;
-	cursor: pointer;
-
-	&:hover {
-		opacity: 0.8;
-	}
-}
-
-@mixin spawn-style($color) {
-	background-color: $color;
-	color: if(lightness($color) > 60, black, white);
-}
-
-// ========== Components ==========
-// Modal
-.modal-overlay {
-	position: fixed;
-	top: 0;
-	left: 0;
-	width: 100vw;
-	height: 100vh;
-	background: rgba(0, 0, 0, 0.8);
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	z-index: 1000;
-	backdrop-filter: blur(5px);
-
-	.modal-content {
-		background: linear-gradient(135deg, rgba(18, 18, 18, 0.98) 0%, rgba(30, 30, 30, 0.95) 100%);
-		border-radius: 16px;
-		padding: 40px 32px;
-		box-shadow: 
-			0 8px 40px rgba(0, 0, 0, 0.7),
-			0 0 0 1px rgba($accent-color, 0.3);
-		min-width: 500px;
-		text-align: center;
-		display: flex;
-		flex-direction: column;
-		gap: 20px;
-		border: 2px solid rgba($accent-color, 0.5);
-
-		h3 {
-			color: $accent-color;
-			font-size: 1.2rem;
-			margin-bottom: 10px;
-			text-shadow: 0 0 10px rgba($accent-color, 0.5);
-		}
-
-		input {
-			padding: 12px 16px;
-			border-radius: 8px;
-			border: 2px solid rgba($primary-color, 0.5);
-			background: rgba(0, 0, 0, 0.7);
-			color: $text-color;
-			font-size: 1rem;
-			font-family: inherit;
-			width: 100%;
-			margin-bottom: 8px;
-			transition: border-color 0.3s, box-shadow 0.3s;
-
-			&:focus {
-				outline: none;
-				border-color: $accent-color;
-				box-shadow: 0 0 10px rgba($accent-color, 0.3);
-			}
-
-			&::placeholder {
-				color: rgba($text-color, 0.5);
-			}
-		}
-
-		button {
-			@include button-style;
-			width: 100%;
-			font-size: 1rem;
-			margin-top: 10px;
-			padding: 12px 20px;
-			background: linear-gradient(135deg, $primary-color 0%, darken($primary-color, 20%) 100%);
-			border: 2px solid $accent-color;
-			transition: all 0.3s ease;
-
-			&:hover {
-				background: linear-gradient(135deg, $accent-color 0%, darken($accent-color, 20%) 100%);
-				transform: translateY(-2px);
-				box-shadow: 0 4px 15px rgba($accent-color, 0.3);
-			}
-
-			&:active {
-				transform: translateY(0);
-			}
-		}
-
-		.error_name {
-			color: $error-color;
-			font-size: 0.8rem;
-			margin-top: 4px;
-		}
-	}
-}
-
-// Map Name Input
-.map-name {
-	display: flex;
-	align-items: center;
-	gap: 8px;
-	margin-bottom: 10px;
-	z-index: 10;
-	width: 100%;
-	max-width: 1400px;
-	justify-content: center;
-
-	label {
-		font-size: 0.8rem;
-	}
-
-	input {
-		flex: 1;
-		max-width: 250px;
-		background-color: $background-light;
-		border: 2px solid $primary-color;
-		color: $text-color;
-		padding: 5px 8px;
-		border-radius: 4px;
-		font-family: inherit;
-	}
-}
-
-// Toolbar
-.toolbar {
-	display: flex;
-	flex-wrap: wrap;
-	gap: 15px;
-	margin-bottom: 20px;
-	z-index: 10;
-	width: 100%;
-	max-width: 1400px;
-	justify-content: center;
-
-	.tool-group {
-		display: flex;
-		gap: 10px;
-
-		button {
-			@include button-style;
-		}
-	}
-}
-
-// Editor Layout - Styles simplifiés
-.left-panel {
-	display: flex;
-	flex-direction: column;
-	gap: 15px;
-	z-index: 10;
-}
-
-.main-content {
-	flex-grow: 1;
-	display: flex;
-	flex-direction: column;
-	z-index: 10;
-}
-
-// Tile Selector
-.tile-selector {
-	display: grid;
-	grid-template-columns: repeat(2, 1fr);
-	gap: 8px;
-	max-height: 400px;
-	overflow-y: auto;
-	z-index: 10;
-
-	.tile-option {
-		@include tile-option-style;
-
-		.tile {
-			width: 20px;
-			height: 20px;
-			position: relative;
-			margin-bottom: 5px;
-
-			// Tile types
-			&.wall {
-				background-color: $primary-color;
-				border-radius: 3px;
-			}
-
-			&.empty {
-				background-color: $background-darker;
-				border: 1px dashed #444;
-			}
-
-			.dot {
-				@include dot-style(6px);
-			}
-
-			.big-dot {
-				@include dot-style(10px);
-			}
-
-			.door-line {
-				width: 80%;
-				height: 2px;
-				background-color: #ffd700;
-				@include center-absolute;
-			}
-
-			&.tunnel {
-				border: 2px solid $tunnel-color;
-				border-radius: 50%;
-				display: flex;
-				justify-content: center;
-				align-items: center;
-				color: $tunnel-color;
-				font-weight: bold;
-				font-size: 12px;
-			}				// Spawn points
-				&.spawn {
-					display: flex;
-					justify-content: center;
-					align-items: center;
-					font-weight: bold;
-					font-size: 8px;
-					border-radius: 50%;
-
-					&.spawn-pacman {
-						@include spawn-style($spawn-pacman);
-					}
-
-					&.spawn-blinky {
-						@include spawn-style($spawn-blinky);
-					}
-
-					&.spawn-inky {
-						@include spawn-style($spawn-inky);
-					}
-
-					&.spawn-pinky {
-						@include spawn-style($spawn-pinky);
-					}
-
-					&.spawn-clyde {
-						@include spawn-style($spawn-clyde);
-					}
-				}
-			}
-
-			span {
-				font-size: 0.5rem;
-				text-align: center;
-				max-width: 100%;
-				overflow: hidden;
-				text-overflow: ellipsis;
-				line-height: 1.1;
-			}
-		}
-	}
-
-	// Console intégrée dans le right-panel - Compact et visible
-	.map-console {
-		@include panel-style;
-		height: 100%;
-		min-height: 200px;
-		max-height: 400px;
-		
-		h3 {
-			color: #3b82f6;
-			font-size: 0.8rem;
-			margin-bottom: 8px;
-			font-family: 'Press Start 2P', cursive;
-			text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
-		}
-
-		.console-output {
-			@include code-style;
-			color: #0f0;
-			min-height: 100px;
-			max-height: 300px;
-			overflow-y: auto;
-			font-size: 0.6rem;
-		}
-	}
-
-	// Grid Cell Styles
-	.grid-cell {
-		@include grid-cell-style;
-		z-index: 10;
-
-		&.wall {
-			background-color: $primary-color;
-		}
-
-		&.tunnel {
-			border: 0.6px solid $tunnel-color;
-			border-radius: 50%;
-			display: flex;
-			justify-content: center;
-			align-items: center;
-			color: $tunnel-color;
-			font-weight: bold;
-			font-size: 10px;
-		}
-
-		&.empty {
-			background-color: $background-darker;
-		}
-
-		.dot {
-			@include dot-style(6px);
-		}
-
-		.big-dot {
-			@include dot-style(10px);
-		}
-
-		.door-line {
-			width: 80%;
-			height: 2px;
-			background-color: #ffd700;
-		}
-	}
-
-	// Tunnel Pairing Visual Feedback
-	.tunnel-paired {
-		box-shadow: 0 0 8px 2px $success-color, 0 0 0 2px $success-color inset;
-		border-color: $success-color !important;
-		background-color: darken($success-color, 70%) !important;
-		transition: box-shadow 0.2s, border-color 0.2s, background-color 0.2s;
-	}
-
-	.tunnel-unpaired {
-		box-shadow: 0 0 8px 2px $error-color, 0 0 0 2px $error-color inset;
-		border-color: $error-color !important;
-		background-color: darken($error-color, 70%) !important;
-		transition: box-shadow 0.2s, border-color 0.2s, background-color 0.2s;
-	
-}
-
-// ========== Animations ==========
-@keyframes pulse {
-	0% {
-		transform: translate(-50%, -50%) scale(1);
-	}
-
-	50% {
-		transform: translate(-50%, -50%) scale(1.1);
-	}
-
-	100% {
-		transform: translate(-50%, -50%) scale(1);
-	}
-}
-
-@keyframes neon-pulse {
-	from {
-		text-shadow: 
-			2px 2px 0px #000,
-			0 0 10px $accent-color;
-	}
-	to {
-		text-shadow: 
-			2px 2px 0px #000,
-			0 0 20px $accent-color, 
-			0 0 30px $accent-color, 
-			0 0 40px $accent-color;
-	}
-}
-
-// ========== Base Styles ==========
 .create-pacman-map {
 	display: flex;
 	flex-direction: column;
 	align-items: center;
-	justify-content: flex-start;
-	padding: 10px 15px;
-	color: $text-color;
+	color: white;
 	height: 100vh;
-	max-height: 100vh;
-	overflow: hidden;
-	box-sizing: border-box;
+	overflow: auto;
 	font-family: 'Press Start 2P', cursive;
-	z-index: 10;
-	width: 100vw;
+	padding: 20px;
 
-	// Typography
-	h2 {
-		text-align: center;
-		font-size: 1.1rem;
-		margin: 5px auto 15px auto;
-		max-width: 600px;
-		text-transform: uppercase;
-		letter-spacing: 1px;
-		z-index: 20;
-		position: relative;
+	.modal-overlay {
+		position: fixed;
+		top: 0;
+		left: 0;
+		width: 100vw;
+		height: 100vh;
 		background: rgba(0, 0, 0, 0.8);
-		padding: 8px 16px;
-		border-radius: 6px;
-		border: 2px solid $accent-color;
-		animation: neon-pulse 2s infinite alternate;
-		color: $accent-color;
-		text-shadow: 
-			2px 2px 0px #000,
-			0 0 10px $accent-color;
-		font-family: 'Press Start 2P', cursive;
-	}
-
-	h3 {
-		color: $accent-color;
-		text-shadow: 2px 2px 0px #000;
-		font-size: 0.8rem;
-		margin-bottom: 10px;
-	}
-
-	// Form elements - Plus compact
-	.map-name {
 		display: flex;
 		align-items: center;
-		gap: 8px;
-		margin-bottom: 10px;
-		width: 100%;
-		max-width: 500px;
 		justify-content: center;
-		padding: 8px 15px;
-		background: rgba(0, 0, 0, 0.4);
-		border-radius: 6px;
-		border: 1px solid rgba($accent-color, 0.3);
+		z-index: 1000;
+		backdrop-filter: blur(5px);
 
-		label {
-			font-size: 0.7rem;
-			color: $accent-color;
-			text-shadow: 0 0 5px rgba($accent-color, 0.5);
-			min-width: 70px;
-		}
+		.modal-content {
+			background: #1e293b;
+			border-radius: 12px;
+			padding: 30px;
+			min-width: 400px;
+			border: 2px solid #FFEE00;
+			box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
 
-		input {
-			flex: 1;
-			max-width: 200px;
-			background-color: rgba(0, 0, 0, 0.7);
-			border: 1px solid $primary-color;
-			color: $text-color;
-			padding: 6px 10px;
-			border-radius: 4px;
-			font-family: inherit;
-			font-size: 0.8rem;
-			transition: border-color 0.3s, box-shadow 0.3s;
-
-			&:focus {
-				outline: none;
-				border-color: $accent-color;
-				box-shadow: 0 0 8px rgba($accent-color, 0.3);
+			h3 {
+				color: #FFEE00;
+				font-size: 1.2rem;
+				margin-bottom: 20px;
+				text-align: center;
 			}
-		}
-	}
 
-	// Toolbar - Ultra compact
-	.toolbar {
-		display: flex;
-		flex-wrap: wrap;
-		gap: 8px;
-		margin-bottom: 10px;
-		width: 100%;
-		max-width: 700px;
-		justify-content: center;
-		padding: 8px 15px;
-		background: rgba(0, 0, 0, 0.3);
-		border-radius: 6px;
-		border: 1px solid rgba($primary-color, 0.3);
+			input {
+				width: 100%;
+				padding: 12px;
+				border: 2px solid #374151;
+				background: #374151;
+				color: white;
+				border-radius: 6px;
+				font-size: 1rem;
+				margin-bottom: 10px;
 
-		.tool-group {
-			display: flex;
-			gap: 6px;
+				&:focus {
+					outline: none;
+					border-color: #FFEE00;
+				}
+			}
 
 			button {
-				@include button-style;
-				font-size: 0.7rem;
-				padding: 4px 8px;
+				width: 100%;
+				padding: 12px;
+				background: #2563eb;
+				color: white;
+				border: none;
+				border-radius: 6px;
+				font-size: 1rem;
+				cursor: pointer;
+				margin-top: 10px;
+
+				&:hover {
+					background: #1d4ed8;
+				}
 			}
-		}
 
-		.spawn-counters {
-			display: flex;
-			flex-wrap: wrap;
-			gap: 6px;
-			font-size: 0.6rem;
-
-			.counter {
-				padding: 3px 5px;
-				border-radius: 2px;
-				background-color: rgba(0, 0, 0, 0.3);
+			.error_name {
+				color: #ef4444;
+				font-size: 0.8rem;
+				margin-top: 5px;
 			}
 		}
 	}
-
-	// Editor layout - Arrangement horizontal optimisé pour une seule page
+		
+	.map-name {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		z-index: 10;
+		justify-content: center;
+		border-radius: 15px;
+		padding: 20px;
+		border: 2px solid rgba(#0066ff, 0.4);
+		box-shadow: 
+		0 8px 32px rgba(0, 0, 0, 0.3),
+		inset 0 1px 0 rgba(255, 255, 255, 0.1);
+		position: relative;
+		
+		label {
+			font-size: 0.9rem;
+			margin: 10px;
+			color: #FFEE00;
+		}
+		
+		input {
+			flex: 1;
+			max-width: 300px;
+			background-color: #374151;
+			border: 2px solid rgba(#0066ff, 0.6);
+			color: white;
+			padding: 10px 16px;
+			border-radius: 10px;
+			font-size: 0.9rem;
+			font-family: inherit;
+			
+			&:focus {
+			///	outline: none;
+				border-color: #FFEE00;
+				box-shadow: 
+				0 0 15px rgba(#FFEE00, 0.4),
+				inset 0 2px 4px rgba(0, 0, 0, 0.3);
+				transform: translateY(-1px);
+			}
+			
+			&::placeholder {
+				color: rgba(white, 0.6);
+			}
+		}
+	}
+	.tunnel-paired {
+		box-shadow: 0 0 8px 2px #00ff99, 0 0 0 2px #00ff99 inset;
+		border-color: #00ff99 !important;
+		background-color: darken(#00ff99, 70%) !important;
+		transition: box-shadow 0.2s, border-color 0.2s, background-color 0.2s;
+	}
+	
+	.tunnel-unpaired {
+		box-shadow: 0 0 8px 2px (#ff3333), 0 0 0 2px (#ff3333) inset;
+		border-color: (#ff3333) !important;
+		background-color: darken((#ff3333), 70%) !important;
+		transition: box-shadow 0.2s, border-color 0.2s, background-color 0.2s;
+	}
+		
+	h2 {
+		text-align: center;
+		font-size: 2rem;
+		margin: 20px auto 30px auto;
+		letter-spacing: 2px;
+		z-index: 20;
+		padding: 20px 30px;
+		border-radius: 15px;
+		border: 2px solid #FFEE00;
+		color: #FFEE00;
+		text-shadow: 
+		2px 2px 0px #000,
+		0 0 20px #FFEE00,
+		0 0 40px rgba(#FFEE00, 0.5);
+		font-family: 'Press Start 2P', cursive;
+		position: relative;
+		backdrop-filter: blur(10px);
+		box-shadow: 
+		0 10px 40px rgba(0, 0, 0, 0.5),
+		inset 0 1px 0 rgba(255, 255, 255, 0.1);
+		
+		&::after {
+			content: '';
+			position: absolute;
+			top: -2px;
+			left: -2px;
+			right: -2px;
+			bottom: -2px;
+			border-radius: 15px;
+			z-index: -1;
+			opacity: 0.3;
+		}
+	}
+	
+	h3 {
+		color: #FFEE00;
+		text-shadow: 
+		2px 2px 0px #000,
+		0 0 15px rgba(#FFEE00, 0.7);
+		font-size: 1rem;
+		margin-bottom: 20px;
+	}
+	
+	.right-panel {
+		align-items: center;
+		z-index: 10;
+		.toolbar {
+			display: flex;
+			flex-direction: column;
+			gap: 15px;
+			margin-top: 20px;
+			width: 100%;
+			max-width: 900px;
+			justify-content: center;
+			padding: 20px 30px;
+			//background: linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(51, 65, 85, 0.8) 100%);
+			border-radius: 15px;
+			border: 2px solid rgba(#0066ff, 0.4);
+			backdrop-filter: blur(10px);
+			box-shadow: 
+			0 8px 32px rgba(0, 0, 0, 0.3),
+			inset 0 1px 0 rgba(255, 255, 255, 0.1);
+			
+			.tool-group {
+				display: flex;
+				flex-direction: column;
+				gap: 12px;
+				
+				button {
+					background: #374151;
+					color: white;
+					border: 2px solid #475569;
+					border-radius: 6px;
+					padding: 8px 16px;
+					font-family: inherit;
+					font-size: 0.8rem;
+					cursor: pointer;
+					transition: all 0.2s ease;
+					width: 100%;
+					
+					&:hover {
+						background: #475569;
+					}
+					
+					&:nth-child(2) { // Save button
+						background: #059669;
+						border-color: #10b981;
+						
+						&:hover {
+							background: #047857;
+						}
+					}
+					
+					&:nth-child(3) { // Cancel button
+						background: #dc2626;
+						border-color: #ef4444;
+						
+						&:hover {
+							background: #b91c1c;
+						}
+					}
+				}
+			}
+		}
+	}
+	
+	// Layout components améliorés
+	.left-panel {
+		width: 280px;
+		flex-shrink: 0;
+		z-index: 10;
+		//background: linear-gradient(135deg, rgba(30, 41, 59, 0.9) 0%, rgba(51, 65, 85, 0.9) 100%);
+		border-radius: 15px;
+		border: 2px solid rgba(#0066ff, 0.4);
+		padding: 20px;
+		backdrop-filter: blur(10px);
+		box-shadow: 
+		0 10px 40px rgba(0, 0, 0, 0.3),
+		inset 0 1px 0 rgba(255, 255, 255, 0.1);
+	}
+	
+	.main-content {
+		flex-grow: 1;
+		display: flex;
+		flex-direction: column;
+		z-index: 10;
+		max-width: 800px;
+	}
+	
 	.editor-container {
 		display: flex;
 		justify-content: center;
 		align-items: flex-start;
-		gap: 20px;
+		gap: 30px;
 		width: 100%;
 		max-width: 1200px;
-		margin: 0 auto;
-		flex: 1;
-		min-height: 0;
+		margin: 0 auto 30px auto;
 	}
-
-	.left-panel {
-		width: 180px;
-		flex-shrink: 0;
-		display: flex;
-		flex-direction: column;
-		gap: 10px;
-		height: 100%;
-	}
-
-	.main-content {
-		flex: 1;
-		display: flex;
-		flex-direction: column;
-		min-width: 400px;
-		max-width: 600px;
-		height: 100%;
-	}
-
-	// Console intégrée à droite de l'éditeur
-	.right-panel {
-		width: 250px;
-		flex-shrink: 0;
-		display: flex;
-		flex-direction: column;
-		gap: 10px;
-		height: 100%;
-	}
-
-	// Tile selector - Plus compact
+	
+	// Tile selector amélioré
 	.tile-selector {
 		display: grid;
-		grid-template-columns: repeat(2, 1fr);
-		gap: 4px;
-		max-height: 280px;
-		overflow-y: auto;
-
+		grid-template-columns: repeat(3, 1fr);
+		gap: 10px;
+		max-height: 600px;
+		padding-right: 8px;
+		
+		// Scrollbar personnalisée
+		&::-webkit-scrollbar {
+			width: 8px;
+		}
+		
+		&::-webkit-scrollbar-track {
+			background: rgba(0, 0, 0, 0.2);
+			border-radius: 4px;
+		}
+		
+		&::-webkit-scrollbar-thumb {
+			border-radius: 4px;
+			transition: all 0.3s ease;
+		}
+		
 		.tile-option {
-			@include tile-option-style;
-			padding: 3px;
-
+			padding: 12px;
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+			cursor: pointer;
+			border: 2px solid transparent;
+			border-radius: 12px;
+			transition: all 0.3s ease;
+			background: linear-gradient(135deg, rgba(51, 65, 85, 0.6) 0%, rgba(71, 85, 105, 0.6) 100%);
+			backdrop-filter: blur(5px);
+			position: relative;
+			overflow: hidden;
+			
+			&:hover {
+				background: linear-gradient(135deg, rgba(71, 85, 105, 0.8) 0%, rgba(100, 116, 139, 0.8) 100%);
+				transform: translateY(-2px);
+				box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+			}
+			
+			&.selected {
+				border-color: #FFEE00;
+				background: linear-gradient(135deg, rgba(#FFEE00, 0.2) 0%, rgba(#FFEE00, 0.1) 100%);
+				box-shadow: 
+				0 0 20px rgba(#FFEE00, 0.3),
+				0 8px 25px rgba(0, 0, 0, 0.3);
+				transform: translateY(-2px);
+			}
 			.tile {
-				width: 16px;
-				height: 16px;
+				width: 24px;
+				height: 24px;
 				position: relative;
-				margin-bottom: 3px;
-
-				// Tile types
+				margin-bottom: 8px;
+				border-radius: 4px;
+				transition: all 0.3s ease;
+				
+				// Tile types avec des styles améliorés
 				&.wall {
-					background-color: #0000ff;
-					border-radius: 2px;
+					background: linear-gradient(135deg, #0066ff 0%, #0052cc 100%);
+					border-radius: 4px;
+					box-shadow: 
+					0 0 10px rgba(#0066ff, 0.5),
+					inset 0 1px 0 rgba(255, 255, 255, 0.2);
 				}
-
+				
 				&.empty {
-					background-color: #111;
-					border: 1px dashed #444;
+					background: linear-gradient(135deg, #1f2937 0%, #374151 100%);
+					border: 2px dashed rgba(#6b7280, 0.7);
+					border-radius: 4px;
 				}
-
+				
 				.dot {
-					@include dot-style(4px);
+					@include dot-style(7px, #ffeb3b);
+					@include local-center-absolute;
+					box-shadow: 0 0 8px rgba(#ffeb3b, 0.6);
 				}
-
+				
 				.big-dot {
-					@include dot-style(7px);
+					@include dot-style(12px, #ffeb3b);
+					@include local-center-absolute;
+					box-shadow: 0 0 15px rgba(#ffeb3b, 0.8);
+					animation: pulse 2s infinite;
 				}
-
+				
+				@keyframes pulse {
+					0%, 100% { transform: translate(-50%, -50%) scale(1); }
+					50% { transform: translate(-50%, -50%) scale(1.1); }
+				}
+				
 				.door-line {
 					width: 80%;
-					height: 2px;
-					background-color: #ffd700;
-					@include center-absolute;
+					height: 3px;
+					background: linear-gradient(90deg, #ffd700 0%, #ffeb3b 100%);
+					@include local-center-absolute;
+					border-radius: 2px;
+					box-shadow: 0 0 8px rgba(#ffd700, 0.6);
 				}
-
+				
 				&.tunnel {
-					border: 1px solid #0066ff;
+					border: 3px solid #00ccff;
 					border-radius: 50%;
 					display: flex;
 					justify-content: center;
 					align-items: center;
-					color: #0066ff;
+					color: #00ccff;
 					font-weight: bold;
-					font-size: 8px;
+					font-size: 11px;
+					background: linear-gradient(135deg, rgba(#00ccff, 0.2) 0%, rgba(#0099cc, 0.2) 100%);
+					box-shadow: 
+					0 0 15px rgba(#00ccff, 0.5),
+					inset 0 1px 0 rgba(255, 255, 255, 0.1);
 				}
-
-				// Spawn points
+				
+				// Spawn points avec des styles améliorés
 				&.spawn {
 					display: flex;
 					justify-content: center;
 					align-items: center;
 					font-weight: bold;
-					font-size: 12px;
+					font-size: 14px;
 					border-radius: 50%;
-
+					box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+					position: relative;
+					
 					&.spawn-pacman {
-						background-color: yellow;
+						background: linear-gradient(135deg, #ffeb3b 0%, #ffc107 100%);
 						color: black;
 					}
-
+					
 					&.spawn-blinky {
-						background-color: red;
+						background: linear-gradient(135deg, #f44336 0%, #d32f2f 100%);
 						color: white;
 					}
-
+					
 					&.spawn-inky {
-						background-color: blue;
+						background: linear-gradient(135deg, #2196f3 0%, #1976d2 100%);
 						color: white;
 					}
-
+					
 					&.spawn-pinky {
-						background-color: pink;
-						color: black;
+						background: linear-gradient(135deg, #e38ada 0%, #ca3eca 100%);
+						color: white;
 					}
-
+					
 					&.spawn-clyde {
-						background-color: orange;
-						color: black;
+						background: linear-gradient(135deg, #ff9800 0%, #be6002 100%);
+						color: white;
 					}
 				}
 			}
-
+			
 			span {
-				font-size: 0.6rem;
+				font-size: 0.7rem;
 				text-align: center;
-				max-width: 100%;
 				overflow: hidden;
-				text-overflow: ellipsis;
+				color: #e5e7eb;
+				font-weight: 600;
+				text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+				margin-top: 4px;
 			}
 		}
 	}
-
-	// Map editor
 	.map-editor {
 		flex-grow: 1;
-
+		display: flex;
+		justify-content: center;
+		
 		.grid-container {
 			display: inline-flex;
 			flex-direction: column;
-			border: 2px solid #0000ff;
-			background-color: #000;
-
+			border: 3px solid #0066ff;
+			border-radius: 2px;
+			position: relative;
+			
+			
 			.grid-row {
 				display: flex;
 			}
-
+			
 			.grid-cell {
-				@include grid-cell-style;
-
-				.dot {
-					@include dot-style(6px);
+				border: 1px solid rgba(#333, 0.7);
+				display: flex;
+				justify-content: center;
+				align-items: center;
+				position: relative;
+				width: 24px;
+				height: 24px;
+				cursor: pointer;
+				transition: all 0.2s ease;
+				background: linear-gradient(135deg, #111 0%, #222 100%);
+				
+				&:hover {
+					background: linear-gradient(135deg, #333 0%, #444 100%);
+					transform: scale(1.05);
+					z-index: 10;
+					box-shadow: 0 0 15px rgba(#FFEE00, 0.5);
 				}
-
-				.big-dot {
-					@include dot-style(10px);
+				
+				&.wall {
+					background: linear-gradient(135deg, #0066ff 0%, #0052cc 100%);
 				}
-
-				.door-line {
-					width: 80%;
-					height: 2px;
-					background-color: #ffd700;
-				}
-
-				.spawn-label {
+				
+				&.tunnel {
+					border: 2px solid #00ccff;
+					border-radius: 50%;
+					display: flex;
+					justify-content: center;
+					align-items: center;
+					color: #00ccff;
 					font-weight: bold;
 					font-size: 12px;
-					z-index: 1;
+					background: linear-gradient(135deg, rgba(#00ccff, 0.2) 0%, rgba(#0099cc, 0.2) 100%);
+					box-shadow: 0 0 15px rgba(#00ccff, 0.5);
+				}
+				
+				&.empty {
+					background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%);
+				}
+				
+				.dot {
+					@include dot-style(4px, #ffeb3b);
+				}
+				
+				.big-dot {
+					@include dot-style(7px, #ffeb3b);
+					animation: pulse 2s infinite;
+				}
+				
+				.door-line {
+					width: 80%;
+					height: 4px;
+					background: linear-gradient(90deg, #ffd700 0%, #ffeb3b 100%);
+					border-radius: 2px;
+					box-shadow: 0 0 10px rgba(#ffd700, 0.7);
+				}
+				
+			}
+			.spawn-pacman {
+				font-size: 10px;
+				color: black;
+				background: linear-gradient(135deg, #ffeb3b 0%, #ffc107 100%);
+			}
+			.spawn-blinky {
+				font-size: 10px;
+				color: white;
+				background: linear-gradient(135deg, #f44336 0%, #d32f2f 100%);
+			}
+			.spawn-inky {
+				font-size: 10px;
+				color: white;
+				background: linear-gradient(135deg, #2196f3 0%, #1976d2 100%);
+			}
+			.spawn-pinky {
+				font-size: 10px;
+				color: white;
+				background: linear-gradient(135deg, #e38ada 0%, #ca3eca 100%);
+			}
+			.spawn-clyde {
+				font-size: 10px;
+				color: white;
+				background: linear-gradient(135deg, #ff9800 0%, #be6002 100%);
+			}
+		}
+	}
+	.map-console {
+		width: 100%;
+		max-width: 1200px;
+		min-height: 200px;
+		max-height: 500px;
+		z-index: 10;
+		background: linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(51, 65, 85) 100%);
+		padding: 20px;
+		border-radius: 15px;
+		border: 2px solid rgba(#3b82f6, 0.6);
+		box-shadow: 
+		0 15px 50px rgba(0, 0, 0, 0.4),
+		inset 0 1px 0 rgba(255, 255, 255, 0.1);
+	
+
+		h3 {
+			color: #60a5fa;
+			font-size: 1.1rem;
+			margin-bottom: 20px;
+			font-family: 'Press Start 2P', cursive;
+			text-shadow: 
+			0 0 15px rgba(#60a5fa, 0.7),
+			0 2px 4px rgba(0, 0, 0, 0.5);
+			text-align: center;
+			position: relative;
+		}
+		.console-output {
+			background: #000;
+		}
+		.console-error {
+			background: linear-gradient(135deg, rgba(239, 68, 68, 0.1) 0%, rgba(220, 38, 38, 0.15) 100%);
+			padding: 15px 20px;
+			margin-bottom: 15px;
+			overflow-y: auto;
+			max-height: 200px;
+			position: relative;
+			border-radius: 5;
+			
+			
+			.error-header {
+				font-weight: bold;
+				margin-bottom: 12px;
+				color: #f56969;
+				font-size: 1rem;
+				text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+			}
+			
+			.error-item {
+				padding: 6px 0;
+				color: #f56969;
+				font-size: 0.9rem;
+				position: relative;
+				padding-left: 20px;
+			}
+			
+			// Scrollbar personnalisée pour les erreurs
+			&::-webkit-scrollbar {
+				width: 10px;
+			}
+			
+			&::-webkit-scrollbar-track {
+				background: rgba(0, 0, 0, 0.2);
+				border-radius: 5px;
+			}
+			
+			&::-webkit-scrollbar-thumb {
+				background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+				border-radius: 5px;
+				transition: all 0.3s ease;
+				
+				&:hover {
+					background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
 				}
 			}
 		}
 	}
-
-	// Console styles pour l'intérieur du composant
-	.map-console {
-		width: 100%;
-		max-width: 1000px;
-		margin: 30px auto 20px auto;
-		align-self: center;
-		z-index: 10;
-		min-height: 200px;
-		@include panel-style;
-
-		h3 {
-			color: #3b82f6;
-			font-size: 0.9rem;
-			margin-bottom: 12px;
-			font-family: 'Press Start 2P', cursive;
-			text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+	@keyframes pulse {
+		0%, 100% {
+			transform: scale(1);
 		}
-
-		.console-output {
-			@include code-style;
-			color: #0f0;
-			min-height: 120px;
-			max-height: 300px;
-			overflow-y: auto;
+		50% {
+			transform: scale(1.02);
 		}
-	}
-
-	.console-error {
-		background-color: rgba(255, 0, 0, 0.1);
-		border-left: 4px solid #ff3333;
-		padding: 8px 12px;
-		margin-bottom: 10px;
-		border-radius: 0 4px 4px 0;
-		overflow-y: auto;
-		max-height: 200px;
-
-		.error-header {
-			font-weight: bold;
-			margin-bottom: 8px;
-			color: #ff3333;
-		}
-
-		.error-list {
-			margin-bottom: 8px;
-
-		}
-
-		.error-item {
-			padding: 3px 0;
-			color: #ff6666;
-
-			&.spawn-error {
-				color: #ff9900;
-			}
-
-			&.pellet-error {
-				color: #ff66cc;
-			}
-		}
-
-		.error-tip {
-			background-color: rgba(255, 255, 255, 0.1);
-			padding: 6px 10px;
-			border-radius: 4px;
-			font-size: 0.9em;
-			color: #aaddff;
-			margin-top: 8px;
-			border-left: 3px solid #3399ff;
-
-			strong {
-				color: #66ccff;
-			}
-		}
-
-		&::-webkit-scrollbar {
-			width: 8px;
-		}
-
-		&::-webkit-scrollbar-track {
-			background: rgba(0, 0, 0, 0.1);
-			border-radius: 4px;
-		}
-
-		&::-webkit-scrollbar-thumb {
-			background: rgba(0, 0, 0, 0.3);
-			border-radius: 4px;
-
-			&:hover {
-				background: rgba(0, 0, 0, 0.5);
-			}
-		}
-
-	}
-}
-
-// Animations
-@keyframes pulse {
-	0% {
-		transform: translate(-50%, -50%) scale(1);
-	}
-
-	50% {
-		transform: translate(-50%, -50%) scale(1.1);
-	}
-
-	100% {
-		transform: translate(-50%, -50%) scale(1);
-	}
-}
-
-@keyframes neon-pulse {
-	from {
-		text-shadow: 
-			2px 2px 0px #000,
-			0 0 10px $accent-color;
-	}
-	to {
-		text-shadow: 
-			2px 2px 0px #000,
-			0 0 20px $accent-color, 
-			0 0 30px $accent-color, 
-			0 0 40px $accent-color;
 	}
 }

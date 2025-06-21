@@ -184,7 +184,7 @@
 					"nameExists": "Le nom de la carte existe déjà",
 					"mapNameTooShort": "Le nom de la carte doit comporter au moins 3 caractères",
 					"mapNameTooLong": "Le nom de la carte ne doit pas dépasser 30 caractères",
-					"save": "Sauvegarder la carte",
+					"save": "Sauvegarder",
 					"mapPreview": "Aperçu de la carte",
 					"console": "Console",
 					"errors": "❌ Erreurs dans la carte",

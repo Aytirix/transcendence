@@ -18,12 +18,10 @@ const MapConsole: React.FC<MapConsoleProps> = ({ maps = [], mapId }) => {
 			<pre className="console-output">
 				{mapWithErrors.map((map, index) => (
 					<div key={index} className="console-error">
-						<div className="error-header">❌ Erreurs dans la carte "{map.name}":</div>
-
-						<div className="error-header">❌ {t("pacman.menu.maps.mapEditor.errors")} "{map.name }"</div>
+						<div className="error-header"> {t("pacman.menu.maps.mapEditor.errors")} "{map.name }"</div>
 						<div className="error-list">
 							{map.errors && map.errors.map((error, errorIndex) => (
-								<div key={errorIndex} className="error-item">• {error}</div>
+								<div key={errorIndex} className="error-item">⚠ {error}</div>
 							))}
 						</div>
 					</div>

@@ -1,5 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { SoundManager } from '../utils/SoundManager';
+import '../../assets/styles/pacman/CreatePacmanMap.scss';
+import '../../assets/styles/pacman/VolumeControl.scss';
+
 
 export const VolumeControl: React.FC = () => {
     const [volume, setVolume] = useState(0.5);
@@ -27,26 +30,8 @@ export const VolumeControl: React.FC = () => {
         }
     };
 
-    const toggleMute = () => {
-        if (volume > 0) {
-            soundManager.setVolume(0);
-            setVolume(0);
-        } else {
-            soundManager.setVolume(0.5);
-            setVolume(0.5);
-        }
-    };
-
     return (
-        <div className="flex items-center gap-3 p-3 bg-black/50 rounded-lg backdrop-blur-sm">
-            <button 
-                onClick={toggleMute}
-                className="text-white hover:text-yellow-400 transition-colors"
-                title={volume === 0 ? 'Unmute' : 'Mute'}
-            >
-                {volume === 0 ? '🔇' : volume < 0.5 ? '🔈' : '🔊'}
-            </button>
-            
+        <div className="volume-control" style={{'--volume-progress': `${volume * 100}%`} as React.CSSProperties}>
             <input
                 type="range"
                 min="0"
@@ -54,27 +39,13 @@ export const VolumeControl: React.FC = () => {
                 step="0.1"
                 value={volume}
                 onChange={handleVolumeChange}
-                className="w-24 h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer slider"
+                className="volume-control__slider"
                 title={`Volume: ${Math.round(volume * 100)}%`}
             />
             
-            <span className="text-white text-sm min-w-[3rem]">
+            <span className="volume-control__volume-text">
                 {Math.round(volume * 100)}%
             </span>
-            
-            <button
-                onClick={handleTestSound}
-                className="text-white hover:text-yellow-400 transition-colors text-sm px-2 py-1 border border-gray-600 rounded"
-                title="Test sound"
-            >
-                Test
-            </button>
-            
-            {!audioEnabled && (
-                <span className="text-red-400 text-xs">
-                    Click to enable audio
-                </span>
-            )}
         </div>
     );
 };

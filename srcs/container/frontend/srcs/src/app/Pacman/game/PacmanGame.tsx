@@ -7,7 +7,6 @@ import {
 	PauseMode, 
 	GameGrid, 
 	GamePlayers, 
-	AudioControls, 
 	GameSidebar,
 	GameContainer
 } from './components';
@@ -50,19 +49,52 @@ const PacmanGame: React.FC<PacmanGameProps> = ({ state }) => {
 				onFirstInteraction={handleFirstInteraction}
 			/>
 
-			<AudioControls 
-				audioEnabled={audioEnabled} 
-				players={players} 
-				state={state} 
-			/>
-
 			<PauseMode 
 				isPaused={state.game.paused.paused}
 				message={state.game.paused.message}
 			/>
 
 			<div className="pacman-map-wrapper">
-				<div className='column-left'></div>
+				<div className='column-left'>
+					{/* Instructions de jeu */}
+					<div className="game-instructions">
+						<h4>Contrôles</h4>
+						<div className="control-item">
+							<span className="key">↑↓←→</span>
+							<span className="action">Déplacer</span>
+						</div>
+						<div className="control-item">
+							<span className="key">WASD</span>
+							<span className="action">Alternatif</span>
+						</div>
+					</div>
+
+					{/* Statistiques de la partie */}
+					<div className="game-stats">
+						<h4>Statistiques</h4>
+						<div className="stat-item">
+							<span className="stat-label">Dots restants:</span>
+							<span className="stat-value">
+								{grid?.join('').split('').filter(cell => cell === '.').length || 0}
+							</span>
+						</div>
+						<div className="stat-item">
+							<span className="stat-label">Power Pills:</span>
+							<span className="stat-value">
+								{grid?.join('').split('').filter(cell => cell === 'o').length || 0}
+							</span>
+						</div>
+					</div>
+
+					{/* État du jeu */}
+					<div className="game-status">
+						<h4>État</h4>
+						<div className="status-indicator">
+							<span className={`status-dot ${state.game.launch ? 'active' : 'inactive'}`}></span>
+							<span className="status-text">{state.game.launch ? 'En cours' : 'En attente'}</span>
+						</div>
+					</div>
+				</div>
 				<GameContainer
 					grid={grid}
 					tileSize={tileSize}
