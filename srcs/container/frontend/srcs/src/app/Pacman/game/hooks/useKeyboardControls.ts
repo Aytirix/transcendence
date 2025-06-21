@@ -16,7 +16,15 @@ export function useKeyboardControls({ ws, onFirstInteraction }: UseKeyboardContr
 			'ArrowUp': 'UP',
 			'ArrowDown': 'DOWN',
 			'ArrowLeft': 'LEFT',
-			'ArrowRight': 'RIGHT'
+			'ArrowRight': 'RIGHT',
+			'w': 'UP',
+			's': 'DOWN',
+			'a': 'LEFT',
+			'd': 'RIGHT',
+			'W': 'UP',
+			'S': 'DOWN',
+			'A': 'LEFT',
+			'D': 'RIGHT'
 		};
 
 		const direction = keyActions[event.key];

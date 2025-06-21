@@ -679,7 +679,7 @@ export default class Engine {
 		this.stop();
 		pacman.life -= 1;
 		pacman.death_count += 1;
-		if (pacman.life >= 0) {
+		if (pacman.life >= 1) {
 			const pacmanId = Array.from(this.players.values()).find(p => p instanceof Pacman)?.player.id;
 			this.reward += -200;
 			this.pause(`Pacman is dead!\nLives remaining ${pacman.life}`);
