@@ -1,0 +1,110 @@
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+@import './general_pacman.scss';
+
+.volume-control {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  display: flex;
+  align-items: center;
+  z-index: 1000;
+  gap: 0.5rem;
+  padding: 0.6rem 1rem;
+  border: 2px solid rgba(255, 238, 0, 0.3);
+  border-radius: 8px;
+  font-family: 'Press Start 2P', cursive;
+
+  &__slider {
+    width: 5rem;
+    height: 0.4rem;
+    border: 1px solid #FFEE00;
+    border-radius: 4px;
+    appearance: none;
+    cursor: pointer;
+    outline: none;
+
+    &::-webkit-slider-thumb {
+      appearance: none;
+      width: 0.8rem;
+      height: 0.8rem;
+      background: #FFEE00;
+      border: 1px solid #000000;
+      border-radius: 2px;
+      cursor: pointer;
+      box-shadow: 0 0 8px rgba(255, 238, 0, 0.6);
+      transition: all 0.25s ease;
+
+      &:hover {
+        transform: scale(1.2);
+        box-shadow: 0 0 15px rgba(255, 238, 0, 0.9);
+      }
+    }
+
+    &::-moz-range-thumb {
+      width: 0.8rem;
+      height: 0.8rem;
+      background: #FFEE00;
+      border: 1px solid #000000;
+      border-radius: 2px;
+      cursor: pointer;
+      box-shadow: 0 0 8px rgba(255, 238, 0, 0.6);
+      transition: all 0.25s ease;
+
+      &:hover {
+        transform: scale(1.2);
+        box-shadow: 0 0 15px rgba(255, 238, 0, 0.9);
+      }
+    }
+
+    &::-webkit-slider-track {
+      background: linear-gradient(to right, 
+        rgba(255, 238, 0, 0.8) 0%, 
+        rgba(255, 238, 0, 0.8) var(--volume-progress, 50%), 
+        rgba(0, 0, 0, 0.6) var(--volume-progress, 50%), 
+        rgba(0, 0, 0, 0.6) 100%);
+      border-radius: 4px;
+      height: 0.4rem;
+      border: 1px solid rgba(255, 238, 0, 0.3);
+    }
+
+    &::-moz-range-track {
+      background: rgba(0, 0, 0, 0.6);
+      border: 1px solid rgba(255, 238, 0, 0.3);
+      border-radius: 4px;
+      height: 0.4rem;
+    }
+
+    &:hover {
+      border-color: #FFEE00;
+      box-shadow: 0 0 8px rgba(255, 238, 0, 0.4);
+    }
+  }
+
+  &__volume-text {
+    color: #FFEE00;
+    font-size: 0.6rem;
+    min-width: 2.5rem;
+    text-align: center;
+    font-weight: 400;
+    text-shadow: 0 0 5px rgba(255, 238, 0, 0.5);
+    font-family: inherit;
+  }
+}
+
+@media (max-width: 640px) {
+  .volume-control {
+    gap: 0.4rem;
+    padding: 0.5rem 0.7rem;
+    top: 15px;
+    right: 15px;
+
+    &__slider {
+      width: 3.5rem;
+    }
+
+    &__volume-text {
+      font-size: 0.5rem;
+      min-width: 2rem;
+    }
+  }
+}

@@ -7,7 +7,6 @@ import PacmanGame from './game/PacmanGame';
 import CreatePacmanMap from './menu/CreatePacmanMap'; // Import the map editor
 import '../assets/styles/Star.scss';
 import { VolumeControl } from './components/VolumeControl';
-import { SoundManager } from './utils/SoundManager';
 
 function initState(): state {
 	const state: state = {
@@ -102,6 +101,7 @@ export default function WebSocketPacman() {
 				break;
 			}
 			case 'updateGame': {
+				
 				setState((prevState: state) => ({
 					...prevState,
 					game: {
@@ -110,6 +110,10 @@ export default function WebSocketPacman() {
 						grid: data.data.grid,
 						players: data.data.players,
 						paused: data.data.paused,
+						frightenedState: data.data.frightenedState || prevState.game.frightenedState,
+						pacmanLife: data.data.pacmanLife !== undefined ? data.data.pacmanLife : prevState.game.pacmanLife,
+						tileSize: data.data.tileSize || prevState.game.tileSize,
+						isSpectator: data.data.isSpectator !== undefined ? data.data.isSpectator : prevState.game.isSpectator,
 					},
 				}));
 				break;
@@ -282,19 +286,8 @@ export default function WebSocketPacman() {
 				</div>
 			</div>
 			<div className="pacman-content-wrapper">
-				<div className="flex items-center gap-4 mb-4">
+				<div className="flex items-center mb-4">
 					<VolumeControl />
-					<button
-						onClick={() => {
-							const sm = SoundManager.getInstance();
-							if (sm.isAudioEnabled()) {
-								sm.playGameStart();
-							}
-						}}
-						className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
-					>
-						Test Sound
-					</button>
 				</div>
 				{showMapEditor ? (
 					<CreatePacmanMap

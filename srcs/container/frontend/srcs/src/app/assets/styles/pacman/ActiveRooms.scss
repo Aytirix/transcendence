@@ -1,17 +1,14 @@
-/* src/assets/styles/pacman/ActiveRooms.scss */
 @import './general_pacman.scss';
 
-/* Conteneur général de la vue “En direct” */
 .active-rooms-container {
 	position: relative;
 	display: flex;
 	justify-content: center;
 	align-items: center;
 	padding: 20px;
-	background-color: #111; /* gris très sombre */
+	background-color: #111;
 }
 
-/* Overlay “Pause” */
 .overlay-paused {
 	position: absolute;
 	top: 0;

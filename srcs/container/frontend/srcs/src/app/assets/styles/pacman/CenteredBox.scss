@@ -2,14 +2,14 @@
 @import './general_pacman.scss';
 
 .home-button {
-    position: fixed;          // Changed back to fixed for consistent left positioning
+    position: fixed;
     top: 5px;
     left: 4px;
-    z-index: 1000;           // Increased z-index to ensure visibility
-    min-height: 52px;         // Added minimum height
-    width: fit-content;       // Added width control
-    display: block;           // Ensure block display
-    pointer-events: all;     // Ensure clickability
+    z-index: 1000;
+    min-height: 52px;
+    width: fit-content;
+    display: block;
+    pointer-events: all;
 
     .home-icon-btn {
         display: flex;
@@ -23,7 +23,7 @@
         box-shadow: 0 2px 8px #0003;
         transition: box-shadow 0.2s, background 0.2s, transform 0.2s;
         touch-action: manipulation;
-        height: 100%;         // Ensure full height usage
+        height: 100%;
 
         &:hover, &:focus {
             background: rgba(34, 34, 34, 0.92);
@@ -57,10 +57,11 @@
 
 .centered-box {
 	display: grid;
-	grid-template-columns: 1fr;
+	 grid-template-columns: 1fr;
 	grid-template-rows: auto 1fr;
 	height: 100vh;
 	width: 100vw;
+	margin-top: 5rem;
 	color: #f3f3f3;
 	overflow: hidden;
 	font-family: 'Press Start 2P', cursive;
@@ -79,14 +80,20 @@
 		}
 	}
 
-
+	.main-content {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		height: 100%;
+		width: 100%;
+		padding: 1rem;
+		box-sizing: border-box;
+	}
 	.menu-button {
 		font-size: 0.8rem;
 		cursor: pointer;
 		margin: 0.1rem;
 		color: #0A0A0A;
-
-		//background: #FFF;
 		&:hover {
 			background-color: #FFEE00;
 			color: #0A0A0A;

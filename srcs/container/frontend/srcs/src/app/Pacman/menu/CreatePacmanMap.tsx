@@ -23,7 +23,7 @@ interface CreatePacmanMapProps {
 
 
 const CreatePacmanMap: React.FC<CreatePacmanMapProps> = ({ state, onSave, onCancel, initialMap, editingMap }) => {
-	const DEFAULT_TILE_SIZE = 15;
+	const DEFAULT_TILE_SIZE = 17;
 	const { t } = useLanguage();
 
 	// Utilisation des hooks modulaires
@@ -73,12 +73,6 @@ const CreatePacmanMap: React.FC<CreatePacmanMapProps> = ({ state, onSave, onCanc
 				onSubmit={handleMapNameSubmit}
 			/>
 
-			<MapNameInput
-				mapName={mapEditor.mapName}
-				onNameChange={handleNameChange}
-				disabled={!mapEditor.mapName}
-				blurred={!mapEditor.mapName}
-			/>
 
 			<div className="editor-container">
 				<TileSelector
@@ -87,11 +81,6 @@ const CreatePacmanMap: React.FC<CreatePacmanMapProps> = ({ state, onSave, onCanc
 				/>
 
 				<div className="main-content">
-					<MapToolbar
-						onAddBorders={mapDrawing.addBorders}
-						onSave={saveMap}
-						onCancel={onCancel}
-					/>
 
 					<Editor
 						grid={mapEditor.grid}
@@ -108,9 +97,20 @@ const CreatePacmanMap: React.FC<CreatePacmanMapProps> = ({ state, onSave, onCanc
 				</div>
 
 				<div className="right-panel">
-					<MapConsole maps={state?.maps} mapId={mapEditor.id} />
+						<MapNameInput
+							mapName={mapEditor.mapName}
+							onNameChange={handleNameChange}
+							disabled={!mapEditor.mapName}
+							blurred={!mapEditor.mapName}
+						/>
+						<MapToolbar
+							onAddBorders={mapDrawing.addBorders}
+							onSave={saveMap}
+							onCancel={onCancel}
+						/>
 				</div>
 			</div>
+				<MapConsole maps={state?.maps} mapId={mapEditor.id} />
 		</div>
 	);
 };

@@ -105,7 +105,7 @@
 		flex-direction: column;
 		align-items: center;
 		justify-content: space-between;
-		min-height: 400px; // Ajuster selon vos besoins
+		min-height: 400px;
 		padding: 1rem;
 	}
 
@@ -196,11 +196,11 @@
 
 	.player-info {
 		display: flex;
-		flex-direction: row; // Changé de column à row
-		align-items: center; // Aligner verticalement au centre
-		gap: 1rem; // Espacement entre nom et elo
+		flex-direction: row;
+		align-items: center;
+		gap: 1rem;
 		flex: 1;
-		min-width: 0; // Pour éviter les débordements
+		min-width: 0;
 	}
 
 	.player-name {
@@ -209,26 +209,26 @@
 		display: flex;
 		align-items: center;
 		overflow: hidden;
-		text-overflow: ellipsis; // Pour afficher "..." si le texte déborde
-		max-width: 60%; // Limiter la largeur du nom
+		text-overflow: ellipsis;
+		max-width: 60%;
 	}
 
 	.player-elo {
 		font-size: 0.85rem;
 		color: #9ca3af;
-		white-space: nowrap; // Éviter le retour à la ligne
+		white-space: nowrap;
 	}
 
 	.player-actions {
 		display: flex;
 		gap: 0.5rem;
-		flex-shrink: 0; // Empêche les boutons de rétrécir
+		flex-shrink: 0;
 
 		.kick-btn,
 		.promote-btn {
 			width: 24px;
 			height: 24px;
-			border-radius: 4px; // Moins arrondi qu'avant
+			border-radius: 4px;
 			border: none;
 			display: flex;
 			align-items: center;
@@ -251,20 +251,20 @@
 		}
 
 		.kick-btn {
-			background-color: #ef4444; // Rouge
+			background-color: #ef4444;
 			color: white;
 
 			&:hover {
-				background-color: #dc2626; // Rouge plus foncé
+				background-color: #dc2626;
 			}
 		}
 
 		.promote-btn {
-			background-color: #10b981; // Vert
+			background-color: #10b981;
 			color: white;
 
 			&:hover {
-				background-color: #059669; // Vert plus foncé
+				background-color: #059669;
 			}
 		}
 	}
@@ -275,10 +275,10 @@
 	}
 
 	.owner-star {
-		color: #fbbf24; // Jaune pour l'étoile
+		color: #fbbf24;
 		font-size: 1.1rem;
 		margin-right: 0.25rem;
-		flex-shrink: 0; // Empêche l'étoile de rétrécir
+		flex-shrink: 0;
 	}
 
 	.room-actions {
@@ -333,8 +333,6 @@
 
 		.map-search {
 			flex: 1;
-			//min-width: 300px;
-			//max-width: 200px;
 			padding: 0.5rem 1rem;
 			border-radius: 0.5rem;
 			border: 2px solid #374151;
