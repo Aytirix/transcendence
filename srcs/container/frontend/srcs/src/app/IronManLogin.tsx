@@ -59,7 +59,7 @@ const IronManLogin: React.FC = () => {
 
 			<form className=" " onSubmit={handleSubmit}>
 				<fieldset className="fieldset bg-base-200 border-base-300 rounded-box w-xs border p-4">
-					<legend className="fieldset-legend">{t('login.title')}</legend>
+					<legend className="fieldset-legend text-lg">{t('login.title')}</legend>
 
 					<label className="label">{t('login.email')}</label>
 					<input

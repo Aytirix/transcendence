@@ -74,7 +74,7 @@ const IronManRegister: React.FC = () => {
 
         <form className=" " onSubmit={handleSubmit}>
           <fieldset className="fieldset bg-base-200 border-base-300 rounded-box w-xs border p-4">
-            <legend className="fieldset-legend">{t('register.title')}</legend>
+            <legend className="fieldset-legend text-lg">{t('register.title')}</legend>
             
             <input
               className="input input-a"

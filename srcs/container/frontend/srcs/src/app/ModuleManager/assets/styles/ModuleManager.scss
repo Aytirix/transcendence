@@ -163,14 +163,14 @@
 
 .modal-content-center {
 	position: fixed;
-	top: 50%;
-	left: 50%;
+	top: 50vh;
+	left: 50vw;
 	transform: translate(-50%, -50%);
 	background: #ffffff;
 	border-radius: 0.5rem;
 	padding: 2rem;
-	max-width: 90%;
-	max-height: 80%;
+	max-width: 90vw;
+	max-height: 80vh;
 	overflow-y: auto;
 	box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
 	z-index: 1001;
@@ -271,5 +271,104 @@
 	to {
 		opacity: 0;
 		transform: translate(-50%, -50%) scale(0.95);
+	}
+}
+
+// Media query pour les écrans de 960px et moins
+@media (max-width: 960px) {
+	.module-manager {
+		.lists {
+			flex-direction: column;
+			height: auto;
+			align-items: stretch;
+			
+			.list-box {
+				width: 100%;
+				max-width: none;
+				height: auto;
+				min-height: 200px;
+				
+				.sublists {
+					height: auto;
+					min-height: 150px;
+					
+					.sublist {
+						max-height: 200px;
+						min-height: 100px;
+						
+						&.empty {
+							min-height: 50px;
+						}
+					}
+				}
+			}
+		}
+	}
+
+	// Modal en plein écran sur mobile
+	.modal-content-center {
+		position: fixed;
+		top: 0;
+		left: 0;
+		width: 100vw;
+		height: 100vh;
+		max-width: 100%;
+		max-height: 100%;
+		transform: none;
+		border-radius: 0;
+		padding: 1rem;
+		box-sizing: border-box;
+		display: flex;
+		flex-direction: column;
+		
+		h2 {
+			margin-top: 0;
+			margin-bottom: 1rem;
+			text-align: center;
+		}
+		
+		pre {
+			flex: 1;
+			overflow-y: auto;
+			margin-bottom: 1rem;
+			height: fit-content;
+			max-height: fit-content;
+		}
+		
+		button {
+			align-self: center;
+			margin-top: auto;
+		}
+	}
+	
+	// Animations spécifiques mobile
+	.modal-content-center.slide-in {
+		animation: slideInMobile 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+	}
+	
+	.modal-content-center.slide-out {
+		animation: slideOutMobile 0.3s ease forwards;
+	}
+}
+
+@keyframes slideInMobile {
+	from {
+		opacity: 0;
+		transform: translateY(100%);
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}
+
+@keyframes slideOutMobile {
+	from {
+		opacity: 1;
+		transform: translateY(0);
+	}
+	to {
+		opacity: 0;
+		transform: translateY(100%);
 	}
 }

@@ -67,7 +67,7 @@ class AppRouter extends Component {
 
 					{/* Route pour le module de gestion des modules */}
 					<Route path="/module-manager" element={
-						<MinSizeGuard minWidth={1200} minHeight={870} message="Écran trop petit">
+						<MinSizeGuard minWidth={400} minHeight={400} message="Écran trop petit">
 							<ModuleManager />
 						</MinSizeGuard>
 					} />
