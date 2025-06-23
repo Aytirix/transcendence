@@ -1,6 +1,6 @@
 import { Game } from "../game/Game";
 import { createGame } from "../game/initGame";
-import { listTournament } from "../state/serverState";
+import { listTournament, sockets } from "../state/serverState";
 import { playerStat, Tournament} from "../types/playerStat";
 import { webMsg } from "../types/webMsg";
 
@@ -8,11 +8,20 @@ import { webMsg } from "../types/webMsg";
 let idTournament: number = 0;
 
 export function handleTournament(playerInfos: playerStat, msg: webMsg) {
-	if (playerInfos.inGame !== true && msg.action === "Create")
+	if (playerInfos.inGame !== true && msg.action === "Create") {
 		createTournament(playerInfos, msg);
+		const list = Array.from(listTournament.values()).map(toTournamentClientFormat);
+		console.log(list);
+		playerInfos.socket.send(JSON.stringify({ type: "Display", list: list }));
+	}
 	else if (msg.action  === "Join" && playerInfos.inGame !== true) {
 		joinTournament(playerInfos, msg);
 	}
+	else if (msg.action === "Display") {
+		const list = Array.from(listTournament.values()).map(toTournamentClientFormat);
+		playerInfos.socket.send(JSON.stringify({ type: "Display", list: list }));
+	}
+
 }
 
 function createTournament(playerInfos: playerStat, msg: webMsg)  {
@@ -21,6 +30,7 @@ function createTournament(playerInfos: playerStat, msg: webMsg)  {
 		name: msg.value,
 		size : msg.sizeTournament,
 		isFull : false,
+		nbPlayer: 1,
 		winner : false,
 		idTournament : idTournament,
 	}
@@ -219,4 +229,15 @@ export function isOnFinishMatch(tournament: Tournament, player1: playerStat, pla
 		dispatchMatch(tournament);
 	}
 
+}
+
+function toTournamentClientFormat(t: Tournament) {
+  return {
+    idTournament: t.idTournament,
+    name: t.name,
+    size: t.size,
+    winner: t.winner,
+    isFull: t.isFull,
+	nbPlayer: t.nbPlayer,
+  };
 }
