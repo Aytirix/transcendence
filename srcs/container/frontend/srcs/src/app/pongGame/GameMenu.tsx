@@ -1,7 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { useEffect, useRef, useState } from "react";
 import { Tournament } from "./types/data";
-import { color } from "framer-motion";
 
 const GameMenu: React.FC = () => {
 	const navigate = useNavigate();
@@ -10,9 +9,10 @@ const GameMenu: React.FC = () => {
 	const [validationButton, setValidationButton] = useState(false);
 	const [nameTournament, setNameTournament] = useState("");
 	const [size, setSize] = useState("4");
-
+	const [idJoin, setIdJoin] = useState("");
 	const [showTournament, setShowTournament] = useState(false);
 	const [showCreate, setShowCreate] = useState(false);
+	const [showJoin, setShowJoin] = useState(false);
 
 	const SameKeyboard = () => navigate('/pong/menu/SameKeyboard');
 	const Solo = () => navigate('/pong/menu/Solo');
@@ -34,6 +34,7 @@ const GameMenu: React.FC = () => {
 			setShowTournament(false);
 			setShowCreate(false);
 			setValidationButton(false);
+			setShowJoin(false);
 		} else {
 			setShowTournament(true);
 			socketRef.current?.send(JSON.stringify({ type: "Tournament", action: "Display" }));
@@ -46,9 +47,18 @@ const GameMenu: React.FC = () => {
 			setValidationButton(false);
 		} else {
 			setShowCreate(true);
+			setShowJoin(false);
 		}
 	};
 
+	const Join = () => {
+		setShowCreate(false);
+		if (showJoin)
+			setShowJoin(false);
+		else
+			setShowJoin(true);
+	}
+	
 	useEffect(() => {
 		const socket = new WebSocket("wss://localhost:7000/pong");
 		socketRef.current = socket;
@@ -111,7 +121,7 @@ const GameMenu: React.FC = () => {
 
 					<div>
 						<button className="button-tournament-create" onClick={Create}>Create</button>
-						<button className="button-tournament-join">Join</button>
+						<button className="button-tournament-join" onClick={Join}>Join</button>
 					</div>
 
 					{validationButton && (
@@ -137,7 +147,6 @@ const GameMenu: React.FC = () => {
 										name="Tournament"
 										onChange={(e) => setNameTournament(e.target.value)}
 										placeholder="Entrez le nom"
-										minLength={3}
 										maxLength={20}
 									/>
 								</td>
@@ -158,6 +167,30 @@ const GameMenu: React.FC = () => {
 					</table>
 				</div>
 			)}
+			{showJoin && (
+				<div className="popup_join">
+					<table>
+						<thead>
+							<th>
+								Join Tournament
+							</th>
+						</thead>
+						<tbody>
+							<tr>
+								<td>
+									<input
+										className="input-join"
+										type="text"
+										placeholder="Entrer id"
+										maxLength={5}
+										onChange={(e) => setIdJoin(e.target.value)}
+									/>
+								</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+				)}
 		</div>
 	);
 };
