@@ -577,6 +577,198 @@ export default class PacmanMap {
 
 
 	/**
+	 * Calcule les zones accessibles seulement aux fantômes (pas à Pacman)
+	 * @param grid La grille de la carte
+	 * @returns Une matrice booléenne indiquant les zones accessibles seulement aux fantômes
+	 */
+	private static calculateGhostOnlyZones(grid: TileType[][]): boolean[][] {
+		const height = grid.length;
+		const width = grid[0]?.length || 0;
+
+		// ----------------------------------------------------------------
+		// A) TROUVER LE SPAWN DE PAC-MAN
+		// ----------------------------------------------------------------
+		let pacmanSpawn: vector2 | null = null;
+		for (let y = 0; y < height; y++) {
+			for (let x = 0; x < width; x++) {
+				if (grid[y][x] === TileType.SpawnPacman) {
+					pacmanSpawn = { x, y };
+					break;
+				}
+			}
+			if (pacmanSpawn) break;
+		}
+		if (!pacmanSpawn) {
+			// Si pas de spawn Pacman, aucune zone n'est accessible seulement aux fantômes
+			return Array(height).fill(0).map(() => Array(width).fill(false));
+		}
+
+		// ----------------------------------------------------------------
+		// B) BFS POUR PAC-MAN : quelles cases Pac-man peut atteindre ?
+		// ----------------------------------------------------------------
+		const reachablePacman: boolean[][] = Array(height)
+			.fill(0)
+			.map(() => Array(width).fill(false));
+
+		const queuePac: vector2[] = [];
+		queuePac.push(pacmanSpawn);
+		reachablePacman[pacmanSpawn.y][pacmanSpawn.x] = true;
+
+		const dirs = [
+			{ x: 0, y: -1 },
+			{ x: 0, y: 1 },
+			{ x: -1, y: 0 },
+			{ x: 1, y: 0 }
+		];
+
+		while (queuePac.length > 0) {
+			const cur = queuePac.shift()!;
+			for (const d of dirs) {
+				const nx = cur.x + d.x;
+				const ny = cur.y + d.y;
+				if (
+					ny >= 0 && ny < height &&
+					nx >= 0 && nx < width &&
+					!reachablePacman[ny][nx]
+				) {
+					const tile = grid[ny][nx];
+					if (tile !== TileType.Wall && tile !== TileType.GhostPortalBlock && tile !== TileType.Teleport) {
+						reachablePacman[ny][nx] = true;
+						queuePac.push({ x: nx, y: ny });
+					}
+				}
+			}
+		}
+
+		// ----------------------------------------------------------------
+		// C) BFS POUR LES FANTÔMES : quelles cases un fantôme peut atteindre ?
+		// ----------------------------------------------------------------
+		const reachableGhost: boolean[][] = Array(height)
+			.fill(0)
+			.map(() => Array(width).fill(false));
+
+		const queueGhost: vector2[] = [];
+		// Commencer par tous les GhostPortalBlock et spawns de fantômes
+		for (let y = 0; y < height; y++) {
+			for (let x = 0; x < width; x++) {
+				const tile = grid[y][x];
+				if (tile === TileType.GhostPortalBlock || 
+					tile === TileType.SpawnBlinky ||
+					tile === TileType.SpawnInky ||
+					tile === TileType.SpawnPinky ||
+					tile === TileType.SpawnClyde) {
+					queueGhost.push({ x, y });
+					reachableGhost[y][x] = true;
+				}
+			}
+		}
+
+		while (queueGhost.length > 0) {
+			const cur = queueGhost.shift()!;
+			for (const d of dirs) {
+				const nx = cur.x + d.x;
+				const ny = cur.y + d.y;
+				if (
+					ny >= 0 && ny < height &&
+					nx >= 0 && nx < width &&
+					!reachableGhost[ny][nx]
+				) {
+					const tile = grid[ny][nx];
+					if (tile !== TileType.Wall && tile !== TileType.Teleport) {
+						reachableGhost[ny][nx] = true;
+						queueGhost.push({ x: nx, y: ny });
+					}
+				}
+			}
+		}
+
+		// ----------------------------------------------------------------
+		// D) ZONES ACCESSIBLES SEULEMENT AUX FANTÔMES
+		// ----------------------------------------------------------------
+		const ghostOnlyZones: boolean[][] = Array(height)
+			.fill(0)
+			.map(() => Array(width).fill(false));
+
+		for (let y = 0; y < height; y++) {
+			for (let x = 0; x < width; x++) {
+				// Une zone est accessible seulement aux fantômes si :
+				// - Les fantômes peuvent l'atteindre
+				// - Pacman ne peut pas l'atteindre
+				ghostOnlyZones[y][x] = reachableGhost[y][x] && !reachablePacman[y][x];
+			}
+		}
+
+		return ghostOnlyZones;
+	}
+
+	/**
+	 * Calcule les zones accessibles à Pacman
+	 * @param grid La grille de la carte
+	 * @returns Une matrice booléenne indiquant les zones accessibles à Pacman
+	 */
+	private static calculatePacmanReachableZones(grid: TileType[][]): boolean[][] {
+		const height = grid.length;
+		const width = grid[0]?.length || 0;
+
+		// ----------------------------------------------------------------
+		// A) TROUVER LE SPAWN DE PAC-MAN
+		// ----------------------------------------------------------------
+		let pacmanSpawn: vector2 | null = null;
+		for (let y = 0; y < height; y++) {
+			for (let x = 0; x < width; x++) {
+				if (grid[y][x] === TileType.SpawnPacman) {
+					pacmanSpawn = { x, y };
+					break;
+				}
+			}
+			if (pacmanSpawn) break;
+		}
+		if (!pacmanSpawn) {
+			// Si pas de spawn Pacman, aucune zone n'est accessible
+			return Array(height).fill(0).map(() => Array(width).fill(false));
+		}
+
+		// ----------------------------------------------------------------
+		// B) BFS POUR PAC-MAN : quelles cases Pac-man peut atteindre ?
+		// ----------------------------------------------------------------
+		const reachablePacman: boolean[][] = Array(height)
+			.fill(0)
+			.map(() => Array(width).fill(false));
+
+		const queuePac: vector2[] = [];
+		queuePac.push(pacmanSpawn);
+		reachablePacman[pacmanSpawn.y][pacmanSpawn.x] = true;
+
+		const dirs = [
+			{ x: 0, y: -1 },
+			{ x: 0, y: 1 },
+			{ x: -1, y: 0 },
+			{ x: 1, y: 0 }
+		];
+
+		while (queuePac.length > 0) {
+			const cur = queuePac.shift()!;
+			for (const d of dirs) {
+				const nx = cur.x + d.x;
+				const ny = cur.y + d.y;
+				if (
+					ny >= 0 && ny < height &&
+					nx >= 0 && nx < width &&
+					!reachablePacman[ny][nx]
+				) {
+					const tile = grid[ny][nx];
+					if (tile !== TileType.Wall && tile !== TileType.GhostPortalBlock && tile !== TileType.Teleport) {
+						reachablePacman[ny][nx] = true;
+						queuePac.push({ x: nx, y: ny });
+					}
+				}
+			}
+		}
+
+		return reachablePacman;
+	}
+
+	/**
  * Vérifie si la carte est valide selon les règles du jeu
  * @returns un objet contenant un booléen indiquant si la carte est valide et un tableau d'erreurs
  */
@@ -650,7 +842,19 @@ export default class PacmanMap {
 		// Vérification que les spawns des fantômes sont correctement entourés
 		if (!duplicatedSpawns) {
 			const ghostSpawns = ['B', 'I', 'C', 'Y'];
+
+			// Calculer les zones accessibles seulement aux fantômes
+			const ghostOnlyZones = PacmanMap.calculateGhostOnlyZones(grid);
+
+			// Vérifier qu'il y a au moins un portail fantôme dans la carte
 			let hasGhostPortal = false;
+			for (let y = 0; y < grid.length && !hasGhostPortal; y++) {
+				for (let x = 0; x < grid[y].length && !hasGhostPortal; x++) {
+					if (grid[y][x] === TileType.GhostPortalBlock) {
+						hasGhostPortal = true;
+					}
+				}
+			}
 
 			for (let y = 0; y < grid.length; y++) {
 				for (let x = 0; x < grid[y].length; x++) {
@@ -666,30 +870,50 @@ export default class PacmanMap {
 						];
 
 						let isProtected = true;
-						let localHasGhostPortal = false;
 
 						for (const pos of adjacentPositions) {
 							if (pos.y >= 0 && pos.y < grid.length &&
 								pos.x >= 0 && pos.x < grid[pos.y].length) {
 								const adjTile = grid[pos.y][pos.x];
 
-								if (adjTile === TileType.GhostPortalBlock) {
-									localHasGhostPortal = true;
-									hasGhostPortal = true;
-								} else if (adjTile !== TileType.Wall &&
+								if (adjTile !== TileType.Wall &&
+									adjTile !== TileType.GhostPortalBlock &&
 									!ghostSpawns.includes(adjTile)) {
-									isProtected = false;
+									// Vérifier si cette case fait partie d'une zone accessible seulement aux fantômes
+									const isGhostOnlyZone = ghostOnlyZones[pos.y] && ghostOnlyZones[pos.y][pos.x];
+									if (!isGhostOnlyZone) {
+										isProtected = false;
+									}
 								}
 							}
 						}
 
 						if (!isProtected) {
-							errors.push(`Le spawn du fantôme ${tile} à (${x},${y}) doit être entouré de murs ou d'autres spawns de fantômes`);
+							errors.push(`Le spawn du fantôme ${tile} à (${x},${y}) doit être dans une zone accessible seulement aux fantômes`);
+							break;
 						}
+					}
+				}
+			}
 
-						if (!localHasGhostPortal && !hasGhostPortal) {
-							errors.push(`La zone des fantômes doit avoir une sortie avec des portails fantômes '-'`);
-						}
+			// Vérification globale : s'il y a des spawns de fantômes, il doit y avoir au moins un portail fantôme
+			if (!hasGhostPortal) {
+				const hasAnyGhostSpawn = Object.values(spawnCounts).some(count => count > 0 && 
+					['B', 'I', 'C', 'Y'].includes(Object.keys(spawnCounts)[Object.values(spawnCounts).indexOf(count)]));
+				if (hasAnyGhostSpawn) {
+					errors.push(`La zone des fantômes doit avoir une sortie avec des portails fantômes '-'`);
+				}
+			}
+		}
+
+		// Vérification que toutes les pastilles et super-pastilles sont accessibles à Pacman
+		const pacmanReachableZones = PacmanMap.calculatePacmanReachableZones(grid);
+		for (let y = 0; y < grid.length; y++) {
+			for (let x = 0; x < grid[y].length; x++) {
+				const tile = grid[y][x];
+				if (tile === TileType.Pellet || tile === TileType.Bonus) {
+					if (!pacmanReachableZones[y] || !pacmanReachableZones[y][x]) {
+						errors.push(`La pastille/super-pastille à (${x},${y}) n'est pas accessible à Pacman`);
 					}
 				}
 			}

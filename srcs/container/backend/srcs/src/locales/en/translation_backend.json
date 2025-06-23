@@ -94,6 +94,7 @@
 				"invalid": "The name must contain between 3 and 20 characters, and can only contain letters, numbers, spaces, hyphens and underscores."
 			},
 			"map": {
+				"invalid": "The map must be 31 lines of 29 characters.",
 				"idRequired": "A map id is required.",
 				"required": "A map is required."
 			},
