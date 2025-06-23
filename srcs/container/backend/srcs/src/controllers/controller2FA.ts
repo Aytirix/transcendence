@@ -249,7 +249,7 @@ export async function verifyCode(req: FastifyRequest, reply: FastifyReply) {
 
 	if (isValid) {
 		if (type == 'createAccount_confirm_email' && typeof isValid === 'object') {
-			const user = await userModel.Register(isValid.email, isValid.username, isValid.password, isValid.avatar, isValid.lang);
+			const user = await userModel.Register(isValid.email, isValid.username, isValid.password, isValid.avatar, isValid.lang, true);
 			req.session.user = user;
 			return reply.status(200).send({ success: true, message: i18n.t('email.verificationCode.CreateAccountOk'), user });
 		} else if (type == 'update_confirm_email') {
