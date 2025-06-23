@@ -55,7 +55,7 @@ const IronManRegister: React.FC = () => {
         const data = await resp.json();
         setError(data.message || 'Erreur lors de la création du compte.');
       } else {
-        setSuccess("Compte créé avec succès ! Bienvenue dans l'équipe Iron Man.");
+        setSuccess("Merci de vérifier votre email pour activer votre compte.");
       }
     } catch (err: any) {
       setError("Erreur réseau ou serveur.");
