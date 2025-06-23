@@ -20,13 +20,31 @@ const StatsOverview: React.FC<StatsOverviewProps> = ({
 	const winrate = totalGames > 0 ? ((wins / totalGames) * 100).toFixed(1) : '0.0';
 
 	return (
-		<div className='stats-content'>
-			<div>{t("pacman.menu.statistics.gamesPlayed")}: {totalGames}</div>
-			<div>{t("pacman.menu.statistics.gamesWon")}: {wins}</div>
-			<div>{t("pacman.menu.statistics.gamesLost")}: {losses}</div>
-			<div>{t("pacman.menu.statistics.winRate")}: {winrate}%</div>
-			<div>{t("pacman.menu.statistics.bestScore")}: {highestScore}</div>
-			<div>{t("pacman.menu.statistics.averageScore")}: {averageScore}</div>
+		<div className='stats-overview'>
+			<div className='stat-item'>
+				<span className='stat-label'>{t("pacman.menu.statistics.gamesPlayed")}:</span>
+				<span className='stat-value'>{totalGames}</span>
+			</div>
+			<div className='stat-item'>
+				<span className='stat-label'>{t("pacman.menu.statistics.gamesWon")}:</span>
+				<span className='stat-value'>{wins}</span>
+			</div>
+			<div className='stat-item'>
+				<span className='stat-label'>{t("pacman.menu.statistics.gamesLost")}:</span>
+				<span className='stat-value'>{losses}</span>
+			</div>
+			<div className='stat-item'>
+				<span className='stat-label'>{t("pacman.menu.statistics.winRate")}:</span>
+				<span className='stat-value'>{winrate}%</span>
+			</div>
+			<div className='stat-item'>
+				<span className='stat-label'>{t("pacman.menu.statistics.bestScore")}:</span>
+				<span className='stat-value'>{highestScore}</span>
+			</div>
+			<div className='stat-item'>
+				<span className='stat-label'>{t("pacman.menu.statistics.averageScore")}:</span>
+				<span className='stat-value'>{averageScore}</span>
+			</div>
 		</div>
 	);
 };

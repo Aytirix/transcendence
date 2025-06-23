@@ -151,6 +151,8 @@
 			"statistics": {
 				"button": "Statistiques",
 				"title": "Statistiques du joueur",
+				"pacman": "Pacman",
+				"ghosts": "Fantômes",
 				"gamesPlayed": "Parties jouées",
 				"gamesWon": "Parties gagnées",
 				"gamesLost": "Parties perdues",

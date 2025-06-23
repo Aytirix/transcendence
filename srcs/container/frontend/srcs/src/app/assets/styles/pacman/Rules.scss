@@ -1,8 +1,9 @@
 @import './general_pacman.scss';
 
 .rules {
-	max-width: 600px;
+	max-width: 1000px;
 	z-index: 10;
+	padding: 1rem;
 
 	.rules-title {
 		text-align: center;
@@ -13,6 +14,7 @@
 		font-size: 1.5rem;
 		color: #e5e7eb;
 		font-family: 'Press Start 2P', cursive;
+		margin-bottom: 2rem;
 	}
 
 	.rules-description {
