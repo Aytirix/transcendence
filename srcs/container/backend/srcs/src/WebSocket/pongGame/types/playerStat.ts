@@ -25,6 +25,7 @@ export interface Tournament {
 	name: string;
 	winner?: boolean;
 	isFull: boolean;
+	nbPlayer: number;
 	idTournament?: number;
 	currentMatch?: {player1: playerStat, player2:playerStat} [];
 	waitingWinner?: playerStat [];

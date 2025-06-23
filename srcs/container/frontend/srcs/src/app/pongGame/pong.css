@@ -49,6 +49,32 @@
   }
 }
 
+@keyframes textValidMenu {
+  0%, 100% {
+    text-shadow:
+      4px 4px 0 #003300,
+     -2px -2px 0 #003300,
+      0 0 0px rgba(0, 255, 128, 0.9),
+      0 0 0px rgba(0, 255, 100, 0.8),
+      0 0 0px rgba(0, 255, 80, 0.7),
+      0 0 40px rgba(0, 255, 120, 0.6),
+      0 0 60px rgba(0, 255, 120, 0.5),
+      0 0 80px rgba(0, 255, 120, 0.4);
+  }
+  50% {
+    text-shadow:
+      4px 4px 0 #003300,
+     -2px -2px 0 #003300,
+      0 0 12px rgba(0, 255, 150, 1),
+      0 0 24px rgba(0, 255, 140, 0.95),
+      0 0 40px rgba(0, 255, 130, 0.9),
+      0 0 70px rgba(0, 255, 120, 0.85),
+      0 0 100px rgba(0, 255, 110, 0.8),
+      0 0 120px rgba(0, 255, 100, 0.8);
+  }
+}
+
+
 @keyframes textGlowWinner {
   0%, 100% {
     text-shadow:
@@ -171,22 +197,6 @@
   z-index: 2;
 }
 
-.video-wrapper {
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  overflow: hidden;
-  z-index: -1;
-}
-
-.bg-video {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  pointer-events: none;
-  user-select: none;
-}
 
 .Menu-button {
 	border: none;
@@ -293,16 +303,151 @@
 }
 
 .game-canvas {
-  height: 100vh;
-  flex-direction: column;
-  width: 100vw;
-  /* position: fixed; */
+	height: 100vh;
+	flex-direction: column;
+	width: 100vw;
+	/* position: fixed; */
+	top: 0;
+	left: 0;
+	margin: 0;
+	padding: 0;
+	overflow-x: hidden;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+/* //////////////////////////////// Page menu /////////////////////////////////////*/
+
+.video-wrapper {
+position: relative;
   top: 0;
   left: 0;
-  margin: 0;
-  padding: 0;
-  overflow-x: hidden;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  z-index: -1;
+}
+
+.bg-video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  pointer-events: none;
+  user-select: none;
+}
+
+.popup {
+  position: fixed;
+  width: 400px;
+  height: 400px;
+  right: 50px;
+  top: 310px;
+  overflow-y: auto;              /* ✅ scroll si dépasse */
+  overflow-x: hidden; 
+  padding: 20px;
+  background-color: #fbf9f95e;
+  color: white;
+  border-radius: 20px;     /* 👈 Coins arrondis */
+  box-shadow: 0 0 15px rgba(0,0,0,0.5);
+}
+
+.popup_create {
+  text-align: left;
+  position: fixed;
+  border: 10px;
+  width: 400px;
+  height: 120px;
+  right: 50px;
+  top: 180px;
+  overflow-y: auto;              /* ✅ scroll si dépasse */
+  overflow-x: hidden; 
+  padding: 10px;
+  background-color: #fbf9f95e;
+  color: white;
+  border-radius: 20px;     /* 👈 Coins arrondis */
+  box-shadow: 0 0 15px rgba(0,0,0,0.5);
+}
+
+.button-tournament-create {
+  	position: fixed;
+  	right: 270px;
+	top: 695px;
+	border: none;
+	border-radius: 10px;
+	z-index: 2;
+	background: transparent;
+	font-size: 27px;
+	color: rgb(241, 247, 247);
+	font-weight: bold;
+	animation: textGlowMenu 1.7s linear infinite;
+}
+
+.button-tournament-create:hover {
+	transform: scale(1.08);
+	animation: textGlow 1.7s linear infinite;
+}
+
+.button-validation {
+	position: fixed;
+  	right: 440px;
+	top: 235px;
+	border: none;
+	border-radius: 10px;
+	z-index: 5;
+	background: transparent;
+	font-size: 18px;
+	color: rgb(95, 237, 7);
+	font-weight: bold;
+	animation: textValidMenu 1.7s linear infinite;
+}
+
+.button-tournament-join {
+  	position: fixed;
+  	right: 50px;
+	top: 695px;
+	border: none;
+	border-radius: 10px;
+	z-index: 2;
+	background: transparent;
+	font-size: 27px;
+	color: rgb(241, 247, 247);
+	font-weight: bold;
+	animation: textGlowMenu 1.7s linear infinite;
+}
+
+.button-tournament-join:hover {
+	transform: scale(1.08);
+	animation: textGlow 1.7s linear infinite;
+}
+
+th, td {
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  padding: 8px;
+  text-align: center;
+}
+
+td {
+  max-width: 20px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;   
+}
+
+th {
+  background-color: rgba(255, 255, 255, 0.1);
+  color: rgb(241, 247, 247);
+  animation: textGlow 1.7s linear infinite;
+  font-weight: bold;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  color: white;
+  margin-top: 10px;
+}
+
+input {
+	width: 180px;
 }

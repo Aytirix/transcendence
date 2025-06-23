@@ -35,3 +35,12 @@ export interface Parse {
 		rot_y: number;
 	}
 }
+
+export interface Tournament {
+	size: 4 | 8 | 16 | 32;
+	name: string;
+	winner?: boolean;
+	isFull: boolean;
+	idTournament?: number;
+	nbPlayer: number;
+} [];
