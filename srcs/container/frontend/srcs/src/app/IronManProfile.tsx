@@ -117,7 +117,7 @@ const UserProfile: React.FC = () => {
 		<div className="min-h-screen flex items-center justify-center">
 			<form className="profile-card" onSubmit={handleSubmit}>
 				<fieldset className="fieldset bg-base-200 border-base-300 rounded-box w-xl border p-4">
-					<legend className="fieldset-legend">Modifier mon profil</legend>
+					<legend className="fieldset-legend text-lg">Modifier mon profil</legend>
 					{/* AVATAR SELECTIONNE */}
 					<div className="w-full flex flex-col items-center mb-4">
 						<img
@@ -125,14 +125,11 @@ const UserProfile: React.FC = () => {
 							alt="Avatar sélectionné"
 							className="w-24 h-24 rounded-full object-cover shadow ring-2 ring-secondary"
 						/>
-						<span className="text-xs text-gray-400 mt-1">
-							{ApiService.getFile(displayAvatar)}
-						</span>
 					</div>
 					{/* CHOIX DES AVATARS */}
-					<div>
-						<h3 className="font-bold mb-2">Choisir votre avatar</h3>
-						<div className="flex gap-3 items-center">
+					<div className="flex flex-col items-center">
+						<h3 className="font-bold mb-2 text-center">Choisir votre avatar</h3>
+						<div className="flex gap-3 items-center justify-center flex-wrap">
 							{defaultAvatars.map((av, idx) => (
 								<img
 									key={idx}
@@ -171,9 +168,11 @@ const UserProfile: React.FC = () => {
 
 					<ProfileInputs form={form} handleChange={handleChange} user={user} />
 
-					<button className="btn btn-neutral mt-4" type="submit" disabled={loading}>
-						{loading ? "Mise à jour..." : "Mettre à jour"}
-					</button>
+					<div className="flex justify-center">
+						<button className="btn btn-neutral mt-4 text-black" type="submit" disabled={loading}>
+							{loading ? "Mise à jour..." : "Mettre à jour"}
+						</button>
+					</div>
 				</fieldset>
 			</form>
 		</div>

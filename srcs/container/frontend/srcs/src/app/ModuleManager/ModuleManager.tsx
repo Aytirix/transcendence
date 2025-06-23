@@ -19,7 +19,6 @@ interface ModuleItem {
 }
 
 const modulesData: ModuleColumns = {
-	untouched: [],
 	rejected: [],
 	undecided: [],
 	accepted: []
@@ -28,7 +27,7 @@ const modulesData: ModuleColumns = {
 // Charger les données du JSON et les traiter
 if (typeof modulesDataImport === 'object' && modulesDataImport !== null) {
 	// Vérifier si c'est déjà une structure avec colonnes
-	if ('untouched' in modulesDataImport && Array.isArray((modulesDataImport as any).untouched)) {
+	if ('rejected' in modulesDataImport && Array.isArray((modulesDataImport as any).rejected)) {
 		// Structure avec colonnes
 		(Object.keys(modulesData) as ColumnKey[]).forEach(col => {
 			if (col in modulesDataImport && Array.isArray((modulesDataImport as any)[col])) {
@@ -42,7 +41,7 @@ if (typeof modulesDataImport === 'object' && modulesDataImport !== null) {
 		});
 	} else if (Array.isArray(modulesDataImport)) {
 		// Structure simple avec array
-		modulesData.untouched = modulesDataImport.map((item: any) => ({
+		modulesData.undecided = modulesDataImport.map((item: any) => ({
 			...item,
 			major: typeof item.major === 'string'
 				? item.major.toLowerCase() === 'majeur'
@@ -51,7 +50,7 @@ if (typeof modulesDataImport === 'object' && modulesDataImport !== null) {
 	}
 }
 
-type ColumnKey = 'untouched' | 'rejected' | 'undecided' | 'accepted';
+type ColumnKey = 'rejected' | 'undecided' | 'accepted';
 type ModuleColumns = Record<ColumnKey, ModuleItem[]>;
 
 enum SubKey {
