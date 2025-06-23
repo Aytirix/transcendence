@@ -2,18 +2,18 @@
 import React from 'react';
 import '../../assets/styles/pacman/PacmanGame.scss';
 import { state } from '../../types/pacmanTypes';
-import { 
-	GameHeader, 
-	PauseMode, 
-	GameGrid, 
-	GamePlayers, 
+import {
+	GameHeader,
+	PauseMode,
+	GameGrid,
+	GamePlayers,
 	GameSidebar,
 	GameContainer
 } from './components';
-import { 
-	useGameAssets, 
-	useGameAudio, 
-	useKeyboardControls, 
+import {
+	useGameAssets,
+	useGameAudio,
+	useKeyboardControls,
 	useGameLayout,
 	useWallTypes
 } from './hooks';
@@ -37,19 +37,21 @@ const PacmanGame: React.FC<PacmanGameProps> = ({ state }) => {
 	const { getWallType } = useWallTypes();
 
 	// Configuration des contrôles clavier
-	useKeyboardControls({ 
-		ws: state.ws, 
-		onFirstInteraction: handleFirstInteraction 
-	});
+	if (state.game.isSpectator == false) {
+		useKeyboardControls({
+			ws: state.ws,
+			onFirstInteraction: handleFirstInteraction
+		});
+	}
 
 	return (
 		<div className="PacmanGame" onClick={handleFirstInteraction}>
-			<GameHeader 
+			<GameHeader
 				audioEnabled={audioEnabled}
 				onFirstInteraction={handleFirstInteraction}
 			/>
 
-			<PauseMode 
+			<PauseMode
 				isPaused={state.game.paused.paused}
 				message={state.game.paused.message}
 			/>
@@ -102,7 +104,7 @@ const PacmanGame: React.FC<PacmanGameProps> = ({ state }) => {
 					offsetX={offsetX}
 					offsetY={offsetY}
 				>
-					<GameGrid 
+					<GameGrid
 						grid={grid}
 						tileSize={tileSize}
 						getWallType={getWallType}
