@@ -3,6 +3,7 @@ import { sessionPayload, User } from '@types';
 import { IncomingMessage } from 'http';
 import { parse } from 'cookie';
 import { decodeSessionId, getStore } from '@session';
+import StateManager from '@wsPacman/game/StateManager';
 
 
 /**
@@ -55,8 +56,10 @@ export async function isAuthenticated(request: FastifyRequest, reply: FastifyRep
 export async function isAuth(request: FastifyRequest, reply: FastifyReply) {
 	if (request && request.session && request.session.user !== undefined && await checkSessionInfo(request, reply)) {
 		const user = request.session.user as User;
+		const GameInPacman = StateManager.RoomManager.PlayerInRoom(user.id);
 		return reply.status(200).send({
 			isAuthenticated: true,
+			redirect: GameInPacman ? '/Pacman' : null,
 			user: {
 				id: user.id,
 				email: user.email,
