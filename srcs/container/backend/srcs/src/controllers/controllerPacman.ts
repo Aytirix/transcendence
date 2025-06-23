@@ -214,7 +214,7 @@ export function handleLaunchRoom(ws: WebSocket, player: player): void {
 	if (player.room.owner_id !== player.id) return sendResponse(ws, 'error', 'error', [ws.i18n.t('pacman.not_owner')]);
 	if (player.room.players.length > 5) return sendResponse(ws, 'error', 'error', [ws.i18n.t('pacman.too_many_players')]);
 	if (player.room.settings.map.id > 0 && PacmanMap.validateMap(player.room.settings.map.map).is_valid === false) {
-		return sendResponse(ws, 'error', 'error', [ws.i18n.t('pacman.map_invalid')]);
+		return sendResponse(ws, 'error', 'error', [ws.i18n.t('pacman.error.map_invalid')]);
 	}
 	createTestRoom(player, player.room);
 	StateManager.startGame(player.room);

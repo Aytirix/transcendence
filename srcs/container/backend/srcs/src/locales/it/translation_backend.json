@@ -94,6 +94,7 @@
 				"invalid": "Il nome deve contenere tra 3 e 20 caratteri, e può contenere solo lettere, numeri, spazi, trattini e underscore."
 			},
 			"map": {
+				"invalid": "La mappa deve avere 31 righe di 29 caratteri.",
 				"idRequired": "È richiesto un id della mappa.",
 				"required": "È richiesta una mappa."
 			},

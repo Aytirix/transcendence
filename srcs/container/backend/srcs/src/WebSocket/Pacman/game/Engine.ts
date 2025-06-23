@@ -52,6 +52,9 @@ export default class Engine {
 		}
 
 		this.addPlayers(room.players);
+		
+		// Valider qu'il n'y a qu'un seul Pacman après l'initialisation
+		this.validateSinglePacman();
 	}
 
 	public getPlayerById(id: number): Ghost | Pacman | undefined {
@@ -62,6 +65,7 @@ export default class Engine {
 	 * Ajout d'un joueur au moteur
 	 */
 	private addPlayers(players: player[]): void {
+		
 		const characters = [CharacterType.Pacman, CharacterType.Blinky, CharacterType.Inky, CharacterType.Pinky, CharacterType.Clyde];
 		const usedCharacters = new Set<string>(
 			Array.from(this.players.values()).map(p => p.nameChar)
@@ -71,31 +75,39 @@ export default class Engine {
 		realPlayer = realPlayer.sort(() => Math.random() - 0.5);
 
 		let availableCharacters = characters.filter(c => !usedCharacters.has(c));
-
+		
+		// Vérifier s'il y a déjà un Pacman existant
+		const hasPacman = Array.from(this.players.values()).some(p => p.nameChar === CharacterType.Pacman);
+		let pacmanAssigned = hasPacman;
+		
 		players.forEach(p => {
 			let spawnIndex = 0;
 			let spawns: vector2[] = [];
 			let player: Ghost | Pacman;
 			let characterType: CharacterType;
 
-			// CORRECTION 1 : Vérifier que realPlayer n'est pas vide
-			if ((this.trainingAI && p.username.startsWith('PacmanAI')) ||
-				(realPlayer.length > 0 && p.username === realPlayer[0].username)) {
-
+			// Assigner Pacman uniquement s'il n'y en a pas déjà un
+			if (!pacmanAssigned && (
+				(this.trainingAI && p.username.startsWith('PacmanAI')) ||
+				(realPlayer.length > 0 && p.username === realPlayer[0].username)
+			)) {
 				characterType = CharacterType.Pacman;
 				spawns = this.map.getSpawnPositions()[CharacterType.Pacman];
+				pacmanAssigned = true; // Marquer Pacman comme assigné
 
-				// CORRECTION 2 : Vérifier que spawns existe
+				// Vérifier que spawns existe
 				if (!spawns || spawns.length === 0) {
 					console.error(`No spawn positions found for Pacman`);
 					return;
 				}
 
-				// CORRECTION 3 : Utiliser spawns.length au lieu de availableCharacters.length
 				spawnIndex = this.players.size % spawns.length;
 				availableCharacters = availableCharacters.filter(c => c !== CharacterType.Pacman);
 			} else {
-				// CORRECTION 4 : Vérifier que availableCharacters n'est pas vide
+				// S'assurer que Pacman n'est pas dans les caractères disponibles
+				availableCharacters = availableCharacters.filter(c => c !== CharacterType.Pacman);
+				
+				// Vérifier que availableCharacters n'est pas vide
 				if (availableCharacters.length === 0) {
 					console.error('No available characters left, falling back to default');
 					// Fallback vers un personnage par défaut
@@ -107,7 +119,7 @@ export default class Engine {
 
 				spawns = this.map.getSpawnPositions()[characterType];
 
-				// CORRECTION 5 : Vérifier que spawns existe
+				// Vérifier que spawns existe
 				if (!spawns || spawns.length === 0) {
 					console.error(`No spawn positions found for character: ${characterType}`);
 					return;
@@ -155,18 +167,26 @@ export default class Engine {
 
 			if (this.players.get(playerId)?.nameChar === CharacterType.Pacman) {
 				this.stop("Pacman left, resetting all players to spawn positions");
-				// prendre un joueur fantôme au hasard pour le remplacer
-				const ghostPlayers = Array.from(this.players.values()).filter(p => p instanceof Ghost && p.player.id > 0);
-				if (ghostPlayers.length > 0) {
-					const randomGhost = ghostPlayers[Math.floor(Math.random() * ghostPlayers.length)];
-
-					const botGhost = new Ghost(botPlayer, randomGhost.position, randomGhost.nameChar, this.map);
-					this.players.set(botPlayer.id, botGhost);
-					const pacmanPlayer = new Pacman(randomGhost.player, randomGhost.position, CharacterType.Pacman);
-					this.players.set(pacmanPlayer.player.id, pacmanPlayer);
-				}
+				// Supprimer d'abord le joueur qui quitte
 				this.players.delete(playerId);
 				this.sockets.delete(playerId);
+				
+				// Vérifier s'il reste d'autres Pacman
+				const remainingPacman = Array.from(this.players.values()).some(p => p.nameChar === CharacterType.Pacman);
+				
+				// Seulement remplacer par un nouveau Pacman s'il n'y en a plus
+				if (!remainingPacman) {
+					const ghostPlayers = Array.from(this.players.values()).filter(p => p instanceof Ghost && p.player.id > 0);
+					if (ghostPlayers.length > 0) {
+						const randomGhost = ghostPlayers[Math.floor(Math.random() * ghostPlayers.length)];
+
+						const botGhost = new Ghost(botPlayer, randomGhost.position, randomGhost.nameChar, this.map);
+						this.players.set(botPlayer.id, botGhost);
+						const pacmanPlayer = new Pacman(randomGhost.player, randomGhost.position, CharacterType.Pacman);
+						this.players.set(pacmanPlayer.player.id, pacmanPlayer);
+					}
+				}
+				
 				this.resetAllPlayerPositions();
 				if (this.players.size === 0 || Array.from(this.players.keys()).every(id => id < 0)) {
 					this.stop('No players left, stopping the game');
@@ -279,6 +299,9 @@ export default class Engine {
 	public start(): void {
 		this.stop();
 
+		// Valider qu'il n'y a qu'un seul Pacman avant de commencer
+		this.validateSinglePacman();
+
 		if (this.trainingAI) {
 			this.resume();
 			setTimeout(() => {
@@ -365,6 +388,8 @@ export default class Engine {
 		this.lastTime = now;
 
 		try {
+			this.validateSinglePacman();
+			
 			this.reward = 0;
 			if (!this.isPaused) {
 				let pacmanInstance: Pacman | undefined;
@@ -873,5 +898,61 @@ export default class Engine {
 		if (this.win != null) this.Finished = true;
 		this.win = null;
 		this.pause('');
+	}
+
+	/**
+	 * Valide qu'il n'y a qu'un seul Pacman dans le jeu
+	 * @returns true si la validation passe, false sinon
+	 */
+	private validateSinglePacman(): boolean {
+		const pacmanPlayers = Array.from(this.players.values()).filter(p => p.nameChar === CharacterType.Pacman);
+		
+		if (pacmanPlayers.length > 1) {
+			console.error(`ERREUR: ${pacmanPlayers.length} Pacman détectés! IDs: ${pacmanPlayers.map(p => p.player.id).join(', ')}`);
+			console.error(`Détails des Pacman en doublon:`, pacmanPlayers.map(p => ({
+				id: p.player.id,
+				username: p.player.username,
+				position: p.position,
+				character: p.nameChar
+			})));
+			
+			// Garder seulement le premier Pacman et convertir les autres en fantômes
+			for (let i = 1; i < pacmanPlayers.length; i++) {
+				const extraPacman = pacmanPlayers[i];
+				console.log(`Converting extra Pacman (ID: ${extraPacman.player.id}) to Ghost`);
+				
+				// Créer un nouveau fantôme pour remplacer le Pacman en trop
+				const newGhost = new Ghost(extraPacman.player, extraPacman.position, CharacterType.Blinky, this.map);
+				this.players.set(extraPacman.player.id, newGhost);
+			}
+			return false;
+		}
+		
+		if (pacmanPlayers.length === 0) {
+			console.warn("ATTENTION: Aucun Pacman détecté dans le jeu! Joueurs actuels:", 
+				Array.from(this.players.values()).map(p => ({ id: p.player.id, character: p.nameChar })));
+		}
+		
+		return true;
+	}
+
+	/**
+	 * Vérifie qu'il y a exactement un Pacman dans le jeu
+	 * @returns true si il y a exactement un Pacman, false sinon
+	 */
+	public hasValidPacmanCount(): boolean {
+		const pacmanCount = Array.from(this.players.values()).filter(p => p.nameChar === CharacterType.Pacman).length;
+		
+		if (pacmanCount === 0) {
+			console.warn("ATTENTION: Aucun Pacman détecté dans le jeu!");
+			return false;
+		}
+		
+		if (pacmanCount > 1) {
+			console.error(`ERREUR: ${pacmanCount} Pacman détectés!`);
+			return false;
+		}
+		
+		return true;
 	}
 }
