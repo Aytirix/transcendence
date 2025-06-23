@@ -1,18 +1,7 @@
-[req]
-default_bits       = 2048
-prompt             = no
-distinguished_name = req_distinguished_name
-req_extensions     = req_ext
-
-[req_distinguished_name]
-C  = FR
-ST = PACA
-L  = Nice
-O  = 42Nice
-OU = Dev
-CN = c4r2p5.42nice.fr
-
-[req_ext]
+authorityKeyIdentifier=keyid,issuer
+basicConstraints=CA:FALSE
+keyUsage = digitalSignature, keyEncipherment
+extendedKeyUsage = serverAuth
 subjectAltName = @alt_names
 
 [alt_names]
