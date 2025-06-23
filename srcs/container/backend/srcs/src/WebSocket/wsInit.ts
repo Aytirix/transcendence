@@ -11,6 +11,7 @@ import { User } from '@types';
 import { pongWebSocket } from './pongGame/pongSocketHandler';
 import { PacManWebSocket } from './Pacman/PacManWebSocket';
 import { createi18nObject } from '../hook';
+import StateManager from '@wsPacman/game/StateManager';
 
 let wss: WebSocketServer | null = null;
 let userConnected: Map<string, WebSocket> = new Map<string, WebSocket>();
@@ -72,6 +73,22 @@ async function initWebSocket(server: FastifyInstance) {
 			} else if (existingSocket) {
 				userConnected.delete(userKey);
 			}
+
+			if (request.url === '/pong' && StateManager.RoomManager.PlayerInRoom(session.user.id)) {
+				socket.write('HTTP/1.1 409 Conflict\r\n\r\n');
+				socket.destroy();
+				return;
+			}
+
+			// A finir
+			// if (request.url === '/Pacman' && pongWebSocket.playerInRoom(session.user.id)) {
+			// 	const gameInPacman = StateManager.RoomManager.PlayerInRoom(session.user.id);
+			// 	if (gameInPacman) {
+			// 		socket.write('HTTP/1.1 409 Conflict\r\n\r\n');
+			// 		socket.destroy();
+			// 		return;
+			// 	}
+			// }
 
 			wss?.handleUpgrade(request, socket, head, (ws: WebSocket) => {
 				userConnected.set(userKey, ws);

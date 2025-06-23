@@ -78,7 +78,7 @@ async function sendTemplateEmail(
 	request?: FastifyRequest
 ): Promise<void> {
 	const language = request.i18n.language || 'fr';
-	const templatePath = join(__dirname, '../template_email', language, `${templateName}.html`);
+	const templatePath = join(__dirname, '../../template_email', language, `${templateName}.html`);
 
 	// Ajouter des variables par défaut si request est fourni
 	const defaultReplacements = request ? {

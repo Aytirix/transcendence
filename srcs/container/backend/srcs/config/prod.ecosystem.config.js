@@ -6,7 +6,7 @@ module.exports = {
 			interpreter: "node",
 			node_args: "-r tsconfig-paths/register",
 			instances: "max",
-			exec_mode: "cluster",
+			exec_mode: "fork",
 			autorestart: true,
 			restart_delay: 500,
 			max_memory_restart: "1G",

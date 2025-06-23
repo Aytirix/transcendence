@@ -242,7 +242,7 @@ export const acceptFriend = async (ws: WebSocket, user: User, state: State, text
 			ws.send(JSON.stringify({ action: 'error', result: 'error', notification: ws.i18n.t(`RelationFriends.errorCreatePrivateGroup`) } as reponse));
 			return;
 		}
-		if (await modelsFriends.updateFriendRelation(user, friend, 'friend', groupPrivMsg?.id || null , state) == false) {
+		if (await modelsFriends.updateFriendRelation(user, friend, 'friend', groupPrivMsg?.id || null, state) == false) {
 			ws.send(JSON.stringify({ action: 'error', result: 'error', notification: ws.i18n.t(`RelationFriends.errorAcceptRequest`) } as reponse));
 			return;
 		}
