@@ -155,7 +155,6 @@ export function handleAddUser(ws: WebSocket, player: player): void {
 
 export function handleCreateRoom(ws: WebSocket, player: player, json: any): void {
 	if (!json.name) return sendResponse(ws, 'error', 'error', [ws.i18n.t('pacman.error.room.nameRequired')]);
-	StateManager.sendRooms();
 	if (player.room) return sendResponse(ws, 'error', 'error', [ws.i18n.t('pacman.error.room.alreadyInRoom')]);
 	if (json.name.length < 3 || json.name.length > 15) return sendResponse(ws, 'error', 'error', [ws.i18n.t('pacman.error.room.nameLength')]);
 	if (StateManager.RoomManager.getRoomByName(json.name)) return sendResponse(ws, 'error', 'error', [ws.i18n.t('pacman.error.room.nameAlreadyUsed')]);

@@ -33,7 +33,7 @@ const SearchResults: React.FC<SearchResultsProps> = ({
             <div className="flex gap-4 items-center">
             <div className="avatar">
              <div className="w-18 rounded-full"><img src={`https://${window.location.hostname}:3000/avatars/${user.avatar}`} alt="A" /></div></div>
-              <div className="w-20 text-left">{user.username}</div>
+              <div className="w-40 text-left">{user.username}</div>
               <div className="w-6 rounded-full"><img src={`https://${window.location.hostname}:3000/flags/${user.lang}_flat.png`} alt="A" /></div>
               </div>
             <div className="flex-1">

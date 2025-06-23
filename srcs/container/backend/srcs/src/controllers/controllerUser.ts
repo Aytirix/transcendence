@@ -34,11 +34,8 @@ export const Login = async (request: FastifyRequest, reply: FastifyReply) => {
 
 	request.i18n.changeLanguage(user.lang || 'fr');
 
-	if (process.env.TWO_FACTOR_ACTIF === 'true') {
-		controller2FA.sendRegisterVerifyEmail(request, user.email, "loginAccount_confirm_email", user);
-	} else {
-		request.session.user = user;
-	}
+	if (process.env.NODE_PROJET === 'dev') request.session.user = user;
+	else controller2FA.sendRegisterVerifyEmail(request, user.email, "loginAccount_confirm_email", user);
 
 	return reply.send({
 		message: request.i18n.t('login.welcome'),
@@ -68,20 +65,19 @@ export const Register = async (request: FastifyRequest, reply: FastifyReply) => 
 
 	const defaultAvatar = ['avatar1.png', 'avatar2.png', 'avatar3.png', 'avatar4.png'][Math.floor(Math.random() * 4)];
 
-	const user = {
-		email,
-		username,
-		password,
-		lang: lang || 'fr',
-		avatar: defaultAvatar,
-	}
+	request.i18n.changeLanguage(lang);
 
-	request.i18n.changeLanguage(user.lang || 'fr');
-
-	if (process.env.TWO_FACTOR_ACTIF === 'true') {
+	if (process.env.NODE_PROJET === 'dev') {
+		const user = {
+			email,
+			username,
+			password: await tools.hashPassword(password),
+			lang: lang || 'fr',
+			avatar: defaultAvatar,
+		};
 		controller2FA.sendRegisterVerifyEmail(request, email, "createAccount_confirm_email", user);
 	} else {
-		const tmp = await userModel.Register(email, username, password, defaultAvatar, user.lang);
+		const tmp = await userModel.Register(email, username, password, defaultAvatar, lang);
 		request.session.user = tmp;
 	}
 

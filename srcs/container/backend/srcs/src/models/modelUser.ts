@@ -29,10 +29,10 @@ export const Login = async (email: string, password: string): Promise<User | nul
 	};
 };
 
-export const Register = async (email: string, username: string, password: string, avatar: string, lang: string): Promise<User> => {
+export const Register = async (email: string, username: string, password: string, avatar: string, lang: string, isHashed: boolean = false): Promise<User> => {
 	let hashedPassword = null;
 	if (password) {
-		hashedPassword = await tools.hashPassword(password);
+		hashedPassword = isHashed ? password : await tools.hashPassword(password);
 	}
 
 	const result: any = await executeReq(
