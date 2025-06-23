@@ -138,6 +138,7 @@ export const isAuth = {
 			type: 'object',
 			properties: {
 				isAuthenticated: { type: 'boolean', const: true },
+				redirect: { type: 'string', nullable: true, description: 'Redirection vers une page spécifique' },
 				user: {
 					type: 'object',
 					properties: {
@@ -149,7 +150,7 @@ export const isAuth = {
 					},
 				},
 			},
-			required: ['isAuthenticated', 'user'],
+			required: ['isAuthenticated', 'redirect', 'user'],
 		},
 		401: {
 			description: 'Utilisateur non authentifié',

@@ -13,7 +13,7 @@ interface AuthContextType {
 const IsAuthenticated = createContext<AuthContextType>({
 	user: null,
 	loading: true,
-	setUser: () => {},
+	setUser: () => { },
 });
 
 export const useAuth = (): AuthContextType => {
@@ -44,6 +44,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 						navigate('/');
 					} else if (!res.isAuthenticated && (!["/login", "/register", "/forget-password", "/auth/checkCode"].includes(window.location.pathname))) {
 						navigate('/login');
+					} else if (res.redirect && window.location.pathname !== res.redirect) {
+						navigate(res.redirect);
 					}
 				}
 			} catch (err) {
