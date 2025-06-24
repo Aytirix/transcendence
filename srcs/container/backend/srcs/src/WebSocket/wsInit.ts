@@ -9,6 +9,7 @@ import Middleware from '@Middleware';
 import chatWebSocket from './chat/wsChat';
 import { User } from '@types';
 import { pongWebSocket } from './pongGame/pongSocketHandler';
+import { getIngame } from './pongGame/state/serverState';
 import { PacManWebSocket } from './Pacman/PacManWebSocket';
 import { createi18nObject } from '../hook';
 import StateManager from '@wsPacman/game/StateManager';
@@ -80,15 +81,14 @@ async function initWebSocket(server: FastifyInstance) {
 				return;
 			}
 
-			// A finir
-			// if (request.url === '/Pacman' && pongWebSocket.playerInRoom(session.user.id)) {
-			// 	const gameInPacman = StateManager.RoomManager.PlayerInRoom(session.user.id);
-			// 	if (gameInPacman) {
-			// 		socket.write('HTTP/1.1 409 Conflict\r\n\r\n');
-			// 		socket.destroy();
-			// 		return;
-			// 	}
-			// }
+			if (request.url === '/Pacman' && getIngame(session.user.id)) {
+				const gameInPacman = StateManager.RoomManager.PlayerInRoom(session.user.id);
+				if (gameInPacman) {
+					socket.write('HTTP/1.1 409 Conflict\r\n\r\n');
+					socket.destroy();
+					return;
+				}
+			}
 
 			wss?.handleUpgrade(request, socket, head, (ws: WebSocket) => {
 				userConnected.set(userKey, ws);

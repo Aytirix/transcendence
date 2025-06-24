@@ -60,7 +60,7 @@ const GameMenu: React.FC = () => {
 	}
 	
 	useEffect(() => {
-		const socket = new WebSocket("wss://localhost:7000/pong");
+		const socket = new WebSocket(`wss://${window.location.host}/api/pong`);
 		socketRef.current = socket;
 
 		socket.onmessage = (message: MessageEvent) => {

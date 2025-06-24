@@ -56,7 +56,7 @@ const Solo: React.FC = () => {
 			const canvas = canvasRef.current;
 			if (!canvas) return;
 			
-			const socket = new WebSocket("wss://localhost:7000/pong");
+			const socket = new WebSocket(`wss://${window.location.host}/api/pong`);
 			socketRef.current = socket;
 	
 			if (reconnection) {
