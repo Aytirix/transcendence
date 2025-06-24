@@ -26,6 +26,13 @@ const MinSizeGuard = ({
 		width: window.innerWidth,
 		height: window.innerHeight
 	});
+	const [showChromiumWarning, setShowChromiumWarning] = useState(false);
+
+	const isChromium = () => {
+		const userAgent = navigator.userAgent.toLowerCase();
+		console.log('User Agent:', userAgent);
+		return userAgent.includes('chrome') && !userAgent.includes('firefox') && !userAgent.includes('safari');
+	};
 
 	useEffect(() => {
 		const handleResize = () => {
@@ -36,6 +43,12 @@ const MinSizeGuard = ({
 		};
 
 		window.addEventListener('resize', handleResize);
+		
+		// Vérifier si c'est Chromium au montage
+		if (isChromium()) {
+			setShowChromiumWarning(true);
+		}
+
 		return () => window.removeEventListener('resize', handleResize);
 	}, []);
 
@@ -44,6 +57,29 @@ const MinSizeGuard = ({
 	};
 
 	const isBlocked = windowSize.width < minWidth || windowSize.height < minHeight;
+
+	// Avertissement Chromium (affiché même si pas bloqué)
+	const ChromiumWarning = () => {
+		if (!showChromiumWarning) return null;
+
+		return (
+			<div className="chromium-warning">
+				<div className="chromium-warning-content">
+					<div className="chromium-warning-icon">⚠️</div>
+					<div className="chromium-warning-text">
+						<p>{t('minSizeGuard.chromiumWarning', 'Vous utilisez Chromium. Le jeu risque de lagger, il est préférable d\'utiliser Firefox ou un autre navigateur.')}</p>
+					</div>
+					<button 
+						className="chromium-warning-close"
+						onClick={() => setShowChromiumWarning(false)}
+						title={t('minSizeGuard.dismissWarning', 'Fermer l\'avertissement')}
+					>
+						✕
+					</button>
+				</div>
+			</div>
+		);
+	};
 
 	if (isBlocked) {
 		// Si hideWhenBlocked est true, ne rien afficher du tout
@@ -54,6 +90,7 @@ const MinSizeGuard = ({
 		// Sinon, afficher l'écran de blocage habituel
 		return (
 			<div className={`min-size-guard ${className}`}>
+				<ChromiumWarning />
 				<button 
 					className="min-size-guard-home-btn"
 					onClick={handleGoHome}
@@ -96,7 +133,12 @@ const MinSizeGuard = ({
 		);
 	}
 
-	return <>{children}</>;
+	return (
+		<>
+			<ChromiumWarning />
+			{children}
+		</>
+	);
 };
 
 export default MinSizeGuard;

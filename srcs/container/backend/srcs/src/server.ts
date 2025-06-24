@@ -7,7 +7,7 @@ import fastifyHelmet from '@fastify/helmet';
 import { registerHook } from './hook';
 import { registerSession } from './session';
 import { setupSwagger } from './docs';
-import { initWebSocket } from './WebSocket/wsInit';  // Import de la fonction WebSocket
+import { initWebSocket } from './WebSocket/wsInit';
 import userRoutes from './routes/userRoutes';
 import Ajv from 'ajv';
 import addFormats from 'ajv-formats';
