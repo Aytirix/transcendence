@@ -10,7 +10,7 @@ i18n
 	.use(LanguageDetector)
 	.use(initReactI18next)
 	.init({
-		lng: localStorage.getItem('language') || 'fr',
+		lng: localStorage.getItem('i18nextLng') || 'fr',
 		fallbackLng: 'fr',
 		debug: false,
 		interpolation: {

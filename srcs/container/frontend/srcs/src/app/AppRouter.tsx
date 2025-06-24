@@ -6,7 +6,7 @@ import { Routes, Route, Navigate } from 'react-router-dom';
 import { Pong } from './pongGame/client'
 import GameMenu from './pongGame/GameMenu';
 import WebSocketPacman from './Pacman/Init'
-import App from './App';
+import Intro from './Intro';
 import SameKeyboard from './pongGame/modes/SameKeyboard';
 import Credits from './Credits';
 import Solo from './pongGame/modes/Solo';
@@ -21,12 +21,8 @@ import FriendPage from './chat/FriendPage';
 import IronManForgetPass from './IronManForgetPass';
 import MinSizeGuard from './components/MinSizeGuard';
 import ModuleManager from './ModuleManager/ModuleManager';
-
-// PAGES
-
-// ERROR PAGES
-
-// JEUX
+import Minecraft from './components/minecraft/Minecraft';
+import MinecraftRouteGuard from './components/minecraft/MinecraftRouteGuard';
 
 class AppRouter extends Component {
 
@@ -35,7 +31,7 @@ class AppRouter extends Component {
 			<Routes>
 
 				<Route>
-					<Route path="/" element={<App />} />
+					<Route path="/" element={<Intro />} />
 					<Route path="/credits" element={<Credits />} />
 					<Route path="/profile" element={<IronManProfile />} />
 					<Route path="/login" element={<IronManLogin />} />
@@ -43,6 +39,12 @@ class AppRouter extends Component {
 					<Route path="/chat" element={<GroupChatPage />} />
 					<Route path="/friend" element={<FriendPage />} />
 					<Route path="/register" element={<IronManRegister />} />
+					<Route path="/minecraft" element={
+						<MinecraftRouteGuard>
+							<Minecraft />
+						</MinecraftRouteGuard>
+					} />
+					{/* Route pour le jeu Pong */}
 					<Route path="/pong" element={
 						<MinSizeGuard minWidth={1200} minHeight={870} message="Écran trop petit">
 							<Pong />

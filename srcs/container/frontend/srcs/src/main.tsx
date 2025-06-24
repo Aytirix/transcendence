@@ -1,4 +1,5 @@
 import './app/assets/styles/index.css';
+import './app/assets/styles/App.scss';
 import './i18next/i18next';
 import { createRoot } from 'react-dom/client';
 import SingletonGuard from './app/components/SingleWindowGuard.tsx';
