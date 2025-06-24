@@ -233,7 +233,7 @@ const SameKeyboard: React.FC = () => {
 			{/* Loading plein écran */}
 			{!isReady3d && (
 				<div>
-					<h1 className="loading">Loading ...</h1>
+					{/* <h1 className="loading">Loading ...</h1> */}
 				</div>
 			)}
 
