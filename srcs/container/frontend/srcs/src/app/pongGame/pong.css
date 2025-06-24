@@ -444,28 +444,28 @@ th, td {
   text-align: center;
 }
 
-td {
+.td-menu {
   max-width: 20px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;   
 }
 
-th {
+.th-menu {
   background-color: rgba(255, 255, 255, 0.1);
   color: rgb(241, 247, 247);
   animation: textGlow 1.7s linear infinite;
   font-weight: bold;
 }
 
-table {
+.table-menu {
   width: 100%;
   border-collapse: collapse;
   color: white;
   margin-top: 10px;
 }
 
-input {
+.input-create {
 	width: 180px;
 }
 
