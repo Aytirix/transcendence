@@ -18,4 +18,5 @@ export function getIngame(id: number) : boolean {
 		if (player.id === id)
 			return player.inGame;
 	}
+	return false;
 }
