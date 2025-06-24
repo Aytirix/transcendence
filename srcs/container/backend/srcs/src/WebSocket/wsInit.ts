@@ -75,14 +75,14 @@ async function initWebSocket(server: FastifyInstance) {
 				userConnected.delete(userKey);
 			}
 
-			if (request.url === '/pong') {
-				const userAgent = request.headers['user-agent'] || '';
-				if (userAgent.toLowerCase().includes('chrome') || userAgent.toLowerCase().includes('chromium')) {
-					socket.write('HTTP/1.1 403 Forbidden\r\n\r\n');
-					socket.destroy();
-					return;
-				}
-			}
+			// if (request.url === '/pong') {
+			// 	const userAgent = request.headers['user-agent'] || '';
+			// 	if (userAgent.toLowerCase().includes('chrome') || userAgent.toLowerCase().includes('chromium')) {
+			// 		socket.write('HTTP/1.1 403 Forbidden\r\n\r\n');
+			// 		socket.destroy();
+			// 		return;
+			// 	}
+			// }
 
 			if (request.url === '/pong' && StateManager.RoomManager.PlayerInRoom(session.user.id)) {
 				socket.write('HTTP/1.1 409 Conflict\r\n\r\n');
