@@ -14,15 +14,13 @@ export const LanguageProvider = ({ children }: any) => {
 	const { t, i18n } = useTranslation();
 	const [currentLanguage, setCurrentLanguage] = useState(() => {
 		// Charger la langue depuis le localStorage au démarrage
-		const savedLanguage = localStorage.getItem('language');
+		const savedLanguage = localStorage.getItem('i18nextLng');
 		return savedLanguage || i18n.language || 'fr';
 	});
 
 	const setLanguage = async (lang: string, updateBackend: boolean = true) => {
 		i18n.changeLanguage(lang);
 		setCurrentLanguage(lang);
-		// Sauvegarder dans le localStorage
-		localStorage.setItem('language', lang);
 
 		// Envoyer au backend si l'utilisateur est connecté et updateBackend est true
 		if (updateBackend) {
@@ -43,7 +41,7 @@ export const LanguageProvider = ({ children }: any) => {
 
 	// Initialiser la langue depuis le localStorage au premier chargement
 	useEffect(() => {
-		const savedLanguage = localStorage.getItem('language');
+		const savedLanguage = localStorage.getItem('i18nextLng');
 		if (savedLanguage && savedLanguage !== i18n.language) {
 			i18n.changeLanguage(savedLanguage);
 			setCurrentLanguage(savedLanguage);
