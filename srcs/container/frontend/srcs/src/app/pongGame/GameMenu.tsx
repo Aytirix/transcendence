@@ -70,6 +70,9 @@ const GameMenu: React.FC = () => {
 				console.log(data.list);
 			}
 		};
+		return () => {
+			socket.close();
+		};
 	}, []);
 
 	useEffect(() => {
@@ -99,19 +102,19 @@ const GameMenu: React.FC = () => {
 			{showTournament && (
 				<>
 					<div className="popup">
-						<table>
+						<table className="table-menu">
 							<thead>
 								<tr>
-									<th>id</th>
-									<th>Name</th>
-									<th>Place</th>
+									<th className="th-menu">id</th>
+									<th className="th-menu">Name</th>
+									<th className="th-menu">Place</th>
 								</tr>
 							</thead>
 							<tbody>
 								{listTournament.map((tournament) => (
 									<tr key={tournament.idTournament}>
-										<td>{tournament.idTournament}</td>
-										<td>{tournament.name}</td>
+										<td className="td-menu">{tournament.idTournament}</td>
+										<td className="td-menu">{tournament.name}</td>
 										<td style={{ color: tournament.isFull ? 'red' : '#39FF14' }}>{tournament.nbPlayer}/{tournament.size}</td>
 									</tr>
 								))}
@@ -132,17 +135,18 @@ const GameMenu: React.FC = () => {
 
 			{showCreate && (
 				<div className="popup_create">
-					<table>
+					<table className="table-menu">
 						<thead>
 							<tr>
-								<th>Name</th>
-								<th>size</th>
+								<th className="th-menu">Name</th>
+								<th className="th-menu">size</th>
 							</tr>
 						</thead>
 						<tbody>
 							<tr>
-								<td>
+								<td className="td-menu">
 									<input
+										className="input-create"
 										type="text"
 										name="Tournament"
 										onChange={(e) => setNameTournament(e.target.value)}
@@ -150,7 +154,7 @@ const GameMenu: React.FC = () => {
 										maxLength={20}
 									/>
 								</td>
-								<td>
+								<td className="td-menu">
 									<select
 										name="Tournament"
 										value={size}
@@ -169,15 +173,15 @@ const GameMenu: React.FC = () => {
 			)}
 			{showJoin && (
 				<div className="popup_join">
-					<table>
+					<table className="table-menu">
 						<thead>
-							<th>
+							<th className="th-menu">
 								Join Tournament
 							</th>
 						</thead>
 						<tbody>
 							<tr>
-								<td>
+								<td className="td-menu">
 									<input
 										className="input-join"
 										type="text"
