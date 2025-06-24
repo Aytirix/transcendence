@@ -10,6 +10,7 @@ interface MinSizeGuardProps {
 	message?: string;
 	className?: string;
 	hideWhenBlocked?: boolean;
+	blockChromium?: boolean;
 }
 
 const MinSizeGuard = ({
@@ -18,7 +19,8 @@ const MinSizeGuard = ({
 	minHeight = 600,
 	message = '',
 	className = '',
-	hideWhenBlocked = false
+	hideWhenBlocked = false,
+	blockChromium = false
 }: MinSizeGuardProps) => {
 	const { t } = useTranslation();
 	const navigate = useNavigate();
@@ -26,13 +28,13 @@ const MinSizeGuard = ({
 		width: window.innerWidth,
 		height: window.innerHeight
 	});
-	const [showChromiumWarning, setShowChromiumWarning] = useState(false);
+	const [isChromium, setIsChromium] = useState(false);
 
-	const isChromium = () => {
+	useEffect(() => {
 		const userAgent = navigator.userAgent.toLowerCase();
-		console.log('User Agent:', userAgent);
-		return userAgent.includes('chrome') && !userAgent.includes('firefox') && !userAgent.includes('safari');
-	};
+		const isChromiumBrowser = userAgent.includes('chrome') || userAgent.includes('chromium');
+		setIsChromium(isChromiumBrowser);
+	}, []);
 
 	useEffect(() => {
 		const handleResize = () => {
@@ -43,11 +45,6 @@ const MinSizeGuard = ({
 		};
 
 		window.addEventListener('resize', handleResize);
-		
-		// Vérifier si c'est Chromium au montage
-		if (isChromium()) {
-			setShowChromiumWarning(true);
-		}
 
 		return () => window.removeEventListener('resize', handleResize);
 	}, []);
@@ -58,87 +55,103 @@ const MinSizeGuard = ({
 
 	const isBlocked = windowSize.width < minWidth || windowSize.height < minHeight;
 
-	// Avertissement Chromium (affiché même si pas bloqué)
-	const ChromiumWarning = () => {
-		if (!showChromiumWarning) return null;
-
-		return (
-			<div className="chromium-warning">
-				<div className="chromium-warning-content">
-					<div className="chromium-warning-icon">⚠️</div>
-					<div className="chromium-warning-text">
-						<p>{t('minSizeGuard.chromiumWarning', 'Vous utilisez Chromium. Le jeu risque de lagger, il est préférable d\'utiliser Firefox ou un autre navigateur.')}</p>
-					</div>
-					<button 
-						className="chromium-warning-close"
-						onClick={() => setShowChromiumWarning(false)}
-						title={t('minSizeGuard.dismissWarning', 'Fermer l\'avertissement')}
-					>
-						✕
-					</button>
-				</div>
-			</div>
-		);
-	};
-
-	if (isBlocked) {
+	if (isBlocked || (blockChromium && isChromium)) {
 		// Si hideWhenBlocked est true, ne rien afficher du tout
 		if (hideWhenBlocked) {
 			return null;
 		}
-
-		// Sinon, afficher l'écran de blocage habituel
-		return (
-			<div className={`min-size-guard ${className}`}>
-				<ChromiumWarning />
-				<button 
-					className="min-size-guard-home-btn"
-					onClick={handleGoHome}
-					title={t('minSizeGuard.goHome', 'Retour à l\'accueil')}
-				>
-					<img src="/avatars/ironman.svg" alt="Iron Man home icon" />
-					<span className="home-label">{t('minSizeGuard.goHome', 'Accueil')}</span>
-				</button>
-				<div className="min-size-guard-content">
-					<div className="min-size-guard-icon">
-						<svg
-							width="64"
-							height="64"
-							viewBox="0 0 24 24"
-							fill="none"
-							stroke="currentColor"
-							strokeWidth="2"
-						>
-							<rect x="2" y="3" width="20" height="14" rx="2" ry="2" />
-							<line x1="8" y1="21" x2="16" y2="21" />
-							<line x1="12" y1="17" x2="12" y2="21" />
-						</svg>
-					</div>
-					<h2 className="min-size-guard-title">
-						{t('minSizeGuard.title')}
-					</h2>
-					<p className="min-size-guard-message">
-						{message || t('minSizeGuard.defaultMessage')}
-					</p>
-					<div className="min-size-guard-details">
-						<p>
-							{t('minSizeGuard.currentSize')}: {windowSize.width}x{windowSize.height}
+		if (isBlocked) {
+			return (
+				<div className={`min-size-guard ${className}`}>
+					<button
+						className="min-size-guard-home-btn"
+						onClick={handleGoHome}
+						title={t('minSizeGuard.goHome')}
+					>
+						<img src="/avatars/ironman.svg" alt="Iron Man home icon" />
+						<span className="home-label">{t('minSizeGuard.goHome')}</span>
+					</button>
+					<div className="min-size-guard-content">
+						<div className="min-size-guard-icon">
+							<svg
+								width="64"
+								height="64"
+								viewBox="0 0 24 24"
+								fill="none"
+								stroke="currentColor"
+								strokeWidth="2"
+							>
+								<rect x="2" y="3" width="20" height="14" rx="2" ry="2" />
+								<line x1="8" y1="21" x2="16" y2="21" />
+								<line x1="12" y1="17" x2="12" y2="21" />
+							</svg>
+						</div>
+						<h2 className="min-size-guard-title">
+							{t('minSizeGuard.title')}
+						</h2>
+						<p className="min-size-guard-message">
+							{message || t('minSizeGuard.defaultMessage')}
 						</p>
-						<p>
-							{t('minSizeGuard.requiredSize')}: {minWidth}x{minHeight}
-						</p>
+						<div className="min-size-guard-details">
+							<p>
+								{t('minSizeGuard.currentSize')}: {windowSize.width}x{windowSize.height}
+							</p>
+							<p>
+								{t('minSizeGuard.requiredSize')}: {minWidth}x{minHeight}
+							</p>
+						</div>
 					</div>
 				</div>
-			</div>
-		);
+			);
+		} else if (blockChromium && isChromium) {
+			return (
+				<div className={`min-size-guard ${className}`}>
+					<button
+						className="min-size-guard-home-btn"
+						onClick={handleGoHome}
+						title={t('minSizeGuard.goHome')}
+					>
+						<img src="/avatars/ironman.svg" alt="Iron Man home icon" />
+						<span className="home-label">{t('minSizeGuard.goHome')}</span>
+					</button>
+					<div className="min-size-guard-content">
+						<div className="min-size-guard-icon">
+							<svg
+								width="64"
+								height="64"
+								viewBox="0 0 24 24"
+								fill="none"
+								stroke="currentColor"
+								strokeWidth="2"
+							>
+								<rect x="2" y="3" width="20" height="14" rx="2" ry="2" />
+								<line x1="8" y1="21" x2="16" y2="21" />
+								<line x1="12" y1="17" x2="12" y2="21" />
+							</svg>
+						</div>
+						<h2 className="min-size-guard-title">
+							{t('minSizeGuard.chromiumTitle')}
+						</h2>
+						<p className="min-size-guard-message">
+							{t('minSizeGuard.chromiumMessage')}
+						</p>
+						<div className="min-size-guard-details mb-4">
+							<p>
+								{t('minSizeGuard.chromiumWarning')}
+							</p>
+						</div>
+						<div className="min-size-guard-details">
+							<p>
+								{t('minSizeGuard.currentBrowser')}: {navigator.userAgent}
+							</p>
+						</div>
+					</div>
+				</div>
+			);
+		}
 	}
 
-	return (
-		<>
-			<ChromiumWarning />
-			{children}
-		</>
-	);
+	return <>{children}</>;
 };
 
 export default MinSizeGuard;

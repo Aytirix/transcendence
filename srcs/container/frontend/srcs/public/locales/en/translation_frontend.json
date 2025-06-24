@@ -110,7 +110,8 @@
 			"gameMechanicsImplementation": "Game mechanics implementation",
 			"statisticsDashboard": "Statistics dashboard",
 			"gameLobbySystem": "Game lobby system",
-			"playerProgressionTracking": "Player progression tracking"
+			"playerProgressionTracking": "Player progression tracking",
+			"pongAI": "Pong AI development"
 		}
 	},
 
@@ -362,6 +363,10 @@
 		"defaultMessage": "This application requires a minimum resolution to function properly.",
 		"currentSize": "Current size",
 		"requiredSize": "Required size",
-		"goHome": "Go home"
+		"goHome": "Go home",
+		"chromiumTitle": "Browser not compatible",
+		"chromiumMessage": "The 3D Pong game is not available on Chrome/Chromium-based browsers.",
+		"chromiumWarning": "These browsers do not properly support the Babylon.js library used for 3D rendering. It is strongly recommended to use Firefox, Safari or another browser for an optimal gaming experience.",
+		"currentBrowser": "Current browser"
 	}
 }

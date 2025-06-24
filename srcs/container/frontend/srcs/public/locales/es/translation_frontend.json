@@ -110,7 +110,8 @@
 			"gameMechanicsImplementation": "Implementación de mecánicas de juego",
 			"statisticsDashboard": "Panel de estadísticas",
 			"gameLobbySystem": "Sistema de lobby de juego",
-			"playerProgressionTracking": "Seguimiento del progreso de jugadores"
+			"playerProgressionTracking": "Seguimiento del progreso de jugadores",
+			"pongAI": "Desarrollo de IA para Pong"
 		}
 	},
 
@@ -362,6 +363,10 @@
 		"defaultMessage": "Esta aplicación requiere una resolución mínima para funcionar correctamente.",
 		"currentSize": "Tamaño actual",
 		"requiredSize": "Tamaño requerido",
-		"goHome": "Ir al inicio"
+		"goHome": "Ir al inicio",
+		"chromiumTitle": "Navegador no compatible",
+		"chromiumMessage": "El juego Pong 3D no está disponible en navegadores basados en Chrome/Chromium.",
+		"chromiumWarning": "Estos navegadores no soportan correctamente la librería Babylon.js utilizada para el renderizado 3D. Se recomienda encarecidamente usar Firefox, Safari u otro navegador para una experiencia de juego óptima.",
+		"currentBrowser": "Navegador actual"
 	}
 }

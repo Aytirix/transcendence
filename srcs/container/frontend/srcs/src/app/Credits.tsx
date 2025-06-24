@@ -34,7 +34,8 @@ function Credits() {
                 t('credits.contributions.realTimeMultiplayerSystem'),
                 t('credits.contributions.uiUxDesign'),
                 t('credits.contributions.gameMatchmaking'),
-                t('credits.contributions.pongStatisticsScoring')
+                t('credits.contributions.pongStatisticsScoring'),
+				t('credits.contributions.pongAI')
             ]
         },
         {
