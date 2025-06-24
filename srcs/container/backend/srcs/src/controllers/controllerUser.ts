@@ -19,7 +19,6 @@ export const Login = async (request: FastifyRequest, reply: FastifyReply) => {
 
 	const user = await userModel.Login(email, password);
 
-
 	if (user === false) {
 		return reply.status(401).send({
 			message: request.i18n.t('login.passwordNotSet'),

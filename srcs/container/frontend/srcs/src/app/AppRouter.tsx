@@ -44,27 +44,27 @@ class AppRouter extends Component {
 					<Route path="/friend" element={<FriendPage />} />
 					<Route path="/register" element={<IronManRegister />} />
 					<Route path="/pong" element={
-						<MinSizeGuard minWidth={1200} minHeight={870} message="Écran trop petit">
+						<MinSizeGuard minWidth={1200} minHeight={870} message="Écran trop petit" blockChromium={true}>
 							<Pong />
 						</MinSizeGuard>
 					} />
 					<Route path="/pong/menu" element={
-						<MinSizeGuard minWidth={1200} minHeight={870} message="Écran trop petit">
+						<MinSizeGuard minWidth={1200} minHeight={870} message="Écran trop petit" blockChromium={true}>
 							<GameMenu />
 						</MinSizeGuard>
 					} />
 					<Route path="/pong/menu/SameKeyboard" element={
-						<MinSizeGuard minWidth={1200} minHeight={870} message="Écran trop petit">
+						<MinSizeGuard minWidth={1200} minHeight={870} message="Écran trop petit" blockChromium={true}>
 							<SameKeyboard />
 						</MinSizeGuard>
 					} />
 					<Route path="/pong/menu/Solo" element={
-						<MinSizeGuard minWidth={1200} minHeight={870} message="Écran trop petit">
+						<MinSizeGuard minWidth={1200} minHeight={870} message="Écran trop petit" blockChromium={true}>
 							<Solo />
 						</MinSizeGuard>
 					} />
 					<Route path="/pong/menu/MultiPlayers" element={
-						<MinSizeGuard minWidth={1200} minHeight={870} message="Écran trop petit">
+						<MinSizeGuard minWidth={1200} minHeight={870} message="Écran trop petit" blockChromium={true}>
 							<MultiPlayers />
 						</MinSizeGuard>
 					} />
