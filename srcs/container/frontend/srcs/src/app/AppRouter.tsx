@@ -7,8 +7,10 @@ import { Pong } from './pongGame/client'
 import GameMenu from './pongGame/GameMenu';
 import WebSocketPacman from './Pacman/Init'
 import App from './App';
-import SameKeyboard from './pongGame/SameKeyboard';
+import SameKeyboard from './pongGame/modes/SameKeyboard';
 import Credits from './Credits';
+import Solo from './pongGame/modes/Solo';
+import MultiPlayers from './pongGame/modes/MultiPlayers';
 
 import IronManProfile from './IronManProfile';
 import IronManLogin from './IronManLogin';
@@ -41,21 +43,33 @@ class AppRouter extends Component {
 					<Route path="/chat" element={<GroupChatPage />} />
 					<Route path="/friend" element={<FriendPage />} />
 					<Route path="/register" element={<IronManRegister />} />
-					<Route path="/Pong" element={
+					<Route path="/pong" element={
 						<MinSizeGuard minWidth={1200} minHeight={870} message="Écran trop petit">
 							<Pong />
 						</MinSizeGuard>
 					} />
-					<Route path="/Pong/menu" element={
+					<Route path="/pong/menu" element={
 						<MinSizeGuard minWidth={1200} minHeight={870} message="Écran trop petit">
 							<GameMenu />
 						</MinSizeGuard>
 					} />
-					<Route path="/Pong/menu/SameKeyboard" element={
+					<Route path="/pong/menu/SameKeyboard" element={
 						<MinSizeGuard minWidth={1200} minHeight={870} message="Écran trop petit">
 							<SameKeyboard />
 						</MinSizeGuard>
 					} />
+					<Route path="/pong/menu/Solo" element={
+						<MinSizeGuard minWidth={1200} minHeight={870} message="Écran trop petit">
+							<Solo />
+						</MinSizeGuard>
+					} />
+					<Route path="/pong/menu/MultiPlayers" element={
+						<MinSizeGuard minWidth={1200} minHeight={870} message="Écran trop petit">
+							<MultiPlayers />
+						</MinSizeGuard>
+					} />
+
+					{/* Route pour le jeu Pacman */}
 					<Route path="/Pacman" element={
 						<MinSizeGuard minWidth={1200} minHeight={870} message="Écran trop petit">
 							<WebSocketPacman />

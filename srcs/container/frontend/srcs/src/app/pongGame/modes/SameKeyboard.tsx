@@ -1,14 +1,15 @@
 import React, { useState, useEffect, useRef } from 'react';
-import './pong.css';
+import '../pong.css';
 import { useNavigate } from 'react-router-dom';
 import { Engine, Scene, Mesh, AbstractMesh, FreeCamera} from '@babylonjs/core';
-import { initBabylon } from './initBabylon';
-import { Parse} from './types/data';
-import { handleKeyDown, handleKeyUp } from './types/handleKey';
+import { initBabylon } from '../initBabylon';
+import { Parse} from '../types/data';
+import { handleKeyDown, handleKeyUp } from '../types/handleKey';
 
 const SameKeyboard: React.FC = () => {
 	const navigate = useNavigate();
-	const returnMenu = () => socketRef.current?.send(JSON.stringify({type: "EXIT"}));
+	const returnMenu = () => socketRef.current?.send(JSON.stringify({type: "EXIT"}));			
+	const returnMenuWinner = () => { navigate('/pong/menu')};
 	
 	const canvasRef = useRef<HTMLCanvasElement | null>(null);
 	const paddle1 = useRef<Mesh | null>(null);
@@ -20,6 +21,8 @@ const SameKeyboard: React.FC = () => {
 	const engine = useRef<Engine | null>(null);
 	const socketRef = useRef<WebSocket | null>(null);
 	const deleteGo = useRef(false);
+	const waitFrame = useRef<Parse[]>([]);
+	
 	const [isReady3d, setIsReady3d] = useState(false);
 	const [isCinematic, setIscinematic] = useState(false);
 	const [parsedData, setParsedData] = useState<Parse | null>(null);
@@ -27,17 +30,27 @@ const SameKeyboard: React.FC = () => {
 	const [namePlayer1] = useState("Player1");
 	const [namePlayer2] = useState("Player2");
 	const [startReco, setStartReco] = useState(false);
-	const [isWinner, setIsWinner] = useState(false);
-	const inGame = sessionStorage.getItem("inGame");
+	const [isPause, setIsPause] = useState(false);
+	const [isWinner, setisWinner] = useState(false);
+	const [nameWinner, setNameWinner] = useState<string | null>(null);
+
 	const reconnection = localStorage.getItem("reconnection");
 
 	const keyPressed = useRef({
 		p1_up: false,
 		p1_down: false,
 		p2_up: false,
-		p2_down: false
+		p2_down: false,
 	});
 	
+	function restoreCamera(data: any) {
+		camera.current!.position.x = data.camera.pos_x;
+		camera.current!.position.y = data.camera.pos_y;
+		camera.current!.position.z = data.camera.pos_z;
+		camera.current!.rotation.x = data.camera.rot_x;
+		camera.current!.rotation.y = data.camera.rot_y;
+
+	}
 	// Initialisation Babylon + WebSocket
 	useEffect(() => {
 		const canvas = canvasRef.current;
@@ -45,20 +58,19 @@ const SameKeyboard: React.FC = () => {
 		
 		const socket = new WebSocket("wss://localhost:7000/pong");
 		socketRef.current = socket;
-		
-		if (inGame === "true") {
-			sessionStorage.removeItem("inGame");
-			localStorage.removeItem("reconnection");
-			setIscinematic(true);
-			navigate('/pong/menu');
-			return;
-		}
 
-		if (reconnection === "true") {
+		if (reconnection) {
+			console.log(reconnection);
+			if (reconnection === "SameKeyboard") {
 				setIscinematic(true);
 				setStartReco(true);
+				setIsPause(true);
+			}
+			else {
+				localStorage.removeItem("reconnection")
+				localStorage.removeItem("data")
+			}
 		}
-
 		const setup = async () => {
 				
 			const result = await initBabylon(canvas);
@@ -76,6 +88,9 @@ const SameKeyboard: React.FC = () => {
 			engine.current.runRenderLoop(() => {
 				galactic.current!.rotation.z += 0.0002;
 				galactic.current!.rotation.y += 0.0002;
+				const directFrame = waitFrame.current.shift();
+				if (directFrame) 
+					setParsedData(directFrame);
 				scene.current?.render();
 			});
 			
@@ -83,27 +98,59 @@ const SameKeyboard: React.FC = () => {
 				setIsReady3d(true);
 			});
 		};
-		
 		setup();
-
-
 		socket.onmessage = (message: MessageEvent) => {
 			const data = JSON.parse(message.data);			
 			if (data.type === 'EXIT') {
 				socket.close();
 				engine.current?.dispose();
-				sessionStorage.removeItem("inGame");
 				localStorage.removeItem("reconnection");
-				navigate('/Pong/menu');
+				localStorage.removeItem("data");
+				navigate('/pong/menu');
 				return;
 			}
 			if (data.type === "Remove") {
 				setStartReco(false);
 				setIscinematic(false);
+				setIsPause(false);
 				localStorage.removeItem("reconnection");
+				localStorage.removeItem("data");
+
 			}
-			if (data.ball && data.player1 && data.player2)
-				setParsedData(data);
+			if (data.type === "Pause") {
+				console.log(camera.current)
+				setIsPause(data.value);
+			}
+			if (data.type === "FINISHED") {
+				localStorage.removeItem("reconnection");
+				localStorage.removeItem("data");
+				setisWinner(true);
+				if (parsedData?.player1.score === 21)
+					setNameWinner("player1")
+				else					
+					setNameWinner("player2")
+				camera!.current!.position.x = 338.131;
+				camera!.current!.position.y = 136.188;
+				camera!.current!.position.z = -481.417;
+				camera!.current!.rotation.x = 0.280;
+				camera!.current!.rotation.y = -0.561;
+			}
+			if (data.ball && data.player1 && data.player2) {
+				waitFrame.current.push(data)
+					console.log("test", data.player1.userName)
+				if (data.ball.pos_x < 778 && data.ball.pos_x > 775 
+					|| data.ball.pos_x < 26 && data.ball.pos_x > 23)
+					waitFrame.current.push(data)
+				localStorage.setItem("data", JSON.stringify({
+					...data, 
+					camera: {
+						pos_x: camera!.current!.position.x,
+						pos_y: camera!.current!.position.y,
+						pos_z: camera!.current!.position.z,
+						rot_x: camera!.current!.rotation.x,
+						rot_y: camera!.current!.rotation.y
+				}}));
+			}
 		};
 		// Nettoyage
 		return () => {
@@ -115,14 +162,15 @@ const SameKeyboard: React.FC = () => {
 	useEffect(() => {
 		if (!isReady3d || !socketRef.current || !isCinematic) return;
 		if (startReco) {
-			camera!.current!.position.x = 71.376;
-			camera!.current!.position.y = 91.805;
-			camera!.current!.position.z = -67.399;
-			camera!.current!.rotation.x = 0.908;
-			camera!.current!.rotation.y = -0.136;
-			sessionStorage.setItem("inGame", "true");
+			const saveData = localStorage.getItem("data");
+			if (saveData) {
+				const data = JSON.parse(saveData);
+				restoreCamera(data);
+				setParsedData(data);
+			}
 			return;
 		}
+
 		if (count > 0) {
 			const timeout = setTimeout(() => {
 				setCount((count) => count - 1);
@@ -134,7 +182,7 @@ const SameKeyboard: React.FC = () => {
 				deleteGo.current = true;
 				return () => clearTimeout(goTimeout);
 			}, 500);
-			sessionStorage.setItem("inGame", "true");
+			// sessionStorage.setItem("inGame", "true");
 			socketRef.current.send(JSON.stringify({ type: "SameKeyboard" }));
 		}
 	}, [isReady3d, isCinematic, count]);
@@ -170,6 +218,19 @@ const SameKeyboard: React.FC = () => {
 	// Gestion des touches clavier
 	useEffect(() => {
 		if (!isReady3d || !socketRef.current || !isCinematic) return;
+		const handlePause = (event: KeyboardEvent) => {
+			if (event.key === ' ') {
+				socketRef.current?.send(JSON.stringify({type: "Pause"}));
+			}
+		}
+		window.addEventListener('keydown', handlePause)
+		return (() => {
+			window.removeEventListener('keydown', handlePause);
+		})
+	}, [isPause, isCinematic, isReady3d])
+
+	useEffect(() => {
+		if (!isReady3d || !socketRef.current || !isCinematic) return;
 
 		const handleDown = (event: KeyboardEvent) => handleKeyDown(event, keyPressed.current, camera.current!);
 		const handleUp = (event: KeyboardEvent) => handleKeyUp(event, keyPressed.current);
@@ -201,8 +262,7 @@ const SameKeyboard: React.FC = () => {
 
 	useEffect(() => {
 		if (!isReady3d || !socketRef.current || isCinematic) return;
-		sessionStorage.setItem("inGame", "true");
-		localStorage.setItem("reconnection", "true");
+		localStorage.setItem("reconnection", "SameKeyboard");
 		let i: number = -1209
 		camera.current!.rotation.x = 0.081;
 		camera.current!.rotation.y = 1.599;
@@ -215,11 +275,11 @@ const SameKeyboard: React.FC = () => {
 					i++;
 				}
 				else if (i >= 200) {
-					camera.current.position.x = 71.376;
+					camera.current.position.x = 60.300;
 					camera.current.position.y = 91.805;
-					camera.current.position.z = -67.399;
+					camera.current.position.z = -67.41;
 					camera.current.rotation.x = 0.908;
-					camera.current.rotation.y = -0.136;
+					camera.current.rotation.y = -0.0084;
 					clearInterval(interval);
 					setIscinematic(true)
 				}
@@ -236,11 +296,16 @@ const SameKeyboard: React.FC = () => {
 					{/* <h1 className="loading">Loading ...</h1> */}
 				</div>
 			)}
-
-			
-			{/* Jeu */}
+			{/* jeu */}
 				<div className="game-canvas">
-					<canvas ref={canvasRef} className="game-canvas" />
+					<canvas ref={canvasRef} className="game-canvas"/>
+
+					 {/* jeu en pause */}
+					{isPause && isReady3d && isCinematic && (
+						<h1 className='Start-go'>
+							[ Pause ]
+						</h1>
+					)}
 
 					{/* Compte à rebours */}
 					{!deleteGo.current && isCinematic && !startReco && (
@@ -250,13 +315,20 @@ const SameKeyboard: React.FC = () => {
 					)}
 
 					{/* Dashboard des scores et exit */}
-					{isCinematic && (
+					{isCinematic && !isWinner && (
 						<>
 							<h1 className="DashBoardp1">{namePlayer1} : Score {parsedData?.player1.score}</h1>
 							<h1 className="DashBoardp2">{namePlayer2} : Score {parsedData?.player2.score}</h1>
 							<button onClick={returnMenu} className="Return-button">Exit Game</button>
 						</>
 					)}
+					{isWinner && (
+						<>
+							<h1 className='Winner'>Winner is {nameWinner}</h1>
+							<button onClick={returnMenuWinner} className="Return-Menu">Return Menu</button>
+						</>
+					)}
+
 				</div>
 		</>
 	);

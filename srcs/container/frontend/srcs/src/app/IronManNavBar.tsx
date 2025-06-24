@@ -28,7 +28,7 @@ const IronManNavBar: React.FC = () => {
 	}, [logoMenuOpen]);
 
 	const hideOnPaths = ['/Pacman', '/login', '/register', '/forget-password', '/auth/checkCode'];
-	const loadNavBar = !hideOnPaths.includes(location.pathname) && !location.pathname.startsWith('/Pong');
+	const loadNavBar = !hideOnPaths.includes(location.pathname) && !location.pathname.startsWith('/pong');
 
 	return (
 		<>

@@ -43,7 +43,7 @@ export async function initBabylon(canvas: HTMLCanvasElement) : Promise<BabylonIn
 
 	thanos.meshes.forEach(mesh => {
 		mesh.scaling = new Vector3(2.3, 2.3, 2.3);
-		mesh.position = new Vector3(190, 1.28, 0);
+		mesh.position = new Vector3(195, 1.28, 0);
 		mesh.rotation.y = 1.3;
 		mesh.rotation.x = 0;
 		mesh.rotation.z = 0;
@@ -106,7 +106,7 @@ export async function initBabylon(canvas: HTMLCanvasElement) : Promise<BabylonIn
 	paddle1.edgesColor = new Color4(1, 0, 0, 1);
 
 	const ball = MeshBuilder.CreateSphere("ball", { diameter: 2 }, scene);
-	ball.position.set(30, 4, 0);
+	ball.position.set(59, 4, 0);
 
 
 	const paddle2 = MeshBuilder.CreateBox("paddle2", { width: 0.1, height: 0.2, depth: 1 }, scene);
@@ -123,7 +123,7 @@ export async function initBabylon(canvas: HTMLCanvasElement) : Promise<BabylonIn
 	
 	const cube = MeshBuilder.CreateBox("cube", {width: 8, height: 0.001, depth: 6.1}, scene);
 	cube.scaling = new Vector3(10, 10 ,10)
-	cube.position.set(59, 4, 0);
+	cube.position.set(59, 4, - 0.15);
 	cube.enableEdgesRendering();
 	cube.edgesWidth = 25;
 	cube.edgesColor = new Color4(1, 0, 0, 1);

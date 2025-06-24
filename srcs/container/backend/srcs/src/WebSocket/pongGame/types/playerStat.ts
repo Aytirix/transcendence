@@ -10,10 +10,13 @@ export interface playerStat {
 	idTournament?: number;
 	matchTournamentNB?: number;
 	resultMatchTournament?: "Loose" | "Win" | "Current";
-	mode?: "Multi" | "Solo" | "SameKeyboard" | "Tournament" | "Undefined" | "Move" | "EXIT" | "Ping";
+	resultMatch?: "Loose" | "win";
+	mode?: "Multi" | "Solo" | "SameKeyboard" | "Tournament" | "Undefined" | "Move" | "EXIT" | "Pause" | "Ping";
 	inGame : boolean;
 	socket: WebSocket;
 	lastping?: number;
+	timePause?: number;
+	pauseGame?: boolean;
 };
 
 export interface Tournament {
@@ -22,6 +25,7 @@ export interface Tournament {
 	name: string;
 	winner?: boolean;
 	isFull: boolean;
+	nbPlayer: number;
 	idTournament?: number;
 	currentMatch?: {player1: playerStat, player2:playerStat} [];
 	waitingWinner?: playerStat [];
