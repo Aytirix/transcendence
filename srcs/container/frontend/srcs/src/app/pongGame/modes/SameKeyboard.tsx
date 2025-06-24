@@ -89,7 +89,7 @@ const SameKeyboard: React.FC = () => {
 				galactic.current!.rotation.z += 0.0002;
 				galactic.current!.rotation.y += 0.0002;
 				const directFrame = waitFrame.current.shift();
-				if (directFrame) 
+				if (directFrame)
 					setParsedData(directFrame);
 				scene.current?.render();
 			});
