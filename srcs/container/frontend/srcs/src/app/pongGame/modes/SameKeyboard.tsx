@@ -21,7 +21,6 @@ const SameKeyboard: React.FC = () => {
 	const engine = useRef<Engine | null>(null);
 	const socketRef = useRef<WebSocket | null>(null);
 	const deleteGo = useRef(false);
-	const waitFrame = useRef<Parse[]>([]);
 	
 	const [isReady3d, setIsReady3d] = useState(false);
 	const [isCinematic, setIscinematic] = useState(false);
@@ -88,9 +87,6 @@ const SameKeyboard: React.FC = () => {
 			engine.current.runRenderLoop(() => {
 				galactic.current!.rotation.z += 0.0002;
 				galactic.current!.rotation.y += 0.0002;
-				const directFrame = waitFrame.current.shift();
-				if (directFrame)
-					setParsedData(directFrame);
 				scene.current?.render();
 			});
 			
@@ -136,11 +132,7 @@ const SameKeyboard: React.FC = () => {
 				camera!.current!.rotation.y = -0.561;
 			}
 			if (data.ball && data.player1 && data.player2) {
-				waitFrame.current.push(data)
-					console.log("test", data.player1.userName)
-				if (data.ball.pos_x < 778 && data.ball.pos_x > 775 
-					|| data.ball.pos_x < 26 && data.ball.pos_x > 23)
-					waitFrame.current.push(data)
+				setParsedData(data)
 				localStorage.setItem("data", JSON.stringify({
 					...data, 
 					camera: {

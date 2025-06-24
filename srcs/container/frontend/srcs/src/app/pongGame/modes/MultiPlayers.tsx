@@ -24,7 +24,6 @@ const MultiPlayers: React.FC = () => {
 			const engine = useRef<Engine | null>(null);
 			const socketRef = useRef<WebSocket | null>(null);
 			const deleteGo = useRef(false);
-			const waitFrame = useRef<Parse[]>([]);
 			const nameWinner = useRef<string | null>(null);
 			const namePlayer1 = useRef<string | null>(null);
 			const namePlayer2 = useRef<string | null>(null);
@@ -93,9 +92,6 @@ const MultiPlayers: React.FC = () => {
 					engine.current.runRenderLoop(() => {
 						galactic.current!.rotation.z += 0.0002;
 						galactic.current!.rotation.y += 0.0002;
-						const directFrame = waitFrame.current.shift();
-						if (directFrame)
-							setParsedData(directFrame);
 						scene.current?.render();
 					});
 					
@@ -170,16 +166,13 @@ const MultiPlayers: React.FC = () => {
 						socket.close(); //ici
 					}
 					if (data.ball && data.player1 && data.player2) {
-						waitFrame.current.push(data)
+						setParsedData(data)
+
 						if (!namePlayer1.current) {
 							namePlayer1.current = (data.player1.userName);
 						}
 						if (!namePlayer2.current)
 							namePlayer2.current = data.player2.userName;
-						if (data.ball.pos_x < 778 && data.ball.pos_x > 775 
-							|| data.ball.pos_x < 26 && data.ball.pos_x > 23) {
-								waitFrame.current.push(data)
-						}	
 						localStorage.setItem("data", JSON.stringify({
 							...data, 
 							camera: {
