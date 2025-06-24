@@ -13,3 +13,9 @@ export const waitingMulti = new Set<playerStat>();
 //information : set -> player waiting for tournament
 export const listTournament = new Map<number, Tournament>();
 
+export function getIngame(id: number) : boolean {
+		for (const [, player] of sockets) {
+		if (player.id === id)
+			return player.inGame;
+	}
+}

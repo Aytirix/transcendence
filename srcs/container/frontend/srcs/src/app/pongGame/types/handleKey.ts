@@ -1,6 +1,7 @@
 import { FreeCamera } from "@babylonjs/core";
 
 export function handleKeyDown(event: KeyboardEvent, keyPressed: {[key: string]: boolean}, camera: FreeCamera) {
+	console.log(event.key);
 	switch (event.key) {
 		case 'ArrowLeft' :
 			keyPressed.p1_down = true;
@@ -15,11 +16,11 @@ export function handleKeyDown(event: KeyboardEvent, keyPressed: {[key: string]: 
 			keyPressed.p2_down = true;
 			break;
 		case '1' :
-			camera.position.x = 71.376;
+			camera.position.x = 60.300;
 			camera.position.y = 91.805;
-			camera.position.z = -67.399;
+			camera.position.z = -67.41;
 			camera.rotation.x = 0.908;
-			camera.rotation.y = -0.136;
+			camera.rotation.y = -0.0084;
 			break;
 		case '2' :
 			camera.position.x = 130.38;

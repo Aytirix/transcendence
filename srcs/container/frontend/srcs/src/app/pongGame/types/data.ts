@@ -27,4 +27,20 @@ export interface Parse {
 		readonly speed: number;
 		score: number;
 	};
+	camera?: {
+		pos_x: number;
+		pos_y: number;
+		pos_z: number;
+		rot_x: number;
+		rot_y: number;
+	}
 }
+
+export interface Tournament {
+	size: 4 | 8 | 16 | 32;
+	name: string;
+	winner?: boolean;
+	isFull: boolean;
+	idTournament?: number;
+	nbPlayer: number;
+} [];
