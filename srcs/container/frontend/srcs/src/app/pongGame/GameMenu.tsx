@@ -27,6 +27,7 @@ const GameMenu: React.FC = () => {
 		}));
 		setValidationButton(false);
 		setShowCreate(false);
+		navigate('/pong/menu/Tournament');
 	};
 
 	const Tournament = () => {
@@ -91,14 +92,16 @@ const GameMenu: React.FC = () => {
 			>
 				<source src="/images/menuPagevids.mp4" type="video/mp4" />
 			</video>
-
+			<div className="button-accueil">
+				<button className="style-button-accueil" onClick={() => navigate('../')}>EXIT</button>
+				<img src="/images/exit.png" className="img-exit"/>
+			</div>
 			<div className="page-menu-custom">
 				<button className="Menu-button" onClick={SameKeyboard}>SameKeyboard</button>
 				<button className="Menu-button" onClick={Solo}>Solo</button>
 				<button className="Menu-button" onClick={MultiPlayers}>Multi Players</button>
 				<button className="Menu-button" onClick={Tournament}>Tournament</button>
 			</div>
-
 			{showTournament && (
 				<>
 					<div className="popup">
