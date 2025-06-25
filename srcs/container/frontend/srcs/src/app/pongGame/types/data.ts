@@ -37,10 +37,9 @@ export interface Parse {
 }
 
 export interface Tournament {
-	size: 4 | 8 | 16 | 32;
+	id: number;
 	name: string;
-	winner?: boolean;
+	max: number;
+	current: number;
 	isFull: boolean;
-	idTournament?: number;
-	nbPlayer: number;
-} [];
+}

@@ -19,12 +19,18 @@ const GameMenu: React.FC = () => {
 	const MultiPlayers = () => navigate('/pong/menu/MultiPlayers');
 
 	const Validation = () => {
-		socketRef.current?.send(JSON.stringify({
+		showCreate 
+		? 	socketRef.current?.send(JSON.stringify({
 			type: "Tournament",
 			action: "Create",
 			value: nameTournament,
 			sizeTournament: size
-		}));
+		}))
+		: socketRef.current?.send(JSON.stringify({
+			type: "Tournament",
+			action: "Join",
+			id: parseInt(idJoin, 10)
+		}))
 		setValidationButton(false);
 		setShowCreate(false);
 		navigate('/pong/menu/Tournament');
@@ -39,6 +45,7 @@ const GameMenu: React.FC = () => {
 		} else {
 			setShowTournament(true);
 			socketRef.current?.send(JSON.stringify({ type: "Tournament", action: "Display" }));
+			console.log("test")
 		}
 	};
 
@@ -66,9 +73,9 @@ const GameMenu: React.FC = () => {
 
 		socket.onmessage = (message: MessageEvent) => {
 			const data = JSON.parse(message.data);
-			if (data.type === "Display") {
-				setListTournament(data.list);
-				console.log(data.list);
+			if (data.action === "LIST_RESPONSE") {
+				setListTournament(data.value);
+				console.log(data.value);
 			}
 		};
 		return () => {
@@ -77,8 +84,29 @@ const GameMenu: React.FC = () => {
 	}, []);
 
 	useEffect(() => {
+		if (!socketRef.current) return;
+
+		const interval = setInterval(() => {
+			if (socketRef.current?.readyState === WebSocket.OPEN) {
+				socketRef.current.send(JSON.stringify({ type: 'Ping' }));
+			}
+		}, 5000);
+		return () => clearInterval(interval);
+	}, []);
+
+	useEffect(() => {
 		setValidationButton(nameTournament.length >= 3);
 	}, [nameTournament]);
+
+	useEffect(() => {
+		setValidationButton(() => {
+			for (const tournament of listTournament) {
+				if (tournament.id.toString() === idJoin)
+					return true;
+			}
+			return false;
+		})
+	}, [idJoin])
 
 	return (
 		<div className="video-wrapper">
@@ -115,10 +143,10 @@ const GameMenu: React.FC = () => {
 							</thead>
 							<tbody>
 								{listTournament.map((tournament) => (
-									<tr key={tournament.idTournament}>
-										<td className="td-menu">{tournament.idTournament}</td>
+									<tr key={tournament.id}>
+										<td className="td-menu">{tournament.id}</td>
 										<td className="td-menu">{tournament.name}</td>
-										<td style={{ color: tournament.isFull ? 'red' : '#39FF14' }}>{tournament.nbPlayer}/{tournament.size}</td>
+										<td style={{ color: tournament.isFull ? 'red' : '#39FF14' }}>{tournament.current}/{tournament.max}</td>
 									</tr>
 								))}
 							</tbody>
