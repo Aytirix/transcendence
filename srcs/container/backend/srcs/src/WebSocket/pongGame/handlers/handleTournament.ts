@@ -8,33 +8,53 @@ import { webMsg } from "../types/webMsg";
 let idTournament: number = 0;
 
 export function handleTournament(playerInfos: playerStat, msg: webMsg) {
-	if (playerInfos.inGame !== true && msg.action === "Create") {
+	if (playerInfos.inGame !== true && msg.action === "Create")
 		createTournament(playerInfos, msg);
-		const list = Array.from(listTournament.values()).map(toTournamentClientFormat);
-		console.log(list);
-		playerInfos.socket.send(JSON.stringify({ type: "Display", list: list }));
-	}
-	else if (msg.action  === "Join" && playerInfos.inGame !== true) {
+	else if (msg.action  === "Join" && playerInfos.inGame !== true)
 		joinTournament(playerInfos, msg);
-	}
 	else if (msg.action === "Display") {
-		const list = Array.from(listTournament.values()).map(toTournamentClientFormat);
-		playerInfos.socket.send(JSON.stringify({ type: "Display", list: list }));
+		console.log("actualise")
+		actualiseDisplay(playerInfos);
 	}
-
+	else if (msg.action === "Quit")
+		quitTournament(playerInfos)
 }
 
+function quitTournament(playerInfos: playerStat) {
+	for (const [id, tournament] of listTournament) {
+		console.log("id", id, "id player", playerInfos.idTournament)
+		if (id === playerInfos.idTournament) {
+			console.log("2")
+
+			tournament.listPlayer.delete(playerInfos);
+			if (tournament.listPlayer.size === 0) {
+				console.log("3")
+				listTournament.delete(id);
+			} else {
+				tournament.isFull = false;
+			}
+			break;
+		}
+	}
+	playerInfos.inGame = false;
+	playerInfos.idTournament = null;
+	playerInfos.mode = null;
+	updateTournament();
+}
+
+
 function createTournament(playerInfos: playerStat, msg: webMsg)  {
+	console.log("createid", idTournament)
 	const tournament: Tournament = {
 		listPlayer: new Set(),
 		name: msg.value,
 		size : msg.sizeTournament,
 		isFull : false,
-		nbPlayer: 1,
 		winner : false,
 		idTournament : idTournament,
 	}
-	playerInfos.idTournament = idTournament;
+	playerInfos.idTournament = tournament.idTournament;
+	console.log("create id playerinfos ", playerInfos.idTournament)
 	playerInfos.mode = msg.type;
 	playerInfos.inGame = true;
 	tournament.listPlayer.add(playerInfos);
@@ -92,10 +112,14 @@ function updateTournament() {
 	}
 	const jsonString: string = JSON.stringify(jsonTournament);
 	//envoi de la mise a jour a tout les players
-	for (const [id, tournament] of listTournament) {
-		for(const player of tournament.listPlayer) {
+	// for (const [id, tournament] of listTournament) {
+	// 	for(const player of tournament.listPlayer) {
+	// 		player.socket.send(jsonString);
+	// 	}
+	// }
+	for (const [, player] of sockets) {
 			player.socket.send(jsonString);
-		}
+			console.log(player.name, "update");
 	}
 }
 
@@ -231,13 +255,32 @@ export function isOnFinishMatch(tournament: Tournament, player1: playerStat, pla
 
 }
 
-function toTournamentClientFormat(t: Tournament) {
-  return {
-    idTournament: t.idTournament,
-    name: t.name,
-    size: t.size,
-    winner: t.winner,
-    isFull: t.isFull,
-	nbPlayer: t.nbPlayer,
-  };
+function actualiseDisplay(playerinfos: playerStat) {
+	let jsonTournament: {
+				type: string,
+				action: string,
+				value: {
+					"id": number,
+					"name": string,
+					"max": number,
+					"current": number,
+					"isFull": boolean
+				} [];
+	} = {
+		type: "Tournament",
+		action: "LIST_RESPONSE",
+		value: []
+	};
+	//mise a jour du fichier json pour envoi a tout les players
+	for (const [id, tournament] of listTournament) {
+		jsonTournament.value.push({
+				"id": id,
+				"name": tournament.name,
+				"max": tournament.size,
+				"current": tournament.listPlayer.size,
+				"isFull": tournament.isFull,
+			})
+	}
+	console.log(jsonTournament.value)
+	playerinfos.socket.send(JSON.stringify(jsonTournament));
 }

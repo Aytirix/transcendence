@@ -4,7 +4,7 @@ import { sockets, waitingID, waitingMulti } from '../state/serverState';
 import { playerStat } from '../types/playerStat';
 
 export function handleReconnection(socket: WebSocket, user: User) : boolean {
-	// console.log("avant user id", user.id);
+	console.log("avant user id", user.id);
 	if (waitingID.has(user.id)) {
 			console.log("waiting", user.id)
 			const tempPlayer = waitingID.get(user.id);
@@ -35,7 +35,6 @@ export function handleReconnection(socket: WebSocket, user: User) : boolean {
 				return (true);
 			}
 			else if (tempPlayer.mode === "Multi") {
-				console.log("winner reco")
 				const user1 = tempPlayer.game.getPlayer1().getPlayerInfos().id;
 				sockets.delete(tempPlayer.socket)
 				tempPlayer.socket = socket;
@@ -53,6 +52,14 @@ export function handleReconnection(socket: WebSocket, user: User) : boolean {
 
 				tempPlayer.game.setStatus("KICKOFF"); //KICKOFF
 				// console.log("essai")
+				return (true);
+			}
+			else if (tempPlayer.mode === "Tournament") {
+				sockets.delete(tempPlayer.socket);
+				tempPlayer.socket = socket;
+				tempPlayer.lastping = Date.now();
+				sockets.set(socket, tempPlayer);
+				waitingID.delete(user.id);
 				return (true);
 			}
 		}
