@@ -197,6 +197,34 @@
   z-index: 2;
 }
 
+.button-accueil {
+  position: absolute;
+  display: flex;
+  top: 90%;
+  right: 50px; /* distance depuis le bord gauche */
+  z-index: 2;
+  align-items: center;
+}
+
+.img-exit {
+  width: 25px;      /* ← ajuste ici la taille */
+  height: 30px;     /* garde le ratio */
+}
+
+.style-button-accueil {
+	border: none;
+	border-radius: 10px;
+	z-index: 2;
+	background: transparent;
+	color: rgb(241, 247, 247);
+	font-weight: bold;
+	font-size: 20px;
+	animation: textGlowMenu 1.7s linear infinite;
+}
+.style-button-accueil:hover {
+	transform: scale(1.08);
+	animation: textGlow 1.7s linear infinite;
+}
 
 .Menu-button {
 	border: none;

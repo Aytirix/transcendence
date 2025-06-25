@@ -11,6 +11,7 @@ import SameKeyboard from './pongGame/modes/SameKeyboard';
 import Credits from './Credits';
 import Solo from './pongGame/modes/Solo';
 import MultiPlayers from './pongGame/modes/MultiPlayers';
+import Tournament from './pongGame/modes/Tournament';
 
 import IronManProfile from './IronManProfile';
 import IronManLogin from './IronManLogin';
@@ -66,6 +67,11 @@ class AppRouter extends Component {
 					<Route path="/pong/menu/MultiPlayers" element={
 						<MinSizeGuard minWidth={0} minHeight={0} message="Écran trop petit">
 							<MultiPlayers />
+						</MinSizeGuard>
+					} />
+					<Route path="/pong/menu/Tournament" element={
+						<MinSizeGuard minWidth={0} minHeight={0} message="Écran trop petit">
+							<Tournament />
 						</MinSizeGuard>
 					} />
 
