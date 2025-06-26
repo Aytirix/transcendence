@@ -36,7 +36,7 @@ export default class Engine {
 	private pacmanKillFrightened: number = 0;
 	private frightenedEndTime: number = 0;
 	private static FRIGHTENED_DURATION = 8000; // 8 secondes en mode effrayé
-	private static FRIGHTENED_SPEED = 1.5 // Vitesse réduite en mode effrayé
+	private static FRIGHTENED_SPEED = 2 // Vitesse réduite en mode effrayé
 
 	constructor(room: room, initialPlayerSockets: Map<number, WebSocket>) {
 
@@ -472,6 +472,17 @@ export default class Engine {
 
 		// Gestion du changement de direction si on est centré
 		if ((isAligned || directionOpposite) && pl.nextDirection && (pl.nextDirection.x !== 0 || pl.nextDirection.y !== 0)) {
+			const nextDirectionGridPos = {
+				x: currentGridPos.x + pl.nextDirection.x,
+				y: currentGridPos.y + pl.nextDirection.y
+			};
+			if (this.map.isWalkable(pl.nameChar, nextDirectionGridPos)) {
+				pl.direction = { ...pl.nextDirection };
+			}
+		}
+
+		// Sécurité anti-blocage : si bloqué mais nextDirection est valide, on force le changement
+		if (pl.direction.x === 0 && pl.direction.y === 0 && pl.nextDirection && (pl.nextDirection.x !== 0 || pl.nextDirection.y !== 0)) {
 			const nextDirectionGridPos = {
 				x: currentGridPos.x + pl.nextDirection.x,
 				y: currentGridPos.y + pl.nextDirection.y
