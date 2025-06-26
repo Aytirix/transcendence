@@ -80,6 +80,7 @@ const IronManRegister: React.FC = () => {
               className="input input-a"
               type="email"
               name="email"
+			  maxLength={50}
               placeholder={t('register.email')}
               value={form.email}
               onChange={handleChange}
@@ -90,6 +91,7 @@ const IronManRegister: React.FC = () => {
               className="input input-a"
               type="text"
               name="username"
+              maxLength={15}
               placeholder={t('register.username')}
               value={form.username}
               onChange={handleChange}

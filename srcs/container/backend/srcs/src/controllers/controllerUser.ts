@@ -67,6 +67,9 @@ export const Register = async (request: FastifyRequest, reply: FastifyReply) => 
 	request.i18n.changeLanguage(lang);
 
 	if (process.env.NODE_PROJET === 'dev') {
+		const tmp = await userModel.Register(email, username, password, defaultAvatar, lang);
+		request.session.user = tmp;
+	} else {
 		const user = {
 			email,
 			username,
@@ -75,9 +78,6 @@ export const Register = async (request: FastifyRequest, reply: FastifyReply) => 
 			avatar: defaultAvatar,
 		};
 		controller2FA.sendRegisterVerifyEmail(request, email, "createAccount_confirm_email", user);
-	} else {
-		const tmp = await userModel.Register(email, username, password, defaultAvatar, lang);
-		request.session.user = tmp;
 	}
 
 	return reply.send({
@@ -217,13 +217,49 @@ export async function authGoogleCallback(request: FastifyRequest, reply: Fastify
 			});
 		}
 
+		user = await userModel.getUserByEmail(payload['email']);
+		if (user) {
+			user.id = user.id;
+			await userModel.addRelationGoogleToken(user.id, payload['sub']);
+			request.session.user = user;
+			return reply.status(200).send({
+				isAuthenticated: true,
+				user: {
+					id: user.id,
+					email: user.email,
+					username: user.username,
+					lang: user.lang,
+					avatar: user.avatar || null,
+				},
+			});
+		}
+
 		user = {
 			id: 0,
 			email: payload['email'],
 			username: payload['name'].replace(/[^a-zA-Z0-9]/g, '').toLowerCase().slice(0, 10) || payload['email'].split('@')[0].toLowerCase().slice(0, 10),
 			lang: 'fr',
-			avatar: payload['picture'] || ['avatar1.png', 'avatar2.png', 'avatar3.png', 'avatar4.png'][Math.floor(Math.random() * 4)],
+			avatar: ['avatar1.png', 'avatar2.png', 'avatar3.png', 'avatar4.png'][Math.floor(Math.random() * 4)],
 		};
+
+		if (payload['picture']) {
+			try {
+				const res = await fetch(payload['picture']);
+				if (res.ok) {
+					const buffer = await res.arrayBuffer();
+					const AVATAR_DIR = path.join(__dirname, "..", "..", "uploads");
+					if (!fs.existsSync(AVATAR_DIR)) {
+						fs.mkdirSync(AVATAR_DIR, { recursive: true });
+					}
+					const avatarFilename = `profile_${payload['sub']}.jpg`;
+					const avatarPath = path.join(AVATAR_DIR, avatarFilename);
+					fs.writeFileSync(avatarPath, Buffer.from(buffer));
+					user.avatar = avatarFilename;
+				}
+			} catch (err) {
+				console.error('Failed to download Google avatar:', err);
+			}
+		}
 
 		let addnum = 0;
 		let maxAttempts: number = 100;
@@ -245,13 +281,18 @@ export async function authGoogleCallback(request: FastifyRequest, reply: Fastify
 			});
 		}
 
-		const userExist = await userModel.getUserByEmail(payload['email']);
-		if (userExist) {
-			user.id = userExist.id;
-			await userModel.addRelationGoogleToken(userExist.id, payload['sub']);
-		} else {
-			user = await userModel.Register(user.email, user.username, null, user.avatar, user.lang);
-			await userModel.addRelationGoogleToken(user.id, payload['sub']);
+		user = await userModel.Register(user.email, user.username, null, user.avatar, user.lang);
+		await userModel.addRelationGoogleToken(user.id, payload['sub']);
+
+		if (payload['picture']) {
+			const AVATAR_DIR = path.join(__dirname, "..", "..", "uploads");
+			const oldAvatarPath = path.join(AVATAR_DIR, `profile_${payload['sub']}.jpg`);
+			const newAvatarPath = path.join(AVATAR_DIR, `profile_${user.id}.jpg`);
+			if (fs.existsSync(oldAvatarPath)) {
+				fs.renameSync(oldAvatarPath, newAvatarPath);
+			}
+			user.avatar = `profile_${user.id}.jpg`;
+			await userModel.UpdateUser(user.id.toString(), null, null, null, null, user.avatar);
 		}
 
 		request.session.user = user;
@@ -313,7 +354,6 @@ export const UploadAvatar = async (request: FastifyRequest, reply: FastifyReply)
 
 	const AVATAR_DIR = path.join(__dirname, "..", "..", "uploads");
 
-	const fileExtension = path.extname(file.filename);
 	const safeFilename = `profile_${request.session.user.id}.jpg`;
 	const safeFilePath = path.join(AVATAR_DIR, safeFilename);
 
