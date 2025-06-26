@@ -18,7 +18,7 @@ const WaitingRooms: React.FC<WaitingRoomsProps> = ({ state }) => {
 	const { MAPS, userMaps, loading, error } = useMapOptions(state);
 
 	// Add filtered maps logic
-	const filteredMaps = MAPS.filter(map => 
+	const filteredMaps = MAPS.filter(map =>
 		!map.disabled && map.label.toLowerCase().includes(mapSearch.toLowerCase())
 	);
 
@@ -77,6 +77,9 @@ const WaitingRooms: React.FC<WaitingRoomsProps> = ({ state }) => {
 	// Fonction pour changer la carte de la salle
 	const handleChangeRoomMap = (mapValue: string) => {
 		const isCustom = userMaps.some(m => m.value === mapValue);
+		if (mapValue == '' || !mapValue) {
+			return;
+		}
 		const payload = isCustom ? { map_id: Number(mapValue) } : { map: mapValue };
 		state.ws?.send(JSON.stringify({ action: 'setRoomMap', ...payload }));
 	};
@@ -85,13 +88,13 @@ const WaitingRooms: React.FC<WaitingRoomsProps> = ({ state }) => {
 	const currentRoom = state.rooms.waiting.find(r =>
 		r.players?.some(p => p.id === state.player?.id)
 	);
-	
+
 	useEffect(() => {
 		if (currentRoom) {
 			setRoomName('');
 		}
 	}, [currentRoom]);
-	
+
 	const isOwner = currentRoom?.owner_id === state.player?.id;
 
 	// Show loading state

@@ -38,6 +38,7 @@ export const Login = async (request: FastifyRequest, reply: FastifyReply) => {
 
 	return reply.send({
 		message: request.i18n.t('login.welcome'),
+		redirect: process.env.NODE_PROJET === 'dev' ? '/' : null,
 	});
 };
 
@@ -82,6 +83,7 @@ export const Register = async (request: FastifyRequest, reply: FastifyReply) => 
 
 	return reply.send({
 		message: request.i18n.t('login.welcome'),
+		redirect: process.env.NODE_PROJET === 'dev' ? '/' : null,
 	});
 };
 

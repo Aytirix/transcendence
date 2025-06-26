@@ -1,8 +1,10 @@
 import notification from '../app/components/Notifications';
+import { useNavigate } from 'react-router-dom';
 
 class ApiService {
 	private static apiURL = `${window.location.protocol}//${window.location.host}/api`;
 	private static url = `${window.location.protocol}//${window.location.host}`;
+	static navigate: ((url: string) => void) | null = null;
 
 	static async request(path: string, method: string, body: any = null, notif: boolean = true): Promise<any> {
 		const headers = new Headers({
@@ -35,6 +37,15 @@ class ApiService {
 					notification.error(resJson.message);
 				}
 			}
+
+			if (resJson.redirect && resJson.redirect !== window.location.pathname) {
+				if (this.navigate) {
+					this.navigate(resJson.redirect);
+				} else {
+					window.location.href = resJson.redirect;
+				}
+			}
+
 			return resJson;
 		} catch (error) {
 			console.error('Error during fetch:', error);
@@ -90,7 +101,7 @@ class ApiService {
 			return name;
 		}
 		if (!name || name === '' || name === 'null' || name === 'undefined') {
-			return `${this.apiURL}/avatars/avatar1.png`;
+			return `${this.url}/avatars/avatar1.png`;
 		}
 		if (['avatar1.png', 'avatar2.png', 'avatar3.png', 'avatar4.png'].includes(name)) {
 			return `${this.url}/avatars/${name}`;
@@ -98,6 +109,10 @@ class ApiService {
 		else {
 			return `${this.apiURL}/avatars/${name}`;
 		}
+	}
+
+	static setNavigate(fn: (url: string) => void) {
+		this.navigate = fn;
 	}
 }
 
