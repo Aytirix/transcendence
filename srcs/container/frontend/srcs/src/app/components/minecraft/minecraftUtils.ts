@@ -1,7 +1,7 @@
 // Utilitaires pour la gestion de l'accès temporel à Minecraft
 
-// Constante pour la durée d'attente en millisecondes (1 minute)
-export const MINECRAFT_COOLDOWN = 60 * 1000;
+// Constante pour la durée d'attente en millisecondes (30 secondes)
+export const MINECRAFT_COOLDOWN = 30 * 1000;
 export const LAST_MINECRAFT_ACCESS_KEY = 'lastMinecraftAccess';
 
 export interface MinecraftAccessInfo {

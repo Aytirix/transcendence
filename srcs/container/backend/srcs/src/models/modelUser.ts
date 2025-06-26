@@ -1,6 +1,6 @@
 import bcrypt from 'bcrypt';
 import executeReq from '@models/database';
-import { User } from '@types';
+import { MinecraftUser, User } from '@types';
 import tools from '@tools';
 
 export const Login = async (email: string, password: string): Promise<User | null | false> => {

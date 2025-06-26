@@ -17,6 +17,7 @@ function DisableNativeContextMenu({ children }: { children: React.ReactNode }) {
 			e.preventDefault();
 		};
 		window.addEventListener('contextmenu', handler);
+		localStorage.setItem('getMinecraftInfo?', 'false');
 		return () => window.removeEventListener('contextmenu', handler);
 	}, []);
 

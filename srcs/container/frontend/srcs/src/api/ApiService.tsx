@@ -4,7 +4,7 @@ class ApiService {
 	private static apiURL = `${window.location.protocol}//${window.location.host}/api`;
 	private static url = `${window.location.protocol}//${window.location.host}`;
 
-	static async request(path: string, method: string, body: any = null, notif: boolean = true) : Promise<any> {
+	static async request(path: string, method: string, body: any = null, notif: boolean = true): Promise<any> {
 		const headers = new Headers({
 			'Content-Type': 'application/json',
 			'Accept': 'application/json'
@@ -22,8 +22,11 @@ class ApiService {
 
 		try {
 			const response = await fetch(`${this.apiURL}${path}`, config);
-			const resJson = await response.json();
-			resJson.ok =  response.ok;
+			let resJson: any = {};
+			try {
+				resJson = await response.json();
+			} catch (error) { }
+			resJson.ok = response.ok;
 			if (resJson.message) {
 				if (notif && response.ok) {
 					notification.success(resJson.message);

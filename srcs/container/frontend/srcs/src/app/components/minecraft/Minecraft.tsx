@@ -1,6 +1,19 @@
 import React from 'react';
+import { setMinecraftInfo } from './FullscreenMinecraftHandler';
 
 const Minecraft: React.FC = () => {
+
+	React.useEffect(() => {
+		const interval = setInterval(() => {
+			setMinecraftInfo();
+		}, 30000);
+
+		return () => {
+			clearInterval(interval);
+			setMinecraftInfo();
+		};
+	}, []);
+
 	return (
 		<iframe
 			src="/minecraft.html"
