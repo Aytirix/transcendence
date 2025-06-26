@@ -44,3 +44,15 @@ export interface Tournament {
 	isFull: boolean;
 	listPlayers: string[];
 }
+
+export interface MatchDisplayData {
+	totalRound: number;
+	totalMatch: number;
+	player1: string;
+	player1Avatar: string;
+	p1ResultMatchTournament?: "Loose" | "Win" | "Current";
+	player2: string;
+	player2Avatar: string;
+	p2ResultMatchTournament?: "Loose" | "Win" | "Current";
+}
+

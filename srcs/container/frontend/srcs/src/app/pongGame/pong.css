@@ -165,6 +165,20 @@
   animation: textGlow 1.7s linear infinite;
 }
 
+.VS {
+  position: absolute;
+  bottom: 0%;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 150px;
+  font-weight: bold;
+  color: #faf68bfb;
+  text-align: center;
+  letter-spacing: 2px;
+  z-index: 10;
+  animation: textGlow 1.7s linear infinite;
+}
+
 .page-custom {
   height: 100vh;
   background-image: url("/images/TournamentPage.jpg");
@@ -391,6 +405,66 @@ position: relative;
   color: white;
   border-radius: 20px;     /* 👈 Coins arrondis */
   box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+}
+
+.popup-player1 {
+  position: fixed;
+  width: 400px;
+  height: 400px;
+  right: 50px;
+  top: 30%;
+  overflow-y: auto;              /* ✅ scroll si dépasse */
+  overflow-x: hidden; 
+  padding: 20px;
+  background-color: #fbf9f900;
+  color: white;
+  border-radius: 20px;     /* 👈 Coins arrondis */
+  border: 1px solid rgba(238, 3, 3, 0.542);
+  box-shadow: 0 0 40px rgba(238, 3, 3, 0.5);
+  display: flex;
+  justify-content: center;
+  /* align-items: center;     centre verticalement */
+  text-align: center;
+}
+
+.popup-player2 {
+  position: fixed;
+  width: 400px;
+  height: 400px;
+  left: 50px;
+  top: 30%;
+  overflow-y: auto;              /* ✅ scroll si dépasse */
+  overflow-x: hidden; 
+  padding: 20px;
+  background-color: #fbf9f900;
+  color: white;
+  border: 1px solid rgba(238, 3, 3, 0.542);
+  border-radius: 20px;     /* 👈 Coins arrondis */
+  box-shadow: 0 0 40px rgba(238, 3, 3, 0.5);
+  display: flex;
+  justify-content: center; /* centre horizontalement */
+  /* align-items: center;     centre verticalement */
+  text-align: center;
+}
+
+.Player1 {
+	position: absolute;
+	font-size: 35px;
+	z-index: 2;
+	bottom: 20%;
+	color: rgb(241, 247, 247);
+	font-weight: bold;
+	animation: textGlowMenu 1.7s linear infinite;
+}
+
+.Player2 {
+	position: absolute;
+	font-size: 35px;
+	bottom: 20%;
+	z-index: 2;
+	color: rgb(241, 247, 247);
+	font-weight: bold;
+	animation: textGlowMenu 1.7s linear infinite;
 }
 
 .popup_create {

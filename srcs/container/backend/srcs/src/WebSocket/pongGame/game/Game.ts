@@ -21,6 +21,7 @@ export class Game {
 		private tournament?: Tournament,
 	) {}
 	start(): void{
+		console.log("start game here")
 		let i: number = 0;
 		while (i < 1 && this.player1.getPlayerInfos().mode === "Solo") {
 			this.player2.getAi().getReboundBall(this.ball, this.player2, this.player1); //calcule de prediction arrive ball sens oppose
@@ -39,6 +40,7 @@ export class Game {
 		if (this.getStatus() === "KICKOFF" 
 		|| this.getStatus() === "SERVICE" 
 		|| this.getStatus() === "DECONNEXION") { return false }
+		console.log(this.ball.pos_x)
 		this.ball.move();
 		this.detectionCollision();
 		this.jsonWebsocket = JSON.stringify({
