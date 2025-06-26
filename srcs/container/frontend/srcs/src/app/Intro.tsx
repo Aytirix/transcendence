@@ -4,6 +4,7 @@ import { useLanguage } from '../contexts/LanguageContext';
 import FullscreenMinecraftHandler, { getMinecraftInfo } from './components/minecraft/FullscreenMinecraftHandler.tsx';
 import './assets/styles/intro.scss';
 import { useAuth } from '../contexts/AuthContext.tsx';
+import { canAccessMinecraft, recordMinecraftAccess } from './components/minecraft/minecraftUtils';
 
 function Intro() {
 	const { t } = useLanguage();
@@ -43,9 +44,46 @@ function Intro() {
 					{/* Éléments flottants simplifiés */}
 					<div className="floating-elements">
 						<div className="floating-element floating-element-1">🎮</div>
-						<div className="floating-element floating-element-2">⭐</div>
-						<div className="floating-element floating-element-3">🏆</div>
+						<div className="floating-element floating-element-2">🏆</div>
+						<div
+							className="floating-element floating-element-3"
+							onClick={() => navigate('/Pacman')}
+							style={{ cursor: 'pointer' }}
+						>
+							<img
+								src="./images/intro/floating-blinky.png"
+								alt="Blinky Logo"
+								style={{ width: '64px', height: '64px' }}
+							/>
+						</div>
 						<div className="floating-element floating-element-4">💫</div>
+						<div
+							className="floating-element floating-element-5"
+							onClick={() => {
+								if (!canAccessMinecraft()) return;
+								recordMinecraftAccess();
+								navigate('/minecraft');
+							}}
+							style={{ cursor: 'pointer' }}
+						>
+							<img
+								src="./images/intro/floating-minecraft.png"
+								alt="Minecraft Logo"
+								style={{ width: '32px', height: '32px' }}
+							/>
+						</div>
+						<div
+							className="floating-element floating-element-6"
+							onClick={() => navigate('/pong/menu')}
+							style={{ cursor: 'pointer' }}
+						>
+							<img
+								src="./images/intro/floating-pong.png"
+								alt="Pong Logo"
+								style={{ width: '64px', height: '64px' }}
+							/>
+						</div>
+
 					</div>
 
 					<div className="hero-content">

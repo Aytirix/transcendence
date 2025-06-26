@@ -25,3 +25,8 @@ body {
 	min-width: 320px;
 	min-height: 100vh;
 }
+img {
+	pointer-events: none;
+	user-drag: none;
+	-webkit-user-drag: none;
+}

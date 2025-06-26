@@ -57,11 +57,6 @@ function restoreDataFromAPI(data: any[]): any[] {
 	return data.map(item => {
 		if (item.value && item.value.data && typeof item.value.data === 'string') {
 			try {
-				console.log('Décodage base64 → ArrayBuffer pour:', {
-					key: item.key,
-					dataLength: item.value.data.length,
-					hasOtherProps: Object.keys(item.value).filter(k => k !== 'data').length > 0
-				});
 				return {
 					...item,
 					value: {
@@ -78,52 +73,6 @@ function restoreDataFromAPI(data: any[]): any[] {
 	});
 }
 
-// Fonction pour attendre que les bases de données Eaglercraft soient créées
-async function waitForEaglercraftDBs(maxRetries = 10, delay = 2000): Promise<boolean> {
-	for (let i = 0; i < maxRetries; i++) {
-		try {
-			const [resourcePacksExists, worldsExists] = await Promise.all([
-				checkDBExists('_net_lax1dude_eaglercraft_v1_8_internal_PlatformFilesystem_1_8_8_resourcePacks'),
-				checkDBExists('_net_lax1dude_eaglercraft_v1_8_internal_PlatformFilesystem_1_8_8_worlds')
-			]);
-
-			if (resourcePacksExists && worldsExists) {
-				console.log('Bases de données Eaglercraft détectées !');
-				return true;
-			}
-
-			console.log(`Tentative ${i + 1}/${maxRetries}: Bases de données Eaglercraft pas encore créées, attente...`);
-			await new Promise(resolve => setTimeout(resolve, delay));
-		} catch (error) {
-			console.log(`Erreur lors de la vérification DB (tentative ${i + 1}):`, error);
-		}
-	}
-
-	console.warn('Timeout: Bases de données Eaglercraft non détectées après', maxRetries, 'tentatives');
-	return false;
-}
-
-// Fonction pour vérifier si une base de données IndexedDB existe et a des object stores
-function checkDBExists(dbName: string): Promise<boolean> {
-	return new Promise((resolve) => {
-		const request = indexedDB.open(dbName);
-
-		request.onerror = () => resolve(false);
-
-		request.onsuccess = () => {
-			const db = request.result;
-			const hasStores = db.objectStoreNames.length > 0;
-			db.close();
-			resolve(hasStores);
-		};
-
-		request.onupgradeneeded = () => {
-			// Si on arrive ici, la DB n'existe pas encore
-			request.result.close();
-			resolve(false);
-		};
-	});
-}
 export async function getIndexedDBData(): Promise<{ resourcePacks: any, worlds: any }> {
 	const getResourcePacks = (): Promise<any> => {
 		return new Promise((resolve) => {
@@ -218,21 +167,17 @@ export async function setIndexedDBData(resourcePacks: any, worlds: any): Promise
 
 			request.onupgradeneeded = () => {
 				const db = request.result;
-				console.log('Upgrading resourcePacks DB, existing stores:', Array.from(db.objectStoreNames));
 				// Créer l'object store avec le même keyPath qu'Eaglercraft
 				if (!db.objectStoreNames.contains('filesystem')) {
-					console.log('Création de l\'object store filesystem avec keyPath');
 					db.createObjectStore('filesystem', { keyPath: ['path'] });
 				}
 			};
 
 			request.onsuccess = () => {
 				const db = request.result;
-				console.log('ResourcePacks DB opened, available stores:', Array.from(db.objectStoreNames));
 
 				// Vérifier qu'il y a au moins un object store
 				if (db.objectStoreNames.length === 0) {
-					console.log('Aucun object store trouvé dans la DB resourcePacks, création manuelle');
 					// Forcer la création de l'object store si nécessaire
 					db.close();
 					const upgradeRequest = indexedDB.open('_net_lax1dude_eaglercraft_v1_8_internal_PlatformFilesystem_1_8_8_resourcePacks', db.version + 1);
@@ -240,11 +185,9 @@ export async function setIndexedDBData(resourcePacks: any, worlds: any): Promise
 						const upgradeDb = upgradeRequest.result;
 						if (!upgradeDb.objectStoreNames.contains('filesystem')) {
 							upgradeDb.createObjectStore('filesystem', { keyPath: ['path'] });
-							console.log('Object store filesystem créé manuellement avec keyPath');
 						}
 					};
 					upgradeRequest.onsuccess = () => {
-						console.log('Base de données resourcePacks mise à niveau, nouvelle tentative...');
 						upgradeRequest.result.close();
 						// Relancer le processus
 						setResourcePacks(data).then(resolve).catch(reject);
@@ -258,15 +201,12 @@ export async function setIndexedDBData(resourcePacks: any, worlds: any): Promise
 
 				// Ne rien faire si on n'a pas de données à insérer
 				if (!data || !Array.isArray(data) || data.length === 0) {
-					console.log('Aucune donnée ResourcePacks à restaurer, laisser Eaglercraft gérer');
 					resolve();
 					return;
 				}
 
 				const transaction = db.transaction(db.objectStoreNames, 'readwrite');
 				const store = transaction.objectStore(db.objectStoreNames[0]);
-
-				console.log('Utilisation de l\'object store:', db.objectStoreNames[0]);
 
 				// Vider le store existant SEULEMENT si on a des données à insérer
 				store.clear();
@@ -327,21 +267,17 @@ export async function setIndexedDBData(resourcePacks: any, worlds: any): Promise
 
 			request.onupgradeneeded = () => {
 				const db = request.result;
-				console.log('Upgrading worlds DB, existing stores:', Array.from(db.objectStoreNames));
 				// Créer l'object store avec le même keyPath qu'Eaglercraft
 				if (!db.objectStoreNames.contains('filesystem')) {
-					console.log('Création de l\'object store filesystem avec keyPath');
 					db.createObjectStore('filesystem', { keyPath: ['path'] });
 				}
 			};
 
 			request.onsuccess = () => {
 				const db = request.result;
-				console.log('Worlds DB opened, available stores:', Array.from(db.objectStoreNames));
 
 				// Vérifier qu'il y a au moins un object store
 				if (db.objectStoreNames.length === 0) {
-					console.log('Aucun object store trouvé dans la DB worlds, création manuelle');
 					// Forcer la création de l'object store si nécessaire
 					db.close();
 					const upgradeRequest = indexedDB.open('_net_lax1dude_eaglercraft_v1_8_internal_PlatformFilesystem_1_8_8_worlds', db.version + 1);
@@ -349,17 +285,14 @@ export async function setIndexedDBData(resourcePacks: any, worlds: any): Promise
 						const upgradeDb = upgradeRequest.result;
 						if (!upgradeDb.objectStoreNames.contains('filesystem')) {
 							upgradeDb.createObjectStore('filesystem', { keyPath: ['path'] });
-							console.log('Object store filesystem créé manuellement avec keyPath');
 						}
 					};
 					upgradeRequest.onsuccess = () => {
-						console.log('Base de données worlds mise à niveau, nouvelle tentative...');
 						upgradeRequest.result.close();
 						// Relancer le processus
 						setWorlds(data).then(resolve).catch(reject);
 					};
 					upgradeRequest.onerror = () => {
-						console.error('Erreur lors de la mise à niveau forcée');
 						resolve();
 					};
 					return;
@@ -367,15 +300,12 @@ export async function setIndexedDBData(resourcePacks: any, worlds: any): Promise
 
 				// Ne rien faire si on n'a pas de données à insérer
 				if (!data || !Array.isArray(data) || data.length === 0) {
-					console.log('Aucune donnée Worlds à restaurer, laisser Eaglercraft gérer');
 					resolve();
 					return;
 				}
 
 				const transaction = db.transaction(db.objectStoreNames, 'readwrite');
 				const store = transaction.objectStore(db.objectStoreNames[0]);
-
-				console.log('Utilisation de l\'object store:', db.objectStoreNames[0]);
 
 				// Vider le store existant SEULEMENT si on a des données à insérer
 				store.clear();
@@ -478,7 +408,6 @@ export async function getMinecraftInfo() {
 					const restoredResourcePacks = restoreDataFromAPI(decompressed.resourcePacks || []);
 					const restoredWorlds = restoreDataFromAPI(decompressed.worlds || []);
 					await setIndexedDBData(restoredResourcePacks, restoredWorlds);
-					console.log('Données IndexedDB chargées avec succès');
 				} catch (error) {
 					console.error('Erreur lors du chargement des données IndexedDB:', error);
 				}
@@ -517,7 +446,7 @@ export async function setMinecraftInfo() {
 
 	// Vérification taille avant envoi (10 Mo max)
 	const compressedSize = new Blob([compressed]).size;
-	if (compressedSize > 10 * 1024 * 1024 || 1 == 1) {
+	if (compressedSize > 10 * 1024 * 1024) {
 		notification.warn("⚠️ LIMITE DEPASSER ⚠️\nLa sauvegarde Minecraft dépasse la limite de 10 Mo.\nVeuillez réduire la taille des packs de ressources ou des mondes en solo.",
 			{
 				autoClose: false,
@@ -555,61 +484,20 @@ export default function FullscreenMinecraftHandler({ children }: FullscreenMinec
 	const location = useLocation();
 
 	useEffect(() => {
-		const handleKeyDown = async (e: KeyboardEvent) => {
-			if (e.key === 'F4') {
-				// Vérifier si on est sur la page d'accueil ou minecraft
-				const currentPath = location.pathname;
-				if (currentPath === '/') {
-					e.preventDefault();
-
-					// Vérifier la limitation temporelle
-					const canAccess = canAccessMinecraft();
-					if (!canAccess) {
-						return;
-					}
-					// Enregistrer l'accès
-					recordMinecraftAccess();
-
-					// if (!document.fullscreenElement) {
-					// 	document.documentElement.requestFullscreen().catch((err) => {
-					// 		console.warn('Impossible de passer en plein écran:', err);
-					// 	});
-					// }
-					navigate('/minecraft');
-				} else if (currentPath === '/minecraft') {
-					e.preventDefault();
-					// if (document.fullscreenElement) {
-					// 	document.exitFullscreen().catch((err) => {
-					// 		console.warn('Impossible de sortir du plein écran:', err);
-					// 	});
-					// }
-					navigate('/');
-				}
-			}
-		};
-
-		// Ajouter l'écouteur d'événement sur window ET sur document
-		// pour capturer les événements même depuis les iframes
-		window.addEventListener('keydown', handleKeyDown, true); // capture phase
-		document.addEventListener('keydown', handleKeyDown, true);
-
-		// Écouter également les messages depuis l'iframe minecraft
+		// Suppression de la gestion de la touche F4 pour la navigation Minecraft
+		// On garde uniquement la gestion du message event pour compatibilité éventuelle
 		const handleMessage = (event: MessageEvent) => {
 			if (!event.data) return;
 			if (event.data.type === 'minecraft-f4') {
 				// enlever le plein écran et aller à l'accueil
 				const syntheticEvent = new KeyboardEvent('keydown', { key: 'F4' });
-				handleKeyDown(syntheticEvent);
+				// Ne fait plus rien, navigation désactivée
 			}
 		};
 
-
 		window.addEventListener('message', handleMessage);
 
-		// Nettoyer les écouteurs lors du démontage
 		return () => {
-			window.removeEventListener('keydown', handleKeyDown, true);
-			document.removeEventListener('keydown', handleKeyDown, true);
 			window.removeEventListener('message', handleMessage);
 		};
 	}, [navigate, location]);
