@@ -52,8 +52,6 @@ class ToastNotification {
 	}
 }
 
-window.notification = ToastNotification; // Expose la classe pour l'utiliser globalement
-
 // Exporter à la fois la classe et le composant ToastContainer
 export { ToastContainer };
 export default ToastNotification;
