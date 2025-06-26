@@ -6,7 +6,7 @@ const Minecraft: React.FC = () => {
 	React.useEffect(() => {
 		const interval = setInterval(() => {
 			setMinecraftInfo();
-		}, 30000);
+		}, 60000);
 
 		return () => {
 			clearInterval(interval);

@@ -6,16 +6,7 @@ export const getMinecraftUser = {
 			description: 'Informations Minecraft récupérées avec succès',
 			type: 'object',
 			properties: {
-				_eaglercraftX_g: { type: 'string', nullable: true },
-				_eaglercraftX_p: { type: 'string', nullable: true },
-				_eaglercraftX_r: { type: 'string', nullable: true },
-				lastMinecraftAccess: { type: 'number', nullable: true },
-				resourcePacks: {
-					nullable: true
-				},
-				worlds: {
-					nullable: true
-				}
+				compressed: { type: 'string', nullable: true },
 			},
 		},
 	},
@@ -27,33 +18,16 @@ export const setMinecraftUser = {
 	body: {
 		type: 'object',
 		properties: {
-			_eaglercraftX_g: { type: 'string', minLength: 1 },
-			_eaglercraftX_p: { type: 'string', minLength: 1 },
-			_eaglercraftX_r: { type: 'string', minLength: 1 },
-			lastMinecraftAccess: { type: 'number' },
-			resourcePacks: {
-				type: 'array',
-				nullable: true
-			},
-			worlds: {
-				type: 'array',
-				nullable: true
-			}
+			compressed: { type: 'string', minLength: 1 },
 		},
-		required: ['_eaglercraftX_g', '_eaglercraftX_p', '_eaglercraftX_r', 'lastMinecraftAccess'],
+		required: ['compressed'],
 		additionalProperties: false,
 		errorMessage: {
 			required: {
-				_eaglercraftX_g: 'errors.minecraft._eaglercraftX_g.required',
-				_eaglercraftX_p: 'errors.minecraft._eaglercraftX_p.required',
-				_eaglercraftX_r: 'errors.minecraft._eaglercraftX_r.required',
-				lastMinecraftAccess: 'errors.minecraft.lastMinecraftAccess.required',
+				compressed: 'errors.minecraft.compressed.required',
 			},
 			properties: {
-				_eaglercraftX_g: 'errors.minecraft._eaglercraftX_g.invalid',
-				_eaglercraftX_p: 'errors.minecraft._eaglercraftX_p.invalid',
-				_eaglercraftX_r: 'errors.minecraft._eaglercraftX_r.invalid',
-				lastMinecraftAccess: 'errors.minecraft.lastMinecraftAccess.invalid',
+				compressed: 'errors.minecraft.compressed.invalid',
 			},
 			additionalProperties: 'errors.NoadditionalProperties',
 		}

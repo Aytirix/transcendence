@@ -9,3 +9,5 @@ PacmanAI/venv
 srcs/container/backend/srcs/sqlite/sessions.sqlite
 srcs/container/backend/srcs/sqlite/transcendence.sqlite
 PacmanAI/venv
+srcs/container/backend/srcs/minecraft_data
+srcs/container/backend/srcs/uploads

@@ -32,21 +32,9 @@
 			"invalid": "La lingua deve essere fr, en, it o es."
 		},
 		"minecraft": {
-			"_eaglercraftX_g": {
-				"required": "Il parametro _eaglercraftX_g è obbligatorio.",
-				"invalid": "_eaglercraftX_g deve essere una stringa non vuota."
-			},
-			"_eaglercraftX_p": {
-				"required": "Il parametro _eaglercraftX_p è obbligatorio.",
-				"invalid": "_eaglercraftX_p deve essere una stringa non vuota."
-			},
-			"_eaglercraftX_r": {
-				"required": "Il parametro _eaglercraftX_r è obbligatorio.",
-				"invalid": "_eaglercraftX_r deve essere una stringa non vuota."
-			},
-			"lastMinecraftAccess": {
-				"required": "La data dell'ultimo accesso a Minecraft è obbligatoria.",
-				"invalid": "La data dell'ultimo accesso a Minecraft deve essere un numero."
+			"compressed": {
+				"required": "Il parametro compresso di Minecraft è obbligatorio.",
+				"invalid": "Il parametro compresso di Minecraft deve essere una stringa base64 non vuota."
 			}
 		}
 	},

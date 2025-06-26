@@ -13,52 +13,30 @@ if (!fs.existsSync(DIRECTORY)) {
 export const getMinecraftUser = async (request: FastifyRequest, reply: FastifyReply) => {
 	const userId = request.session.user.id.toString();
 	const filePath = path.join(DIRECTORY, `mc_${userId}.json`);
-	
-	let userData = {
-		_eaglercraftX_g: '',
-		_eaglercraftX_p: '',
-		_eaglercraftX_r: '',
-		lastMinecraftAccess: 0,
-		resourcePacks: [],
-		worlds: []
-	};
+
+	let mc = { compressed: null };
 
 	try {
 		if (fs.existsSync(filePath)) {
-			const fileData = fs.readFileSync(filePath, 'utf8');
-			userData = JSON.parse(fileData);
+			mc.compressed = fs.readFileSync(filePath, 'utf8');
 		}
 	} catch (error) {
 		console.error(`Error reading minecraft data for user ${userId}:`, error);
 	}
 
-	return reply.send(userData);
+	return reply.send(mc);
 }
 
 export const setMinecraftUser = async (request: FastifyRequest, reply: FastifyReply) => {
-	const { _eaglercraftX_g, _eaglercraftX_p, _eaglercraftX_r, lastMinecraftAccess, resourcePacks, worlds } = request.body as {
-		_eaglercraftX_g: string;
-		_eaglercraftX_p: string;
-		_eaglercraftX_r: string;
-		lastMinecraftAccess: number;
-		resourcePacks?: any[];
-		worlds?: any[];
-	};
-	
-	const userId = request.session.user.id.toString();
-	const filePath = path.join(DIRECTORY, `mc_${userId}.json`);
-	
-	const minecraftData = {
-		_eaglercraftX_g,
-		_eaglercraftX_p,
-		_eaglercraftX_r,
-		lastMinecraftAccess,
-		resourcePacks: resourcePacks || [],
-		worlds: worlds || []
+	const { compressed } = request.body as {
+		compressed: string;
 	};
 
+	const userId = request.session.user.id.toString();
+	const filePath = path.join(DIRECTORY, `mc_${userId}.json`);
+
 	try {
-		fs.writeFileSync(filePath, JSON.stringify(minecraftData, null, 2), 'utf8');
+		fs.writeFileSync(filePath, compressed, 'utf8');
 	} catch (error) {
 		console.error(`Error saving minecraft data for user ${userId}:`, error);
 		return reply.code(500).send();
