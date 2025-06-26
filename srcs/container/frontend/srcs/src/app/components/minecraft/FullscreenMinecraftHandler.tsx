@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { recordMinecraftAccess, canAccessMinecraft } from './minecraftUtils';
 import ApiService from '../../../api/ApiService';
+import pako from 'pako';
 
 interface FullscreenMinecraftHandlerProps {
 	children: React.ReactNode;
@@ -51,7 +52,7 @@ function prepareDataForAPI(data: any[]): any[] {
 // Fonction pour restaurer les données depuis l'API (convertir base64 en ArrayBuffer)
 function restoreDataFromAPI(data: any[]): any[] {
 	if (!Array.isArray(data)) return [];
-	
+
 	return data.map(item => {
 		if (item.value && item.value.data && typeof item.value.data === 'string') {
 			try {
@@ -84,19 +85,19 @@ async function waitForEaglercraftDBs(maxRetries = 10, delay = 2000): Promise<boo
 				checkDBExists('_net_lax1dude_eaglercraft_v1_8_internal_PlatformFilesystem_1_8_8_resourcePacks'),
 				checkDBExists('_net_lax1dude_eaglercraft_v1_8_internal_PlatformFilesystem_1_8_8_worlds')
 			]);
-			
+
 			if (resourcePacksExists && worldsExists) {
 				console.log('Bases de données Eaglercraft détectées !');
 				return true;
 			}
-			
+
 			console.log(`Tentative ${i + 1}/${maxRetries}: Bases de données Eaglercraft pas encore créées, attente...`);
 			await new Promise(resolve => setTimeout(resolve, delay));
 		} catch (error) {
 			console.log(`Erreur lors de la vérification DB (tentative ${i + 1}):`, error);
 		}
 	}
-	
+
 	console.warn('Timeout: Bases de données Eaglercraft non détectées après', maxRetries, 'tentatives');
 	return false;
 }
@@ -105,16 +106,16 @@ async function waitForEaglercraftDBs(maxRetries = 10, delay = 2000): Promise<boo
 function checkDBExists(dbName: string): Promise<boolean> {
 	return new Promise((resolve) => {
 		const request = indexedDB.open(dbName);
-		
+
 		request.onerror = () => resolve(false);
-		
+
 		request.onsuccess = () => {
 			const db = request.result;
 			const hasStores = db.objectStoreNames.length > 0;
 			db.close();
 			resolve(hasStores);
 		};
-		
+
 		request.onupgradeneeded = () => {
 			// Si on arrive ici, la DB n'existe pas encore
 			request.result.close();
@@ -126,19 +127,19 @@ export async function getIndexedDBData(): Promise<{ resourcePacks: any, worlds: 
 	const getResourcePacks = (): Promise<any> => {
 		return new Promise((resolve) => {
 			const request = indexedDB.open('_net_lax1dude_eaglercraft_v1_8_internal_PlatformFilesystem_1_8_8_resourcePacks');
-			
+
 			request.onerror = () => resolve([]); // Si la DB n'existe pas, retourner un tableau vide
-			
+
 			request.onsuccess = () => {
 				const db = request.result;
 				try {
 					const transaction = db.transaction(db.objectStoreNames, 'readonly');
 					const store = transaction.objectStore(db.objectStoreNames[0]);
-					
+
 					// Utiliser un curseur pour récupérer clés et valeurs
 					const results: any[] = [];
 					const cursorRequest = store.openCursor();
-					
+
 					cursorRequest.onsuccess = () => {
 						const cursor = cursorRequest.result;
 						if (cursor) {
@@ -151,7 +152,7 @@ export async function getIndexedDBData(): Promise<{ resourcePacks: any, worlds: 
 							resolve(results);
 						}
 					};
-					
+
 					cursorRequest.onerror = () => resolve([]);
 				} catch (error) {
 					resolve([]);
@@ -163,19 +164,19 @@ export async function getIndexedDBData(): Promise<{ resourcePacks: any, worlds: 
 	const getWorlds = (): Promise<any> => {
 		return new Promise((resolve) => {
 			const request = indexedDB.open('_net_lax1dude_eaglercraft_v1_8_internal_PlatformFilesystem_1_8_8_worlds');
-			
+
 			request.onerror = () => resolve([]); // Si la DB n'existe pas, retourner un tableau vide
-			
+
 			request.onsuccess = () => {
 				const db = request.result;
 				try {
 					const transaction = db.transaction(db.objectStoreNames, 'readonly');
 					const store = transaction.objectStore(db.objectStoreNames[0]);
-					
+
 					// Utiliser un curseur pour récupérer clés et valeurs
 					const results: any[] = [];
 					const cursorRequest = store.openCursor();
-					
+
 					cursorRequest.onsuccess = () => {
 						const cursor = cursorRequest.result;
 						if (cursor) {
@@ -189,7 +190,7 @@ export async function getIndexedDBData(): Promise<{ resourcePacks: any, worlds: 
 							resolve(results);
 						}
 					};
-					
+
 					cursorRequest.onerror = () => resolve([]);
 				} catch (error) {
 					resolve([]);
@@ -211,9 +212,9 @@ export async function setIndexedDBData(resourcePacks: any, worlds: any): Promise
 	const setResourcePacks = (data: any): Promise<void> => {
 		return new Promise((resolve, reject) => {
 			const request = indexedDB.open('_net_lax1dude_eaglercraft_v1_8_internal_PlatformFilesystem_1_8_8_resourcePacks');
-			
+
 			request.onerror = () => reject(request.error);
-			
+
 			request.onupgradeneeded = () => {
 				const db = request.result;
 				console.log('Upgrading resourcePacks DB, existing stores:', Array.from(db.objectStoreNames));
@@ -223,11 +224,11 @@ export async function setIndexedDBData(resourcePacks: any, worlds: any): Promise
 					db.createObjectStore('filesystem', { keyPath: ['path'] });
 				}
 			};
-			
+
 			request.onsuccess = () => {
 				const db = request.result;
 				console.log('ResourcePacks DB opened, available stores:', Array.from(db.objectStoreNames));
-				
+
 				// Vérifier qu'il y a au moins un object store
 				if (db.objectStoreNames.length === 0) {
 					console.log('Aucun object store trouvé dans la DB resourcePacks, création manuelle');
@@ -263,12 +264,12 @@ export async function setIndexedDBData(resourcePacks: any, worlds: any): Promise
 
 				const transaction = db.transaction(db.objectStoreNames, 'readwrite');
 				const store = transaction.objectStore(db.objectStoreNames[0]);
-				
+
 				console.log('Utilisation de l\'object store:', db.objectStoreNames[0]);
-				
+
 				// Vider le store existant SEULEMENT si on a des données à insérer
 				store.clear();
-				
+
 				// Ajouter les nouvelles données avec clés et valeurs
 				if (data && Array.isArray(data)) {
 					// Détecter le type de clés de l'object store
@@ -310,7 +311,7 @@ export async function setIndexedDBData(resourcePacks: any, worlds: any): Promise
 						}
 					});
 				}
-				
+
 				transaction.oncomplete = () => resolve();
 				transaction.onerror = () => reject(transaction.error);
 			};
@@ -320,9 +321,9 @@ export async function setIndexedDBData(resourcePacks: any, worlds: any): Promise
 	const setWorlds = (data: any): Promise<void> => {
 		return new Promise((resolve, reject) => {
 			const request = indexedDB.open('_net_lax1dude_eaglercraft_v1_8_internal_PlatformFilesystem_1_8_8_worlds');
-			
+
 			request.onerror = () => reject(request.error);
-			
+
 			request.onupgradeneeded = () => {
 				const db = request.result;
 				console.log('Upgrading worlds DB, existing stores:', Array.from(db.objectStoreNames));
@@ -332,11 +333,11 @@ export async function setIndexedDBData(resourcePacks: any, worlds: any): Promise
 					db.createObjectStore('filesystem', { keyPath: ['path'] });
 				}
 			};
-			
+
 			request.onsuccess = () => {
 				const db = request.result;
 				console.log('Worlds DB opened, available stores:', Array.from(db.objectStoreNames));
-				
+
 				// Vérifier qu'il y a au moins un object store
 				if (db.objectStoreNames.length === 0) {
 					console.log('Aucun object store trouvé dans la DB worlds, création manuelle');
@@ -369,15 +370,15 @@ export async function setIndexedDBData(resourcePacks: any, worlds: any): Promise
 					resolve();
 					return;
 				}
-				
+
 				const transaction = db.transaction(db.objectStoreNames, 'readwrite');
 				const store = transaction.objectStore(db.objectStoreNames[0]);
-				
+
 				console.log('Utilisation de l\'object store:', db.objectStoreNames[0]);
-				
+
 				// Vider le store existant SEULEMENT si on a des données à insérer
 				store.clear();
-				
+
 				// Ajouter les nouvelles données
 				if (data && Array.isArray(data)) {
 					// Détecter le type de clés de l'object store
@@ -422,7 +423,7 @@ export async function setIndexedDBData(resourcePacks: any, worlds: any): Promise
 						}
 					});
 				}
-				
+
 				transaction.oncomplete = () => resolve();
 				transaction.onerror = () => reject(transaction.error);
 			};
@@ -436,30 +437,49 @@ export async function setIndexedDBData(resourcePacks: any, worlds: any): Promise
 	}
 }
 
+// Helpers compression/décompression deflate (pako)
+function compressMinecraftData(obj: any): string {
+	const json = JSON.stringify(obj);
+	const compressed = pako.deflate(json);
+	// Conversion chunkée pour éviter stack overflow
+	let binary = '';
+	const chunkSize = 0x8000; // 32k
+	for (let i = 0; i < compressed.length; i += chunkSize) {
+		binary += String.fromCharCode.apply(null, compressed.subarray(i, i + chunkSize) as any);
+	}
+	return btoa(binary);
+}
+
+function decompressMinecraftData(base64: string): any {
+	const binary = atob(base64);
+	const bytes = new Uint8Array(binary.length);
+	for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+	const decompressed = pako.inflate(bytes, { to: 'string' });
+	return JSON.parse(decompressed);
+}
+
 export async function getMinecraftInfo() {
 	ApiService.get('/getMinecraftUser').then(async (data) => {
 		if (data.ok) {
-			if (data && data._eaglercraftX_g && data._eaglercraftX_p && data._eaglercraftX_r && data.lastMinecraftAccess) {
-				// Charger les données IndexedDB si elles existent
-				localStorage.setItem('_eaglercraftX.g', data._eaglercraftX_g);
-				localStorage.setItem('_eaglercraftX.p', data._eaglercraftX_p);
-				localStorage.setItem('_eaglercraftX.r', data._eaglercraftX_r);
-				localStorage.setItem('lastMinecraftAccess', data.lastMinecraftAccess.toString());
-				if (data.resourcePacks || data.worlds) {
-					try {
-						console.log('Données reçues du backend:', {
-							resourcePacks: data.resourcePacks?.length || 0,
-							worlds: data.worlds?.length || 0
-						});
-						
-						const restoredResourcePacks = restoreDataFromAPI(data.resourcePacks || []);
-						const restoredWorlds = restoreDataFromAPI(data.worlds || []);
-						
-						await setIndexedDBData(restoredResourcePacks, restoredWorlds);
-						console.log('Données IndexedDB chargées avec succès');
-					} catch (error) {
-						console.error('Erreur lors du chargement des données IndexedDB:', error);
-					}
+			if (data && data.compressed) {
+				let decompressed;
+				try {
+					decompressed = decompressMinecraftData(data.compressed);
+				} catch (e) {
+					console.error('Erreur décompression Minecraft:', e);
+					return;
+				}
+				localStorage.setItem('_eaglercraftX.g', decompressed._eaglercraftX_g);
+				localStorage.setItem('_eaglercraftX.p', decompressed._eaglercraftX_p);
+				localStorage.setItem('_eaglercraftX.r', decompressed._eaglercraftX_r);
+				localStorage.setItem('lastMinecraftAccess', decompressed.lastMinecraftAccess.toString());
+				try {
+					const restoredResourcePacks = restoreDataFromAPI(decompressed.resourcePacks || []);
+					const restoredWorlds = restoreDataFromAPI(decompressed.worlds || []);
+					await setIndexedDBData(restoredResourcePacks, restoredWorlds);
+					console.log('Données IndexedDB chargées avec succès');
+				} catch (error) {
+					console.error('Erreur lors du chargement des données IndexedDB:', error);
 				}
 			}
 		}
@@ -471,16 +491,12 @@ export async function getMinecraftInfo() {
 export async function setMinecraftInfo() {
 	let lastAccess = localStorage.getItem('lastMinecraftAccess');
 	if (!lastAccess) lastAccess = '0';
-	
-	// Récupérer les données IndexedDB
 	let indexedDBData = { resourcePacks: [], worlds: [] };
 	try {
 		indexedDBData = await getIndexedDBData();
 	} catch (error) {
 		console.warn('Impossible de récupérer les données IndexedDB:', error);
 	}
-
-	// Préparer les données pour l'API (convertir ArrayBuffer en base64)
 	const minecraftInfo = {
 		_eaglercraftX_g: localStorage.getItem('_eaglercraftX.g'),
 		_eaglercraftX_p: localStorage.getItem('_eaglercraftX.p'),
@@ -488,19 +504,28 @@ export async function setMinecraftInfo() {
 		lastMinecraftAccess: parseInt(lastAccess, 10) || 0,
 		resourcePacks: prepareDataForAPI(indexedDBData.resourcePacks),
 		worlds: prepareDataForAPI(indexedDBData.worlds)
-	}
-	const hash = hashMinecraftData(minecraftInfo);
-	const storedHash = localStorage.getItem('minecraftHash');
-	if (storedHash && storedHash === hash) return;
+	};
 
-	if (minecraftInfo._eaglercraftX_g && minecraftInfo._eaglercraftX_p && minecraftInfo._eaglercraftX_r && minecraftInfo.lastMinecraftAccess) {
-		ApiService.post('/setMinecraftUser', minecraftInfo).then((result) => {
-			if (result.ok) {
-				localStorage.setItem('minecraftHash', hash);
-			}
-		}).catch((error) => {
+	let compressed: string;
+	try {
+		compressed = compressMinecraftData(minecraftInfo);
+	} catch (e) {
+		console.warn('Erreur lors de la compression Minecraft:', e);
+		return;
+	}
+
+	if (
+		minecraftInfo._eaglercraftX_g &&
+		minecraftInfo._eaglercraftX_p &&
+		minecraftInfo._eaglercraftX_r &&
+		minecraftInfo.lastMinecraftAccess
+	) {
+		try {
+			await ApiService.post('/setMinecraftUser', { compressed });
+			// Succès silencieux ou log minimal
+		} catch (error) {
 			console.error('Erreur lors de la sauvegarde minecraft:', error);
-		});
+		}
 	}
 }
 
