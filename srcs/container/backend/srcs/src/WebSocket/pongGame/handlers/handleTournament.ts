@@ -17,8 +17,8 @@ export function handleTournament(playerInfos: playerStat, msg: webMsg) {
 	}
 	else if (msg.action === "Quit")
 		quitTournament(playerInfos)
-	else if (msg.action === "idTournament")
-		playerInfos.socket.send(JSON.stringify({action: "idTournament", value: playerInfos.idTournament}))
+	else if (msg.action === "infoTournament")
+		playerInfos.socket.send(JSON.stringify({action: "infoTournament", id: playerInfos.idTournament, name: playerInfos.name}))
 }
 
 function quitTournament(playerInfos: playerStat) {
@@ -48,6 +48,9 @@ function createTournament(playerInfos: playerStat, msg: webMsg)  {
 		isFull : false,
 		winner : false,
 		idTournament : idTournament,
+		currentManche: 1,
+		currentMatch : [],
+		waitingWinner : [],
 	}
 	playerInfos.idTournament = tournament.idTournament;
 	playerInfos.mode = msg.type;
@@ -66,15 +69,17 @@ function joinTournament(playerInfos: playerStat, msg: webMsg) {
 		return ;
 	}
 	else {
-		console.log("start")
 		playerInfos.idTournament = tournament.idTournament;
 		playerInfos.mode = msg.type;
 		playerInfos.inGame = true;
 		tournament.listPlayer.add(playerInfos);
-		if (tournament.listPlayer.size === tournament.size) {
+		console.log(tournament.listPlayer.size, tournament.size)
+		if (tournament.listPlayer.size == tournament.size) {
 			tournament.isFull = true;
 			updateTournament();
-			startTournament(msg.id, tournament);
+			setTimeout(() => {
+				startTournament(msg.id, tournament);
+			}, 3000)
 		}
 	}
 	updateTournament();
@@ -110,12 +115,6 @@ function updateTournament() {
 			})
 	}
 	const jsonString: string = JSON.stringify(jsonTournament);
-	//envoi de la mise a jour a tout les players
-	// for (const [id, tournament] of listTournament) {
-	// 	for(const player of tournament.listPlayer) {
-	// 		player.socket.send(jsonString);
-	// 	}
-	// }
 	for (const [, player] of sockets) {
 			player.socket.send(jsonString);
 	}
@@ -167,7 +166,7 @@ function randomMatch(tournament: Tournament) {
 			player2: playerTournament[i + 1]
 		});
 		playerTournament[i].matchTournamentNB = idMatch;
-		playerTournament[i].resultMatchTournament = "Current";
+		playerTournament[i].resultMatchTournament = "Current";	
 		playerTournament[i + 1].matchTournamentNB = idMatch;
 		playerTournament[i + 1].resultMatchTournament = "Current";
 		idMatch++;
@@ -186,30 +185,32 @@ function displayTournament(tournament: Tournament)
 	let tab: {
 		totalRound: number,
 		totalMatch: number,
-		matchTournamentNB: number,
 		player1: string;
+		player1Avatar: string,
 		p1ResultMatchTournament?: "Loose" | "Win" | "Current";
-		player2: string;
+		player2: string
+		player2Avatar: string,
 		p2ResultMatchTournament?: "Loose" | "Win" | "Current";
 	} [] = [];
 	for (const {player1, player2} of tournament.currentMatch) {
 		tab.push({
 			totalRound: Math.log2(tournament.size),
 			totalMatch: tournament.currentMatch.length,
-			matchTournamentNB: player1.matchTournamentNB,
 			player1: player1.name,
+			player1Avatar: player1.avatar,
 			p1ResultMatchTournament: player1.resultMatchTournament,
 			player2: player2.name,
+			player2Avatar: player2.avatar,
 			p2ResultMatchTournament: player2.resultMatchTournament
 		});
 	}
 	const jsonDisplayTournament = {
 		type: "Tournament",
 		action: "Display",
+		currentManche: tournament.currentManche,
 		value: tab
 	};
 	for (const player of tournament.listPlayer) {
-		if (player.socket.readyState === WebSocket.OPEN)
 			player.socket.send(JSON.stringify(jsonDisplayTournament));
 	}
 }
@@ -224,6 +225,7 @@ function dispatchMatch(tournament: Tournament) {
 		tournament.waitingWinner[i].resultMatchTournament = "Current";
 		tournament.waitingWinner[i + 1].resultMatchTournament = "Current";
 	}
+	tournament.currentManche++;
 	tournament.waitingWinner.length = 0;
 	messageTournament(tournament, "Start", "nouvelle Manche");
 	displayTournament(tournament);

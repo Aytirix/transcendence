@@ -32,6 +32,7 @@ export function createGame(playerInfos: playerStat, player2Infos?: playerStat) :
 		return (game);
 	}
 	else if (playerInfos.mode === "Tournament" && player2Infos.mode === "Tournament") {
+		console.log("tournament start")
 		const ball = new Ball(400, 300, 1, 0);
 		const player1 = new Paddle(780, 250, playerInfos);
 		const player2 = new Paddle(20, 250, player2Infos);

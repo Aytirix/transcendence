@@ -27,6 +27,7 @@ export interface Tournament {
 	isFull: boolean;
 	idTournament?: number;
 	currentMatch?: {player1: playerStat, player2:playerStat} [];
+	currentManche?: number;
 	waitingWinner?: playerStat [];
 	historyTournament?: {
 		nbRound: number,
