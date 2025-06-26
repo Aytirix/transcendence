@@ -42,4 +42,5 @@ export interface Tournament {
 	max: number;
 	current: number;
 	isFull: boolean;
+	listPlayers: string[];
 }

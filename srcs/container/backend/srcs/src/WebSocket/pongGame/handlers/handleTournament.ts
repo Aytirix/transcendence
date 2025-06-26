@@ -13,22 +13,19 @@ export function handleTournament(playerInfos: playerStat, msg: webMsg) {
 	else if (msg.action  === "Join" && playerInfos.inGame !== true)
 		joinTournament(playerInfos, msg);
 	else if (msg.action === "Display") {
-		console.log("actualise")
 		actualiseDisplay(playerInfos);
 	}
 	else if (msg.action === "Quit")
 		quitTournament(playerInfos)
+	else if (msg.action === "idTournament")
+		playerInfos.socket.send(JSON.stringify({action: "idTournament", value: playerInfos.idTournament}))
 }
 
 function quitTournament(playerInfos: playerStat) {
 	for (const [id, tournament] of listTournament) {
-		console.log("id", id, "id player", playerInfos.idTournament)
 		if (id === playerInfos.idTournament) {
-			console.log("2")
-
 			tournament.listPlayer.delete(playerInfos);
 			if (tournament.listPlayer.size === 0) {
-				console.log("3")
 				listTournament.delete(id);
 			} else {
 				tournament.isFull = false;
@@ -44,7 +41,6 @@ function quitTournament(playerInfos: playerStat) {
 
 
 function createTournament(playerInfos: playerStat, msg: webMsg)  {
-	console.log("createid", idTournament)
 	const tournament: Tournament = {
 		listPlayer: new Set(),
 		name: msg.value,
@@ -54,13 +50,13 @@ function createTournament(playerInfos: playerStat, msg: webMsg)  {
 		idTournament : idTournament,
 	}
 	playerInfos.idTournament = tournament.idTournament;
-	console.log("create id playerinfos ", playerInfos.idTournament)
 	playerInfos.mode = msg.type;
 	playerInfos.inGame = true;
 	tournament.listPlayer.add(playerInfos);
 	listTournament.set(idTournament,tournament);
 	idTournament++;
 	updateTournament();
+
 }
 
 function joinTournament(playerInfos: playerStat, msg: webMsg) {
@@ -70,6 +66,7 @@ function joinTournament(playerInfos: playerStat, msg: webMsg) {
 		return ;
 	}
 	else {
+		console.log("start")
 		playerInfos.idTournament = tournament.idTournament;
 		playerInfos.mode = msg.type;
 		playerInfos.inGame = true;
@@ -93,7 +90,8 @@ function updateTournament() {
 					"name": string,
 					"max": number,
 					"current": number,
-					"isFull": boolean
+					"isFull": boolean,
+					"listPlayers": string[]
 				} [];
 	} = {
 		type: "Tournament",
@@ -108,6 +106,7 @@ function updateTournament() {
 				"max": tournament.size,
 				"current": tournament.listPlayer.size,
 				"isFull": tournament.isFull,
+				"listPlayers": Array.from(tournament.listPlayer).map(player => player.name),
 			})
 	}
 	const jsonString: string = JSON.stringify(jsonTournament);
@@ -119,7 +118,6 @@ function updateTournament() {
 	// }
 	for (const [, player] of sockets) {
 			player.socket.send(jsonString);
-			console.log(player.name, "update");
 	}
 }
 
@@ -264,7 +262,8 @@ function actualiseDisplay(playerinfos: playerStat) {
 					"name": string,
 					"max": number,
 					"current": number,
-					"isFull": boolean
+					"isFull": boolean,
+					"listPlayers": string[]
 				} [];
 	} = {
 		type: "Tournament",
@@ -279,8 +278,8 @@ function actualiseDisplay(playerinfos: playerStat) {
 				"max": tournament.size,
 				"current": tournament.listPlayer.size,
 				"isFull": tournament.isFull,
+				"listPlayers": Array.from(tournament.listPlayer).map(player => player.name),
 			})
 	}
-	console.log(jsonTournament.value)
 	playerinfos.socket.send(JSON.stringify(jsonTournament));
 }
