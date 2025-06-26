@@ -56,39 +56,55 @@ export function useStatistics() {
 		const fetchStatistics = async () => {
 			try {
 				setError(null);
-				
+
 				const response: PacmanStatisticsResponse = await ApiService.get('/pacman/statistics', null, false);
-				
+
 				if (response.success && response.stats) {
 					const data = response.stats;
-					setStats({
-						pacman: {
-							totalGames: data.pacman.games_played,
-							wins: data.pacman.games_won,
-							losses: data.pacman.games_lost,
-							winRate: data.pacman.win_rate,
-							highestScore: data.pacman.best_score,
-							averageScore: data.pacman.average_score,
-						},
-						ghosts: {
-							totalGames: data.ghosts.games_played,
-							wins: data.ghosts.games_won,
-							losses: data.ghosts.games_lost,
-							winRate: data.ghosts.win_rate,
-							highestScore: data.ghosts.best_score,
-							averageScore: data.ghosts.average_score,
-						},
-						leaderboardPacman: data.record_pacman.map(record => ({
-							username: record.username,
-							score: record.score,
-						})),
-						leaderboardGhost: data.record_ghost.map(record => ({
-							username: record.username,
-							score: record.score,
-						})),
-					});
-				} else {
-					setError('Erreur lors du chargement des statistiques');
+					if (data.pacman) {
+						setStats(prevStats => ({
+							...prevStats,
+							pacman: {
+								totalGames: data.pacman.games_played,
+								wins: data.pacman.games_won,
+								losses: data.pacman.games_lost,
+								winRate: data.pacman.win_rate,
+								highestScore: data.pacman.best_score,
+								averageScore: data.pacman.average_score,
+							},
+						}));
+					}
+					if (data.ghosts) {
+						setStats(prevStats => ({
+							...prevStats,
+							ghosts: {
+								totalGames: data.ghosts.games_played,
+								wins: data.ghosts.games_won,
+								losses: data.ghosts.games_lost,
+								winRate: data.ghosts.win_rate,
+								highestScore: data.ghosts.best_score,
+								averageScore: data.ghosts.average_score,
+							},
+						}));
+					}
+					if (data.record_pacman) {
+						setStats(prevStats => ({
+							...prevStats,
+							leaderboardPacman: data.record_pacman.map(record => ({
+								username: record.username,
+								score: record.score,
+							})),
+						}));
+					}
+					if (data.record_ghost) {
+						setStats(prevStats => ({
+							...prevStats,
+							leaderboardGhost: data.record_ghost.map(record => ({
+								username: record.username,
+								score: record.score,
+							})),
+						}));
+					}
 				}
 			} catch (err) {
 				console.error('Error fetching statistics:', err);

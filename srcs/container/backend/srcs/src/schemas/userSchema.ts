@@ -8,7 +8,12 @@ export const login = {
 		properties: {
 			email: { type: 'string', minLength: 3, maxLength: 50 },
 			password: { type: 'string', minLength: 3 },
-			// password: { type: 'string', minLength: 8, maxLength: 25, pattern: '^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&.])[A-Za-z\\d@$!%*?&.]{8,25}$' },
+			// password: { 
+			// 	type: 'string', 
+			// 	minLength: 8, 
+			// 	maxLength: 25, 
+			// 	pattern: '^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%$#^:;\'"|*?&.,<>\\\\/\\-_=+()])[A-Za-z\\d@$!%$#^:;\'"|*?&.,<>\\\\/\\-_=+()]{8,25}$' 
+			// },
 		},
 		required: ['email', 'password'],
 		additionalProperties: false,
@@ -27,7 +32,12 @@ export const login = {
 	response: {
 		200: {
 			description: 'Authentification réussie',
-			...messageResponse,
+			type: 'object',
+			properties: {
+				message: { type: 'string' },
+				redirect: { type: 'string', nullable: true, description: 'Redirection vers une page spécifique' },
+			},
+			additionalProperties: false,
 		},
 		400: {
 			description: 'Format des données incorrect',
@@ -50,7 +60,12 @@ export const register = {
 			email: { type: 'string', minLength: 3, maxLength: 50, format: 'email' },
 			username: { type: 'string', minLength: 3, maxLength: 15, pattern: '^[a-zA-Z0-9]+$' },
 			confirmPassword: { type: 'string', minLength: 3 },
-			// confirmPassword: { type: 'string', minLength: 8, maxLength: 25, pattern: '^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&.])[A-Za-z\\d@$!%*?&.]{8,25}$' },
+			// confirmPassword: { 
+			// 	type: 'string', 
+			// 	minLength: 8, 
+			// 	maxLength: 25, 
+			// 	pattern: '^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%$#^:;\'"|*?&.,<>\\\\/\\-_=+()])[A-Za-z\\d@$!%$#^:;\'"|*?&.,<>\\\\/\\-_=+()]{8,25}$' 
+			// },
 			lang: { type: 'string', enum: ['fr', 'en', 'it', 'es'] },
 		},
 		required: [...login.body.required, 'username', 'confirmPassword'],
@@ -125,6 +140,9 @@ export const logout = {
 		200: {
 			description: 'Déconnexion réussie',
 			...messageResponse,
+			properties: {
+				redirect: { type: 'string', nullable: true, description: 'Redirection vers une page spécifique' },
+			},
 		}
 	},
 }

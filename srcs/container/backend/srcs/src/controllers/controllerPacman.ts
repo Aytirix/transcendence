@@ -86,9 +86,6 @@ export const deleteMap = async (ws: WebSocket, user_id: number, request: any) =>
 export const searchMap = async (ws: WebSocket, player: player, request: any): Promise<void> => {
 	const { text: name } = request as { text: string };
 	const maps = await pacmanModel.searchMap(player.id, name);
-	if (!maps || maps.length === 0) {
-		return sendResponse(ws, 'searchMap', 'error', [ws.i18n.t('pacman.error.searchMap.noResults')]);
-	}
 	sendResponse(ws, 'searchMap', 'success', [], { maps });
 }
 

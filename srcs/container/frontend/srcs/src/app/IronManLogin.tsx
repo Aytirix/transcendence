@@ -1,11 +1,11 @@
 import { Link } from 'react-router-dom';
 import React, { useState } from 'react';
 import ApiService from '../api/ApiService';
-import { useNavigate } from 'react-router-dom';
 import { useLanguage } from '../contexts/LanguageContext';
 
 import GoogleLoginButton from './components/GoogleLoginButton';
 import LanguageToggle from './components/LanguageToggle';
+import notification from './components/Notifications';
 
 interface LoginSchema {
 	email: string;
@@ -16,8 +16,6 @@ const IronManLogin: React.FC = () => {
 	const { t, currentLanguage } = useLanguage();
 	const [form, setForm] = useState<LoginSchema>({ email: '', password: '' });
 	const [loading, setLoading] = useState(false);
-	const [error, setError] = useState<string | null>(null);
-	const navigate = useNavigate();
 
 	const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		setForm({ ...form, [e.target.name]: e.target.value });
@@ -25,83 +23,74 @@ const IronManLogin: React.FC = () => {
 
 	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault();
-		setError(null);
 		setLoading(true);
 
 		try {
-			console.log("test0");
 			const resp: any = await ApiService.post('/login', form) as ApiService;
-			console.log("test1", form);
-			console.log(resp.ok);
-			if (!resp.ok) {
-				console.log("test2");
-				console.log(resp.ok);
-				const data = await resp.json();
-				setError(data.message || 'Erreur lors de la connexion.');
-			} else {
-				navigate('/');
-			}
-
-			console.log("test4");
 		} catch (err) {
-			setError('Erreur réseau ou serveur.');
+			notification.error('Erreur réseau ou serveur.');
 		} finally {
 			setLoading(false);
 		}
 	};
 
 	return (
-		<div className="min-h-screen flex items-center justify-center relative">
+		<div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 relative overflow-hidden">
+			{/* Décorations flottantes façon Intro */}
+			<div className="absolute top-0 left-0 w-full h-full pointer-events-none z-0">
+				<div className="absolute left-10 top-10 animate-bounce-slow text-5xl opacity-30 select-none">🎮</div>
+				<div className="absolute right-16 top-24 animate-float text-4xl opacity-20 select-none">🏆</div>
+				<div className="absolute left-1/2 top-1/3 animate-float2 text-6xl opacity-10 select-none">💫</div>
+				<div className="absolute right-1/3 bottom-10 animate-bounce-slow text-5xl opacity-20 select-none">👾</div>
+			</div>
+
 			{/* Bouton de changement de langue en haut à droite */}
-			<div className="absolute top-4 right-4">
+			<div className="absolute top-4 right-4 z-10">
 				<LanguageToggle />
 			</div>
 
-			<form className=" " onSubmit={handleSubmit}>
-				<fieldset className="fieldset bg-base-200 border-base-300 rounded-box w-xs border p-4">
-					<legend className="fieldset-legend text-lg">{t('login.title')}</legend>
+			<form className="z-10 w-full max-w-md" onSubmit={handleSubmit}>
+				<fieldset className="bg-gray-900 bg-opacity-90 border border-gray-700 rounded-2xl shadow-2xl p-8 flex flex-col gap-4 items-center">
+					<legend className="text-2xl font-bold text-center mb-2 text-white tracking-widest gradient-text">{t('login.title')}</legend>
 
-					<label className="label">{t('login.email')}</label>
+					<label className="label text-gray-300 self-center">{t('login.email')}</label>
 					<input
 						type="text"
 						name="email"
-						className="input input-a"
+						className="input input-a bg-gray-800 border border-gray-700 text-white focus:ring-2 focus:ring-blue-500 rounded-md px-4 py-2 text-center"
 						maxLength={50}
 						placeholder={`  ${t('login.email')}`}
 						onChange={handleChange}
 						required
 					/>
 
-					<label className="label">{t('login.password')}</label>
+					<label className="label text-gray-300 self-center">{t('login.password')}</label>
 					<input
 						type="password"
 						name="password"
-						className="input input-a"
+						className="input input-a bg-gray-800 border border-gray-700 text-white focus:ring-2 focus:ring-blue-500 rounded-md px-4 py-2 text-center"
 						placeholder={`  ${t('login.password')}`}
 						onChange={handleChange}
 						required
 					/>
 
-					<button className="btn btn-neutral mt-4 text-black" type="submit" disabled={loading}>
+					<button className="btn btn-neutral mt-4 text-black font-bold bg-gradient-to-r from-yellow-400 via-red-500 to-pink-500 hover:from-pink-500 hover:to-yellow-400 transition-colors w-full rounded-md shadow-lg" type="submit" disabled={loading}>
 						{loading ? t('login.loading') : t('login.submit')}
 					</button>
 
-					<div className="flex justify-center mt-4">
-						<Link to="/forget-password" className="link link-hover">
+					<div className="flex justify-center mt-2">
+						<Link to="/forget-password" className="link link-hover text-blue-400 hover:underline">
 							{t('login.forgetPassword')}
 						</Link>
 					</div>
-					
-					<div className="flex justify-center mt-4">
+					<div className="flex justify-center mt-2">
 						<GoogleLoginButton textbtn="login" />
 					</div>
-
-					<div className="w-full justify-center items-center">
-						<Link to="/register" className="w-full justify-center items-center">
+					<div className="flex justify-center mt-2">
+						<Link to="/register" className="text-gray-300 hover:text-yellow-400 transition-colors">
 							{t('login.registerLink')}
 						</Link>
 					</div>
-					{error && <div style={{ color: '#c20000', marginTop: '16px', textAlign: 'center' }}>{error}</div>}
 				</fieldset>
 			</form>
 		</div>
