@@ -48,7 +48,6 @@ const GameMenu: React.FC = () => {
 			console.log("test")
 		}
 	};
-
 	const Create = () => {
 		if (showCreate) {
 			setShowCreate(false);
@@ -58,7 +57,6 @@ const GameMenu: React.FC = () => {
 			setShowJoin(false);
 		}
 	};
-
 	const Join = () => {
 		setShowCreate(false);
 		if (showJoin)

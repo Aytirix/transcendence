@@ -198,12 +198,25 @@
 }
 
 .button-accueil {
-  position: absolute;
-  display: flex;
-  top: 90%;
-  right: 50px; /* distance depuis le bord gauche */
-  z-index: 2;
-  align-items: center;
+	position: absolute;
+	display: flex;
+	top: 90%;
+	right: 50px; /* distance depuis le bord gauche */
+	z-index: 2;
+	align-items: center;
+	border: none;
+	border-radius: 10px;
+	z-index: 2;
+	background: transparent;
+	color: rgb(241, 247, 247);
+	font-weight: bold;
+	font-size: 20px;
+	animation: textGlowMenu 1.7s linear infinite;
+}
+
+.button-accueil:hover {
+	transform: scale(1.08);
+	animation: textGlow 1.7s linear infinite;
 }
 
 .img-exit {
@@ -377,7 +390,7 @@ position: relative;
   background-color: #fbf9f95e;
   color: white;
   border-radius: 20px;     /* 👈 Coins arrondis */
-  box-shadow: 0 0 15px rgba(0,0,0,0.5);
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
 }
 
 .popup_create {
@@ -477,6 +490,16 @@ th, td {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;   
+}
+
+.td-tournament-size{
+	max-width: 20px;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	color: rgb(95, 237, 7);
+	font-weight: bold;
+	animation: textValidMenu 1.7s linear infinite;
 }
 
 .th-menu {
