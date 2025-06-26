@@ -127,35 +127,86 @@ export default class Ghost extends Character {
 		}
 
 		// 6) Utiliser BFS pour calculer la direction menant au chemin le plus court
-		const nextDir = this.computeNextDirectionBFS(currentGrid, targetGrid);
-		if (nextDir) {
-			this.nextDirection = nextDir;
-		}
+		let nextDir = this.computeNextDirectionBFS(currentGrid, targetGrid);
+        if (!nextDir) {
+            // Si aucune direction trouvée, choisir une direction aléatoire non bloquée
+            const dirs: vector2[] = [
+                { x: 0, y: -1 },
+                { x: -1, y: 0 },
+                { x: 0, y: 1 },
+                { x: 1, y: 0 },
+            ];
+            const possibles = dirs.filter(dir => {
+                const nx = currentGrid.x + dir.x;
+                const ny = currentGrid.y + dir.y;
+                return this.map.isWalkable(this.nameChar, { x: nx, y: ny });
+            });
+            if (possibles.length > 0) {
+                nextDir = possibles[Math.floor(Math.random() * possibles.length)];
+            } else {
+                nextDir = { x: 0, y: 0 };
+            }
+        }
+        this.nextDirection = nextDir;
+        // Sécurité anti-blocage : si le fantôme est bloqué, on force une direction possible
+        if (this.direction.x === 0 && this.direction.y === 0 && this.nextDirection.x === 0 && this.nextDirection.y === 0) {
+            const dirs: vector2[] = [
+                { x: 0, y: -1 },
+                { x: -1, y: 0 },
+                { x: 0, y: 1 },
+                { x: 1, y: 0 },
+            ];
+            const possibles = dirs.filter(dir => {
+                const nx = currentGrid.x + dir.x;
+                const ny = currentGrid.y + dir.y;
+                return this.map.isWalkable(this.nameChar, { x: nx, y: ny });
+            });
+            if (possibles.length > 0) {
+                this.nextDirection = possibles[Math.floor(Math.random() * possibles.length)];
+            }
+        }
 	}
 
 	/**
 	 * Comportement en mode frightened: fuir Pac-Man en utilisant BFS classique.
 	 */
 	private updateFrightenedBehaviour(pacman: Pacman): void {
-		const currentGrid = this.pixelToGrid(this.position);
-		const pacmanGrid = this.pixelToGrid(pacman.position);
+        const currentGrid = this.pixelToGrid(this.position);
+        const pacmanGrid = this.pixelToGrid(pacman.position);
 
-		// Pour fuir, on choisit un point opposé à Pac-Man
-		const targetGrid: vector2 = {
-			x: 2 * currentGrid.x - pacmanGrid.x,
-			y: 2 * currentGrid.y - pacmanGrid.y
-		};
+        // Pour fuir, on choisit un point opposé à Pac-Man
+        const targetGrid: vector2 = {
+            x: 2 * currentGrid.x - pacmanGrid.x,
+            y: 2 * currentGrid.y - pacmanGrid.y
+        };
 
-		// Limiter les coordonnées aux dimensions de la carte
-		targetGrid.x = Math.max(0, Math.min(this.map.getWidth() - 1, targetGrid.x));
-		targetGrid.y = Math.max(0, Math.min(this.map.getHeight() - 1, targetGrid.y));
+        // Limiter les coordonnées aux dimensions de la carte
+        targetGrid.x = Math.max(0, Math.min(this.map.getWidth() - 1, targetGrid.x));
+        targetGrid.y = Math.max(0, Math.min(this.map.getHeight() - 1, targetGrid.y));
 
-		// Calculer la prochaine direction avec BFS
-		const nextDir = this.computeNextDirectionBFS(currentGrid, targetGrid);
-		if (nextDir) {
-			this.nextDirection = nextDir;
-		}
-	}
+        // Calculer la prochaine direction avec BFS
+        let nextDir = this.computeNextDirectionBFS(currentGrid, targetGrid);
+        if (!nextDir) {
+            // Si aucune direction trouvée, choisir une direction aléatoire non bloquée
+            const dirs: vector2[] = [
+                { x: 0, y: -1 },
+                { x: -1, y: 0 },
+                { x: 0, y: 1 },
+                { x: 1, y: 0 },
+            ];
+            const possibles = dirs.filter(dir => {
+                const nx = currentGrid.x + dir.x;
+                const ny = currentGrid.y + dir.y;
+                return this.map.isWalkable(this.nameChar, { x: nx, y: ny });
+            });
+            if (possibles.length > 0) {
+                nextDir = possibles[Math.floor(Math.random() * possibles.length)];
+            } else {
+                nextDir = { x: 0, y: 0 };
+            }
+        }
+        this.nextDirection = nextDir;
+    }
 
 	/** (Blinky) cible la position actuelle de Pac-Man. */
 	private getBlinkyTarget(pacman: Pacman): vector2 {
