@@ -66,6 +66,7 @@ const IronManLogin: React.FC = () => {
 						type="text"
 						name="email"
 						className="input input-a"
+						maxLength={50}
 						placeholder={`  ${t('login.email')}`}
 						onChange={handleChange}
 						required

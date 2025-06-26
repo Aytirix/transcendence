@@ -29,6 +29,7 @@ export default class Engine {
 	private win: 'pacman' | 'ghosts' | null = null;
 	private reward: number = 0;
 	private room: room | null = null;
+	private pacmanLeaved: boolean = false;
 
 	// Ajout des propriétés pour le mode effrayé
 	private isFrightened: boolean = false;
@@ -52,7 +53,7 @@ export default class Engine {
 		}
 
 		this.addPlayers(room.players);
-		
+
 		// Valider qu'il n'y a qu'un seul Pacman après l'initialisation
 		this.validateSinglePacman();
 	}
@@ -65,7 +66,7 @@ export default class Engine {
 	 * Ajout d'un joueur au moteur
 	 */
 	private addPlayers(players: player[]): void {
-		
+
 		const characters = [CharacterType.Pacman, CharacterType.Blinky, CharacterType.Inky, CharacterType.Pinky, CharacterType.Clyde];
 		const usedCharacters = new Set<string>(
 			Array.from(this.players.values()).map(p => p.nameChar)
@@ -75,11 +76,11 @@ export default class Engine {
 		realPlayer = realPlayer.sort(() => Math.random() - 0.5);
 
 		let availableCharacters = characters.filter(c => !usedCharacters.has(c));
-		
+
 		// Vérifier s'il y a déjà un Pacman existant
 		const hasPacman = Array.from(this.players.values()).some(p => p.nameChar === CharacterType.Pacman);
 		let pacmanAssigned = hasPacman;
-		
+
 		players.forEach(p => {
 			let spawnIndex = 0;
 			let spawns: vector2[] = [];
@@ -106,7 +107,7 @@ export default class Engine {
 			} else {
 				// S'assurer que Pacman n'est pas dans les caractères disponibles
 				availableCharacters = availableCharacters.filter(c => c !== CharacterType.Pacman);
-				
+
 				// Vérifier que availableCharacters n'est pas vide
 				if (availableCharacters.length === 0) {
 					console.error('No available characters left, falling back to default');
@@ -166,14 +167,15 @@ export default class Engine {
 			};
 
 			if (this.players.get(playerId)?.nameChar === CharacterType.Pacman) {
+				this.pacmanLeaved = true;
 				this.stop("Pacman left, resetting all players to spawn positions");
 				// Supprimer d'abord le joueur qui quitte
 				this.players.delete(playerId);
 				this.sockets.delete(playerId);
-				
+
 				// Vérifier s'il reste d'autres Pacman
 				const remainingPacman = Array.from(this.players.values()).some(p => p.nameChar === CharacterType.Pacman);
-				
+
 				// Seulement remplacer par un nouveau Pacman s'il n'y en a plus
 				if (!remainingPacman) {
 					const ghostPlayers = Array.from(this.players.values()).filter(p => p instanceof Ghost && p.player.id > 0);
@@ -186,7 +188,7 @@ export default class Engine {
 						this.players.set(pacmanPlayer.player.id, pacmanPlayer);
 					}
 				}
-				
+
 				this.resetAllPlayerPositions();
 				if (this.players.size === 0 || Array.from(this.players.keys()).every(id => id < 0)) {
 					this.stop('No players left, stopping the game');
@@ -351,6 +353,7 @@ export default class Engine {
 	public stop(message: string = "Game stopped"): void {
 		this.isPaused = true;
 		this.PauseMessage = message;
+		this.broadcastState();
 		if (this.intervalId) {
 			clearInterval(this.intervalId);
 			this.intervalId = null;
@@ -389,7 +392,7 @@ export default class Engine {
 
 		try {
 			this.validateSinglePacman();
-			
+
 			this.reward = 0;
 			if (!this.isPaused) {
 				let pacmanInstance: Pacman | undefined;
@@ -747,7 +750,7 @@ export default class Engine {
 	}
 
 	private addStatistics() {
-		if (this.room.settings.map.id === -1) {
+		if (this.room.settings.map.id === -1 && this.pacmanLeaved === false) {
 			for (const player of this.players.values()) {
 				if (!player.player || player.player.id < 0) continue;
 				const win = player instanceof Pacman ? (this.win === 'pacman') : (this.win === 'ghosts');
@@ -906,7 +909,7 @@ export default class Engine {
 	 */
 	private validateSinglePacman(): boolean {
 		const pacmanPlayers = Array.from(this.players.values()).filter(p => p.nameChar === CharacterType.Pacman);
-		
+
 		if (pacmanPlayers.length > 1) {
 			console.error(`ERREUR: ${pacmanPlayers.length} Pacman détectés! IDs: ${pacmanPlayers.map(p => p.player.id).join(', ')}`);
 			console.error(`Détails des Pacman en doublon:`, pacmanPlayers.map(p => ({
@@ -915,24 +918,24 @@ export default class Engine {
 				position: p.position,
 				character: p.nameChar
 			})));
-			
+
 			// Garder seulement le premier Pacman et convertir les autres en fantômes
 			for (let i = 1; i < pacmanPlayers.length; i++) {
 				const extraPacman = pacmanPlayers[i];
 				console.log(`Converting extra Pacman (ID: ${extraPacman.player.id}) to Ghost`);
-				
+
 				// Créer un nouveau fantôme pour remplacer le Pacman en trop
 				const newGhost = new Ghost(extraPacman.player, extraPacman.position, CharacterType.Blinky, this.map);
 				this.players.set(extraPacman.player.id, newGhost);
 			}
 			return false;
 		}
-		
+
 		if (pacmanPlayers.length === 0) {
-			console.warn("ATTENTION: Aucun Pacman détecté dans le jeu! Joueurs actuels:", 
+			console.warn("ATTENTION: Aucun Pacman détecté dans le jeu! Joueurs actuels:",
 				Array.from(this.players.values()).map(p => ({ id: p.player.id, character: p.nameChar })));
 		}
-		
+
 		return true;
 	}
 
@@ -942,17 +945,17 @@ export default class Engine {
 	 */
 	public hasValidPacmanCount(): boolean {
 		const pacmanCount = Array.from(this.players.values()).filter(p => p.nameChar === CharacterType.Pacman).length;
-		
+
 		if (pacmanCount === 0) {
 			console.warn("ATTENTION: Aucun Pacman détecté dans le jeu!");
 			return false;
 		}
-		
+
 		if (pacmanCount > 1) {
 			console.error(`ERREUR: ${pacmanCount} Pacman détectés!`);
 			return false;
 		}
-		
+
 		return true;
 	}
 }
