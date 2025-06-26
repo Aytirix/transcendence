@@ -1,3 +1,4 @@
+import React from 'react';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css'; // Import des styles nécessaires
 
@@ -15,19 +16,19 @@ class ToastNotification {
 	};
 
 	static success(message: string, options = {}) {
-		toast.success(message, { ...this.toastOptions, ...options });
+		toast.success(ToastNotification.formatMessage(message), { ...this.toastOptions, ...options });
 	}
 
 	static info(message: string, options = {}) {
-		toast.info(message, { ...this.toastOptions, ...options });
+		toast.info(ToastNotification.formatMessage(message), { ...this.toastOptions, ...options });
 	}
 
 	static warn(message: string, options = {}) {
-		toast.warn(message, { ...this.toastOptions, ...options });
+		toast.warn(ToastNotification.formatMessage(message), { ...this.toastOptions, ...options });
 	}
 
 	static error(message: string, options = {}) {
-		toast.error(message, { ...this.toastOptions, ...options });
+		toast.error(ToastNotification.formatMessage(message), { ...this.toastOptions, ...options });
 	}
 
 	static promise(promise: Promise<unknown> | (() => Promise<unknown>), successMessage: string, errorMessage: string, options = {}) {
@@ -37,7 +38,21 @@ class ToastNotification {
 			error: errorMessage,
 		}, { ...this.toastOptions, ...options });
 	}
+
+	// Utiliser le type React.ReactElement pour le typage
+	private static formatMessage(message: string): React.ReactElement {
+		const lines = message.split('\n');
+		return (
+			<div style={{ display: 'flex', flexDirection: 'column' }}>
+				{lines.map((line, idx) => (
+					<div key={idx}>{line}</div>
+				))}
+			</div>
+		);
+	}
 }
+
+window.notification = ToastNotification; // Expose la classe pour l'utiliser globalement
 
 // Exporter à la fois la classe et le composant ToastContainer
 export { ToastContainer };

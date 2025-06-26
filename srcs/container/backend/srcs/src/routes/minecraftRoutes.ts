@@ -13,6 +13,7 @@ export default async (fastify: FastifyInstance) => {
 	fastify.post('/setMinecraftUser', {
 		preHandler: [Middleware.isAuthenticated],
 		schema: minecraftSchema.setMinecraftUser,
+		bodyLimit: 10 * 1024 * 1024, // 10 Mo
 		handler: controllerMinecraft.setMinecraftUser,
 	});
-};
+};	
