@@ -3,6 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { recordMinecraftAccess, canAccessMinecraft } from './minecraftUtils';
 import ApiService from '../../../api/ApiService';
 import pako from 'pako';
+import notification from '../Notifications';
 
 interface FullscreenMinecraftHandlerProps {
 	children: React.ReactNode;
@@ -514,6 +515,27 @@ export async function setMinecraftInfo() {
 		return;
 	}
 
+	// Vérification taille avant envoi (10 Mo max)
+	const compressedSize = new Blob([compressed]).size;
+	if (compressedSize > 10 * 1024 * 1024 || 1 == 1) {
+		notification.warn("⚠️ LIMITE DEPASSER ⚠️\nLa sauvegarde Minecraft dépasse la limite de 10 Mo.\nVeuillez réduire la taille des packs de ressources ou des mondes en solo.",
+			{
+				autoClose: false,
+				position: 'top-center',
+				closeButton: true,
+				icon: false,
+				toastId: 'minecraft-save-limit',
+				style: {
+					backgroundColor: '#f87171', // Rouge moins agressif
+					color: 'white',
+					fontWeight: 'bold',
+				}
+			}
+		);
+		console.error('La sauvegarde Minecraft dépasse la limite de 10 Mo (', (compressedSize / (1024 * 1024)).toFixed(2), 'Mo )');
+		return;
+	}
+
 	if (
 		minecraftInfo._eaglercraftX_g &&
 		minecraftInfo._eaglercraftX_p &&
@@ -522,7 +544,6 @@ export async function setMinecraftInfo() {
 	) {
 		try {
 			await ApiService.post('/setMinecraftUser', { compressed });
-			// Succès silencieux ou log minimal
 		} catch (error) {
 			console.error('Erreur lors de la sauvegarde minecraft:', error);
 		}
