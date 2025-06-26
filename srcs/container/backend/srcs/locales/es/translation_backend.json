@@ -30,6 +30,24 @@
 		"lang": {
 			"required": "El idioma es obligatorio.",
 			"invalid": "El idioma debe ser fr, en, it o es."
+		},
+		"minecraft": {
+			"_eaglercraftX_g": {
+				"required": "El parámetro _eaglercraftX_g es obligatorio.",
+				"invalid": "_eaglercraftX_g debe ser una cadena de caracteres no vacía."
+			},
+			"_eaglercraftX_p": {
+				"required": "El parámetro _eaglercraftX_p es obligatorio.",
+				"invalid": "_eaglercraftX_p debe ser una cadena de caracteres no vacía."
+			},
+			"_eaglercraftX_r": {
+				"required": "El parámetro _eaglercraftX_r es obligatorio.",
+				"invalid": "_eaglercraftX_r debe ser una cadena de caracteres no vacía."
+			},
+			"lastMinecraftAccess": {
+				"required": "La fecha del último acceso a Minecraft es obligatoria.",
+				"invalid": "La fecha del último acceso a Minecraft debe ser un número."
+			}
 		}
 	},
 	"login": {

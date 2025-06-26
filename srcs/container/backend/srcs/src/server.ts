@@ -15,6 +15,7 @@ import ajvErrors from 'ajv-errors';
 import dotenv from 'dotenv';
 import pacmanRoutes from './routes/pacmanRoutes';
 import fileRoutes from './routes/fileRoutes';
+import minecraftRoutes from './routes/minecraftRoutes';
 
 dotenv.config();
 
@@ -72,6 +73,7 @@ app.register(fastifyCors, {
 app.register(userRoutes);
 app.register(pacmanRoutes);
 app.register(fileRoutes);
+app.register(minecraftRoutes);
 
 // Intégration de WebSocket
 initWebSocket(app);  // Appel de la fonction initWebSocket

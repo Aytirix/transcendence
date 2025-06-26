@@ -1,13 +1,26 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useLanguage } from '../contexts/LanguageContext';
-import FullscreenMinecraftHandler from './components/minecraft/FullscreenMinecraftHandler.tsx';
+import FullscreenMinecraftHandler, { getMinecraftInfo } from './components/minecraft/FullscreenMinecraftHandler.tsx';
 import './assets/styles/intro.scss';
+import { useAuth } from '../contexts/AuthContext.tsx';
 
 function Intro() {
 	const { t } = useLanguage();
 	const navigate = useNavigate();
 	const [currentTime, setCurrentTime] = useState(new Date());
+	const { user, loading } = useAuth();
+
+	useEffect(() => {
+		if (!user || loading) {
+			return;
+		}
+		const check = localStorage.getItem('getMinecraftInfo?');
+		if (check === 'false' || check === null) {
+			getMinecraftInfo();
+			localStorage.setItem('getMinecraftInfo?', 'true');
+		}
+	}, [user, loading]);
 
 	useEffect(() => {
 		const timer = setInterval(() => {

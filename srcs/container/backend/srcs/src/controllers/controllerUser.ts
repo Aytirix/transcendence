@@ -352,5 +352,5 @@ export default {
 	Logout,
 	authGoogleCallback,
 	UploadAvatar,
-	ForgetPassword
+	ForgetPassword,
 };

@@ -21,6 +21,15 @@ export interface User {
 	}
 }
 
+export interface MinecraftUser {
+	_eaglercraftX_g: string;
+	_eaglercraftX_p: string;
+	_eaglercraftX_r: string;
+	lastMinecraftAccess: number;
+	resourcePacks: any[];
+	worlds: any[];
+}
+
 export interface Message {
 	id: number;
 	sender_id?: number;

@@ -325,6 +325,29 @@ export const forgetPassword = {
 	},
 };
 
+export const getMinecraftUser = {
+	description: 'Récupération des informations Minecraft de l\'utilisateur',
+	tags: ['minecraft'],
+	response: {
+		200: {
+			description: 'Informations Minecraft récupérées avec succès',
+			type: 'object',
+			properties: {
+				_eaglercraftX_g: { type: 'string', nullable: true },
+				_eaglercraftX_p: { type: 'string', nullable: true },
+				_eaglercraftX_r: { type: 'string', nullable: true },
+				lastMinecraftAccess: { type: 'number', nullable: true },
+				resourcePacks: {
+					nullable: true
+				},
+				worlds: {
+					nullable: true
+				}
+			},
+		},
+	},
+};
+
 export default {
 	login,
 	register,
