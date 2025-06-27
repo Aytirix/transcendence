@@ -14,7 +14,6 @@ function initState(): state {
 		statusws: 'Connecting...',
 		player: null, // Will be set in the component
 		maps: [],
-		publicMaps: [],
 		rooms: {
 			active: [],
 			waiting: [],
@@ -247,7 +246,7 @@ export default function WebSocketPacman() {
 	}, [websocket]);
 
 	// Gérer automatiquement la requête searchMap quand l'utilisateur rejoint une room
-	useEffect(() => {
+	/* useEffect(() => {
 		if (!state.ws || state.ws.readyState !== WebSocket.OPEN) {
 			return;
 		}
@@ -269,13 +268,13 @@ export default function WebSocketPacman() {
 				if (state.ws && state.ws.readyState === WebSocket.OPEN) {
 					state.ws.send(JSON.stringify({ action: 'searchMap', text: '' }));
 				}
-			}, 1000);
+			}, 5000);
 
 			return () => {
 				clearInterval(interval);
 			};
 		}
-	}, [state.ws, state.rooms?.waiting, state.player?.id]);
+	}, [state.ws, state.rooms?.waiting, state.player?.id]); */
 
 	return (
 		<div id="PacmanStars">

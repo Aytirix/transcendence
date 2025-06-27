@@ -11,11 +11,11 @@ interface WaitingRoomsProps {
 const WaitingRooms: React.FC<WaitingRoomsProps> = ({ state }) => {
 	const [roomName, setRoomName] = useState('');
 	const [mapSearch, setMapSearch] = useState('');
-	const selectedMap = 'classic';
+	const [selectedMap, setSelectedMap] = useState('classic');
 	const MAX_ROOM_NAME_LENGTH = 15;
 
 	// Use the useMapOptions hook to get map data
-	const { MAPS, userMaps, loading, error } = useMapOptions(state);
+	const { MAPS, loading, error } = useMapOptions(state);
 
 	// Add filtered maps logic
 	const filteredMaps = MAPS.filter(map =>
@@ -25,9 +25,10 @@ const WaitingRooms: React.FC<WaitingRoomsProps> = ({ state }) => {
 	// Fonction pour créer une salle
 	const handleCreateRoom = () => {
 		if (roomName.trim() && roomName.length <= MAX_ROOM_NAME_LENGTH) {
-			// Send map id if custom, else map name
-			const mapPayload = userMaps.some(m => m.value === selectedMap)
-				? { map_id: Number(selectedMap) }
+			// Send map id if custom or public, else map name
+			const existingMap = MAPS.find(m => m.value === selectedMap);
+			const mapPayload = existingMap
+				? { map_id: Number(selectedMap), user_id: existingMap.userId || 0 }
 				: { map: selectedMap };
 			state.ws?.send(JSON.stringify({ action: 'createRoom', name: roomName, map: selectedMap, ...mapPayload }));
 		}
@@ -76,12 +77,22 @@ const WaitingRooms: React.FC<WaitingRoomsProps> = ({ state }) => {
 
 	// Fonction pour changer la carte de la salle
 	const handleChangeRoomMap = (mapValue: string) => {
-		const isCustom = userMaps.some(m => m.value === mapValue);
 		if (mapValue == '' || !mapValue) {
 			return;
 		}
-		const payload = isCustom ? { map_id: Number(mapValue) } : { map: mapValue };
+		// Vérifier si c'est une carte personnalisée ou publique (qui nécessite un map_id)
+	//const isCustomOrPublic = userMaps.some(m => m.value === mapValue) || publicMaps.some(m => m.value === mapValue);
+		const existingMap = MAPS.find(m => m.value === mapValue);
+		if (!existingMap) {
+			console.error('Map not found:', mapValue);
+			return;
+		}
+		const payload = /* isCustomOrPublic */
+			/* ? */ { map_id: Number(existingMap.mapId), user_id: existingMap.userId || 0 }
+			/* : */ /* { map: mapValue }; */
+
 		state.ws?.send(JSON.stringify({ action: 'setRoomMap', ...payload }));
+		setSelectedMap(mapValue);
 	};
 
 	// Vérifier si l'utilisateur est déjà dans une salle d'attente
@@ -91,9 +102,40 @@ const WaitingRooms: React.FC<WaitingRoomsProps> = ({ state }) => {
 
 	useEffect(() => {
 		if (currentRoom) {
-			setRoomName('');
+			setRoomName(currentRoom.name || '');
 		}
 	}, [currentRoom]);
+
+	// Gérer automatiquement la requête searchMap quand l'utilisateur rejoint une room
+	useEffect(() => {
+		if (!state.ws || state.ws.readyState !== WebSocket.OPEN) {
+			return;
+		}
+
+		// Vérifier si l'utilisateur est dans une CurrentRoom
+		const currentRoom = state.rooms?.waiting?.find(r =>
+			r.players?.some(p => p.id === state.player?.id)
+		);
+
+		// Si l'utilisateur est dans une room, envoyer searchMap et configurer un rafraîchissement
+		if (currentRoom) {
+			console.log('Utilisateur dans une room, envoi de searchMap');
+			
+			// Envoyer immédiatement
+			state.ws.send(JSON.stringify({ action: 'searchMap', text: mapSearch }));
+
+			// Configurer un rafraîchissement toutes les 5 secondes pour les mises à jour temps réel
+			const interval = setInterval(() => {
+				if (state.ws && state.ws.readyState === WebSocket.OPEN) {
+					state.ws.send(JSON.stringify({ action: 'searchMap', text: mapSearch }));
+				}
+			}, 5000);
+
+			return () => {
+				clearInterval(interval);
+			};
+		}
+	}, [state.ws, state.rooms?.waiting, state.player?.id, mapSearch]);
 
 	const isOwner = currentRoom?.owner_id === state.player?.id;
 
