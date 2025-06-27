@@ -93,6 +93,7 @@ const GameMenu: React.FC = () => {
 	}, []);
 
 	useEffect(() => {
+		//penser a ne pas pouvoir valider si isFull
 		setValidationButton(nameTournament.length >= 3);
 	}, [nameTournament]);
 

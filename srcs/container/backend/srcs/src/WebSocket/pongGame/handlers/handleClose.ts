@@ -13,12 +13,12 @@ export function handleClose(playerInfos: playerStat) {
 	if (playerInfos.game) {
 		playerInfos.game.setStatus("KICKOFF") //deconnexion
 		playerInfos.pauseGame = true;
-	}
-	if (playerInfos.mode === "Multi") {
-		if (playerInfos.name !== playerInfos.game.getPlayer1().getPlayerInfos().name)
-			playerInfos.game.getPlayer1().getPlayerInfos().pauseGame = false;
-		else
-			playerInfos.game.getPlayer2().getPlayerInfos().pauseGame = false;
+		if (playerInfos.mode === "Multi" || playerInfos.mode === "Tournament") {
+			if (playerInfos.name !== playerInfos.game.getPlayer1().getPlayerInfos().name)
+				playerInfos.game.getPlayer1().getPlayerInfos().pauseGame = false;
+			else
+				playerInfos.game.getPlayer2().getPlayerInfos().pauseGame = false;
+		}
 	}
 	if (waitingID.has(playerInfos.id) === false && playerInfos.mode === "SameKeyboard")
 		waitingID.set(playerInfos.id, playerInfos);

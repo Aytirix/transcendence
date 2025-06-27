@@ -44,7 +44,10 @@ const TournamentPage: React.FC = () => {
 			else if (data.action === "Display") {
 				setStartTournament(true);
 				setRounds(data.currentManche);
-				displayDuel(data.value)
+				displayDuel(data.value) 
+				setTimeout(() => {
+					navigate('/pong/menu/GameTournament')
+				}, 2000)
 			}
 		};
 		return () => {
