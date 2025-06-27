@@ -1,10 +1,10 @@
 import path from 'path';
 import fs from 'fs';
-import mysql, { Connection } from 'mysql2';
 import sqlite3 from 'sqlite3';
 require('dotenv').config();
 
 let db: sqlite3.Database = null;
+let initPromise: Promise<sqlite3.Database> | null = null;
 
 async function createDbFile(): Promise<sqlite3.Database> {
 	const templateDataseFile = path.join(__dirname, '..', '..', 'sqlite', 'template', 'transcendence.sql');
@@ -25,26 +25,25 @@ async function createDbFile(): Promise<sqlite3.Database> {
 				console.log("Tentative de recréation à partir du template...");
 
 				// Supprimer le fichier corrompu s'il existe
-				if (fs.existsSync(dbFilePath)) {
-					try {
-						fs.unlinkSync(dbFilePath);
-					} catch (unlinkErr) {
-						console.error("Erreur lors de la suppression du fichier corrompu:", unlinkErr);
-					}
-				}
+				// if (fs.existsSync(dbFilePath)) {
+				// 	try {
+				// 		fs.unlinkSync(dbFilePath);
+				// 	} catch (unlinkErr) {
+				// 		console.error("Erreur lors de la suppression du fichier corrompu:", unlinkErr);
+				// 	}
+				// }
 
 				// Créer une nouvelle base de données
-				db = new sqlite3.Database(dbFilePath, (createErr: Error | null) => {
-					if (createErr) {
-						console.error("Erreur lors de la création de la nouvelle base de données:", createErr);
-						reject(createErr);
-						return;
-					}
-					initializeDatabase(templateDataseFile, resolve, reject);
-				});
+				// db = new sqlite3.Database(dbFilePath, (createErr: Error | null) => {
+				// 	if (createErr) {
+				// 		console.error("Erreur lors de la création de la nouvelle base de données:", createErr);
+				// 		reject(createErr);
+				// 		return;
+				// 	}
+				// 	initializeDatabase(templateDataseFile, resolve, reject);
+				// });
 			} else {
 				if (!dbExists) {
-					// Base créée avec succès, initialiser avec le template
 					initializeDatabase(templateDataseFile, resolve, reject);
 				} else {
 					resolve(db);
@@ -91,18 +90,22 @@ async function createDbFile(): Promise<sqlite3.Database> {
  * @throws Une erreur si la connexion à la base de données échoue ou si la requête SQL échoue.
  *
  * @remarks
- * Cette fonction établit une connexion à la base de données, exécute la requête SQL, puis ferme la connexion, même en cas d'erreur.
+ * Cette fonction établit une connexion à la base de données, exécute la requête SQL.
  */
 async function executeReq(req: string, data: Array<string | number> = []) {
 	if (!db) {
+		if (!initPromise) {
+			initPromise = createDbFile();
+		}
 		try {
-			db = await createDbFile();
+			db = await initPromise;
 		} catch (error) {
-			console.error('Erreur lors de la création de la base de données:', error);
+			console.error('Erreur création BDD :', error);
 			throw error;
 		}
 	}
-	return new Promise(async (resolve, reject) => {
+
+	return new Promise((resolve, reject) => {
 		try {
 			const clearReq = req.trim().replace(/\s+/g, ' ');
 			if (clearReq.startsWith('SELECT')) {
