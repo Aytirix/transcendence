@@ -37,10 +37,22 @@ export interface Parse {
 }
 
 export interface Tournament {
-	size: 4 | 8 | 16 | 32;
+	id: number;
 	name: string;
-	winner?: boolean;
+	max: number;
+	current: number;
 	isFull: boolean;
-	idTournament?: number;
-	nbPlayer: number;
-} [];
+	listPlayers: string[];
+}
+
+export interface MatchDisplayData {
+	totalRound: number;
+	totalMatch: number;
+	player1: string;
+	player1Avatar: string;
+	p1ResultMatchTournament?: "Loose" | "Win" | "Current";
+	player2: string;
+	player2Avatar: string;
+	p2ResultMatchTournament?: "Loose" | "Win" | "Current";
+}
+

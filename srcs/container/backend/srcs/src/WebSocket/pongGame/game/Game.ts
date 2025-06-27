@@ -18,9 +18,14 @@ export class Game {
 		private readonly height: number = 600,
 		private status: "PLAYING" | "KICKOFF" | "SERVICE" | "DECONNEXION" | "EXIT" = "PLAYING",
 		private jsonWebsocket: string = "",
+		private isStarted: boolean = false,
 		private tournament?: Tournament,
+		private player1Ready?: boolean,
+		private player2Ready?: boolean,
 	) {}
 	start(): void{
+		if (this.isStarted) return ;
+		this.isStarted = true
 		let i: number = 0;
 		while (i < 1 && this.player1.getPlayerInfos().mode === "Solo") {
 			this.player2.getAi().getReboundBall(this.ball, this.player2, this.player1); //calcule de prediction arrive ball sens oppose
@@ -269,4 +274,9 @@ export class Game {
 	setStatus(stat: "PLAYING" | "KICKOFF" | "SERVICE" | "DECONNEXION" | "EXIT") { this.status = stat; }
 	setFramerate(frameRate: number) { this.frameRate = frameRate; }
 	setTournament(tournament: Tournament) { this.tournament = tournament; }
+	getPlayer1Ready() : boolean {return (this.player1Ready)}
+	getPlayer2Ready() : boolean {return (this.player2Ready)}
+	setPlayer1Ready(boolean: boolean) { this.player1Ready = boolean }
+	setPlayer2Ready(boolean: boolean) { this.player2Ready = boolean }
+	setIsStarted(boolean: boolean) {this.isStarted = boolean}
 }
