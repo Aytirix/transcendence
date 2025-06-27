@@ -39,6 +39,11 @@ class ToastNotification {
 		}, { ...this.toastOptions, ...options });
 	}
 
+	// Méthode pour fermer une notification spécifique
+	static dismiss(toastId: string) {
+		toast.dismiss(toastId);
+	}
+
 	// Utiliser le type React.ReactElement pour le typage
 	private static formatMessage(message: string): React.ReactElement {
 		const lines = message.split('\n');

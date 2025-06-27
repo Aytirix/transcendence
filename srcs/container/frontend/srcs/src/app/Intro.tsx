@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useLanguage } from '../contexts/LanguageContext';
-import FullscreenMinecraftHandler, { getMinecraftInfo } from './components/minecraft/FullscreenMinecraftHandler.tsx';
+import { getMinecraftInfo } from './components/minecraft/FullscreenMinecraftHandler.tsx';
 import './assets/styles/intro.scss';
 import { useAuth } from '../contexts/AuthContext.tsx';
 import { canAccessMinecraft, recordMinecraftAccess } from './components/minecraft/minecraftUtils';
@@ -35,7 +35,6 @@ function Intro() {
 	};
 
 	return (
-		<FullscreenMinecraftHandler>
 			<div className="intro-container">
 				{/* Hero Section */}
 				<section className="hero-section">
@@ -149,7 +148,6 @@ function Intro() {
 					</div>
 				</footer>
 			</div>
-		</FullscreenMinecraftHandler>
 	);
 }
 

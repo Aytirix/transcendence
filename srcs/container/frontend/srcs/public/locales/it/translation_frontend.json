@@ -368,5 +368,14 @@
 		"chromiumMessage": "Il gioco Pong 3D non è disponibile sui browser basati su Chrome/Chromium.",
 		"chromiumWarning": "Questi browser non supportano correttamente la libreria Babylon.js utilizzata per il rendering 3D. Si consiglia vivamente di utilizzare Firefox, Safari o un altro browser per un'esperienza di gioco ottimale.",
 		"currentBrowser": "Browser attuale"
+	},
+	"minecraft": {
+		"settings": "Opzioni di salvataggio",
+		"saveWorlds": "Salva mondi singoli",
+		"saveResourcePacks": "Salva resource packs",
+		"soloWorldsSize": "Dimensione mondi singoli",
+		"resourcePacksSize": "Dimensione resource packs",
+		"totalSize": "Dimensione totale salvata",
+		"closeSettings": "Chiudi"
 	}
 }
