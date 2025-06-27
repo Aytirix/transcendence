@@ -283,7 +283,7 @@ class StateManager {
 					const socketOnlineGame = Array.from(room.engine.sockets.values())
 						.filter(ws => ws.readyState === WebSocket.OPEN)
 						.map(ws => ws.readyState === WebSocket.OPEN);
-					if (socketOnlineGame.length === 0) {
+					if (socketOnlineGame.length === 0 && room.engine.lastTimePlayerConnected + 10000 < now) {
 						this.stopGame(room);
 						this.sendRooms();
 					}

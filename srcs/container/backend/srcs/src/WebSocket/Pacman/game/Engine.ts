@@ -37,6 +37,7 @@ export default class Engine {
 	private frightenedEndTime: number = 0;
 	private static FRIGHTENED_DURATION = 8000; // 8 secondes en mode effrayé
 	private static FRIGHTENED_SPEED = 2 // Vitesse réduite en mode effrayé
+	public lastTimePlayerConnected: number = Date.now();
 
 	constructor(room: room, initialPlayerSockets: Map<number, WebSocket>) {
 
@@ -205,12 +206,11 @@ export default class Engine {
 				this.sockets.delete(playerId);
 				this.players.set(botPlayer.id, botGhost);
 			}
-		}
-
-		if (this.players.size === 0 || Array.from(this.players.keys()).every(id => id < 0)) {
-			this.stop('No players left, stopping the game');
-			this.Finished = true;
-			return;
+			if (this.players.size === 0 || Array.from(this.players.keys()).every(id => id < 0)) {
+				this.stop('No players left, stopping the game');
+				this.Finished = true;
+				return;
+			}
 		}
 	}
 
@@ -806,6 +806,14 @@ export default class Engine {
 	 * Envoie l'état du jeu à tous les clients
 	 */
 	private broadcastState(): void {
+		const now = Date.now();
+		this.players.forEach(player => {
+			const socket = this.sockets.get(player.player.id);
+			if (player.player.id > 0 && socket && socket.readyState === WebSocket.OPEN) {
+				this.lastTimePlayerConnected = now;
+				return;
+			}
+		});
 		if (this.trainingAI) this.broadcastStateAI();
 		const state = {
 			action: 'updateGame',
