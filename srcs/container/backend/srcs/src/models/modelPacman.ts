@@ -88,7 +88,7 @@ async function insertMap(map: map): Promise<boolean> {
         map = VALUES(map), 
         is_public = VALUES(is_public), 
         is_valid = VALUES(is_valid),
-        updated_at = NOW()
+        updated_at = datetime('now')
     `;
 
 	const result: any = await executeReq(query, [
@@ -113,7 +113,7 @@ async function updateMap(map: map): Promise<boolean> {
 			map = ?, 
 			is_public = ?, 
 			is_valid = ?,
-			updated_at = NOW()
+			updated_at = datetime('now')
 		WHERE id = ?
 	`;
 

@@ -12,7 +12,7 @@ setInterval(async () => {
 }, 15 * 60 * 1000);
 
 export const updateInvalidExpiredCode = async (): Promise<void> => {
-	await executeReq('DELETE FROM verification_codes WHERE expires_at < NOW()');
+	await executeReq(`DELETE FROM verification_codes WHERE expires_at < datetime('now')`);
 };
 
 export const deleteCode = async (email: string): Promise<void> => {
@@ -31,7 +31,7 @@ export const createCode = async (email: string, username: string, code: string, 
 };
 
 export const verifyCode = async (email: string, type: string, code: string): Promise<User | null | true> => {
-	const result: any = await executeReq('SELECT code, user_json FROM verification_codes WHERE email = ? AND type = ? AND expires_at > NOW()', [email, type]);
+	const result: any = await executeReq(`SELECT code, user_json FROM verification_codes WHERE email = ? AND type = ? AND expires_at > datetime('now')`, [email, type]);
 
 	if (result.length === 0) {
 		return null;

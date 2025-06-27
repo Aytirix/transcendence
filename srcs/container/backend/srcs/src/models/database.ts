@@ -104,16 +104,14 @@ async function executeReq(req: string, data: Array<string | number> = []) {
 	}
 	return new Promise(async (resolve, reject) => {
 		try {
-			if (req.startsWith('SELECT')) {
-				db.all(req, data, (err: Error | null, results: unknown) => {
-					if (err) {
-						reject(err.message);
-					} else {
-						resolve(results);
-					}
+			const clearReq = req.trim().replace(/\s+/g, ' ');
+			if (clearReq.startsWith('SELECT')) {
+				db.all(clearReq, data, (err: Error | null, results: unknown) => {
+					if (err) reject(err.message);
+					else resolve(results);
 				});
 			} else {
-				db.run(req, data, function(err: Error | null) {
+				db.run(clearReq, data, function (err: Error | null) {
 					if (err) {
 						reject(err.message);
 					} else {
