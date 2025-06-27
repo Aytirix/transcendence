@@ -6,12 +6,8 @@ import Leaderboard from './components/Leaderboard';
 import { useLanguage } from '../../../contexts/LanguageContext';
 
 const Statistics: React.FC = () => {
-	const { stats, loading, error } = useStatistics();
+	const { stats, error } = useStatistics();
 	const { t } = useLanguage();
-
-	if (loading) {
-		return <div className="statistics loading">{t("pacman.menu.statistics.loading")}</div>;
-	}
 
 	if (error) {
 		return <div className="statistics error">{t("pacman.menu.statistics.error")} {error}</div>;

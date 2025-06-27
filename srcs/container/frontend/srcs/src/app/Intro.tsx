@@ -52,7 +52,7 @@ function Intro() {
 							<img
 								src="./images/intro/floating-blinky.png"
 								alt="Blinky Logo"
-								style={{ width: '64px', height: '64px' }}
+								style={{ width: '40px', height: '40px' }}
 							/>
 						</div>
 						<div className="floating-element floating-element-4">💫</div>
@@ -79,7 +79,7 @@ function Intro() {
 							<img
 								src="./images/intro/floating-pong.png"
 								alt="Pong Logo"
-								style={{ width: '64px', height: '64px' }}
+								style={{ width: '40px', height: '40px' }}
 							/>
 						</div>
 

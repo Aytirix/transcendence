@@ -27,65 +27,36 @@ export class SoundManager {
             waza: '/sounds/waza.mp3',
             
             // Background/ambient sounds
-            siren: '/sounds/siren.mp3'
+          //  siren: '/sounds/siren.mp3'
         };
 
         Object.entries(soundFiles).forEach(([name, src]) => {
-            try {
-                const audio = new Audio();
-                audio.preload = 'metadata';
-                audio.volume = this.volume;
-                audio.crossOrigin = 'anonymous'; // Add CORS support
-                
-                // Special handling for background sounds
-                if (name === 'siren') {
-                    audio.loop = true;
-                    this.backgroundSounds[name] = audio;
-                } else {
-                    audio.loop = false;
-                }
-                
-                // Add event listeners
-                audio.addEventListener('ended', () => {
-                    this.currentlyPlaying[name] = false;
-                });
-                
-                audio.addEventListener('canplaythrough', () => {
-                    console.log(`🎵 Sound ${name} loaded successfully`);
-                });
-
-                audio.addEventListener('loadeddata', () => {
-                    console.log(`📂 Sound ${name} data loaded`);
-                });
-
-                audio.addEventListener('error', (e) => {
-                    console.error(`❌ Error loading sound ${name}:`, e);
-                    console.error(`❌ Failed to load: ${src}`);
-                    console.error(`❌ Audio error details:`, {
-                        readyState: audio.readyState,
-                        networkState: audio.networkState,
-                        error: audio.error
-                    });
-                });
-
-                audio.addEventListener('loadstart', () => {
-                    console.log(`🔄 Started loading sound: ${name}`);
-                });
-
-                // Set source after event listeners
-                audio.src = src;
-                
-                this.sounds[name] = audio;
-                this.currentlyPlaying[name] = false;
-                
-                console.log(`🎯 Initialized sound ${name} with src: ${src}`);
-            } catch (error) {
-                console.error(`❌ Failed to create audio element for ${name}:`, error);
-            }
+            
+			const audio = new Audio();
+			audio.preload = 'metadata';
+			audio.volume = this.volume;
+			audio.crossOrigin = 'anonymous'; // Add CORS support
+			
+			// Special handling for background sounds
+			if (name === 'siren') {
+				audio.loop = true;
+				this.backgroundSounds[name] = audio;
+			} else {
+				audio.loop = false;
+			}
+			
+			// Add event listeners
+			audio.addEventListener('ended', () => {
+				this.currentlyPlaying[name] = false;
+			});
+			
+			// Set source after event listeners
+			audio.src = src;
+			
+			this.sounds[name] = audio;
+			this.currentlyPlaying[name] = false;
+			
         });
-        
-        // Log the final state
-        console.log(`🎵 SoundManager initialized with ${Object.keys(this.sounds).length} sounds`);
     }
 
     public static getInstance(): SoundManager {
@@ -103,7 +74,6 @@ export class SoundManager {
         Object.values(this.backgroundSounds).forEach(sound => {
             sound.volume = this.volume * 0.3; // Background sounds quieter
         });
-        console.log(`🔊 Volume set to: ${(this.volume * 100).toFixed(0)}%`);
     }
 
     public getVolume(): number {
@@ -111,7 +81,6 @@ export class SoundManager {
     }
 
     public async preloadSounds(): Promise<void> {
-        console.log('🔄 Preloading sounds...');
         const loadPromises = Object.entries(this.sounds).map(([name, audio]) => {
             return new Promise<void>((resolve) => {
                 if (audio.readyState >= 2) {
@@ -120,7 +89,6 @@ export class SoundManager {
                 }
                 
                 const onLoad = () => {
-                    console.log(`✅ Preloaded sound: ${name}`);
                     audio.removeEventListener('canplaythrough', onLoad);
                     audio.removeEventListener('error', onError);
                     resolve();
@@ -157,12 +125,10 @@ export class SoundManager {
             // Try to create AudioContext
             if (!this.audioContext) {
                 this.audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
-                console.log('🎛️ AudioContext created');
             }
 
             // Resume AudioContext if suspended
             if (this.audioContext.state === 'suspended') {
-                console.log('🔄 Resuming suspended AudioContext...');
                 await this.audioContext.resume();
             }
 

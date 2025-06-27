@@ -13,9 +13,9 @@ import {
 import {
 	useGameAssets,
 	useGameAudio,
-	useKeyboardControls,
 	useGameLayout,
-	useWallTypes
+	useWallTypes,
+	useKeyboardControls
 } from './hooks';
 
 interface PacmanGameProps {

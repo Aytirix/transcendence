@@ -63,6 +63,7 @@ export function useGameAudio(gameState: GameState, playerId?: number) {
 		}
 	}, [audioEnabled, gameState.launch, gameState.players.length, soundManager]);
 
+	
 	// Handle score changes with better sound logic
 	useEffect(() => {
 		if (!audioEnabled || !gameStarted.current) return;
@@ -74,21 +75,15 @@ export function useGameAudio(gameState: GameState, playerId?: number) {
 			const scoreDifference = currentScore - previousScore.current;
 			const now = Date.now();
 
-			console.log(`📊 Score change: ${previousScore.current} → ${currentScore} (+${scoreDifference})`);
 
 			if (scoreDifference >= 200) {
-				// Ghost eaten
-				console.log('🎵 Ghost eaten');
 				soundManager.playGhostEaten();
 			} else if (scoreDifference >= 50) {
-				// Power pill or fruit
-				console.log('🎵 Power pill eaten');
 				soundManager.playPowerPill();
 				soundManager.playWaza(); // Play waza sound for power mode
 			} else if (scoreDifference >= 10) {
 				// Regular pellet - with throttling
 				if (now - lastEatingTime.current > 100) { // Throttle eating sounds
-					console.log('🎵 Pellet eaten');
 					soundManager.playEating();
 					lastEatingTime.current = now;
 				}
@@ -96,7 +91,6 @@ export function useGameAudio(gameState: GameState, playerId?: number) {
 
 			// Check for extra life (typically at 10,000 points)
 			if (Math.floor(currentScore / 10000) > Math.floor(previousScore.current / 10000)) {
-				console.log('🎵 Extra life!');
 				soundManager.playExtraLife();
 			}
 
@@ -109,8 +103,6 @@ export function useGameAudio(gameState: GameState, playerId?: number) {
 		if (!audioEnabled || !gameStarted.current) return;
 
 		if (gameState.pacmanLife < previousLife.current) {
-			console.log(`💀 Life lost: ${previousLife.current} → ${gameState.pacmanLife}`);
-			console.log('🎵 Death sound');
 			soundManager.playDeath();
 			previousLife.current = gameState.pacmanLife;
 			
@@ -130,11 +122,9 @@ export function useGameAudio(gameState: GameState, playerId?: number) {
 		const currentFrightened = gameState.frightenedState.active || false;
 
 		if (currentFrightened && !previousFrightened.current) {
-			console.log('⚡ Frightened mode activated');
 			soundManager.stopSiren(); // Stop normal siren during frightened mode
 			previousFrightened.current = true;
 		} else if (!currentFrightened && previousFrightened.current) {
-			console.log('⚡ Frightened mode deactivated');
 			soundManager.startSiren(); // Resume normal siren
 			previousFrightened.current = false;
 		}
@@ -143,7 +133,6 @@ export function useGameAudio(gameState: GameState, playerId?: number) {
 	// Reset when game ends
 	useEffect(() => {
 		if (!gameState.launch && gameStarted.current) {
-			console.log('🎮 Game ended - Resetting audio state');
 			gameStarted.current = false;
 			soundManager.stopAll();
 		}
