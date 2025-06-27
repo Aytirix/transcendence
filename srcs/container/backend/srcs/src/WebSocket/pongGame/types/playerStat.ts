@@ -13,6 +13,7 @@ export interface playerStat {
 	resultMatch?: "Loose" | "win";
 	mode?: "Multi" | "Solo" | "SameKeyboard" | "Tournament" | "Undefined" | "Move" | "EXIT" | "Pause" | "Ping";
 	inGame : boolean;
+	inRoom: boolean;
 	socket: WebSocket;
 	lastping?: number;
 	timePause?: number;
