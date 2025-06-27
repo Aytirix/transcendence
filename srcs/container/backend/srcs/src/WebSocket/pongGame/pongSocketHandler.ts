@@ -55,6 +55,7 @@ export function pongWebSocket(socket: WebSocket, user: User) {
 				handleSolo(playerInfos, msg);
 				break ;
 			case "Tournament" :
+				console.log("Tournament")
 				handleTournament(playerInfos, msg);
 				break ;
 			case "Move" :
@@ -82,7 +83,7 @@ export function pongWebSocket(socket: WebSocket, user: User) {
 		const playerInfos = sockets.get(socket);
 		console.log("close");
 		if (playerInfos) handleClose(playerInfos);
-		if (playerInfos && playerInfos.mode === "Multi") {
+		if ((playerInfos && playerInfos.mode === "Multi") || (playerInfos && playerInfos.mode === "Tournament")) {
 			if (playerInfos && playerInfos.game) {
 				if (playerInfos.name !== playerInfos.game.getPlayer1().getPlayerInfos().name) //if multi
 					playerInfos.game.getPlayer1().getPlayerInfos().socket.send(JSON.stringify({type: "Pause", value: true}))

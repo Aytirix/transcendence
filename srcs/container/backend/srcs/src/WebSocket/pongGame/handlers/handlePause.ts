@@ -33,7 +33,7 @@ export function handlePause(playerInfos: playerStat) {
 	console.log(playerInfos.game.getStatus());
 	if (playerInfos.game.getStatus() === "KICKOFF" 
 	&& playerInfos.game.getStatus() !== "SERVICE") {
-		if (playerInfos.mode === "Multi") {
+		if (playerInfos.mode === "Multi" || playerInfos.mode === "Tournament") {
 			if (playerInfos.name !== playerInfos.game.getPlayer1().getPlayerInfos().name) {
 				if (!playerInfos.game.getPlayer1().getPlayerInfos().pauseGame) {
 					playerInfos.game.setStatus("PLAYING")
@@ -61,7 +61,7 @@ export function handlePause(playerInfos: playerStat) {
 	}
 	else if (playerInfos.game.getStatus() === "PLAYING" 
 	&& playerInfos.game.getStatus() !== "SERVICE") {
-		if (playerInfos.mode === "Multi") {
+		if (playerInfos.mode === "Multi" || playerInfos.mode === "Tournament") {
 			if (playerInfos.name !== playerInfos.game.getPlayer1().getPlayerInfos().name) {
 				if (!playerInfos.game.getPlayer1().getPlayerInfos().pauseGame) {
 					playerInfos.game.setStatus("KICKOFF")

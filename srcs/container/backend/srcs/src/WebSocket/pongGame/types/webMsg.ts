@@ -12,7 +12,9 @@ export interface webMsg {
 			| "Join"
 			| "Start"
 			| "Display"
-			| "Winner";
+			| "Winner"
+			| "Quit"
+			| "infoTournament";
 	player1?: number;
 	player2?: number;
 	sizeTournament?: 4

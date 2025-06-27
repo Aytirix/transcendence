@@ -4,6 +4,7 @@ import { IncomingMessage } from 'http';
 import { parse } from 'cookie';
 import { decodeSessionId, getStore } from '@session';
 import StateManager from '@wsPacman/game/StateManager';
+import { getIngame } from './WebSocket/pongGame/state/serverState';
 
 
 /**
@@ -57,9 +58,16 @@ export async function isAuth(request: FastifyRequest, reply: FastifyReply) {
 	if (request && request.session && request.session.user !== undefined && await checkSessionInfo(request, reply)) {
 		const user = request.session.user as User;
 		const GameInPacman = StateManager.RoomManager.PlayerInRoom(user.id);
+		const pongInGame = getIngame(user.id);
+		let redirect = null;
+		if (GameInPacman) {
+			redirect = '/Pacman';
+		} else if (pongInGame.inGame) {
+			redirect = pongInGame.nav;
+		}
 		return reply.status(200).send({
 			isAuthenticated: true,
-			redirect: GameInPacman ? '/Pacman' : null,
+			redirect: redirect,
 			user: {
 				id: user.id,
 				email: user.email,

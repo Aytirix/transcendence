@@ -1,18 +1,12 @@
-import { parse } from 'cookie';
-import SQLiteStoreFactory from 'connect-sqlite3';
 import { Socket } from 'net';
 import { IncomingMessage } from 'http';
 import { Server as WebSocketServer, WebSocket } from 'ws';
 import { FastifyInstance, Session } from 'fastify';
-import fastifyCookie from '@fastify/cookie';
 import Middleware from '@Middleware';
 import chatWebSocket from './chat/wsChat';
-import { User } from '@types';
 import { pongWebSocket } from './pongGame/pongSocketHandler';
-import { getIngame } from './pongGame/state/serverState';
 import { PacManWebSocket } from './Pacman/PacManWebSocket';
 import { createi18nObject } from '../hook';
-import StateManager from '@wsPacman/game/StateManager';
 
 let wss: WebSocketServer | null = null;
 let userConnected: Map<string, WebSocket> = new Map<string, WebSocket>();
@@ -75,28 +69,16 @@ async function initWebSocket(server: FastifyInstance) {
 				userConnected.delete(userKey);
 			}
 
-			// if (request.url === '/pong') {
-			// 	const userAgent = request.headers['user-agent'] || '';
-			// 	if (userAgent.toLowerCase().includes('chrome') || userAgent.toLowerCase().includes('chromium')) {
-			// 		socket.write('HTTP/1.1 403 Forbidden\r\n\r\n');
-			// 		socket.destroy();
-			// 		return;
-			// 	}
-			// }
-
-			if (request.url === '/pong' && StateManager.RoomManager.PlayerInRoom(session.user.id)) {
+			if (request.url === '/pong' && userConnected.has(`/Pacman_${session.user.id}`)) {
 				socket.write('HTTP/1.1 409 Conflict\r\n\r\n');
 				socket.destroy();
 				return;
 			}
 
-			if (request.url === '/Pacman' && getIngame(session.user.id)) {
-				const gameInPacman = StateManager.RoomManager.PlayerInRoom(session.user.id);
-				if (gameInPacman) {
-					socket.write('HTTP/1.1 409 Conflict\r\n\r\n');
-					socket.destroy();
-					return;
-				}
+			if (request.url === '/Pacman' && userConnected.has(`/pong_${session.user.id}`)) {
+				socket.write('HTTP/1.1 409 Conflict\r\n\r\n');
+				socket.destroy();
+				return;
 			}
 
 			wss?.handleUpgrade(request, socket, head, (ws: WebSocket) => {
