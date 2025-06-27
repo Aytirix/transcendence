@@ -239,7 +239,7 @@ export async function authGoogleCallback(request: FastifyRequest, reply: Fastify
 		user = {
 			id: 0,
 			email: payload['email'],
-			username: payload['name'].replace(/[^a-zA-Z0-9]/g, '').toLowerCase().slice(0, 10) || payload['email'].split('@')[0].toLowerCase().slice(0, 10),
+			username: payload['name'].replace(/[^a-zA-Z0-9\u00C0-\u017F]/g, '').toLowerCase().slice(0, 10) || payload['email'].split('@')[0].toLowerCase().slice(0, 10),
 			lang: 'fr',
 			avatar: ['avatar1.png', 'avatar2.png', 'avatar3.png', 'avatar4.png'][Math.floor(Math.random() * 4)],
 		};
