@@ -37,6 +37,7 @@ async function getFriendsForUser(userId: number, state: State): Promise<User[]> 
 
 	const result: any = await executeReq(query, [userId, userId, userId]);
 
+	console.log('getFriendsForUser', result);
 	if (result.length === 0) return [];
 
 	const fullFriends = result.map((friend: any) => ({
