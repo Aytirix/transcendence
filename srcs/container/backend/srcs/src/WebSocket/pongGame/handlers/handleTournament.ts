@@ -19,6 +19,25 @@ export function handleTournament(playerInfos: playerStat, msg: webMsg) {
 		quitTournament(playerInfos)
 	else if (msg.action === "infoTournament")
 		playerInfos.socket.send(JSON.stringify({action: "infoTournament", id: playerInfos.idTournament, name: playerInfos.name}))
+	else if (msg.action === "Start") {
+		const game = playerInfos.game;
+		if (!game) return;
+		if (game.getPlayer1().getPlayerInfos().id === playerInfos.id) {
+			game.setPlayer1Ready(true);
+			game.getPlayer1().getPlayerInfos().socket.send(JSON.stringify({ type: "assign", value: "p1" }))
+			game.getPlayer1().getPlayerInfos().socket.send(JSON.stringify({ type: "Pause"}))
+		} else if (game.getPlayer2().getPlayerInfos().id === playerInfos.id) {
+			game.setPlayer2Ready(true);
+			game.getPlayer2().getPlayerInfos().socket.send(JSON.stringify({ type: "assign", value: "p2" }))			
+			game.getPlayer2().getPlayerInfos().socket.send(JSON.stringify({ type: "Pause"}))
+		}
+		if (game.getPlayer1Ready() && game.getPlayer2Ready()) {
+			game.setStatus("PLAYING");
+			setTimeout(() => {
+				game.start();
+			}, 3000)
+		}
+	}
 }
 
 function quitTournament(playerInfos: playerStat) {
@@ -151,7 +170,6 @@ function createMatchPairs(tournament: Tournament) {
 		player1.game = game;
 		player2.game = game;
 		game.setTournament(tournament);
-		game.start();
 	}
 }
 
