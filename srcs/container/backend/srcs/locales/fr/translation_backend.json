@@ -87,6 +87,11 @@
 		"not_in_game": "Vous n'êtes pas en game",
 		"not_started": "La game n'est pas lancée",
 		"too_few_players": "Il faut au moins 2 joueurs pour lancer une game",
+		"not_waiting": "Vous n'êtes pas en attente",
+		"map_set": "La map a été définie avec succès.",
+		"map_id_required": "Veuillez spécifier un id de map.",
+		"map_not_public": "La map n'est pas publique.",
+		"map_not_found": "La map n'existe pas.",
 		"success": {
 			"mapDeleted": "La map a été supprimée avec succès."
 		},
