@@ -28,6 +28,7 @@ export function pongWebSocket(socket: WebSocket, user: User) {
 				id: user.id,
 				mode: "Undefined",
 				inGame: false,
+				inRoom: false,
 				socket: socket,
 				lastping: Date.now(),
 				timePause: 0,

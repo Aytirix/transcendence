@@ -1,7 +1,7 @@
 import { Game } from "../game/Game";
 import { createGame } from "../game/initGame";
 import { listTournament, sockets } from "../state/serverState";
-import { playerStat, Tournament} from "../types/playerStat";
+import { playerStat, Tournament } from "../types/playerStat";
 import { webMsg } from "../types/webMsg";
 
 
@@ -10,7 +10,7 @@ let idTournament: number = 0;
 export function handleTournament(playerInfos: playerStat, msg: webMsg) {
 	if (playerInfos.inGame !== true && msg.action === "Create")
 		createTournament(playerInfos, msg);
-	else if (msg.action  === "Join" && playerInfos.inGame !== true)
+	else if (msg.action === "Join" && playerInfos.inGame !== true)
 		joinTournament(playerInfos, msg);
 	else if (msg.action === "Display") {
 		actualiseDisplay(playerInfos);
@@ -18,18 +18,18 @@ export function handleTournament(playerInfos: playerStat, msg: webMsg) {
 	else if (msg.action === "Quit")
 		quitTournament(playerInfos)
 	else if (msg.action === "infoTournament")
-		playerInfos.socket.send(JSON.stringify({action: "infoTournament", id: playerInfos.idTournament, name: playerInfos.name}))
+		playerInfos.socket.send(JSON.stringify({ action: "infoTournament", id: playerInfos.idTournament, name: playerInfos.name }))
 	else if (msg.action === "Start") {
 		const game = playerInfos.game;
 		if (!game) return;
 		if (game.getPlayer1().getPlayerInfos().id === playerInfos.id) {
 			game.setPlayer1Ready(true);
 			game.getPlayer1().getPlayerInfos().socket.send(JSON.stringify({ type: "assign", value: "p1" }))
-			game.getPlayer1().getPlayerInfos().socket.send(JSON.stringify({ type: "Pause"}))
+			game.getPlayer1().getPlayerInfos().socket.send(JSON.stringify({ type: "Pause" }))
 		} else if (game.getPlayer2().getPlayerInfos().id === playerInfos.id) {
 			game.setPlayer2Ready(true);
-			game.getPlayer2().getPlayerInfos().socket.send(JSON.stringify({ type: "assign", value: "p2" }))			
-			game.getPlayer2().getPlayerInfos().socket.send(JSON.stringify({ type: "Pause"}))
+			game.getPlayer2().getPlayerInfos().socket.send(JSON.stringify({ type: "assign", value: "p2" }))
+			game.getPlayer2().getPlayerInfos().socket.send(JSON.stringify({ type: "Pause" }))
 		}
 		if (game.getPlayer1Ready() && game.getPlayer2Ready()) {
 			game.setStatus("PLAYING");
@@ -59,23 +59,24 @@ function quitTournament(playerInfos: playerStat) {
 }
 
 
-function createTournament(playerInfos: playerStat, msg: webMsg)  {
+function createTournament(playerInfos: playerStat, msg: webMsg) {
 	const tournament: Tournament = {
 		listPlayer: new Set(),
 		name: msg.value,
-		size : msg.sizeTournament,
-		isFull : false,
-		winner : false,
-		idTournament : idTournament,
+		size: msg.sizeTournament,
+		isFull: false,
+		winner: false,
+		idTournament: idTournament,
 		currentManche: 1,
-		currentMatch : [],
-		waitingWinner : [],
+		currentMatch: [],
+		waitingWinner: [],
 	}
 	playerInfos.idTournament = tournament.idTournament;
 	playerInfos.mode = msg.type;
 	playerInfos.inGame = true;
+	playerInfos.inRoom = true;
 	tournament.listPlayer.add(playerInfos);
-	listTournament.set(idTournament,tournament);
+	listTournament.set(idTournament, tournament);
 	idTournament++;
 	updateTournament();
 
@@ -85,12 +86,13 @@ function joinTournament(playerInfos: playerStat, msg: webMsg) {
 	const tournament: Tournament = listTournament.get(msg.id)
 	if (tournament.isFull) {
 		playerInfos.socket.send("Tournament is Full !!!!");
-		return ;
+		return;
 	}
 	else {
 		playerInfos.idTournament = tournament.idTournament;
 		playerInfos.mode = msg.type;
 		playerInfos.inGame = true;
+		playerInfos.inRoom = true;
 		tournament.listPlayer.add(playerInfos);
 		console.log(tournament.listPlayer.size, tournament.size)
 		if (tournament.listPlayer.size == tournament.size) {
@@ -107,16 +109,16 @@ function joinTournament(playerInfos: playerStat, msg: webMsg) {
 function updateTournament() {
 
 	let jsonTournament: {
-				type: string,
-				action: string,
-				value: {
-					"id": number,
-					"name": string,
-					"max": number,
-					"current": number,
-					"isFull": boolean,
-					"listPlayers": string[]
-				} [];
+		type: string,
+		action: string,
+		value: {
+			"id": number,
+			"name": string,
+			"max": number,
+			"current": number,
+			"isFull": boolean,
+			"listPlayers": string[]
+		}[];
 	} = {
 		type: "Tournament",
 		action: "LIST_RESPONSE",
@@ -125,17 +127,17 @@ function updateTournament() {
 	//mise a jour du fichier json pour envoi a tout les players
 	for (const [id, tournament] of listTournament) {
 		jsonTournament.value.push({
-				"id": id,
-				"name": tournament.name,
-				"max": tournament.size,
-				"current": tournament.listPlayer.size,
-				"isFull": tournament.isFull,
-				"listPlayers": Array.from(tournament.listPlayer).map(player => player.name),
-			})
+			"id": id,
+			"name": tournament.name,
+			"max": tournament.size,
+			"current": tournament.listPlayer.size,
+			"isFull": tournament.isFull,
+			"listPlayers": Array.from(tournament.listPlayer).map(player => player.name),
+		})
 	}
 	const jsonString: string = JSON.stringify(jsonTournament);
 	for (const [, player] of sockets) {
-			player.socket.send(jsonString);
+		player.socket.send(jsonString);
 	}
 }
 
@@ -147,8 +149,7 @@ function startTournament(id: number, tournament: Tournament) {
 	//avant de passer a la manche suivante redisplay et afficher gagnant perdant 
 }
 
-function messageTournament(tournament: Tournament, action: string, message: string)
-{
+function messageTournament(tournament: Tournament, action: string, message: string) {
 	let jsonTournament: {
 		type: string,
 		action: string,
@@ -165,7 +166,7 @@ function messageTournament(tournament: Tournament, action: string, message: stri
 
 function createMatchPairs(tournament: Tournament) {
 	messageTournament(tournament, "Start", "Lancement du match dans");
-	for (const {player1, player2} of tournament.currentMatch) {
+	for (const { player1, player2 } of tournament.currentMatch) {
 		const game: Game = createGame(player1, player2);
 		player1.game = game;
 		player2.game = game;
@@ -177,14 +178,13 @@ function randomMatch(tournament: Tournament) {
 	let idMatch: number = 1;
 	const playerTournament = Array.from(tournament.listPlayer)
 	shuffle(playerTournament);
-	for(let i: number = 0; i < playerTournament.length; i += 2)
-	{
+	for (let i: number = 0; i < playerTournament.length; i += 2) {
 		tournament.currentMatch.push({
 			player1: playerTournament[i],
 			player2: playerTournament[i + 1]
 		});
 		playerTournament[i].matchTournamentNB = idMatch;
-		playerTournament[i].resultMatchTournament = "Current";	
+		playerTournament[i].resultMatchTournament = "Current";
 		playerTournament[i + 1].matchTournamentNB = idMatch;
 		playerTournament[i + 1].resultMatchTournament = "Current";
 		idMatch++;
@@ -198,8 +198,7 @@ function shuffle(playerTournament: Array<playerStat>) {
 	}
 }
 
-function displayTournament(tournament: Tournament)
-{
+function displayTournament(tournament: Tournament) {
 	let tab: {
 		totalRound: number,
 		totalMatch: number,
@@ -209,8 +208,8 @@ function displayTournament(tournament: Tournament)
 		player2: string
 		player2Avatar: string,
 		p2ResultMatchTournament?: "Loose" | "Win" | "Current";
-	} [] = [];
-	for (const {player1, player2} of tournament.currentMatch) {
+	}[] = [];
+	for (const { player1, player2 } of tournament.currentMatch) {
 		tab.push({
 			totalRound: Math.log2(tournament.size),
 			totalMatch: tournament.currentMatch.length,
@@ -229,13 +228,15 @@ function displayTournament(tournament: Tournament)
 		value: tab
 	};
 	for (const player of tournament.listPlayer) {
-			player.socket.send(JSON.stringify(jsonDisplayTournament));
+		player.socket.send(JSON.stringify(jsonDisplayTournament));
+		setTimeout(() => {
+			player.inRoom = false;
+		}, 2000);
 	}
 }
 function dispatchMatch(tournament: Tournament) {
 	shuffle(tournament.waitingWinner);
-	for(let i: number = 0; i < tournament.waitingWinner.length; i += 2)
-	{
+	for (let i: number = 0; i < tournament.waitingWinner.length; i += 2) {
 		tournament.currentMatch.push({
 			player1: tournament.waitingWinner[i],
 			player2: tournament.waitingWinner[i + 1]
@@ -275,16 +276,16 @@ export function isOnFinishMatch(tournament: Tournament, player1: playerStat, pla
 
 function actualiseDisplay(playerinfos: playerStat) {
 	let jsonTournament: {
-				type: string,
-				action: string,
-				value: {
-					"id": number,
-					"name": string,
-					"max": number,
-					"current": number,
-					"isFull": boolean,
-					"listPlayers": string[]
-				} [];
+		type: string,
+		action: string,
+		value: {
+			"id": number,
+			"name": string,
+			"max": number,
+			"current": number,
+			"isFull": boolean,
+			"listPlayers": string[]
+		}[];
 	} = {
 		type: "Tournament",
 		action: "LIST_RESPONSE",
@@ -293,13 +294,13 @@ function actualiseDisplay(playerinfos: playerStat) {
 	//mise a jour du fichier json pour envoi a tout les players
 	for (const [id, tournament] of listTournament) {
 		jsonTournament.value.push({
-				"id": id,
-				"name": tournament.name,
-				"max": tournament.size,
-				"current": tournament.listPlayer.size,
-				"isFull": tournament.isFull,
-				"listPlayers": Array.from(tournament.listPlayer).map(player => player.name),
-			})
+			"id": id,
+			"name": tournament.name,
+			"max": tournament.size,
+			"current": tournament.listPlayer.size,
+			"isFull": tournament.isFull,
+			"listPlayers": Array.from(tournament.listPlayer).map(player => player.name),
+		})
 	}
 	playerinfos.socket.send(JSON.stringify(jsonTournament));
 }
