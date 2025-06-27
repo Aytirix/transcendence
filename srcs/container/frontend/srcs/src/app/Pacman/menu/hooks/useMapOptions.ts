@@ -18,7 +18,7 @@ export function useMapOptions(state: state) {
 	const mapOptions = useMemo(() => {
 		// Default maps
 		const DEFAULT_MAPS: MapOption[] = [
-			{ value: 'classic', label: 'Classique', isCustom: false, isValid: true },
+			{ mapId: -1, value: 'classic', label: 'Classique', isCustom: false, isValid: true },
 		];
 		// Separate user maps and public maps from allMaps
 		const userMaps = allMaps

@@ -6,6 +6,7 @@ import PacmanMap from '@wsPacman/game/map/Map';
 import { WebSocket } from 'ws'
 import { room, player } from "@Pacman/TypesPacman";
 import StateManager from '@wsPacman/game/StateManager';
+import defaultMap from '@wsPacman/game/map/default_map';
 
 export function sendResponse(ws: WebSocket, action: string, result: string, notification: string | string[], data: any = null): void {
 	ws?.send(JSON.stringify({ action, result, notification, data }));
@@ -161,7 +162,7 @@ export function handleCreateRoom(ws: WebSocket, player: player, json: any): void
 }
 
 export function handleJoinRoom(ws: WebSocket, player: player, json: any): void {
-	if (!json.room_id) return sendResponse(ws, 'error', 'error', [ws.i18n.t('pacman.id_required')]);
+	if (!json.room_id) return sendResponse(ws, 'error', 'error', [ws.i18n.t('pacman.id_required')]);	
 	if (player.room) return sendResponse(ws, 'error', 'error', [ws.i18n.t('pacman.already_in_room')]);
 	const room = StateManager.RoomManager.getRoomById(json.room_id);
 	if (!room) return sendResponse(ws, 'error', 'error', [ws.i18n.t('pacman.not_found')]);
@@ -241,18 +242,22 @@ export async function setRoomMap(ws: WebSocket, player: player, json: any): Prom
 	if (player.room.state !== 'waiting') return sendResponse(ws, 'error', 'error', [ws.i18n.t('pacman.not_waiting')]);
 	if (player.room.owner_id !== player.id) return sendResponse(ws, 'error', 'error', [ws.i18n.t('pacman.not_owner')]);
 
-	const map = await pacmanModel.getMapById(json.map_id);
-	if (!map) return sendResponse(ws, 'error', 'error', [ws.i18n.t('pacman.map_not_found')]);
+	if (json.map_id == -1) {
+		player.room.settings.map = defaultMap;
+	} else {
+		const map = await pacmanModel.getMapById(json.map_id);
+		if (!map) return sendResponse(ws, 'error', 'error', [ws.i18n.t('pacman.map_not_found')]);
+		if (map.user_id !== player.id) {
+			if (!map.is_public) return sendResponse(ws, 'error', 'error', [ws.i18n.t('pacman.map_not_public')]);
+		}
 
-	if (map.user_id !== player.id) {
-		if (!map.is_public) return sendResponse(ws, 'error', 'error', [ws.i18n.t('pacman.map_not_public')]);
+		if (!map.is_valid) return sendResponse(ws, 'error', 'error', [ws.i18n.t('pacman.map_invalid')]);
+		player.room.settings.map = map;
+		if (PacmanMap.validateMap(player.room.settings.map.map).is_valid === false) {
+			return sendResponse(ws, 'error', 'error', [ws.i18n.t('pacman.map_invalid')]);
+		}
 	}
 
-	if (!map.is_valid) return sendResponse(ws, 'error', 'error', [ws.i18n.t('pacman.map_invalid')]);
-	player.room.settings.map = map;
-	if (PacmanMap.validateMap(player.room.settings.map.map).is_valid === false) {
-		return sendResponse(ws, 'error', 'error', [ws.i18n.t('pacman.map_invalid')]);
-	}
 	sendResponse(ws, 'setRoomMap', 'success', [ws.i18n.t('pacman.map_set')], { map: player.room.settings.map });
 	StateManager.sendRooms();
 }

@@ -87,9 +87,11 @@
 		"not_in_game": "You are not in game",
 		"not_started": "The game is not started",
 		"too_few_players": "At least 2 players are needed to start a game",
-		"success": {
-			"mapDeleted": "The map has been deleted successfully."
-		},
+		"not_waiting": "You are not waiting",
+		"map_set": "The map has been set successfully.",
+		"map_id_required": "Please specify a map id.",
+		"map_not_public": "The map is not public.",
+		"map_not_found": "The map does not exist.",
 		"error": {
 			"insertMapError": "Error saving the map to the database.",
 			"mapNotFound": "Unable to find the requested map.",

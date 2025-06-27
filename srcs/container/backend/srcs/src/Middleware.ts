@@ -77,7 +77,6 @@ export async function isAuth(request: FastifyRequest, reply: FastifyReply) {
 			},
 		});
 	} else {
-		console.warn('Session invalide ou expirée, destruction de la session');
 		return reply.status(401).send({
 			isAuthenticated: false,
 			user: null,

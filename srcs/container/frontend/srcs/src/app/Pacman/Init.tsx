@@ -100,7 +100,7 @@ export default function WebSocketPacman() {
 				break;
 			}
 			case 'updateGame': {
-				
+
 				setState((prevState: state) => ({
 					...prevState,
 					game: {
