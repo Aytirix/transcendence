@@ -1,9 +1,9 @@
-import { useEffect } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
-import { recordMinecraftAccess, canAccessMinecraft } from './minecraftUtils';
+import React, { useEffect, useState } from 'react';
 import ApiService from '../../../api/ApiService';
-import pako from 'pako';
 import notification from '../Notifications';
+import MinecraftCompressWorker from './minecraftCompressWorker.ts?worker';
+import { useLanguage } from '../../../contexts/LanguageContext';
+
 
 interface FullscreenMinecraftHandlerProps {
 	children: React.ReactNode;
@@ -369,24 +369,28 @@ export async function setIndexedDBData(resourcePacks: any, worlds: any): Promise
 }
 
 // Helpers compression/décompression deflate (pako)
-function compressMinecraftData(obj: any): string {
-	const json = JSON.stringify(obj);
-	const compressed = pako.deflate(json);
-	// Conversion chunkée pour éviter stack overflow
-	let binary = '';
-	const chunkSize = 0x8000; // 32k
-	for (let i = 0; i < compressed.length; i += chunkSize) {
-		binary += String.fromCharCode.apply(null, compressed.subarray(i, i + chunkSize) as any);
-	}
-	return btoa(binary);
+function compressMinecraftData(obj: any): Promise<string> {
+	return new Promise((resolve, reject) => {
+		const worker = new MinecraftCompressWorker();
+		worker.onmessage = (e: MessageEvent) => {
+			if (e.data.error) reject(e.data.error);
+			else resolve(e.data.result);
+			worker.terminate();
+		};
+		worker.postMessage({ type: 'compress', data: obj });
+	});
 }
 
-function decompressMinecraftData(base64: string): any {
-	const binary = atob(base64);
-	const bytes = new Uint8Array(binary.length);
-	for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
-	const decompressed = pako.inflate(bytes, { to: 'string' });
-	return JSON.parse(decompressed);
+function decompressMinecraftData(base64: string): Promise<any> {
+	return new Promise((resolve, reject) => {
+		const worker = new MinecraftCompressWorker();
+		worker.onmessage = (e: MessageEvent) => {
+			if (e.data.error) reject(e.data.error);
+			else resolve(e.data.result);
+			worker.terminate();
+		};
+		worker.postMessage({ type: 'decompress', data: base64 });
+	});
 }
 
 export async function getMinecraftInfo() {
@@ -395,7 +399,7 @@ export async function getMinecraftInfo() {
 			if (data && data.compressed) {
 				let decompressed;
 				try {
-					decompressed = decompressMinecraftData(data.compressed);
+					decompressed = await decompressMinecraftData(data.compressed);
 				} catch (e) {
 					console.error('Erreur décompression Minecraft:', e);
 					return;
@@ -404,6 +408,8 @@ export async function getMinecraftInfo() {
 				localStorage.setItem('_eaglercraftX.p', decompressed._eaglercraftX_p);
 				localStorage.setItem('_eaglercraftX.r', decompressed._eaglercraftX_r);
 				localStorage.setItem('lastMinecraftAccess', decompressed.lastMinecraftAccess.toString());
+				localStorage.setItem('saveResourcePacks', decompressed.saveResourcePacks ? 'true' : 'false');
+				localStorage.setItem('saveWorlds', decompressed.saveWorlds ? 'true' : 'false');
 				try {
 					const restoredResourcePacks = restoreDataFromAPI(decompressed.resourcePacks || []);
 					const restoredWorlds = restoreDataFromAPI(decompressed.worlds || []);
@@ -417,90 +423,249 @@ export async function getMinecraftInfo() {
 		console.error('Erreur lors du chargement minecraft:', error);
 	});
 }
-
-export async function setMinecraftInfo() {
-	let lastAccess = localStorage.getItem('lastMinecraftAccess');
-	if (!lastAccess) lastAccess = '0';
+/**
+ * Récupère la taille totale (en Mo) des données Minecraft stockées localement.
+ * Retourne un objet { localStorageMB, resourcePacksMB, worldsMB, totalMB }
+ */
+export async function getMinecraftStorageSizeMB(worldIsSave: boolean = true, rsIsSave: boolean = true): Promise<{ resourcePacksMB: number, worldsMB: number, totalMB: number }> {
 	let indexedDBData = { resourcePacks: [], worlds: [] };
 	try {
 		indexedDBData = await getIndexedDBData();
 	} catch (error) {
 		console.warn('Impossible de récupérer les données IndexedDB:', error);
 	}
-	const minecraftInfo = {
-		_eaglercraftX_g: localStorage.getItem('_eaglercraftX.g'),
-		_eaglercraftX_p: localStorage.getItem('_eaglercraftX.p'),
-		_eaglercraftX_r: localStorage.getItem('_eaglercraftX.r'),
-		lastMinecraftAccess: parseInt(lastAccess, 10) || 0,
-		resourcePacks: prepareDataForAPI(indexedDBData.resourcePacks),
-		worlds: prepareDataForAPI(indexedDBData.worlds)
-	};
 
-	let compressed: string;
+	let resourcePacks: string;
+	let worlds: string;
 	try {
-		compressed = compressMinecraftData(minecraftInfo);
+		resourcePacks = await compressMinecraftData(prepareDataForAPI(indexedDBData.resourcePacks));
+		worlds = await compressMinecraftData(prepareDataForAPI(indexedDBData.worlds));
 	} catch (e) {
 		console.warn('Erreur lors de la compression Minecraft:', e);
-		return;
+		return {
+			resourcePacksMB: -1,
+			worldsMB: -1,
+			totalMB: -1
+		};
 	}
 
-	// Vérification taille avant envoi (10 Mo max)
-	const compressedSize = new Blob([compressed]).size;
-	if (compressedSize > 10 * 1024 * 1024) {
-		notification.warn("⚠️ LIMITE DEPASSER ⚠️\nLa sauvegarde Minecraft dépasse la limite de 10 Mo.\nVeuillez réduire la taille des packs de ressources ou des mondes en solo.",
-			{
-				autoClose: false,
-				position: 'top-center',
-				closeButton: true,
-				icon: false,
-				toastId: 'minecraft-save-limit',
-				style: {
-					backgroundColor: '#f87171', // Rouge moins agressif
-					color: 'white',
-					fontWeight: 'bold',
-				}
-			}
-		);
-		console.error('La sauvegarde Minecraft dépasse la limite de 10 Mo (', (compressedSize / (1024 * 1024)).toFixed(2), 'Mo )');
-		return;
-	}
+	const resourcePacksSize = new Blob([resourcePacks]).size;
+	const worldsSize = new Blob([worlds]).size;
+	const resourcePacksMB = resourcePacksSize / (1024 * 1024);
+	const worldsMB = worldsSize / (1024 * 1024);
+	const totalMB = (worldIsSave ? worldsMB : 0) + (rsIsSave ? resourcePacksMB : 0);
+	return {
+		resourcePacksMB,
+		worldsMB,
+		totalMB
+	};
+}
 
-	if (
-		minecraftInfo._eaglercraftX_g &&
-		minecraftInfo._eaglercraftX_p &&
-		minecraftInfo._eaglercraftX_r &&
-		minecraftInfo.lastMinecraftAccess
-	) {
+// Lance la sauvegarde Minecraft en arrière-plan (non bloquant)
+export function setMinecraftInfo() {
+	(async () => {
+		let lastAccess = localStorage.getItem('lastMinecraftAccess');
+		if (!lastAccess) lastAccess = '0';
+		let indexedDBData = { resourcePacks: [], worlds: [] };
 		try {
-			await ApiService.post('/setMinecraftUser', { compressed });
+			indexedDBData = await getIndexedDBData();
 		} catch (error) {
-			console.error('Erreur lors de la sauvegarde minecraft:', error);
+			console.warn('Impossible de récupérer les données IndexedDB:', error);
 		}
-	}
+
+		// Appliquer les préférences utilisateur
+		const { saveResourcePacks, saveWorlds } = getMinecraftSavePreferences();
+		const resourcePacks = saveResourcePacks ? prepareDataForAPI(indexedDBData.resourcePacks) : [];
+		const worlds = saveWorlds ? prepareDataForAPI(indexedDBData.worlds) : [];
+
+		const minecraftInfo = {
+			_eaglercraftX_g: localStorage.getItem('_eaglercraftX.g'),
+			_eaglercraftX_p: localStorage.getItem('_eaglercraftX.p'),
+			_eaglercraftX_r: localStorage.getItem('_eaglercraftX.r'),
+			saveResourcePacks,
+			saveWorlds,
+			lastMinecraftAccess: parseInt(lastAccess, 10) || 0,
+			resourcePacks,
+			worlds
+		};
+
+		let compressed: string;
+		try {
+			compressed = await compressMinecraftData(minecraftInfo);
+		} catch (e) {
+			console.warn('Erreur lors de la compression Minecraft:', e);
+			return;
+		}
+
+		// Vérification taille avant envoi (10 Mo max)
+		const compressedSize = new Blob([compressed]).size;
+		if (compressedSize > 10 * 1024 * 1024) {
+			notification.warn(`⚠️ LIMITE DEPASSER ⚠️\nLa sauvegarde Minecraft dépasse la limite de 10 Mo.\nVeuillez réduire la taille des packs de ressources ou des mondes en solo.`,
+				{
+					autoClose: false,
+					position: 'top-center',
+					closeButton: true,
+					icon: false,
+					toastId: 'minecraft-save-limit',
+					style: {
+						backgroundColor: '#f87171',
+						color: 'white',
+						fontWeight: 'bold',
+						zIndex: 1000,
+					}
+				}
+			);
+			console.error('La sauvegarde Minecraft dépasse la limite de 10 Mo (', (compressedSize / (1024 * 1024)).toFixed(2), 'Mo )');
+			return;
+		}
+
+		if (
+			minecraftInfo._eaglercraftX_g &&
+			minecraftInfo._eaglercraftX_p &&
+			minecraftInfo._eaglercraftX_r &&
+			minecraftInfo.lastMinecraftAccess
+		) {
+			try {
+				const result = await ApiService.post('/setMinecraftUser', { compressed });
+				console.log('Résultat de la sauvegarde Minecraft:', result);
+				if (!result.ok) {
+					notification.error("❌ Erreur lors de la sauvegarde Minecraft.",
+						{
+							autoClose: 1000,
+							position: 'top-center',
+							closeButton: false,
+							icon: false,
+							toastId: 'minecraft-save-limit',
+							style: {
+								backgroundColor: '#f87171',
+								color: 'white',
+								fontWeight: 'bold',
+								zIndex: 1000,
+							}
+						}
+					);
+				}
+			} catch (error) {
+				console.error('Erreur lors de la sauvegarde minecraft:', error);
+			}
+		}
+	})();
+}
+
+export function getMinecraftSavePreferences() {
+	const saveResourcePacks = localStorage.getItem('saveResourcePacks');
+	const saveWorlds = localStorage.getItem('saveWorlds');
+	return {
+		saveResourcePacks: saveResourcePacks === null ? false : saveResourcePacks === 'true',
+		saveWorlds: saveWorlds === null ? true : saveWorlds === 'true',
+	};
 }
 
 export default function FullscreenMinecraftHandler({ children }: FullscreenMinecraftHandlerProps) {
-	const navigate = useNavigate();
-	const location = useLocation();
+	const { t } = useLanguage();
+	const [showSettings, setShowSettings] = useState(false);
+	const [saveResourcePacks, setSaveResourcePacks] = useState<boolean>(() => {
+		const val = localStorage.getItem('saveResourcePacks');
+		return val === null ? false : val === 'true';
+	});
+	const [saveWorlds, setSaveWorlds] = useState<boolean>(() => {
+		const val = localStorage.getItem('saveWorlds');
+		return val === null ? true : val === 'true';
+	});
+	const [storageInfo, setStorageInfo] = useState<{ resourcePacksMB: number, worldsMB: number, totalMB: number } | null>(null);
 
+	// Sauvegarde dans localStorage à chaque changement
 	useEffect(() => {
-		// Suppression de la gestion de la touche F4 pour la navigation Minecraft
-		// On garde uniquement la gestion du message event pour compatibilité éventuelle
-		const handleMessage = (event: MessageEvent) => {
-			if (!event.data) return;
-			if (event.data.type === 'minecraft-f4') {
-				// enlever le plein écran et aller à l'accueil
-				const syntheticEvent = new KeyboardEvent('keydown', { key: 'F4' });
-				// Ne fait plus rien, navigation désactivée
-			}
-		};
+		localStorage.setItem('saveResourcePacks', saveResourcePacks.toString());
+	}, [saveResourcePacks]);
+	useEffect(() => {
+		localStorage.setItem('saveWorlds', saveWorlds.toString());
+	}, [saveWorlds]);
 
-		window.addEventListener('message', handleMessage);
+	// Charger la taille du stockage à l'ouverture ou lors d'un changement de préférence
+	useEffect(() => {
+		getMinecraftStorageSizeMB(saveWorlds, saveResourcePacks).then(setStorageInfo);
+	}, [saveResourcePacks, saveWorlds]);
 
-		return () => {
-			window.removeEventListener('message', handleMessage);
-		};
-	}, [navigate, location]);
+	// Engrenage et menu toujours visibles
+	const settingsButton = (
+		<div style={{
+			position: 'fixed',
+			top: 16,
+			right: 16,
+			zIndex: 2000,
+			cursor: 'pointer',
+			background: 'rgba(34,197,94,0.85)',
+			borderRadius: '50%',
+			width: 40,
+			height: 40,
+			display: 'flex',
+			alignItems: 'center',
+			justifyContent: 'center',
+			boxShadow: '0 2px 8px rgba(0,0,0,0.15)'
+		}}
+			onClick={() => setShowSettings(v => !v)}
+		>
+			<svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+				<path d="M12 15.5A3.5 3.5 0 1 0 12 8.5a3.5 3.5 0 0 0 0 7zm7.43-2.06l1.77-1.02a1 1 0 0 0 .37-1.36l-1.67-2.89a1 1 0 0 0-1.28-.45l-1.77 1.02a7.03 7.03 0 0 0-1.52-.88l-.27-2A1 1 0 0 0 13 4h-2a1 1 0 0 0-1 .86l-.27 2a7.03 7.03 0 0 0-1.52.88l-1.77-1.02a1 1 0 0 0-1.28.45l-1.67 2.89a1 1 0 0 0 .37 1.36l1.77 1.02c-.06.32-.1.65-.1.99s.04.67.1.99l-1.77 1.02a1 1 0 0 0-.37 1.36l1.67 2.89a1 1 0 0 0 1.28.45l1.77-1.02c.47.34.98.63 1.52.88l.27 2A1 1 0 0 0 11 20h2a1 1 0 0 0 1-.86l.27-2c.54-.25 1.05-.54 1.52-.88l1.77 1.02a1 1 0 0 0 1.28-.45l1.67-2.89a1 1 0 0 0-.37-1.36l-1.77-1.02c.06-.32.1-.65.1-.99s-.04-.67-.1-.99z" fill="#fff" />
+			</svg>
+		</div>
+	);
 
-	return <>{children}</>;
+	const settingsMenu = showSettings && (
+		<div style={{
+			position: 'fixed',
+			top: 64,
+			right: 16,
+			zIndex: 2100,
+			background: '#222',
+			color: '#fff',
+			padding: '20px 24px',
+			borderRadius: 12,
+			boxShadow: '0 4px 16px rgba(0,0,0,0.25)',
+			minWidth: 260
+		}}>
+			<div style={{ fontWeight: 'bold', fontSize: 18, marginBottom: 12 }}>{t('minecraft.settings')}</div>
+			<label style={{ display: 'flex', alignItems: 'center', marginBottom: 10 }}>
+				<input
+					type="checkbox"
+					checked={saveWorlds}
+					onChange={e => setSaveWorlds(e.target.checked)}
+					style={{ marginRight: 8 }}
+				/>
+				{t('minecraft.saveWorlds')}
+			</label>
+			<label style={{ display: 'flex', alignItems: 'center', marginBottom: 10 }}>
+				<input
+					type="checkbox"
+					checked={saveResourcePacks}
+					onChange={e => setSaveResourcePacks(e.target.checked)}
+					style={{ marginRight: 8 }}
+				/>
+				{t('minecraft.saveResourcePacks')}
+			</label>
+			{storageInfo && (
+				<div style={{ marginTop: 12, fontSize: 14 }}>
+					<div style={{ color: saveWorlds && storageInfo.worldsMB > 10 ? '#ef4444' : '#a3e635' }}>
+						{t('minecraft.soloWorldsSize')}: {storageInfo.worldsMB.toFixed(2)} Mo
+					</div>
+					<div style={{ color: saveResourcePacks && storageInfo.resourcePacksMB > 10 ? '#ef4444' : '#a3e635' }}>
+						{t('minecraft.resourcePacksSize')}: {storageInfo.resourcePacksMB.toFixed(2)} Mo
+					</div>
+					<div style={{ color: (saveWorlds && storageInfo.worldsMB > 10) || (saveResourcePacks && storageInfo.resourcePacksMB > 10) ? '#ef4444' : '#a3e635' }}>
+						{t('minecraft.totalSize')}: {storageInfo.totalMB.toFixed(2)} Mo / 10 Mo
+					</div>
+				</div>
+			)}
+			<button onClick={() => setShowSettings(false)} style={{ marginTop: 10, background: '#22c55e', color: '#fff', border: 'none', borderRadius: 6, padding: '6px 16px', fontWeight: 'bold', cursor: 'pointer' }}>
+				{t('minecraft.closeSettings')}
+			</button>
+		</div>
+	);
+
+	return <>
+		{settingsButton}
+		{settingsMenu}
+		{children}
+	</>;
 }
