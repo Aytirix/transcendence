@@ -9,7 +9,7 @@ import { handleKeyDown, handleKeyUp } from '../types/handleKey';
 const GameTournament: React.FC = () => {
 
 			const navigate = useNavigate();
-			const returnMenu = () => socketRef.current?.send(JSON.stringify({type: "EXIT", value: assignPlayer}));			
+			const returnMenu = () => socketRef.current?.send(JSON.stringify({type: "EXIT", value: assignPlayer}));
 			const returnMenuWinner = () => { 
 				navigate('/pong/menu')
 				engine.current?.dispose();
@@ -37,6 +37,7 @@ const GameTournament: React.FC = () => {
 			const [isWinner, setisWinner] = useState(false);
 			const [waitingPlayers, setWaitingPlayers] = useState(false);
 			const [isPause, setIsPause] = useState(false);
+			const messagePause = useRef("Press [ ESP ] for PLAY")
 		
 			const reconnection = localStorage.getItem("reconnection");
 		
@@ -121,6 +122,8 @@ const GameTournament: React.FC = () => {
 					}
 					if (data.type === "Pause") {
 						setIsPause(data.value);
+						if (data.message)
+							messagePause.current = data.message;
 					}
 					if (data.type === "Win") {
 						// socket.close();
@@ -309,7 +312,7 @@ const GameTournament: React.FC = () => {
 							 {/* jeu en pause */}
 							{isPause && isReady3d && !isWinner && (
 								<h1 className='Start-go'>
-									[ Pause ]
+									{messagePause.current}
 								</h1>
 							)}
 		
@@ -318,13 +321,6 @@ const GameTournament: React.FC = () => {
 								count > 0 
 									? <h1 className="Start-go">{count}</h1>
 									: <h1 className="Start-go">Go</h1>
-							)}
-
-							{/* waiting Players */}
-							{!startReco && !waitingPlayers && (
-								<>
-									<h1 className='Start-go' > attente du second joueur </h1>
-								</>
 							)}
 							{/* Dashboard des scores et exit */}
 							{!isWinner && (

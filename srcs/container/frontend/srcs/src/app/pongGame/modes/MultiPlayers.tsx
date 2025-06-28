@@ -36,6 +36,7 @@ const MultiPlayers: React.FC = () => {
 			const [isWinner, setisWinner] = useState(false);
 			const [waitingPlayers, setWaitingPlayers] = useState(false);
 			const [isPause, setIsPause] = useState(false);
+			const messagePause = useRef("Press [ ESP ] for PLAY")
 		
 			const reconnection = localStorage.getItem("reconnection");
 		
@@ -119,8 +120,9 @@ const MultiPlayers: React.FC = () => {
 		
 					}
 					if (data.type === "Pause") {
-						console.log(`pause = ${isPause}`)
 						setIsPause(data.value);
+						if (data.message)
+							messagePause.current = data.message;
 					}
 					if (data.type === "assign") {
 						assignPlayer.current = data.value;
@@ -330,7 +332,7 @@ const MultiPlayers: React.FC = () => {
 							 {/* jeu en pause */}
 							{isPause && isReady3d && isCinematic && !isWinner && (
 								<h1 className='Start-go'>
-									[ Pause ]
+									{messagePause.current}
 								</h1>
 							)}
 		

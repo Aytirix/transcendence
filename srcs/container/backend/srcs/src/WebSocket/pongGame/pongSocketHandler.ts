@@ -61,12 +61,23 @@ export function pongWebSocket(socket: WebSocket, user: User) {
 				handleMove(playerInfos, msg.value);
 				break ;
 			case "EXIT" :
-				if (playerInfos.mode === "Multi" || playerInfos.mode === "Tournament") {
+				if (playerInfos.mode === "Multi") {
 					playerInfos.resultMatch = "Loose"
-					if (playerInfos.name !== playerInfos.game.getPlayer1().getPlayerInfos().name)
+					if (playerInfos.name !== playerInfos.game.getPlayer1().getPlayerInfos().name) 
 						playerInfos.game.getPlayer1().getPlayerInfos().resultMatch = "win"
-					else
+					else 
 						playerInfos.game.getPlayer2().getPlayerInfos().resultMatch = "win"
+				}
+				else if (playerInfos.mode === "Tournament") {
+					playerInfos.resultMatch = "Loose"
+					if (playerInfos.name !== playerInfos.game.getPlayer1().getPlayerInfos().name) {
+						playerInfos.game.getPlayer2().getPlayerInfos().socket.send(JSON.stringify({type: "FINISHED", value: "win"}));
+						playerInfos.game.getPlayer1().getPlayerInfos().resultMatchTournament = "Win"
+					}
+					else {
+						playerInfos.game.getPlayer1().getPlayerInfos().socket.send(JSON.stringify({type: "FINISHED", value: "win"}));
+						playerInfos.game.getPlayer2().getPlayerInfos().resultMatchTournament = "Win"
+					}
 				}
 				handleFinish(playerInfos);
 				break ;
@@ -85,11 +96,10 @@ export function pongWebSocket(socket: WebSocket, user: User) {
 		if ((playerInfos && playerInfos.mode === "Multi")|| (playerInfos && playerInfos.mode === "Tournament")) {
 			if (playerInfos && playerInfos.game) {
 				if (playerInfos.name !== playerInfos.game.getPlayer1().getPlayerInfos().name) {
-					playerInfos.game.getPlayer1().getPlayerInfos().socket.send(JSON.stringify({type: "Pause", value: true}))
+					playerInfos.game.getPlayer1().getPlayerInfos().socket.send(JSON.stringify({type: "Pause", value: true, message: "Adversaire en pause. Reprise imminente."}))
 				}//if multi
-
 				else {
-					playerInfos.game.getPlayer2().getPlayerInfos().socket.send(JSON.stringify({type: "Pause", value: true}))
+					playerInfos.game.getPlayer2().getPlayerInfos().socket.send(JSON.stringify({type: "Pause", value: true, message: "Adversaire en pause. Reprise imminente."}))
 				}
 			}
 		}
