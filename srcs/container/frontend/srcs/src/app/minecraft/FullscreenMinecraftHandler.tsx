@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from 'react';
-import ApiService from '../../../api/ApiService';
-import notification from '../Notifications';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+import ApiService from '../../api/ApiService';
+import notification from '../components/Notifications';
 import MinecraftCompressWorker from './minecraftCompressWorker.ts?worker';
-import { useLanguage } from '../../../contexts/LanguageContext';
+import { useLanguage } from '../../contexts/LanguageContext';
 
 
 interface FullscreenMinecraftHandlerProps {
@@ -573,11 +573,89 @@ export default function FullscreenMinecraftHandler({ children }: FullscreenMinec
 		return val === null ? true : val === 'true';
 	});
 	const [storageInfo, setStorageInfo] = useState<{ resourcePacksMB: number, worldsMB: number, totalMB: number } | null>(null);
+	
+	// Référence pour l'iframe
+	const iframeRef = useRef<HTMLIFrameElement>(null);
+	const settingsMenuRef = useRef<HTMLDivElement>(null);
+	const settingsButtonRef = useRef<HTMLDivElement>(null);
+
+	// Fonction pour redonner le focus à l'iframe
+	const refocusMinecraft = useCallback(() => {
+		setTimeout(() => {
+			if (iframeRef.current) {
+				iframeRef.current.focus();
+				// Essayer aussi de cliquer dans l'iframe pour s'assurer qu'elle reçoit le focus
+				const iframeDocument = iframeRef.current.contentDocument;
+				if (iframeDocument && iframeDocument.body) {
+					iframeDocument.body.click();
+				}
+			}
+		}, 50);
+	}, []);
+
+	// Fonction pour fermer les paramètres et redonner le focus
+	const handleCloseSettings = useCallback(() => {
+		setShowSettings(false);
+		refocusMinecraft();
+	}, [refocusMinecraft]);
+
+	// Gérer les clics en dehors du menu pour le fermer et redonner le focus
+	useEffect(() => {
+		const handleClickOutside = (event: MouseEvent) => {
+			if (showSettings && settingsMenuRef.current && settingsButtonRef.current) {
+				const target = event.target as Element;
+				const isInsideMenu = settingsMenuRef.current.contains(target);
+				const isInsideButton = settingsButtonRef.current.contains(target);
+				
+				if (!isInsideMenu && !isInsideButton) {
+					handleCloseSettings();
+				}
+			}
+		};
+
+		if (showSettings) {
+			document.addEventListener('mousedown', handleClickOutside);
+		}
+
+		return () => {
+			document.removeEventListener('mousedown', handleClickOutside);
+		};
+	}, [showSettings, handleCloseSettings]);
+
+	// Gérer la touche Escape pour fermer le menu
+	useEffect(() => {
+		const handleKeyDown = (event: KeyboardEvent) => {
+			if (showSettings && event.key === 'Escape') {
+				event.preventDefault();
+				handleCloseSettings();
+			}
+		};
+
+		if (showSettings) {
+			document.addEventListener('keydown', handleKeyDown);
+		}
+
+		return () => {
+			document.removeEventListener('keydown', handleKeyDown);
+		};
+	}, [showSettings, handleCloseSettings]);
+
+	// Redonner le focus après chaque changement de paramètres
+	const handleResourcePacksChange = useCallback((checked: boolean) => {
+		setSaveResourcePacks(checked);
+		refocusMinecraft();
+	}, [refocusMinecraft]);
+
+	const handleWorldsChange = useCallback((checked: boolean) => {
+		setSaveWorlds(checked);
+		refocusMinecraft();
+	}, [refocusMinecraft]);
 
 	// Sauvegarde dans localStorage à chaque changement
 	useEffect(() => {
 		localStorage.setItem('saveResourcePacks', saveResourcePacks.toString());
 	}, [saveResourcePacks]);
+	
 	useEffect(() => {
 		localStorage.setItem('saveWorlds', saveWorlds.toString());
 	}, [saveWorlds]);
@@ -587,24 +665,38 @@ export default function FullscreenMinecraftHandler({ children }: FullscreenMinec
 		getMinecraftStorageSizeMB(saveWorlds, saveResourcePacks).then(setStorageInfo);
 	}, [saveResourcePacks, saveWorlds]);
 
-	// Engrenage et menu toujours visibles
+	// Engrenage avec gestion du focus
 	const settingsButton = (
-		<div style={{
-			position: 'fixed',
-			top: 16,
-			right: 16,
-			zIndex: 2000,
-			cursor: 'pointer',
-			background: 'rgba(34,197,94,0.85)',
-			borderRadius: '50%',
-			width: 40,
-			height: 40,
-			display: 'flex',
-			alignItems: 'center',
-			justifyContent: 'center',
-			boxShadow: '0 2px 8px rgba(0,0,0,0.15)'
-		}}
-			onClick={() => setShowSettings(v => !v)}
+		<div 
+			ref={settingsButtonRef}
+			style={{
+				position: 'fixed',
+				top: 16,
+				right: 16,
+				zIndex: 2000,
+				cursor: 'pointer',
+				background: 'rgba(34,197,94,0.85)',
+				borderRadius: '50%',
+				width: 40,
+				height: 40,
+				display: 'flex',
+				alignItems: 'center',
+				justifyContent: 'center',
+				boxShadow: '0 2px 8px rgba(0,0,0,0.15)'
+			}}
+			onClick={(e) => {
+				e.preventDefault();
+				e.stopPropagation();
+				setShowSettings(v => !v);
+				if (!showSettings) {
+					// Si on ouvre le menu, garder le focus sur l'iframe en arrière-plan
+					refocusMinecraft();
+				}
+			}}
+			onMouseDown={(e) => {
+				// Empêcher la perte de focus lors du mousedown
+				e.preventDefault();
+			}}
 		>
 			<svg width="24" height="24" viewBox="0 0 24 24" fill="none">
 				<path d="M12 15.5A3.5 3.5 0 1 0 12 8.5a3.5 3.5 0 0 0 0 7zm7.43-2.06l1.77-1.02a1 1 0 0 0 .37-1.36l-1.67-2.89a1 1 0 0 0-1.28-.45l-1.77 1.02a7.03 7.03 0 0 0-1.52-.88l-.27-2A1 1 0 0 0 13 4h-2a1 1 0 0 0-1 .86l-.27 2a7.03 7.03 0 0 0-1.52.88l-1.77-1.02a1 1 0 0 0-1.28.45l-1.67 2.89a1 1 0 0 0 .37 1.36l1.77 1.02c-.06.32-.1.65-.1.99s.04.67.1.99l-1.77 1.02a1 1 0 0 0-.37 1.36l1.67 2.89a1 1 0 0 0 1.28.45l1.77-1.02c.47.34.98.63 1.52.88l.27 2A1 1 0 0 0 11 20h2a1 1 0 0 0 1-.86l.27-2c.54-.25 1.05-.54 1.52-.88l1.77 1.02a1 1 0 0 0 1.28-.45l1.67-2.89a1 1 0 0 0-.37-1.36l-1.77-1.02c.06-.32.1-.65.1-.99s-.04-.67-.1-.99z" fill="#fff" />
@@ -613,25 +705,33 @@ export default function FullscreenMinecraftHandler({ children }: FullscreenMinec
 	);
 
 	const settingsMenu = showSettings && (
-		<div style={{
-			position: 'fixed',
-			top: 64,
-			right: 16,
-			zIndex: 2100,
-			background: '#222',
-			color: '#fff',
-			padding: '20px 24px',
-			borderRadius: 12,
-			boxShadow: '0 4px 16px rgba(0,0,0,0.25)',
-			minWidth: 260
-		}}>
+		<div 
+			ref={settingsMenuRef}
+			style={{
+				position: 'fixed',
+				top: 64,
+				right: 16,
+				zIndex: 2100,
+				background: '#222',
+				color: '#fff',
+				padding: '20px 24px',
+				borderRadius: 12,
+				boxShadow: '0 4px 16px rgba(0,0,0,0.25)',
+				minWidth: 260
+			}}
+			onMouseDown={(e) => {
+				// Empêcher la propagation pour éviter la perte de focus
+				e.stopPropagation();
+			}}
+		>
 			<div style={{ fontWeight: 'bold', fontSize: 18, marginBottom: 12 }}>{t('minecraft.settings')}</div>
 			<label style={{ display: 'flex', alignItems: 'center', marginBottom: 10 }}>
 				<input
 					type="checkbox"
 					checked={saveWorlds}
-					onChange={e => setSaveWorlds(e.target.checked)}
+					onChange={e => handleWorldsChange(e.target.checked)}
 					style={{ marginRight: 8 }}
+					onMouseDown={(e) => e.stopPropagation()}
 				/>
 				{t('minecraft.saveWorlds')}
 			</label>
@@ -639,8 +739,9 @@ export default function FullscreenMinecraftHandler({ children }: FullscreenMinec
 				<input
 					type="checkbox"
 					checked={saveResourcePacks}
-					onChange={e => setSaveResourcePacks(e.target.checked)}
+					onChange={e => handleResourcePacksChange(e.target.checked)}
 					style={{ marginRight: 8 }}
+					onMouseDown={(e) => e.stopPropagation()}
 				/>
 				{t('minecraft.saveResourcePacks')}
 			</label>
@@ -657,15 +758,42 @@ export default function FullscreenMinecraftHandler({ children }: FullscreenMinec
 					</div>
 				</div>
 			)}
-			<button onClick={() => setShowSettings(false)} style={{ marginTop: 10, background: '#22c55e', color: '#fff', border: 'none', borderRadius: 6, padding: '6px 16px', fontWeight: 'bold', cursor: 'pointer' }}>
+			<button 
+				onClick={handleCloseSettings} 
+				onMouseDown={(e) => e.stopPropagation()}
+				style={{ 
+					marginTop: 10, 
+					background: '#22c55e', 
+					color: '#fff', 
+					border: 'none', 
+					borderRadius: 6, 
+					padding: '6px 16px', 
+					fontWeight: 'bold', 
+					cursor: 'pointer' 
+				}}
+			>
 				{t('minecraft.closeSettings')}
 			</button>
 		</div>
 	);
 
+	// Modifier les children pour ajouter la ref à l'iframe
+	const childrenWithRef = React.Children.map(children, child => {
+		if (React.isValidElement(child) && child.type === 'iframe') {
+			return React.cloneElement(child as React.ReactElement<any>, { 
+				ref: iframeRef,
+				onLoad: () => {
+					// S'assurer que l'iframe a le focus au chargement
+					refocusMinecraft();
+				}
+			});
+		}
+		return child;
+	});
+
 	return <>
 		{settingsButton}
 		{settingsMenu}
-		{children}
+		{childrenWithRef}
 	</>;
 }

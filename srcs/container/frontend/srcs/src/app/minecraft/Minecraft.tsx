@@ -1,6 +1,6 @@
-import React from 'react';
 import FullscreenMinecraftHandler, { setMinecraftInfo } from './FullscreenMinecraftHandler';
-import notification from '../Notifications';
+import notification from '../components/Notifications';
+import React from 'react';
 
 const Minecraft: React.FC = () => {
 
@@ -33,6 +33,10 @@ const Minecraft: React.FC = () => {
 					overflow: 'hidden',
 					zIndex: 10,
 				}}
+				// Permettre la capture du focus
+				tabIndex={0}
+				// Assurer que l'iframe peut recevoir le focus
+				allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
 			/>
 		</FullscreenMinecraftHandler>
 	);

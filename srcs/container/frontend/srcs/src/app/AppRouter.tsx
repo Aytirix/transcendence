@@ -23,8 +23,8 @@ import FriendPage from './chat/FriendPage';
 import IronManForgetPass from './IronManForgetPass';
 import MinSizeGuard from './components/MinSizeGuard';
 import ModuleManager from './ModuleManager/ModuleManager';
-import Minecraft from './components/minecraft/Minecraft';
-import MinecraftRouteGuard from './components/minecraft/MinecraftRouteGuard';
+import Minecraft from './minecraft/Minecraft';
+import MinecraftRouteGuard from './minecraft/MinecraftRouteGuard';
 
 class AppRouter extends Component {
 
