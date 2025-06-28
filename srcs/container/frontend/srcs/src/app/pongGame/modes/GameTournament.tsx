@@ -278,7 +278,7 @@ const GameTournament: React.FC = () => {
 				return (() => {
 					window.removeEventListener('keydown', handlePause);
 				})
-			}, [isPause, isReady3d, waitingPlayers])
+			}, [isPause, isReady3d, waitingPlayers, isStarted])
 		
 			useEffect(() => {
 				if (!isReady3d || !socketRef.current) return;
