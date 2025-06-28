@@ -81,15 +81,15 @@ async function getMapById(id: number): Promise<map | null> {
 
 async function insertMap(map: map): Promise<boolean> {
 	const query = `
-        INSERT INTO pacman_map (user_id, name, map, is_public, is_valid) 
-        VALUES (?, ?, ?, ?, ?)
-        ON DUPLICATE KEY UPDATE 
-        name = VALUES(name), 
-        map = VALUES(map), 
-        is_public = VALUES(is_public), 
-        is_valid = VALUES(is_valid),
+		INSERT INTO pacman_map (user_id, name, map, is_public, is_valid) 
+		VALUES (?, ?, ?, ?, ?)
+		ON CONFLICT(user_id, name) DO UPDATE SET 
+        name = excluded.name, 
+        map = excluded.map, 
+        is_public = excluded.is_public, 
+        is_valid = excluded.is_valid,
         updated_at = datetime('now')
-    `;
+`;
 
 	const result: any = await executeReq(query, [
 		map.user_id,

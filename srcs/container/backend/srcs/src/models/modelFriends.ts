@@ -37,7 +37,6 @@ async function getFriendsForUser(userId: number, state: State): Promise<User[]> 
 
 	const result: any = await executeReq(query, [userId, userId, userId]);
 
-	console.log('getFriendsForUser', result);
 	if (result.length === 0) return [];
 
 	const fullFriends = result.map((friend: any) => ({
@@ -67,8 +66,11 @@ async function getFriendsForUser(userId: number, state: State): Promise<User[]> 
 async function updateFriendRelation(user: User, friend: User, status: 'friend' | 'blocked' | 'pending' | '', group_id: number | false = null, state: State): Promise<boolean> {
 	const [user_one_id, user_two_id] = user.id < friend.id ? [user.id, friend.id] : [friend.id, user.id];
 	const query = `
-		INSERT INTO friends (target, user_one_id, user_two_id, status, groupe_priv_msg_id ) VALUES (?, ?, ?, ?, ?)
-		ON DUPLICATE KEY UPDATE status = VALUES(status), target = VALUES(target)${group_id !== false ? ', groupe_priv_msg_id = VALUES(groupe_priv_msg_id)' : ''};
+		INSERT INTO friends (target, user_one_id, user_two_id, status, groupe_priv_msg_id) 
+		VALUES (?, ?, ?, ?, ?)
+		ON CONFLICT(user_one_id, user_two_id) DO UPDATE SET 
+			status = excluded.status, 
+			target = excluded.target${group_id !== false ? ', groupe_priv_msg_id = excluded.groupe_priv_msg_id' : ''};
 	`;
 	const result: any = await executeReq(query, [friend.id, user_one_id, user_two_id, status, group_id !== false ? group_id : null]);
 

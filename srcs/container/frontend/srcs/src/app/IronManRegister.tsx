@@ -121,7 +121,7 @@ const IronManRegister: React.FC = () => {
 						required
 					/>
 
-					<button className="btn btn-neutral mt-4 text-black font-bold bg-gradient-to-r from-yellow-400 via-red-500 to-pink-500 hover:from-pink-500 hover:to-yellow-400 transition-colors w-full rounded-md shadow-lg" type="submit" disabled={loading}>
+					<button className="style-button transition-colors w-full rounded-md shadow-lg" type="submit" disabled={loading}>
 						{loading ? "Création..." : t('register.submit')}
 					</button>
 

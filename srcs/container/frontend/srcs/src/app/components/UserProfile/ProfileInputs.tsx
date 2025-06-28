@@ -10,16 +10,17 @@ interface ProfileInputsProps {
 const ProfileInputs: React.FC<ProfileInputsProps> = ({ form, handleChange }) => (
 	<div className="flex flex-col items-center gap-4 w-full">
 		<input
-			className="input w-full max-w-md"
+			className="input w-full max-w-md bg-gray-800 text-white"
 			type="text"
 			name="username"
 			placeholder={form?.username || "Pseudo"}
 			value={form.username}
 			maxLength={15}
 			onChange={handleChange}
+			
 		/>
 		<input
-			className="input w-full max-w-md"
+			className="input w-full max-w-md bg-gray-800 text-white"
 			type="email"
 			name="email"
 			placeholder={form?.email || "E-mail"}
@@ -28,7 +29,7 @@ const ProfileInputs: React.FC<ProfileInputsProps> = ({ form, handleChange }) => 
 			onChange={handleChange}
 		/>
 		<input
-			className="input w-full max-w-md"
+			className="input w-full max-w-md bg-gray-800 text-white"
 			type="password"
 			name="password"
 			placeholder="Nouveau mot de passe"
@@ -36,14 +37,14 @@ const ProfileInputs: React.FC<ProfileInputsProps> = ({ form, handleChange }) => 
 			onChange={handleChange}
 		/>
 		<input
-			className="input w-full max-w-md"
+			className="input w-full max-w-md bg-gray-800 text-white"
 			type="password"
 			name="confirmPassword"
 			placeholder="Confirmer le mot de passe"
 			value={form.confirmPassword}
 			onChange={handleChange}
 		/>
-		<select className="select w-full max-w-md" value={form.lang} name="lang" onChange={handleChange}>
+		<select className="select w-full max-w-md bg-gray-800 text-white" value={form.lang} name="lang" onChange={handleChange}>
 			<option disabled={true} value="">Langue...</option>
 			<option value="fr">Français</option>
 			<option value="en">English</option>

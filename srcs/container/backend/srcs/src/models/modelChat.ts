@@ -112,7 +112,7 @@ async function getMessagesFromGroup(
 
 
 async function newMessage(group: Group, user: User, message: string, sent_at: Date) {
-	const query = `INSERT group_messages (group_id, sender_id, message, sent_at) VALUES (?, ?, ?, ?)`;
+	const query = `INSERT INTO group_messages (group_id, sender_id, message, sent_at) VALUES (?, ?, ?, ?)`;
 	let sentAtTimestamp = sent_at.getTime();
 	const result: any = await executeReq(query, [group.id, user.id, message, sentAtTimestamp]);
 
@@ -197,7 +197,7 @@ async function deleteGroup(group_id: number, state: State): Promise<boolean> {
 }
 
 async function createPrivateGroup(user: User, friend: User, state: State): Promise<Group | null> {
-    const query = `
+	const query = `
         SELECT g.* FROM groups g 
         WHERE g.private = 1 
         AND (

@@ -78,8 +78,9 @@ export function userIsBlocked(ws: WebSocket, user: User, friend: User, state: St
 export const searchUser = async (ws: WebSocket, user: User, state: State, text: req_search_user) => {
 	const { name, group_id } = text;
 	let users: User[] = [];
-	if (name && name.length >= 3 && name.length <= 15) {
+	if (name && name.length >= 1 && name.length <= 15) {
 		users = await modelsUser.searchUser(name);
+		const userIds = Array.from(state.user.keys());
 		if (users.length === 0) {
 			return;
 		}
@@ -99,8 +100,8 @@ export const searchUser = async (ws: WebSocket, user: User, state: State, text: 
 			if (relation && relation.status === 'blocked') return false;
 		}
 		else {
-			// enlever les utilisateurs ou il y a une relation.
-			if (relation && relation.status != '') return false;
+			console.log(`status: ${relation?.status}, target: ${relation?.target}, user.id: ${user.id}, userSearch.id: ${userSearch.id}`);
+			if (relation && relation.status === 'blocked' && relation.target === user.id) return false;
 		}
 		return true;
 	});
@@ -124,7 +125,6 @@ export const addFriend = async (ws: WebSocket, user: User, state: State, text: r
 	if (friend.id === user.id) return ws.send(JSON.stringify({ action: 'error', result: 'error', notification: ws.i18n.t('RelationFriends.cannotAddYourself') } as reponse));
 
 	const relation = getRelationFriend(user.id, friend.id, state);
-
 	if (relation) {
 		switch (relation.status) {
 			case 'friend':
