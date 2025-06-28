@@ -55,7 +55,6 @@ const IronManForgetPass: React.FC = () => {
 				<fieldset className="bg-gray-900 bg-opacity-90 border border-gray-700 rounded-2xl shadow-2xl p-8 flex flex-col gap-4 items-center">
 					<legend className="text-2xl font-bold text-center mb-2 text-white tracking-widest gradient-text">{t('forgetPassword.title')}</legend>
 
-					<label className="label text-gray-300 self-center">{t('forgetPassword.email')}</label>
 					<input
 						type="email"
 						name="email"

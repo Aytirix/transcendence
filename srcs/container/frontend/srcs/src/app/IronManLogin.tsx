@@ -51,9 +51,11 @@ const IronManLogin: React.FC = () => {
 
 			<form className="z-10 w-full max-w-md" onSubmit={handleSubmit}>
 				<fieldset className="bg-gray-900 bg-opacity-90 border border-gray-700 rounded-2xl shadow-2xl p-8 flex flex-col gap-4 items-center">
-					<legend className="text-2xl font-bold text-center mb-2 text-white tracking-widest gradient-text">{t('login.title')}</legend>
+					<legend className="text-2xl font-bold text-center text-white tracking-widest gradient-text">{t('login.title')}</legend>
 
-					<label className="label text-gray-300 self-center">{t('login.email')}</label>
+					<div className="flex justify-center mb-3">
+						<GoogleLoginButton textbtn="login" />
+					</div>
 					<input
 						type="text"
 						name="email"
@@ -64,7 +66,6 @@ const IronManLogin: React.FC = () => {
 						required
 					/>
 
-					<label className="label text-gray-300 self-center">{t('login.password')}</label>
 					<input
 						type="password"
 						name="password"
@@ -82,9 +83,6 @@ const IronManLogin: React.FC = () => {
 						<Link to="/forget-password" className="link link-hover text-blue-400 hover:underline">
 							{t('login.forgetPassword')}
 						</Link>
-					</div>
-					<div className="flex justify-center mt-2">
-						<GoogleLoginButton textbtn="login" />
 					</div>
 					<div className="flex justify-center mt-2">
 						<Link to="/register" className="text-gray-300 hover:text-yellow-400 transition-colors">

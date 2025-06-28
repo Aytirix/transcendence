@@ -4,6 +4,7 @@
 	"username": "Nom d'utilisateur",
 	"password": "Mot de passe",
 	"login": {
+		"withGoogle": "Se connecter avec Google",
 		"title": "Connexion",
 		"email": "Email",
 		"password": "Mot de passe",
@@ -13,6 +14,7 @@
 		"registerLink": "Nouveau héros ? Créer un compte"
 	},
 	"register": {
+		"withGoogle": "S'inscrire avec Googless",
 		"title": "Inscription",
 		"email": "E-mail",
 		"username": "Nom d'utilisateur",
