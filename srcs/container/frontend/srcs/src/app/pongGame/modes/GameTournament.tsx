@@ -37,6 +37,7 @@ const GameTournament: React.FC = () => {
 			const [isWinner, setisWinner] = useState(false);
 			const [waitingPlayers, setWaitingPlayers] = useState(false);
 			const [isPause, setIsPause] = useState(false);
+			const [isStarted, setIsStarted] = useState(false);
 			const messagePause = useRef("Press [ ESP ] for PLAY")
 			const [player1Avatar, setPlayer1Avatar] = useState<string | undefined>(undefined)
 			const [player2Avatar, setPlayer2Avatar] = useState<string | undefined>(undefined)
@@ -73,6 +74,7 @@ const GameTournament: React.FC = () => {
 						// setIscinematic(true);
 						setStartReco(true);
 						setIsPause(true);
+						setIsStarted(true);
 						console.log("reconnection")
 					}
 					else {
@@ -233,6 +235,7 @@ const GameTournament: React.FC = () => {
 						return () => clearTimeout(goTimeout);
 					}, 500);
 				}
+				setIsStarted(true);
 			}, [isReady3d, count]);
 		
 			// Mise à jour des positions
@@ -265,7 +268,7 @@ const GameTournament: React.FC = () => {
 		
 			// Gestion des touches clavier
 			useEffect(() => {
-				if (!isReady3d || !socketRef.current || !waitingPlayers) return;
+				if (!isReady3d || !socketRef.current || !waitingPlayers || !isStarted) return;
 				const handlePause = (event: KeyboardEvent) => {
 					if (event.key === ' ') {
 						socketRef.current?.send(JSON.stringify({type: "Pause"})); //value p1
@@ -315,7 +318,7 @@ const GameTournament: React.FC = () => {
 							<canvas ref={canvasRef} className="game-canvas"/>
 		
 							 {/* jeu en pause */}
-							{isPause && isReady3d && !isWinner && (
+							{isPause && isReady3d && !isWinner && isStarted &&(
 								<h1 className='Start-go'>
 									{messagePause.current}
 								</h1>
