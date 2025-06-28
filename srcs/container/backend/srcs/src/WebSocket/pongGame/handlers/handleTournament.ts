@@ -228,9 +228,7 @@ function displayTournament(tournament: Tournament) {
 	};
 	for (const player of tournament.listPlayer) {
 		player.socket.send(JSON.stringify(jsonDisplayTournament));
-		setTimeout(() => {
-			player.inRoom = false;
-		}, 2000);
+		player.inRoom = false;
 	}
 }
 function dispatchMatch(tournament: Tournament) {
