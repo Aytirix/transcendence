@@ -104,10 +104,14 @@ export class Game {
 			}
 			else if (this.player1.getPlayerInfos().mode === "Tournament"
 			&& this.player2.getPlayerInfos().mode === "Tournament") {
-				this.player1.getPlayerInfos().socket.send(JSON.stringify({type: "EXIT"}));
-				this.player2.getPlayerInfos().socket.send(JSON.stringify({type: "EXIT"}));
-				handleFinish(this.player1.getPlayerInfos())
-				handleFinish(this.player2.getPlayerInfos())
+				// this.player1.getPlayerInfos().socket.send(JSON.stringify({type: "EXIT"}));
+				// this.player2.getPlayerInfos().socket.send(JSON.stringify({type: "EXIT"}));
+				// handleFinish(this.player1.getPlayerInfos())
+				// handleFinish(this.player2.getPlayerInfos())
+				// this.player1.getPlayerInfos().socket.send(JSON.stringify({type: "FINISHED", value: this.player1.getPlayerInfos().resultMatch}));
+				// this.player2.getPlayerInfos().socket.send(JSON.stringify({type: "FINISHED", value: this.player2.getPlayerInfos().resultMatch}));
+				// handleFinish(this.player1.getPlayerInfos());
+				// handleFinish(this.player2.getPlayerInfos());
 				this.resetDisplay("Tournament");
 				isOnFinishMatch(this.tournament, this.player1.getPlayerInfos(), this.player2.getPlayerInfos());
 				//determiner le finish du tournois en fonction des manche
@@ -137,11 +141,15 @@ export class Game {
 			}
 			else if (this.player1.getPlayerInfos().mode === "Tournament"
 			&& this.player2.getPlayerInfos().mode === "Tournament") {
-				this.player1.getPlayerInfos().socket.send(JSON.stringify({type: "EXIT"}));
-				this.player2.getPlayerInfos().socket.send(JSON.stringify({type: "EXIT"}));
+				this.player1.getPlayerInfos().socket.send(JSON.stringify({type: "FINISHED", value: this.player1.getPlayerInfos().resultMatch}));
+				this.player2.getPlayerInfos().socket.send(JSON.stringify({type: "FINISHED", value: this.player2.getPlayerInfos().resultMatch}));
+				handleFinish(this.player1.getPlayerInfos());
+				handleFinish(this.player2.getPlayerInfos());
+				// this.player1.getPlayerInfos().socket.send(JSON.stringify({type: "EXIT"}));
+				// this.player2.getPlayerInfos().socket.send(JSON.stringify({type: "EXIT"}));
 				//checker lequel fait exit pour donner gagnant l adversaire si cest un exit avant la fin du match 
-				handleFinish(this.player1.getPlayerInfos())
-				handleFinish(this.player2.getPlayerInfos())
+				// handleFinish(this.player1.getPlayerInfos())
+				// handleFinish(this.player2.getPlayerInfos())
 				this.resetDisplay("Tournament");
 				isOnFinishMatch(this.tournament, this.player1.getPlayerInfos(), this.player2.getPlayerInfos());
 			}
@@ -234,18 +242,20 @@ export class Game {
 		}, 1000); //2000
 	}
 	checkScore(player1: Paddle, player2: Paddle) : boolean {
-		if (player1.getScore() == 21) {
+		if (player1.getScore() == 3) {
 			if (player1.getPlayerInfos().mode === "Tournament") {
 				player1.getPlayerInfos().resultMatchTournament = "Win";
 				player2.getPlayerInfos().resultMatchTournament = "Loose";
+				player2.getPlayerInfos().socket.send(JSON.stringify({type: "FINISHED", value: player1.getPlayerInfos().resultMatch}))
 			}
 			console.log("Winner is player 1")
 			return (true);
 		}
-		else if (player2.getScore() == 21){
+		else if (player2.getScore() == 3){
 			if (player1.getPlayerInfos().mode === "Tournament") {
 				player2.getPlayerInfos().resultMatchTournament = "Win";
 				player1.getPlayerInfos().resultMatchTournament = "Loose";
+				player1.getPlayerInfos().socket.send(JSON.stringify({type: "FINISHED", value: player2.getPlayerInfos().resultMatch}))
 			}
 			console.log("Winner is player 2")
 			return (true);

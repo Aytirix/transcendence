@@ -18,6 +18,7 @@ export interface playerStat {
 	lastping?: number;
 	timePause?: number;
 	pauseGame?: boolean;
+	readyToNext?: boolean;
 };
 
 export interface Tournament {
@@ -30,6 +31,7 @@ export interface Tournament {
 	currentMatch?: {player1: playerStat, player2:playerStat} [];
 	currentManche?: number;
 	waitingWinner?: playerStat [];
+	nextManche?: boolean;
 	historyTournament?: {
 		nbRound: number,
 		round: number, 

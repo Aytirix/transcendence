@@ -38,6 +38,14 @@ export function handleTournament(playerInfos: playerStat, msg: webMsg) {
 			}, 3000)
 		}
 	}
+	else if (msg.action === "readyToNext") {
+		playerInfos.readyToNext = true;
+		const tournament = listTournament.get(playerInfos.idTournament)
+		if (!tournament) return;
+		if (!tournament.nextManche) return;
+		if (checkReady(tournament))
+			dispatchMatch(tournament);
+	}
 }
 
 function quitTournament(playerInfos: playerStat) {
@@ -70,6 +78,7 @@ function createTournament(playerInfos: playerStat, msg: webMsg) {
 		currentManche: 1,
 		currentMatch: [],
 		waitingWinner: [],
+		nextManche: false,
 	}
 	playerInfos.idTournament = tournament.idTournament;
 	playerInfos.mode = msg.type;
@@ -232,6 +241,7 @@ function displayTournament(tournament: Tournament) {
 	}
 }
 function dispatchMatch(tournament: Tournament) {
+	tournament.nextManche = false;
 	shuffle(tournament.waitingWinner);
 	for (let i: number = 0; i < tournament.waitingWinner.length; i += 2) {
 		tournament.currentMatch.push({
@@ -239,7 +249,9 @@ function dispatchMatch(tournament: Tournament) {
 			player2: tournament.waitingWinner[i + 1]
 		});
 		tournament.waitingWinner[i].resultMatchTournament = "Current";
+		tournament.waitingWinner[i].readyToNext = false;
 		tournament.waitingWinner[i + 1].resultMatchTournament = "Current";
+		tournament.waitingWinner[i + 1].readyToNext = false;
 	}
 	tournament.currentManche++;
 	tournament.waitingWinner.length = 0;
@@ -251,24 +263,51 @@ function dispatchMatch(tournament: Tournament) {
 export function isOnFinishMatch(tournament: Tournament, player1: playerStat, player2: playerStat) {
 	if (player1.resultMatchTournament === "Win") {
 		tournament.waitingWinner.push(player1);
+		player2.inGame = false
+		player2.inRoom = false
+
+		player1.socket.send(JSON.stringify({type: "Win"}))
+		player1.inRoom = true;
 		//penser a exit le looser peux etre
+		//player in game pour winner tjr a true et le perdant a false 
+		//in room a true 
 	}
 	else if (player2.resultMatchTournament === "Win") {
 		tournament.waitingWinner.push(player2);
+		player1.inGame = false
+		player1.inRoom = false
+
+		player2.socket.send(JSON.stringify({type: "Win"}))
+		player2.inRoom = true;
 	}
+	console.log(`longueur waiting winner ${tournament.waitingWinner.length} longueur current ${tournament.currentMatch.length}`)
 	if (tournament.waitingWinner.length === tournament.currentMatch.length) {
-		displayTournament(tournament);
+		// displayTournament(tournament);
 		tournament.currentMatch.length = 0;
 		if (tournament.waitingWinner.length === 1) {
 			tournament.winner = true;
-			messageTournament(tournament, "Winner", `Le gagnant est ${tournament.waitingWinner[0].name}`);
-			listTournament.delete(tournament.idTournament);
+			console.log("envoi du vainqueur", tournament.waitingWinner[0].name)
+			setTimeout(() => {
+				messageTournament(tournament, "WinnerTournament", `${tournament.waitingWinner[0].name} remporte le tournois`);
+				listTournament.delete(tournament.idTournament);
+			}, 500)
+			return ;
 			//penser a supprimer le tournois de la list ensuite et aussi a supprimer le tournois de la list quand le dernier joueur sort de la file d attente 
 			//penser au nettoyage des perdant nettoyage du gagnant avec un reset des donnees .
 		}
-		dispatchMatch(tournament);
+		tournament.nextManche = true;
+		// if (checkReady(tournament))
+		// 	dispatchMatch(tournament);
 	}
 
+}
+
+function checkReady(tournament: Tournament) : boolean {
+	for (const player of tournament.waitingWinner) {
+		if (!player.readyToNext)
+			return (false)
+	}
+	return (true);
 }
 
 function actualiseDisplay(playerinfos: playerStat) {
