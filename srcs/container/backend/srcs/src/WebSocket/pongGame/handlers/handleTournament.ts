@@ -94,7 +94,6 @@ function joinTournament(playerInfos: playerStat, msg: webMsg) {
 		playerInfos.inGame = true;
 		playerInfos.inRoom = true;
 		tournament.listPlayer.add(playerInfos);
-		console.log(tournament.listPlayer.size, tournament.size)
 		if (tournament.listPlayer.size == tournament.size) {
 			tournament.isFull = true;
 			updateTournament();

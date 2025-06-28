@@ -20,7 +20,6 @@ export let pingMonitoring: boolean = false;
 export function pongWebSocket(socket: WebSocket, user: User) {
 	if (handleReconnection(socket, user)){}
 	else {
-		// console.log("reset")
 		const playerInfos: playerStat = {
 				avatar: user.avatar,
 				email: user.email,
@@ -49,14 +48,12 @@ export function pongWebSocket(socket: WebSocket, user: User) {
 				handleSameKeyboard(playerInfos, msg);
 				break ;
 			case "Multi" :
-				console.log("relance une partie")
 				handleMulti(playerInfos, msg);
 				break ;
 			case "Solo" :
 				handleSolo(playerInfos, msg);
 				break ;
 			case "Tournament" :
-				console.log("Tournament")
 				handleTournament(playerInfos, msg);
 				break ;
 			case "Move" :
@@ -84,12 +81,15 @@ export function pongWebSocket(socket: WebSocket, user: User) {
 		const playerInfos = sockets.get(socket);
 		console.log("close");
 		if (playerInfos) handleClose(playerInfos);
-		if ((playerInfos && playerInfos.mode === "Multi") || (playerInfos && playerInfos.mode === "Tournament")) {
+		if ((playerInfos && playerInfos.mode === "Multi")|| (playerInfos && playerInfos.mode === "Tournament")) {
 			if (playerInfos && playerInfos.game) {
-				if (playerInfos.name !== playerInfos.game.getPlayer1().getPlayerInfos().name) //if multi
+				if (playerInfos.name !== playerInfos.game.getPlayer1().getPlayerInfos().name) {
 					playerInfos.game.getPlayer1().getPlayerInfos().socket.send(JSON.stringify({type: "Pause", value: true}))
-				else
+				}//if multi
+
+				else {
 					playerInfos.game.getPlayer2().getPlayerInfos().socket.send(JSON.stringify({type: "Pause", value: true}))
+				}
 			}
 		}
 	});

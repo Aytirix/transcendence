@@ -120,7 +120,6 @@ const GameTournament: React.FC = () => {
 		
 					}
 					if (data.type === "Pause") {
-						console.log(`pause = ${isPause}`)
 						setIsPause(data.value);
 					}
 					if (data.type === "assign") {
@@ -144,7 +143,6 @@ const GameTournament: React.FC = () => {
 					if (data.type === "FINISHED") {
 						localStorage.removeItem("reconnection");
 						localStorage.removeItem("data");
-						console.log(data.value)
 						if (data.value === "win") {
 							if (assignPlayer.current === "p1")
 								nameWinner.current = namePlayer1!.current
@@ -167,7 +165,6 @@ const GameTournament: React.FC = () => {
 						socket.close(); //ici
 					}
 					if (data.ball && data.player1 && data.player2) {
-						console.log("reception data")
 						setParsedData(data)
 
 						if (!namePlayer1.current) {
@@ -207,6 +204,7 @@ const GameTournament: React.FC = () => {
 					return;
 				}
 				socketRef.current.send(JSON.stringify({ type: "Tournament", action: "Start"}));
+				localStorage.setItem("reconnection", "Tournament");
 				if (count > 0) {
 					const timeout = setTimeout(() => {
 						setCount((count) => count - 1);
@@ -287,35 +285,6 @@ const GameTournament: React.FC = () => {
 					clearInterval(interval);
 				};
 			}, [isReady3d]);
-		
-			// useEffect(() => {
-			// 	if (!isReady3d || !socketRef.current || isCinematic) return;
-			// 	localStorage.setItem("reconnection", "Tournament"); //certqinement a cause de ca
-
-			// 	let i: number = -1209
-			// 	camera.current!.rotation.x = 0.081;
-			// 	camera.current!.rotation.y = 1.599;
-			// 	camera.current!.position.y = 21.71;
-			// 	camera.current!.position.z = -1.446;
-			// 		const interval = setInterval(() => {
-			// 			if (!camera.current) return;
-			// 			if (i <= - 21) {
-			// 				camera.current.position.x = i;
-			// 				i++;
-			// 			}
-			// 			else if (i >= 200) {
-			// 				camera.current.position.x = 338.131;
-			// 				camera.current.position.y = 136.188;
-			// 				camera.current.position.z = -481.417;
-			// 				camera.current.rotation.x = 0.280;
-			// 				camera.current.rotation.y = -0.561;
-			// 				clearInterval(interval);
-			// 				setIscinematic(true)
-			// 			}
-			// 			else
-			// 				i++;
-			// 		}, 6);
-			// }, [isReady3d])
 		
 			return (
 				<>
