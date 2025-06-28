@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useLanguage } from '../contexts/LanguageContext';
-import { getMinecraftInfo } from './components/minecraft/FullscreenMinecraftHandler.tsx';
+import { getMinecraftInfo } from './minecraft/FullscreenMinecraftHandler.tsx';
 import './assets/styles/intro.scss';
 import { useAuth } from '../contexts/AuthContext.tsx';
-import { canAccessMinecraft, recordMinecraftAccess } from './components/minecraft/minecraftUtils';
+import { canAccessMinecraft, recordMinecraftAccess } from './minecraft/minecraftUtils';
 
 function Intro() {
 	const { t } = useLanguage();
