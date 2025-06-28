@@ -296,8 +296,6 @@ export function isOnFinishMatch(tournament: Tournament, player1: playerStat, pla
 			//penser au nettoyage des perdant nettoyage du gagnant avec un reset des donnees .
 		}
 		tournament.nextManche = true;
-		// if (checkReady(tournament))
-		// 	dispatchMatch(tournament);
 	}
 
 }

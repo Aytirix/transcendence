@@ -63,17 +63,23 @@ export class Game {
 				width: this.player1.width,
 				margin: this.player1.margin,
 				speed: this.player1.speed,
-				score: this.player1.getScore()
+				score: this.player1.getScore(),
+				avatar: this.player1.getPlayerInfos().avatar
 			},
 			player2: {
 				pos_x: this.player2.pos_x,
 				pos_y: this.player2.pos_y,
-				userName: this.player1.getPlayerInfos().mode !== "SameKeyboard" ? this.player2.getPlayerInfos().name : "player2",
+				userName: this.player1.getPlayerInfos().mode !== "SameKeyboard" 
+					? this.player2.getPlayerInfos().name 
+					: "player2",
 				height: this.player2.height,
 				width: this.player2.width,
 				margin: this.player2.margin,
 				speed: this.player2.speed,
-				score: this.player2.getScore()
+				score: this.player2.getScore(),
+				avatar: this.player1.getPlayerInfos().mode === "SameKeyboard" || this.player1.getPlayerInfos().mode === "Solo"
+					? null
+					: this.player2.getPlayerInfos().avatar
 			}
 		});
 		if (this.player1.getPlayerInfos().mode === "Multi"
