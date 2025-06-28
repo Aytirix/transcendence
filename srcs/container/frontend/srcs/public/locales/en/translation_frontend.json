@@ -4,6 +4,7 @@
 	"username": "Username",
 	"password": "Password",
 	"login": {
+		"withGoogle": "Login with Google",
 		"title": "Login",
 		"email": "Email",
 		"password": "Password",
@@ -13,6 +14,7 @@
 		"registerLink": "New hero? Create an account"
 	},
 	"register": {
+		"withGoogle": "Register with Google",
 		"title": "Register",
 		"email": "Email",
 		"username": "Username",

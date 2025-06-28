@@ -73,7 +73,11 @@ const IronManRegister: React.FC = () => {
 
 			<form className="z-10 w-full max-w-md" onSubmit={handleSubmit}>
 				<fieldset className="bg-gray-900 bg-opacity-90 border border-gray-700 rounded-2xl shadow-2xl p-8 flex flex-col gap-4 items-center">
-					<legend className="text-2xl font-bold text-center mb-2 text-white tracking-widest gradient-text">{t('register.title')}</legend>
+					<legend className="text-2xl font-bold text-center text-white tracking-widest gradient-text">{t('register.title')}</legend>
+
+					<div className="flex justify-center mb-2">
+						<GoogleLoginButton textbtn="signup" />
+					</div>
 
 					<input
 						className="input input-a bg-gray-800 border border-gray-700 text-white focus:ring-2 focus:ring-blue-500 rounded-md px-4 py-2 text-center"
@@ -121,9 +125,6 @@ const IronManRegister: React.FC = () => {
 						{loading ? "Création..." : t('register.submit')}
 					</button>
 
-					<div className="flex justify-center mt-2">
-						<GoogleLoginButton textbtn="signup" />
-					</div>
 
 					<div className="flex justify-center mt-2">
 						<Link to="/login" className="text-gray-300 hover:text-yellow-400 transition-colors">

@@ -199,6 +199,7 @@
 	},
 	"email": {
 		"verificationCode": {
+			"subjectForgetPassword": "Transcendence - Réinitialisation de votre mot de passe",
 			"subjectCreateAccount": "Transcendence - Confirmez la création de votre compte",
 			"subjectUpdateEmail": "Transcendence - Confirmez votre nouvelle adresse e-mail",
 			"CreateAccountOk": "Votre compte a été créé avec succès.",

@@ -6,7 +6,7 @@ import SingletonGuard from './app/components/SingleWindowGuard.tsx';
 import { LanguageProvider } from './contexts/LanguageContext.tsx';
 import { BrowserRouter } from 'react-router-dom';
 import AppRouter from './app/AppRouter.tsx';
-import { ToastContainer } from './app/components/Notifications';
+import { ToastPortalContainer } from './app/components/Notifications';
 import IronManNavBar from './app/IronManNavBar';
 import { AuthProvider } from './contexts/AuthContext';
 import { useEffect } from 'react';
@@ -26,7 +26,7 @@ function DisableNativeContextMenu({ children }: { children: React.ReactNode }) {
 
 createRoot(document.getElementById('root')!).render(
 	<DisableNativeContextMenu>
-		<ToastContainer />
+		<ToastPortalContainer/>
 		<BrowserRouter>
 			<SingletonGuard>
 				<LanguageProvider>

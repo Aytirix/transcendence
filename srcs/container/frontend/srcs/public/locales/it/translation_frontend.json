@@ -4,6 +4,7 @@
 	"username": "Nome utente",
 	"password": "Password",
 	"login": {
+		"withGoogle": "Accedi con Google",
 		"title": "Accesso",
 		"email": "Email",
 		"password": "Password",
@@ -13,6 +14,7 @@
 		"registerLink": "Nuovo eroe? Crea un account"
 	},
 	"register": {
+		"withGoogle": "Registrati con Google",
 		"title": "Registrazione",
 		"email": "Email",
 		"username": "Nome utente",

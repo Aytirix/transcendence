@@ -195,7 +195,9 @@
 		"groupDeletedByUser": "{{username}} has deleted the group {{groupName}}"
 	},
 	"email": {
-		"verificationCode": {
+		"verificationCode": 
+		{
+			"subjectForgetPassword": "Transcendence - Reset your password",
 			"subjectCreateAccount": "Transcendence - Confirm your account creation",
 			"subjectUpdateEmail": "Transcendence - Confirm your new email address",
 			"CreateAccountOk": "Your account has been created successfully.",
