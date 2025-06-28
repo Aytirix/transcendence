@@ -21,6 +21,7 @@ const Solo: React.FC = () => {
 		const engine = useRef<Engine | null>(null);
 		const socketRef = useRef<WebSocket | null>(null);
 		const deleteGo = useRef(false);
+		const messagePause = useRef("Press [ ESP ] for PLAY")
 		
 		const [isReady3d, setIsReady3d] = useState(false);
 		const [isCinematic, setIscinematic] = useState(false);
@@ -116,6 +117,8 @@ const Solo: React.FC = () => {
 				}
 				if (data.type === "Pause") {
 					setIsPause(data.value);
+					if (data.message)
+						messagePause.current = data.message;
 				}
 				if (data.type === "FINISHED") {
 					localStorage.removeItem("reconnection");
@@ -292,7 +295,7 @@ const Solo: React.FC = () => {
 						 {/* jeu en pause */}
 						{isPause && isReady3d && isCinematic && (
 							<h1 className='Start-go'>
-								[ Pause ]
+								{messagePause.current}
 							</h1>
 						)}
 	
