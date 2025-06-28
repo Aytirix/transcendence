@@ -52,6 +52,7 @@ const IronManLogin: React.FC = () => {
 			<form className="z-10 w-full max-w-md" onSubmit={handleSubmit}>
 				<fieldset className="bg-gray-900 bg-opacity-90 border border-gray-700 rounded-2xl shadow-2xl p-8 flex flex-col gap-4 items-center">
 					<legend className="text-2xl font-bold text-center text-white tracking-widest gradient-text">{t('login.title')}</legend>
+					
 
 					<div className="flex justify-center mb-3">
 						<GoogleLoginButton textbtn="login" />
@@ -75,7 +76,7 @@ const IronManLogin: React.FC = () => {
 						required
 					/>
 
-					<button className="btn btn-neutral mt-4 text-black font-bold bg-gradient-to-r from-yellow-400 via-red-500 to-pink-500 hover:from-pink-500 hover:to-yellow-400 transition-colors w-full rounded-md shadow-lg" type="submit" disabled={loading}>
+					<button className="style-button  w-full rounded-md shadow-lg" type="submit" disabled={loading}>
 						{loading ? t('login.loading') : t('login.submit')}
 					</button>
 

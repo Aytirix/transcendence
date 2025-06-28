@@ -10,6 +10,7 @@ import { ToastPortalContainer } from './app/components/Notifications';
 import IronManNavBar from './app/IronManNavBar';
 import { AuthProvider } from './contexts/AuthContext';
 import { useEffect } from 'react';
+import { ChatWebSocketProvider } from './app/chat/ChatWebSocketContext';
 
 function DisableNativeContextMenu({ children }: { children: React.ReactNode }) {
 	useEffect(() => {
@@ -26,16 +27,19 @@ function DisableNativeContextMenu({ children }: { children: React.ReactNode }) {
 
 createRoot(document.getElementById('root')!).render(
 	<DisableNativeContextMenu>
-		<ToastPortalContainer/>
-		<BrowserRouter>
-			<SingletonGuard>
-				<LanguageProvider>
-					<AuthProvider>
-						<IronManNavBar />
-						<AppRouter />
-					</AuthProvider>
-				</LanguageProvider>
-			</SingletonGuard>
-		</BrowserRouter>
+		<ToastPortalContainer />
+		<ChatWebSocketProvider>
+			<BrowserRouter>
+				<SingletonGuard>
+					<LanguageProvider>
+						<AuthProvider>
+							<IronManNavBar />
+							<AppRouter />
+						</AuthProvider>
+					</LanguageProvider>
+				</SingletonGuard>
+			</BrowserRouter>
+			<ToastPortalContainer />
+		</ChatWebSocketProvider>
 	</DisableNativeContextMenu>
 );

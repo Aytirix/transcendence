@@ -150,7 +150,7 @@ export const addRelationGoogleToken = async (id: number, token: string): Promise
 };
 
 export const searchUser = async (name: string): Promise<User[]> => {
-	const result: any = await executeReq('SELECT * FROM users WHERE username LIKE ? LIMIT 10', [`%${name}%`]);
+	const result: any = await executeReq('SELECT * FROM users WHERE username LIKE ? LIMIT 25', [`%${name}%`]);
 	if (result.length === 0) {
 		return [];
 	}

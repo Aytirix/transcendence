@@ -5,6 +5,7 @@
 	cursor: default;
 	backdrop-filter: blur(2rem);
 	min-height: 100vh;
+	background: linear-gradient(90deg, #111827 0%, #1f2937 50%, #111827 100%);
 }
 
 .logo {
@@ -51,4 +52,43 @@ input,
 textarea {
 	user-select: text;
 	cursor: text;
+}
+
+/* Scrollbar personnalisée */
+::-webkit-scrollbar {
+	width: 12px;
+	height: 12px;
+}
+
+::-webkit-scrollbar-track {
+	background: rgba(255, 255, 255, 0.1);
+	border-radius: 10px;
+	backdrop-filter: blur(10px);
+}
+
+::-webkit-scrollbar-thumb {
+	background: linear-gradient(135deg, #646cff, #61dafb);
+	border-radius: 10px;
+	border: 2px solid transparent;
+	background-clip: content-box;
+	transition: all 0.3s ease;
+}
+
+::-webkit-scrollbar-thumb:hover {
+	background: linear-gradient(135deg, #5a5fcf, #4fb3d9);
+	box-shadow: 0 0 10px rgba(100, 108, 255, 0.5);
+}
+
+::-webkit-scrollbar-thumb:active {
+	background: linear-gradient(135deg, #4a4fbf, #3f92c9);
+}
+
+::-webkit-scrollbar-corner {
+	background: rgba(255, 255, 255, 0.1);
+}
+
+/* Support pour Firefox */
+* {
+	scrollbar-width: thin;
+	scrollbar-color: #ffffff rgb(0, 0, 0);
 }

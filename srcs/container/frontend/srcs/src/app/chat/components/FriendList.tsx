@@ -1,5 +1,6 @@
 import React from 'react';
 import { Friend } from '../types/chat'; // Assurez-vous que le chemin est correct
+import ApiService from '../../../api/ApiService';
 
 interface FriendListProps {
   friends: Friend[];
@@ -35,9 +36,9 @@ const FriendList: React.FC<FriendListProps> = ({
           {/* {console.log("friend.id",friend.id, friend.username)} */}
           <div className="flex gap-4 items-center">
             <div className={`avatar ${friend.online ? "avatar-online" : "avatar-offline"}`}>
-              <div className="w-18 rounded-full"><img src={`https://${window.location.hostname}:3000/avatars/${friend.avatar}`} alt="A" /></div></div>
+              <div className="w-18 rounded-full"><img src={ApiService.getFile(friend.avatar)} alt="A" /></div></div>
             <div className="w-40 text-left">{friend.username}</div>
-            <div className="w-6 rounded-full"><img src={`https://${window.location.hostname}:3000/flags/${friend.lang}_flat.png`} alt="A" /></div>
+            <div className="w-6 rounded-full"><img src={`/flags/${friend.lang}_flat.png`} alt="A" /></div>
             <div className={`${friend.relation.status === "friend"
               ? "text-green-700"
               : friend.relation.status === "pending"

@@ -1,21 +1,27 @@
 // src/GroupsMessagesPage.tsx
 
-import React, { useEffect, useState, useCallback, useRef } from "react";
-import useSafeWebSocket, { WebSocketStatus } from "../../api/useSafeWebSocket";
-import { Group, Message, Friend } from "./types/chat";
+import React, { useEffect, useState, useCallback } from "react";
+import { useChatWebSocket } from "./ChatWebSocketContext";
+import { Group, Message } from "./types/chat";
 import ChatSidebar from "./components/ChatSidebar";
 import ChatContentArea from "./components/ChatContentArea";
 
-const endpoint = `/chat`;
-
 const GroupsMessagesPage: React.FC = () => {
-    const [groups, setGroups] = useState<Group[]>([]);
-    const [friends, setFriends] = useState<Friend[]>([]);
+    const {
+        groups,
+        friends,
+        groupMessages,
+        wsStatus,
+        feedback,
+        setFeedback,
+        sendMessage,
+        loadMessages,
+        createGroup,
+    } = useChatWebSocket();
+
+    // État local pour l'interface utilisateur
     const [selectedGroup, setSelectedGroup] = useState<Group | null>(null);
-    const [groupMessages, setGroupMessages] = useState<{ [groupId: number]: Message[] }>({});
     const [input, setInput] = useState("");
-    const [wsStatus, setWsStatus] = useState<WebSocketStatus>("Connecting...");
-    const [feedback, setFeedback] = useState<string | null>(null);
 
     // Création de groupe
     const [showCreateGroup, setShowCreateGroup] = useState(false);
@@ -25,139 +31,40 @@ const GroupsMessagesPage: React.FC = () => {
     // Messages du groupe actuellement sélectionné
     const selectedMessages: Message[] = selectedGroup ? groupMessages[selectedGroup.id] || [] : [];
 
-    // --- Gestion des messages WebSocket ---
-    const handleWebSocketMessage = useCallback((data: any) => {
-        console.log("data", data);
-        switch (data.action) {
-            case "new_message":
-                if (data.group_id && data.result === "ok" && data.message) {
-                    setGroupMessages(prev => ({
-                        ...prev,
-                        [data.group_id]: [...(prev[data.group_id] || []), data.message]
-                    }));
-                }
-                console.log("FRIENDS", data.friends)
-                if (data.friends) setFriends(prev => [...prev, data.friends]);
-                break;
-            case "loadMoreMessage":
-                if (data.messages && data.group_id) {
-                    const arr = Object.values(data.messages) as Message[];
-                    arr.sort((a, b) => a.id - b.id);
-
-
-                    for (const key in arr) {
-                        const sender_id = arr[key].sender_id;
-                        const username = friends.find(f => f.id === sender_id)?.username
-                        console.log("idmessage", username, sender_id, arr[key].message);
-                        console.log(friends);
-                        arr[key].sender_id = username || "moi";
-                    }
-
-
-                    setGroupMessages(prev => ({
-                        ...prev,
-                        [data.group_id]: arr
-                    }));
-                } else if (data.group_id) {
-                    setGroupMessages(prev => ({
-                        ...prev,
-                        [data.group_id]: []
-                    }));
-                }
-                break;
-            case "init_connected": {
-                const groupArray: Group[] = Object.values(data.groups || {});
-                setGroups(groupArray);
-                if (groupArray.length > 0) setSelectedGroup(groupArray[0]);
-                console.log("FRIENDS", data.friends);
-                const groupFriends: Friend[] = Object.values(data.friends || {});
-                if (groupFriends.length > 0) setFriends(groupFriends);
-                console.log("FRIENDS2", groupFriends);
-                break;
-            }
-            case "create_group": {
-                if (data.result === "ok" && data.group) {
-                    setGroups(prev => [...prev, data.group]);
-                    setFeedback("Groupe créé avec succès !");
-                    setSelectedGroup(data.group);
-                    setShowCreateGroup(false);
-                    setNewGroupName("");
-                    setSelectedFriendsForGroup([]);
-                } else {
-                    setFeedback(data.error || "Erreur lors de la création du groupe.");
-                }
-                setTimeout(() => setFeedback(null), 2000);
-                break;
-            }
-            //   case "group_updated": {
-            //     if (data.group) {
-            //       setGroups(prev => prev.map(g => g.id === data.group.id ? data.group : g));
-            //       if (selectedGroup?.id === data.group.id) setSelectedGroup(data.group);
-            //     }
-            //     break;
-            //   }
-            case "delete_group": {
-                if (data.group_id) {
-                    setGroups(prev => prev.filter(g => g.id !== data.group_id));
-                    if (selectedGroup?.id === data.group_id) setSelectedGroup(null);
-                }
-                break;
-            }
-            default:
-                // Actions autres ignorées dans ce contexte
-                break;
+    // Sélectionner automatiquement le premier groupe lors du chargement
+    useEffect(() => {
+        if (groups.length > 0 && !selectedGroup) {
+            setSelectedGroup(groups[0]);
         }
-    }, [selectedGroup]);
-
-    // --- Configuration WebSocket ---
-    const socket = useSafeWebSocket({
-        endpoint,
-        onMessage: handleWebSocketMessage,
-        onStatusChange: setWsStatus,
-        reconnectDelay: 1000,
-        maxReconnectAttempts: 15,
-        pingInterval: 30000,
-    });
+    }, [groups, selectedGroup]);
 
     // Charger les messages quand un groupe est sélectionné
     useEffect(() => {
-        if (socket?.readyState !== WebSocket.OPEN || !selectedGroup) return;
-        socket.send(
-            JSON.stringify({
-                action: "loadMoreMessage",
-                group_id: selectedGroup.id,
-                firstMessageId: 0,
-            })
-        );
-    }, [selectedGroup, socket]);
-
-
+        if (selectedGroup) {
+            loadMessages(selectedGroup.id, 0);
+        }
+    }, [selectedGroup, loadMessages]);
 
     // Envoyer un message
-    const sendMessage = () => {
-        if (!input.trim() || !selectedGroup || socket?.readyState !== WebSocket.OPEN) return;
-        socket.send(JSON.stringify({
-            action: "new_message",
-            group_id: selectedGroup.id,
-            message: input,
-        }));
+    const handleSendMessage = useCallback(() => {
+        if (!input.trim() || !selectedGroup) return;
+        
+        sendMessage(selectedGroup.id, input);
         setInput("");
-    };
+    }, [input, selectedGroup, sendMessage]);
 
     // Gérer création de groupe
-    const handleCreateGroup = () => {
-        if (!newGroupName.trim() || selectedFriendsForGroup.length === 0 || socket?.readyState !== WebSocket.OPEN) {
-            setFeedback("Veuillez saisir un nom de groupe et sélectionner au moins un ami.");
-            setTimeout(() => setFeedback(null), 2000);
-            return;
+    const handleCreateGroup = useCallback(() => {
+        createGroup(newGroupName, selectedFriendsForGroup);
+        
+        // Réinitialiser le formulaire si la création réussit
+        // (le contexte gère déjà le feedback)
+        if (!feedback?.includes("Erreur")) {
+            setShowCreateGroup(false);
+            setNewGroupName("");
+            setSelectedFriendsForGroup([]);
         }
-        setFeedback(null);
-        socket.send(JSON.stringify({
-            action: "create_group",
-            group_name: newGroupName.trim(),
-            users_id: selectedFriendsForGroup,
-        }));
-    };
+    }, [newGroupName, selectedFriendsForGroup, createGroup, feedback]);
 
     const toggleFriendSelection = useCallback((friendId: number) => {
         setSelectedFriendsForGroup(prev =>
@@ -166,6 +73,14 @@ const GroupsMessagesPage: React.FC = () => {
                 : [...prev, friendId]
         );
     }, []);
+
+    // Mettre à jour le groupe sélectionné quand un nouveau groupe est créé
+    useEffect(() => {
+        if (feedback?.includes("succès") && groups.length > 0) {
+            const newestGroup = groups[groups.length - 1];
+            setSelectedGroup(newestGroup);
+        }
+    }, [feedback, groups]);
 
     return (
         <div className="flex h-screen">
@@ -188,7 +103,7 @@ const GroupsMessagesPage: React.FC = () => {
                 selectedMessages={selectedMessages}
                 feedback={feedback}
                 wsStatus={wsStatus}
-                sendMessage={sendMessage}
+                sendMessage={handleSendMessage}
                 input={input}
                 setInput={setInput}
             />

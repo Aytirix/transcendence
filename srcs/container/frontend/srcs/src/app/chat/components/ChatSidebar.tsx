@@ -46,7 +46,7 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({
   // const confirmedFriends = friends.filter(friend => friend.relation.status === "friend");
 
   return (
-    <aside className="w-64 bg-gray-100 border-r flex flex-col">
+    <aside className="w-64 bg-gray-100 border-r flex flex-col mt-16">
       <div className="p-4 font-bold text-xl">Groupes</div>
 
       {/* Section de création de groupe */}
