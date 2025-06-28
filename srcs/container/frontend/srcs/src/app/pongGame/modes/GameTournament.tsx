@@ -122,6 +122,14 @@ const GameTournament: React.FC = () => {
 					if (data.type === "Pause") {
 						setIsPause(data.value);
 					}
+					if (data.type === "Win") {
+						// socket.close();
+						console.log("win")
+						engine.current?.dispose();
+						localStorage.removeItem("reconnection");
+						localStorage.removeItem("data");
+						navigate("/pong/menu/Tournament");
+					}
 					if (data.type === "assign") {
 						assignPlayer.current = data.value;
 						if (assignPlayer.current === "p2" && camera.current) {
@@ -162,7 +170,7 @@ const GameTournament: React.FC = () => {
 						camera!.current!.position.z = -481.417;
 						camera!.current!.rotation.x = 0.280;
 						camera!.current!.rotation.y = -0.561;
-						socket.close(); //ici
+						// socket.close(); //ici
 					}
 					if (data.ball && data.player1 && data.player2) {
 						setParsedData(data)
