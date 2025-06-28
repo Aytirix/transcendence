@@ -27,8 +27,8 @@ const SameKeyboard: React.FC = () => {
 	const [isCinematic, setIscinematic] = useState(false);
 	const [parsedData, setParsedData] = useState<Parse | null>(null);
 	const [count, setCount] = useState(3);
-	const [namePlayer1] = useState("Player1");
-	const [namePlayer2] = useState("Player2");
+	const [namePlayer1] = useState("Thanos");
+	const [namePlayer2] = useState("Ironman");
 	const [startReco, setStartReco] = useState(false);
 	const [isPause, setIsPause] = useState(false);
 	const [isWinner, setisWinner] = useState(false);
@@ -310,9 +310,17 @@ const SameKeyboard: React.FC = () => {
 
 					{/* Dashboard des scores et exit */}
 					{isCinematic && !isWinner && (
-						<>
-							<h1 className="DashBoardp1">{namePlayer1} : Score {parsedData?.player1.score}</h1>
-							<h1 className="DashBoardp2">{namePlayer2} : Score {parsedData?.player2.score}</h1>
+								<>
+									<h1 className="DashBoardp1">{namePlayer1}</h1>
+									<h1 className='DashScore1'>{parsedData?.player1.score}</h1>
+										<div className='popup-avatar1'>
+											<img src="/images/Thanos.png" alt="Avatar"/>
+										</div>
+									<h1 className="DashBoardp2">{namePlayer2}</h1>
+									<h1 className='DashScore2'>{parsedData?.player2.score}</h1>
+										<div className='popup-avatar2'>
+											<img src="/images/IronmanProfil.png" alt="Avatar"/>
+										</div>
 							<button onClick={returnMenu} className="Return-button">Exit Game</button>
 						</>
 					)}

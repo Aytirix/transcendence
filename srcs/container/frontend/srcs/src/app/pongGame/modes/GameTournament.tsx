@@ -5,6 +5,7 @@ import { Engine, Scene, Mesh, AbstractMesh, FreeCamera} from '@babylonjs/core';
 import { initBabylon } from '../initBabylon';
 import { Parse} from '../types/data';
 import { handleKeyDown, handleKeyUp } from '../types/handleKey';
+import ApiService from '../../../api/ApiService';
 
 const GameTournament: React.FC = () => {
 
@@ -30,7 +31,6 @@ const GameTournament: React.FC = () => {
 			const namePlayer2 = useRef<string | null>(null);
 			const assignPlayer = useRef<"p1" | "p2" | null>(null);
 			const [isReady3d, setIsReady3d] = useState(false);
-			// const [isCinematic, setIscinematic] = useState(false);
 			const [parsedData, setParsedData] = useState<Parse | null>(null);
 			const [count, setCount] = useState(3);
 			const [startReco, setStartReco] = useState(false);
@@ -38,6 +38,9 @@ const GameTournament: React.FC = () => {
 			const [waitingPlayers, setWaitingPlayers] = useState(false);
 			const [isPause, setIsPause] = useState(false);
 			const messagePause = useRef("Press [ ESP ] for PLAY")
+			const [player1Avatar, setPlayer1Avatar] = useState<string | undefined>(undefined)
+			const [player2Avatar, setPlayer2Avatar] = useState<string | undefined>(undefined)
+			
 		
 			const reconnection = localStorage.getItem("reconnection");
 		
@@ -177,10 +180,12 @@ const GameTournament: React.FC = () => {
 					}
 					if (data.ball && data.player1 && data.player2) {
 						setParsedData(data)
-
-						if (!namePlayer1.current) {
+						if (!player1Avatar)
+							setPlayer1Avatar(ApiService.getFile(data.player1.avatar))
+						if (!player2Avatar)
+							setPlayer2Avatar(ApiService.getFile(data.player2.avatar))
+						if (!namePlayer1.current)
 							namePlayer1.current = (data.player1.userName);
-						}
 						if (!namePlayer2.current)
 							namePlayer2.current = data.player2.userName;
 						localStorage.setItem("data", JSON.stringify({
@@ -325,8 +330,24 @@ const GameTournament: React.FC = () => {
 							{/* Dashboard des scores et exit */}
 							{!isWinner && (
 								<>
-									<h1 className="DashBoardp1">{!namePlayer1.current ? "" : `${namePlayer1.current} : Score ${parsedData?.player1.score}`}</h1>
-									<h1 className="DashBoardp2">{!namePlayer2.current ? "" : `${namePlayer2.current} : Score ${parsedData?.player2.score}`}</h1>
+									<h1 className="DashBoardp1">{!namePlayer1.current ? "" : `${namePlayer1.current}`}</h1>
+									<h1 className='DashScore1'>{!namePlayer1.current ? "" : `${parsedData?.player1.score}`}</h1>
+										{!namePlayer1.current ? (
+											""
+											) : (
+											<div className='popup-avatar1'>
+												<img src={player1Avatar} alt="Avatar"/>
+											</div>
+											)}
+									<h1 className="DashBoardp2">{!namePlayer2.current ? "" : `${namePlayer2.current}`}</h1>
+									<h1 className='DashScore2'>{!namePlayer2.current ? "" : `${parsedData?.player2.score}`}</h1>
+										{!namePlayer2.current ? (
+											""
+											) : (
+											<div className='popup-avatar2'>
+												<img src={player2Avatar} alt="Avatar"/>
+											</div>
+											)}
 									<button onClick={returnMenu} className="Return-button">Exit Game</button>
 								</>
 							)}
