@@ -44,10 +44,10 @@ const IronManNavBar: React.FC = () => {
 						</div>
 					</div>
 					<div className="navbar-center">
-						<MinSizeGuard minWidth={1200} minHeight={870} hideWhenBlocked={true}>
+						<MinSizeGuard minWidth={800} minHeight={870} hideWhenBlocked={true}>
 							<Link to="/Pacman" className="btn btn-ghost sm:text-lg md:text-xl lg:text-2xl" >Pacman</Link>
 						</MinSizeGuard>
-						<MinSizeGuard minWidth={1200} minHeight={870} hideWhenBlocked={true}>
+						<MinSizeGuard minWidth={800} minHeight={870} hideWhenBlocked={true}>
 							<Link to="/pong" className="btn btn-ghost sm:text-lg md:text-xl lg:text-2xl">Pong</Link>
 						</MinSizeGuard>
 						<Link to="/Chat" className="btn btn-ghost sm:text-lg md:text-xl lg:text-2xl">Chat</Link>

@@ -276,6 +276,7 @@ export class Game {
 	setTournament(tournament: Tournament) { this.tournament = tournament; }
 	getPlayer1Ready() : boolean {return (this.player1Ready)}
 	getPlayer2Ready() : boolean {return (this.player2Ready)}
+	getIsStarted() : boolean {return (this.isStarted)}
 	setPlayer1Ready(boolean: boolean) { this.player1Ready = boolean }
 	setPlayer2Ready(boolean: boolean) { this.player2Ready = boolean }
 	setIsStarted(boolean: boolean) {this.isStarted = boolean}
