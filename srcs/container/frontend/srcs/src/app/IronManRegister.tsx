@@ -94,7 +94,7 @@ const IronManRegister: React.FC = () => {
 						className="input input-a bg-gray-800 border border-gray-700 text-white focus:ring-2 focus:ring-blue-500 rounded-md px-4 py-2 text-center"
 						type="text"
 						name="username"
-						maxLength={15}
+						maxLength={10}
 						placeholder={t('register.username')}
 						value={form.username}
 						onChange={handleChange}

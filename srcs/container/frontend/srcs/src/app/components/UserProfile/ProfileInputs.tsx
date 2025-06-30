@@ -15,7 +15,7 @@ const ProfileInputs: React.FC<ProfileInputsProps> = ({ form, handleChange }) => 
 			name="username"
 			placeholder={form?.username || "Pseudo"}
 			value={form.username}
-			maxLength={15}
+			maxLength={10}
 			onChange={handleChange}
 			
 		/>

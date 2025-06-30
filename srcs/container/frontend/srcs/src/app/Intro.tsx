@@ -112,7 +112,7 @@ function Intro() {
 								<span className="feature">• {t('home.real_time')}</span>
 								<span className="feature">• {t('home.competitive')}</span>
 							</div>
-							<button className="play-button">
+							<button className="style-button">
 								{t('home.play_now')} →
 							</button>
 						</div>
@@ -129,7 +129,7 @@ function Intro() {
 								<span className="feature">• {t('home.high_scores')}</span>
 								<span className="feature">• {t('home.nostalgic')}</span>
 							</div>
-							<button className="play-button">
+							<button className="style-button">
 								{t('home.play_now')} →
 							</button>
 						</div>
