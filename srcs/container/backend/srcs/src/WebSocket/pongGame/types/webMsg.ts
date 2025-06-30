@@ -15,7 +15,8 @@ export interface webMsg {
 			| "Winner"
 			| "Quit"
 			| "infoTournament"
-			| "readyToNext";
+			| "readyToNext"
+			| "assign";
 	player1?: number;
 	player2?: number;
 	sizeTournament?: 4

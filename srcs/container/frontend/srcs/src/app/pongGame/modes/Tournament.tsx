@@ -17,6 +17,8 @@ const TournamentPage: React.FC = () => {
 	const [player2Avatar, setPlayer2Avatar] = useState<string | undefined>(undefined)
 	const [isWinnerTournament, setIsWinnerTournament] = useState(false);
 	const [nameWinner, setNameWinner] = useState<string | null>(null)
+	const [autoQualified, setAutoQualified] = useState(false);
+	const switchDisplay = useRef(false);
 	
 	const [idTournament, setIdTournament] = useState<number>(0);
 	const socketRef = useRef<WebSocket | null>(null);
@@ -44,13 +46,24 @@ const TournamentPage: React.FC = () => {
 				playerName.current =data.name;
 				socketRef.current?.send(JSON.stringify({ type: "Tournament", action: "Display" }));
 			}
+			else if (data.action === "WinNextManche") {
+					setAutoQualified(true);
+					switchDisplay.current = true;
+					setTimeout(() => {
+						setAutoQualified(false);
+					}, 3000);
+					console.log("win next manche")
+			}
 			else if (data.action === "Display") {
-				setStartTournament(true);
-				setRounds(data.currentManche);
-				displayDuel(data.value) 
-				setTimeout(() => {
-					navigate('/pong/menu/GameTournament')
-				}, 3000)
+				if (!switchDisplay.current) {
+					setStartTournament(true);
+					setRounds(data.currentManche);
+					displayDuel(data.value)
+					setTimeout(() => {
+						navigate('/pong/menu/GameTournament')
+					}, 3000)
+				}
+				switchDisplay.current = false;
 			}
 			else if (data.action === "WinnerTournament") {
 				console.log(data.message);
@@ -138,6 +151,9 @@ const TournamentPage: React.FC = () => {
 									</table>
 								</div>
 								:	<>
+										{autoQualified && (
+											<h2 className='Info'>Vous êtes qualifié d’office pour la prochaine manche !</h2>
+										)}
 										<div className='popup-player1'>
 											<img src={player1Avatar} alt='Avatar'/>
 											<h1 className='Player1'>{player1}</h1>

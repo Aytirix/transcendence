@@ -33,6 +33,7 @@ export function pongWebSocket(socket: WebSocket, user: User) {
 				timePause: 0,
 				pauseGame: false,
 				readyToNext: false,
+				switchManche: false,
 			};
 			sockets.set(socket, playerInfos);
 	}

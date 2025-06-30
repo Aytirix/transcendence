@@ -146,6 +146,15 @@ const GameTournament: React.FC = () => {
 							camera.current.position.z = -0.804;
 							camera.current.rotation.x = 0.363
 							camera.current.rotation.y = 1.570;
+							localStorage.setItem("data", JSON.stringify({
+								camera: {
+									pos_x: camera!.current!.position.x,
+									pos_y: camera!.current!.position.y,
+									pos_z: camera!.current!.position.z,
+									rot_x: camera!.current!.rotation.x,
+									rot_y: camera!.current!.rotation.y
+								}
+							}))
 						}
 						else if (assignPlayer.current === "p1" && camera.current){
 							camera.current.position.x = 130.38;
@@ -221,8 +230,7 @@ const GameTournament: React.FC = () => {
 					}
 					return;
 				}
-				socketRef.current.send(JSON.stringify({ type: "Tournament", action: "Start"}));
-				localStorage.setItem("reconnection", "Tournament");
+				socketRef.current.send(JSON.stringify({ type: "Tournament", action: "assign"}));
 				if (count > 0) {
 					const timeout = setTimeout(() => {
 						setCount((count) => count - 1);
@@ -235,6 +243,8 @@ const GameTournament: React.FC = () => {
 						return () => clearTimeout(goTimeout);
 					}, 500);
 				}
+				socketRef.current.send(JSON.stringify({ type: "Tournament", action: "Start"}));
+				localStorage.setItem("reconnection", "Tournament");
 				setIsStarted(true);
 			}, [isReady3d, count]);
 		
@@ -331,7 +341,7 @@ const GameTournament: React.FC = () => {
 									: <h1 className="Start-go">Go</h1>
 							)}
 							{/* Dashboard des scores et exit */}
-							{!isWinner && (
+							{!isWinner && isStarted &&(
 								<>
 									<h1 className="DashBoardp1">{!namePlayer1.current ? "" : `${namePlayer1.current}`}</h1>
 									<h1 className='DashScore1'>{!namePlayer1.current ? "" : `${parsedData?.player1.score}`}</h1>

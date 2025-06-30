@@ -19,6 +19,7 @@ export interface playerStat {
 	timePause?: number;
 	pauseGame?: boolean;
 	readyToNext?: boolean;
+	switchManche?: boolean;
 };
 
 export interface Tournament {
