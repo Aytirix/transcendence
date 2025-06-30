@@ -152,8 +152,8 @@ const UserProfile: React.FC = () => {
 									key={idx}
 									src={ApiService.getFile(av)}
 									className={`w-16 h-16 cursor-pointer rounded-full border-2 transition-all duration-300 hover:scale-110 ${form.avatar === av
-											? "border-yellow-400 ring-2 ring-yellow-400 ring-opacity-50 shadow-lg"
-											: "border-gray-600 hover:border-gray-400"
+										? "border-yellow-400 ring-2 ring-yellow-400 ring-opacity-50 shadow-lg"
+										: "border-gray-600 hover:border-gray-400"
 										}`}
 									alt={`avatar${idx + 1}`}
 									onClick={() => handleAvatarSelect(av)}
@@ -205,13 +205,6 @@ const UserProfile: React.FC = () => {
 			</form>
 
 			<style>{`
-				.gradient-text {
-					background: linear-gradient(135deg, #fbbf24, #ef4444, #ec4899);
-					-webkit-background-clip: text;
-					-webkit-text-fill-color: transparent;
-					background-clip: text;
-				}
-
 				@keyframes bounce-slow {
 					0%, 20%, 50%, 80%, 100% {
 						transform: translateY(0);

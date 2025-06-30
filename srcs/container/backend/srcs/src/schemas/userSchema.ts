@@ -58,7 +58,7 @@ export const register = {
 		properties: {
 			...login.body.properties,
 			email: { type: 'string', minLength: 3, maxLength: 50, format: 'email' },
-			username: { type: 'string', minLength: 3, maxLength: 15, pattern: '^[a-zA-Z0-9]+$' },
+			username: { type: 'string', minLength: 3, maxLength: 10, pattern: '^[a-zA-Z0-9]+$' },
 			confirmPassword: { type: 'string', minLength: 3 },
 			// confirmPassword: { 
 			// 	type: 'string', 
@@ -113,7 +113,7 @@ export const update = {
 					properties: {
 						id: { type: 'number', minLength: 3, maxLength: 5 },
 						email: { type: 'string', format: 'email' },
-						username: { type: 'string', minLength: 3, maxLength: 15, pattern: '^[a-zA-Z0-9]+$' },
+						username: { type: 'string', minLength: 3, maxLength: 10, pattern: '^[a-zA-Z0-9]+$' },
 						lang: { type: 'string', enum: ['fr', 'en', 'it', 'es'] },
 						avatar: { type: 'string' },
 					},
@@ -162,7 +162,7 @@ export const isAuth = {
 					properties: {
 						id: { type: 'number', minLength: 3, maxLength: 5 },
 						email: { type: 'string', format: 'email' },
-						username: { type: 'string', minLength: 3, maxLength: 15, pattern: '^[a-zA-Z0-9]+$' },
+						username: { type: 'string', minLength: 3, maxLength: 10, pattern: '^[a-zA-Z0-9]+$' },
 						lang: { type: 'string', enum: ['fr', 'en', 'it', 'es'] },
 						avatar: { type: 'string' },
 					},
@@ -203,7 +203,7 @@ export const authGoogleCallback = {
 					properties: {
 						id: { type: 'number', minLength: 3, maxLength: 5 },
 						email: { type: 'string', format: 'email' },
-						username: { type: 'string', minLength: 3, maxLength: 15, pattern: '^[a-zA-Z0-9]+$' },
+						username: { type: 'string', minLength: 3, maxLength: 10, pattern: '^[a-zA-Z0-9]+$' },
 						lang: { type: 'string', enum: ['fr', 'en', 'it', 'es'] },
 						avatar: { type: 'string' },
 					},

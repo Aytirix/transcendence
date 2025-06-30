@@ -269,8 +269,8 @@ export async function authGoogleCallback(request: FastifyRequest, reply: Fastify
 			if (await userModel.usernameAlreadyExists(user.username)) {
 				user.username += Math.floor(Math.random() * 10);
 				addnum++;
-				if (user.username.length > 15) {
-					user.username = user.username.slice(0, 15 - addnum.toString().length);
+				if (user.username.length > 7) {
+					user.username = user.username.slice(0, 7 - addnum.toString().length);
 				}
 			}
 			else break;
