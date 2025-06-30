@@ -19,23 +19,34 @@ export function handleTournament(playerInfos: playerStat, msg: webMsg) {
 		quitTournament(playerInfos)
 	else if (msg.action === "infoTournament")
 		playerInfos.socket.send(JSON.stringify({ action: "infoTournament", id: playerInfos.idTournament, name: playerInfos.name }))
+	else if (msg.action === "assign") {
+		const game = playerInfos.game;
+		if (!game) return;
+		if (game.getPlayer1().getPlayerInfos().id === playerInfos.id) {
+			game.getPlayer1().getPlayerInfos().socket.send(JSON.stringify({ type: "assign", value: "p1" }))
+			game.getPlayer1().getPlayerInfos().socket.send(JSON.stringify({ type: "Pause" }))
+		} else if (game.getPlayer2().getPlayerInfos().id === playerInfos.id) {
+			game.getPlayer2().getPlayerInfos().socket.send(JSON.stringify({ type: "assign", value: "p2" }))
+			game.getPlayer2().getPlayerInfos().socket.send(JSON.stringify({ type: "Pause" }))
+		}
+	}
 	else if (msg.action === "Start") {
 		const game = playerInfos.game;
 		if (!game) return;
 		if (game.getPlayer1().getPlayerInfos().id === playerInfos.id) {
 			game.setPlayer1Ready(true);
-			game.getPlayer1().getPlayerInfos().socket.send(JSON.stringify({ type: "assign", value: "p1" }))
-			game.getPlayer1().getPlayerInfos().socket.send(JSON.stringify({ type: "Pause" }))
+			// game.getPlayer1().getPlayerInfos().socket.send(JSON.stringify({ type: "assign", value: "p1" }))
+			// game.getPlayer1().getPlayerInfos().socket.send(JSON.stringify({ type: "Pause" }))
 		} else if (game.getPlayer2().getPlayerInfos().id === playerInfos.id) {
 			game.setPlayer2Ready(true);
-			game.getPlayer2().getPlayerInfos().socket.send(JSON.stringify({ type: "assign", value: "p2" }))
-			game.getPlayer2().getPlayerInfos().socket.send(JSON.stringify({ type: "Pause" }))
+			// game.getPlayer2().getPlayerInfos().socket.send(JSON.stringify({ type: "assign", value: "p2" }))
+			// game.getPlayer2().getPlayerInfos().socket.send(JSON.stringify({ type: "Pause" }))
 		}
 		if (game.getPlayer1Ready() && game.getPlayer2Ready()) {
 			game.setStatus("PLAYING");
-			setTimeout(() => {
+			// setTimeout(() => {
 				game.start();
-			}, 3000)
+			// }, 3000)
 		}
 	}
 	else if (msg.action === "readyToNext") {
@@ -51,13 +62,26 @@ export function handleTournament(playerInfos: playerStat, msg: webMsg) {
 function quitTournament(playerInfos: playerStat) {
 	for (const [id, tournament] of listTournament) {
 		if (id === playerInfos.idTournament) {
-			tournament.listPlayer.delete(playerInfos);
-			if (tournament.listPlayer.size === 0) {
-				listTournament.delete(id);
-			} else {
-				tournament.isFull = false;
+			const idx = tournament.waitingWinner.indexOf(playerInfos);
+			if (idx !== -1) {
+				tournament.waitingWinner.splice(idx, 1); // je supprime un element a l index donne
+				for (let i : number = 0; i < tournament.currentMatch.length; i++) {
+					const match = tournament.currentMatch[i];
+					if (match.player1.id === playerInfos.id || match.player2.id === playerInfos.id) {
+						tournament.currentMatch.splice(i, 1); // je supprime le match à l’index i
+						break;
+					}
+				}
 			}
-			break;
+			else {
+				tournament.listPlayer.delete(playerInfos);
+				if (tournament.listPlayer.size === 0) {
+					listTournament.delete(id);
+				} else {
+					tournament.isFull = false;
+				}
+				break; 
+			}
 		}
 	}
 	playerInfos.inGame = false;
@@ -175,10 +199,15 @@ function messageTournament(tournament: Tournament, action: string, message: stri
 function createMatchPairs(tournament: Tournament) {
 	messageTournament(tournament, "Start", "Lancement du match dans");
 	for (const { player1, player2 } of tournament.currentMatch) {
-		const game: Game = createGame(player1, player2);
-		player1.game = game;
-		player2.game = game;
-		game.setTournament(tournament);
+		if (!player1.switchManche) {
+			const game: Game = createGame(player1, player2);
+			player1.game = game;
+			player2.game = game;
+			game.setTournament(tournament);
+		}
+		else if (player1.switchManche)
+			player1.switchManche = false;
+
 	}
 }
 
@@ -243,6 +272,23 @@ function displayTournament(tournament: Tournament) {
 function dispatchMatch(tournament: Tournament) {
 	tournament.nextManche = false;
 	shuffle(tournament.waitingWinner);
+	const length : number = tournament.waitingWinner.length;
+	let stockWinner : playerStat;
+	if (length % 2 !== 0) {
+		if (length === 1) {
+			tournament.winner = true;
+			console.log("envoi du vainqueur", tournament.waitingWinner[0].name)
+			setTimeout(() => {
+				messageTournament(tournament, "WinnerTournament", `${tournament.waitingWinner[0].name} remporte le tournois`);
+				listTournament.delete(tournament.idTournament);
+			}, 500)
+			return ;
+		}
+		stockWinner = tournament.waitingWinner[0];
+		tournament.waitingWinner.splice(0, 1);
+		stockWinner.socket.send(JSON.stringify({action: "WinNextManche"}))
+		//preparer pour plus de joueur
+	}
 	for (let i: number = 0; i < tournament.waitingWinner.length; i += 2) {
 		tournament.currentMatch.push({
 			player1: tournament.waitingWinner[i],
@@ -255,6 +301,15 @@ function dispatchMatch(tournament: Tournament) {
 	}
 	tournament.currentManche++;
 	tournament.waitingWinner.length = 0;
+	if (stockWinner) {
+		tournament.waitingWinner.push(stockWinner);
+		stockWinner.switchManche = true;
+		tournament.currentMatch.push({
+			player1: tournament.waitingWinner[0],
+			player2: tournament.waitingWinner[0]
+		});
+	}
+	//voir comment gerer ca current
 	messageTournament(tournament, "Start", "nouvelle Manche");
 	displayTournament(tournament);
 	createMatchPairs(tournament);
@@ -301,10 +356,15 @@ export function isOnFinishMatch(tournament: Tournament, player1: playerStat, pla
 }
 
 function checkReady(tournament: Tournament) : boolean {
+	console.log("check")
 	for (const player of tournament.waitingWinner) {
-		if (!player.readyToNext)
+		if (!player.readyToNext){
+		console.log("check false")
 			return (false)
+		}
+		
 	}
+	console.log("check true")
 	return (true);
 }
 
@@ -327,14 +387,26 @@ function actualiseDisplay(playerinfos: playerStat) {
 	};
 	//mise a jour du fichier json pour envoi a tout les players
 	for (const [id, tournament] of listTournament) {
-		jsonTournament.value.push({
-			"id": id,
-			"name": tournament.name,
-			"max": tournament.size,
-			"current": tournament.listPlayer.size,
-			"isFull": tournament.isFull,
-			"listPlayers": Array.from(tournament.listPlayer).map(player => player.name),
-		})
+		if (tournament.waitingWinner.length === 0) {
+			jsonTournament.value.push({
+				"id": id,
+				"name": tournament.name,
+				"max": tournament.size,
+				"current": tournament.listPlayer.size,
+				"isFull": tournament.isFull,
+				"listPlayers": Array.from(tournament.listPlayer).map(player => player.name),
+			})
+		}
+		else {
+			jsonTournament.value.push({
+				"id": id,
+				"name": tournament.name,
+				"max": tournament.size,
+				"current": tournament.waitingWinner.length,
+				"isFull": tournament.isFull,
+				"listPlayers": Array.from(tournament.waitingWinner).map(player => player.name),
+			})
+		}
 	}
 	playerinfos.socket.send(JSON.stringify(jsonTournament));
 }
