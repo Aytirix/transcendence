@@ -15,7 +15,7 @@ export interface SafeWebSocketProps {
 	pingInterval?: number; // Délai entre les ping, en ms
 }
 
-export function useSafeWebSocket({ endpoint, onMessage, onStatusChange, reconnectDelay = 500, maxReconnectAttempts = 10, pingInterval = 50000 }: SafeWebSocketProps): WebSocket | null {
+export function useSafeWebSocket({ endpoint, onMessage, onStatusChange, reconnectDelay = 10000, maxReconnectAttempts = 1, pingInterval = 50000 }: SafeWebSocketProps): WebSocket | null {
 	const socketRef = useRef<WebSocket | null>(null);
 	const reconnectTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 	const heartbeatRef = useRef<NodeJS.Timeout | null>(null);
@@ -35,7 +35,7 @@ export function useSafeWebSocket({ endpoint, onMessage, onStatusChange, reconnec
 
 		socket.onopen = () => {
 			console.log('WebSocket connected successfully to:', wsUrl);
-			reconnectAttemptsRef.current = 0;
+			// reconnectAttemptsRef.current = 0;
 			onStatusChange?.('Connected');
 			heartbeatRef.current = setInterval(() => {
 				if (socket.readyState === WebSocket.OPEN) {
@@ -50,19 +50,19 @@ export function useSafeWebSocket({ endpoint, onMessage, onStatusChange, reconnec
 				if (data.result === 'error' && data.notification) {
 					if (!Array.isArray(data.notification)) {
 						notification.error(data.notification);
-						return;
-					}
-					for (const message of data.notification) {
-						notification.error(message);
+					} else if (data.notification.length > 0) {
+						for (const message of data.notification) {
+							notification.error(message);
+						}
 					}
 					return;
 				} else if (data.result !== 'error' && data.notification) {
 					if (!Array.isArray(data.notification)) {
 						notification.success(data.notification);
-						return;
-					}
-					for (const message of data.notification) {
-						notification.success(message);
+					} else if (data.notification.length > 0) {
+						for (const message of data.notification) {
+							notification.success(message);
+						}
 					}
 				}
 				onMessage(data);

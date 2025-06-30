@@ -229,7 +229,6 @@ export default function WebSocketPacman() {
 		endpoint: '/Pacman',
 		onMessage: handleMessage,
 		onStatusChange: resetState,
-		reconnectDelay: 1000,
 		pingInterval: 1000,
 	});
 

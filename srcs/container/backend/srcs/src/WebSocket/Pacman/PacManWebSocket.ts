@@ -50,7 +50,7 @@ async function PacManWebSocket(ws: WebSocket, user: User): Promise<void> {
 
 		const action = text.action;
 		if (!action) {
-			controllerPacman.sendResponse(ws, 'error', 'error', ws.i18n.t('pacman.error.actionNotFound'));
+			controllerPacman.sendResponse(ws, 'error', 'error', ws.i18n.t('pacman.rooms.actionNotFound'));
 			return;
 		}
 

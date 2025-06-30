@@ -65,41 +65,59 @@ async function getFriendsForUser(userId: number, state: State): Promise<User[]> 
 
 async function updateFriendRelation(user: User, friend: User, status: 'friend' | 'blocked' | 'pending' | '', group_id: number | false = null, state: State): Promise<boolean> {
 	const [user_one_id, user_two_id] = user.id < friend.id ? [user.id, friend.id] : [friend.id, user.id];
+
+	// 1. Vérifie si la relation existe déjà
+	const selectQuery = `SELECT id FROM friends WHERE user_one_id = ? AND user_two_id = ?`;
+	const existing: any = await executeReq(selectQuery, [user_one_id, user_two_id]);
+
+	let relationId = null;
+	if (existing && existing.length > 0) {
+		relationId = existing[0].id;
+	}
+
+	// 2. Fait l'insert ou update
 	const query = `
-		INSERT INTO friends (target, user_one_id, user_two_id, status, groupe_priv_msg_id) 
-		VALUES (?, ?, ?, ?, ?)
-		ON CONFLICT(user_one_id, user_two_id) DO UPDATE SET 
-			status = excluded.status, 
-			target = excluded.target${group_id !== false ? ', groupe_priv_msg_id = excluded.groupe_priv_msg_id' : ''};
-	`;
+        INSERT INTO friends (target, user_one_id, user_two_id, status, groupe_priv_msg_id)
+        VALUES (?, ?, ?, ?, ?)
+        ON CONFLICT(user_one_id, user_two_id) DO UPDATE SET 
+            status = excluded.status,
+            target = excluded.target${group_id !== false ? ', groupe_priv_msg_id = excluded.groupe_priv_msg_id' : ''};
+    `;
 	const result: any = await executeReq(query, [friend.id, user_one_id, user_two_id, status, group_id !== false ? group_id : null]);
 
-	if (result.affectedRows === 0) return false;
-	// mettre à jour la relation dans le state
-	// Ajouter le friends dans user
+	if (!relationId) relationId = result.insertId;
+
+	if (!relationId) {
+		console.error('Impossible de déterminer l\'id de la relation après insert/update');
+		return false;
+	}
+
 	if (!state.user.has(friend.id)) {
 		state.user.set(friend.id, user);
 	}
-	if (state.friends.has(result.insertId)) {
-		const relation = state.friends.get(result.insertId);
+
+	if (state.friends.has(relationId)) {
+		const relation = state.friends.get(relationId);
 		if (relation) {
 			relation.status = status;
 			relation.target = friend.id;
 			relation.group_id = group_id !== false ? group_id : relation.group_id;
 		}
-		state.friends.set(result.insertId, relation);
+		state.friends.set(relationId, relation);
 	} else {
-		state.friends.set(result.insertId, {
-			id: result.insertId,
+		state.friends.set(relationId, {
+			id: relationId,
 			user_one_id,
 			user_two_id,
 			target: friend.id,
 			group_id: group_id !== false ? group_id : null,
 			status,
-		});
+		} as Friends);
 	}
+
 	return true;
 }
+
 
 export default {
 	loadAllFriendRelationsFromDB,
