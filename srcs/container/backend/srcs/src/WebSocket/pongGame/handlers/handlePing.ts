@@ -26,6 +26,17 @@ export function startingPing(sockets: Map<WebSocket, playerStat>) {
 						}
 					}
 				}
+				if (playerInfos.mode === "Tournament") {
+					if (playerInfos && playerInfos.game) {
+						if (playerInfos.name !== playerInfos.game.getPlayer1().getPlayerInfos().name) {
+							playerInfos.game.getPlayer1().getPlayerInfos().resultMatchTournament = "Win"
+						}
+						else {
+							playerInfos.game.getPlayer2().getPlayerInfos().resultMatchTournament = "Win"
+
+						}
+					}
+				}
 				if (playerInfos.game)
 					playerInfos.game.setStatus("EXIT");
 				sockets.delete(playerSocket);
@@ -51,9 +62,11 @@ export function startingPing(sockets: Map<WebSocket, playerStat>) {
 						playerInfos.resultMatch = "Loose"
 					if (playerInfos.name !== playerInfos.game.getPlayer1().getPlayerInfos().name) {
 						playerInfos.game.getPlayer1().getPlayerInfos().resultMatchTournament = "Win"
+						playerInfos.game.getPlayer2().getPlayerInfos().socket.send(JSON.stringify({type: "FINISHED", value: "win"}));
 					}
 					else {
 						playerInfos.game.getPlayer2().getPlayerInfos().resultMatchTournament = "Win"
+						playerInfos.game.getPlayer1().getPlayerInfos().socket.send(JSON.stringify({type: "FINISHED", value: "win"}));
 					}
 					if (playerInfos.game)
 						playerInfos.game.setStatus("EXIT");
