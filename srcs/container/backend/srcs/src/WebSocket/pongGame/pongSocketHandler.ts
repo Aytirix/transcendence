@@ -2,7 +2,7 @@ import { WebSocket, RawData } from 'ws'
 import { User } from '@types'
 import { webMsg } from './types/webMsg';
 import { isJson } from './utils/isJson';
-import { sockets, waitingID } from './state/serverState';
+import { sockets, waitingID, waitingMulti } from './state/serverState';
 import { handleMove } from './handlers/handleMove';
 import { handleSameKeyboard } from './handlers/handleSameKeyboard';
 import { handleMulti } from './handlers/handleMulti';
@@ -64,6 +64,13 @@ export function pongWebSocket(socket: WebSocket, user: User) {
 			case "EXIT" :
 				if (playerInfos.mode === "Multi") {
 					playerInfos.resultMatch = "Loose"
+					if (!playerInfos.game) {
+						waitingMulti.delete(playerInfos);
+						playerInfos.socket.send(JSON.stringify({type: "EXIT"}));
+						playerInfos.mode = "Undefined";
+						playerInfos.inGame = false;
+						return ;
+					}
 					if (playerInfos.name !== playerInfos.game.getPlayer1().getPlayerInfos().name) 
 						playerInfos.game.getPlayer1().getPlayerInfos().resultMatch = "win"
 					else 
