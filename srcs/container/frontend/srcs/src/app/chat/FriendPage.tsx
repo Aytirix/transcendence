@@ -13,11 +13,11 @@ const FriendPage: React.FC = () => {
     wsStatus,
     currentUserId,
     searchResults,
-    feedback,
     getFriendshipStatus,
     handleAddFriend,
     handleAcceptFriend,
     handleRefuseFriend,
+	handleCancelFriend,
     handleRemoveFriend,
     handleBlockedFriend,
     handleUnBlockedFriend,
@@ -41,14 +41,15 @@ const FriendPage: React.FC = () => {
       </div>
       <FriendsContentArea
         searchResults={searchResults}
+		inputSearch={inputSearch}
         friends={friends}
         currentUserId={currentUserId}
-        feedback={feedback}
         wsStatus={wsStatus}
         getFriendshipStatus={getFriendshipStatus}
         handleAddFriend={handleAddFriend}
         handleAcceptFriend={handleAcceptFriend}
         handleRefuseFriend={handleRefuseFriend}
+		handleCancelFriend={handleCancelFriend}
         handleRemoveFriend={handleRemoveFriend}
         handleBlockedFriend={handleBlockedFriend}
         handleUnBlockedFriend={handleUnBlockedFriend}

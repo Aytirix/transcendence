@@ -31,7 +31,7 @@ export type Friend = {
   avatar?: string;
   lang?: string;
   relation: {
-    status: "pending" | "friend" | "blocked";
+    status: "pending" | "friend" | "blocked" | "";
     target: number; // user_id ciblé par la demande
     privmsg_id?: number | null; // ID du groupe privé si relation est "friend"
   };

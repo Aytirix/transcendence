@@ -125,9 +125,11 @@ export const init_connexion = async (ws: WebSocket, user: User, state: State) =>
 			let isFriend = false;
 			group.messages = filterBlockedUserMessages(group.messages, user, state);
 			for (const member of group.members) {
+				console.log('Checking member:', member.id, 'against user:', user.id);
 				if (member.id !== user.id) {
 					const relation = controllerFriends.getRelationFriend(user.id, member.id, state);
 					if (relation && relation.status === 'friend') isFriend = true;
+					console.log('Relation found:', relation);
 					break;
 				}
 			}
@@ -136,7 +138,6 @@ export const init_connexion = async (ws: WebSocket, user: User, state: State) =>
 			return false;
 		})
 	);
-
 	// Envoi de la liste des groupes et utilisateurs connectés à l'utilisateur
 	const send: send_init_connected = {
 		action: 'init_connected',

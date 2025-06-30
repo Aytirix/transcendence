@@ -6,8 +6,9 @@ import modelsFriends from '@models/modelFriends';
 import controllersChat from '@controllers/controllerChat';
 import controllerFriends from '@controllers/controllerFriends';
 import { mapToObject } from '@tools';
+import { writeFile } from 'fs';
 
-const state: State = {
+let state: State = {
 	user: new Map<number, User>(),
 	onlineSockets: new Map<number, WebSocket>(),
 	groups: new Map<number, Group>(),
@@ -31,9 +32,11 @@ async function chatWebSocket(ws: WebSocket, user: User): Promise<void> {
 
 		const action = text.action;
 		if (!action) {
-			ws.send(JSON.stringify({ action: 'error', result: 'error', notification: [ws.i18n.t('pacman.error.actionNotFound')] })); // to close
+			ws.send(JSON.stringify({ action: 'error', result: 'error', notification: [ws.i18n.t('pacman.rooms.actionNotFound')] })); // to close
 			return true;
 		}
+
+		console.log('Action received:', action, 'from user:', user.username, ',ID:', user.id, 'with data:', text);
 
 		switch (action) {
 			case 'ping':
@@ -88,20 +91,27 @@ async function chatWebSocket(ws: WebSocket, user: User): Promise<void> {
 				controllerFriends.unBlockFriend(ws, user, state, (text as req_block_user));
 				break;
 			default:
-				ws.send(JSON.stringify({ action: 'error', result: 'error', notification: [ws.i18n.t('pacman.error.actionNotFound')] })); // to close
+				ws.send(JSON.stringify({ action: 'error', result: 'error', notification: [ws.i18n.t('pacman.rooms.actionNotFound')] })); // to close
 				break;
 		}
 
-		// ws.send(JSON.stringify({
-		// 	action: 'state',
-		// 	state: {
-		// 		groups: mapToObject(state.groups),
-		// 		friends: state.friends,
-		// 		users_connected: mapToObject(state.user),
-		// 		user: user,
-		// 		lenOnlineSockets: state.onlineSockets.size,
+		const st = JSON.stringify({
+			action: 'state',
+			state: {
+				groups: mapToObject(state.groups),
+				friends: state.friends,
+				users_connected: mapToObject(state.user),
+				user: user,
+				lenOnlineSockets: state.onlineSockets.size,
+			}
+		}
+		);
+		// console.log('État actuel:', st);
+		// writeFile('./state.json', st, (err) => {
+		// 	if (err) {
+		// 		console.error('Erreur lors de l\'écriture du fichier state.json:', err);
 		// 	}
-		// }));
+		// });
 	});
 
 	ws.on('close', () => {
