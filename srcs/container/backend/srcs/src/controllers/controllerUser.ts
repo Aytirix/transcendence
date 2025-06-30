@@ -51,7 +51,7 @@ export const Register = async (request: FastifyRequest, reply: FastifyReply) => 
 		});
 	}
 
-	if (username.startsWith('PacmanAI') || await userModel.usernameAlreadyExists(username)) {
+	if ((process.env.NODE_PROJET !== 'dev' && username.startsWith('PacmanAI')) || await userModel.usernameAlreadyExists(username)) {
 		return reply.status(409).send({
 			message: request.i18n.t('errors.username.alreadyExists'),
 		});
