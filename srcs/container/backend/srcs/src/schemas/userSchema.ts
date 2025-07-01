@@ -94,6 +94,7 @@ export const update = {
 	body: {
 		properties: {
 			...register.body.properties,
+			username: { type: 'string', minLength: 3, maxLength: 10, pattern: '^[a-zA-Z0-9\u00C0-\u017F]+$' },
 		},
 		required: [],
 		errorMessage: {
@@ -106,14 +107,14 @@ export const update = {
 		200: {
 			description: 'Mise à jour réussie',
 			type: 'object',
-			properties: {
+			properties: { 
 				message: { type: 'string' },
 				user: {
 					type: 'object',
 					properties: {
 						id: { type: 'number', minLength: 3, maxLength: 5 },
 						email: { type: 'string', format: 'email' },
-						username: { type: 'string', minLength: 3, maxLength: 10, pattern: '^[a-zA-Z0-9]+$' },
+						username: { type: 'string', minLength: 3, maxLength: 10, pattern: '^[a-zA-Z0-9\u00C0-\u017F]+$' },
 						lang: { type: 'string', enum: ['fr', 'en', 'it', 'es'] },
 						avatar: { type: 'string' },
 					},

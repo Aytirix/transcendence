@@ -10,7 +10,8 @@ import { ToastPortalContainer } from './app/components/Notifications';
 import IronManNavBar from './app/IronManNavBar';
 import { AuthProvider } from './contexts/AuthContext';
 import { useEffect } from 'react';
-import { ChatWebSocketProvider } from './app/chat/ChatWebSocketContext';
+import { ChatWebSocketProvider, useChatWebSocket } from './app/chat/ChatWebSocketContext';
+import { NavigationBridge } from './app/components/NavigationBridge';
 
 function DisableNativeContextMenu({ children }: { children: React.ReactNode }) {
 	useEffect(() => {
@@ -25,19 +26,29 @@ function DisableNativeContextMenu({ children }: { children: React.ReactNode }) {
 	return <>{children}</>;
 }
 
+function AppContent() {
+	const { setNavigateFunction } = useChatWebSocket();
+
+	return (
+		<NavigationBridge onNavigateReady={setNavigateFunction}>
+			<SingletonGuard>
+				<LanguageProvider>
+					<AuthProvider>
+						<IronManNavBar />
+						<AppRouter />
+					</AuthProvider>
+				</LanguageProvider>
+			</SingletonGuard>
+		</NavigationBridge>
+	);
+}
+
 createRoot(document.getElementById('root')!).render(
 	<DisableNativeContextMenu>
 		<ToastPortalContainer />
 		<ChatWebSocketProvider>
 			<BrowserRouter>
-				<SingletonGuard>
-					<LanguageProvider>
-						<AuthProvider>
-							<IronManNavBar />
-							<AppRouter />
-						</AuthProvider>
-					</LanguageProvider>
-				</SingletonGuard>
+				<AppContent />
 			</BrowserRouter>
 			<ToastPortalContainer />
 		</ChatWebSocketProvider>

@@ -89,7 +89,17 @@ export const searchUser = async (ws: WebSocket, user: User, state: State, text: 
 
 	// filtrer les utilisateurs pour ne pas afficher l'utilisateur lui-même et ceux qui sont déjà amis
 	users = users.filter((userSearch) => {
-		const relation = getRelationFriend(user.id, userSearch.id, state);
+		let relation = getRelationFriend(user.id, userSearch.id, state);
+		if (!relation) {
+			relation = {
+				id: -1,
+				user_one_id: user.id,
+				user_two_id: userSearch.id,
+				status: '',
+				target: null,
+				group_id: null,
+			}
+		}
 		userSearch.relation = relation;
 		if (userSearch.id === user.id) return false;
 		if (group_id) {

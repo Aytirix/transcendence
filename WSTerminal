@@ -1,0 +1,4 @@
+etape 1 : npm install -g wscat
+
+wscat -c wss://localhost:3000/api/pong --no-check \
+  -H "Cookie: sessionId=2_4utDqY1rAVqKDhW7u0jz7PEjCvjhYqhNZ02g3MzlA.d02bfc7c821e6dba77a996e9259bf02ac1b99e93c3563e7be383995555a9b5d2da0ba6bd022f8609f9a7323a4357f08fa5e6c765bd42fce7ca6bcb575d2f04d8.Ux6kTh5RxI9pWK%2FvoQFR%2Fovf988DO4SJGfFakVD2fvw"

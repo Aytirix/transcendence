@@ -16,6 +16,7 @@ import dotenv from 'dotenv';
 import pacmanRoutes from './routes/pacmanRoutes';
 import fileRoutes from './routes/fileRoutes';
 import minecraftRoutes from './routes/minecraftRoutes';
+import pongRoutes from './routes/pongRoutes';
 
 dotenv.config();
 
@@ -74,6 +75,7 @@ app.register(userRoutes);
 app.register(pacmanRoutes);
 app.register(fileRoutes);
 app.register(minecraftRoutes);
+app.register(pongRoutes);
 
 // Intégration de WebSocket
 initWebSocket(app);  // Appel de la fonction initWebSocket

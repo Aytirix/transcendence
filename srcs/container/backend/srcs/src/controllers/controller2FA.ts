@@ -51,7 +51,7 @@ function processTemplate(templatePath: string, replacements: Record<string, stri
  * @param request - Objet request Fastify
  * @returns L'URL de base (protocole + host + port si nécessaire)
  */
-function getBaseUrlFromRequest(request: FastifyRequest): string {
+export function getBaseUrlFromRequest(request: FastifyRequest): string {
 	// Récupérer le protocole (https si forwarded, sinon http)
 	const protocol = request.headers['x-forwarded-proto'] ||
 		(request.headers['x-forwarded-ssl'] === 'on' ? 'https' : 'http');
@@ -277,6 +277,7 @@ export default {
 	generateCode,
 	createVerificationCode,
 	verifyCode,
+	getBaseUrlFromRequest,
 	sendRegisterVerifyEmail,
 	sendForgotPassword,
 	sendUpdateVerifyEmail,

@@ -25,13 +25,17 @@ const FriendList: React.FC<FriendListProps> = ({
 	handleBlockedFriend,
 	handleUnBlockedFriend
 }) => {
-	console.log("friendProp", friends);
 	if (friends.length === 0) {
 		return (
 			<div className="text-center text-gray-500 mt-8">
 				Aucun ami pour le moment
 			</div>
 		);
+	}
+
+	async function testInvitePong(friendId: number) {
+		const response = await ApiService.post(`/pong/invitePlayer`, { friendId });
+		return response;
 	}
 
 	function RelationPending({ friend, handleAcceptFriend, handleRefuseFriend, handleCancelFriend }: any) {
@@ -82,22 +86,43 @@ const FriendList: React.FC<FriendListProps> = ({
 		return (
 			<div>
 				<button
+					title="Débloquer l'utilisateur"
 					className="px-3 py-1 bg-green-100 text-green-700 rounded hover:bg-green-200 text-sm font-medium"
 					onClick={() => handleUnBlockedFriend(friend.id)}
 				>
-					<svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-						<rect x="6" y="11" width="12" height="9" rx="2" />
-						<path d="M8 11V7a4 4 0 1 1 8 0" />
-					</svg>
+					<img src="/images/unblock.png" alt="Débloquer" className="w-6 h-6" />
+				</button>
+				<span> </span>
+			</div>
+		);
+	}
+
+	function RelationFriend({ friend, handleBlockedFriend, handleRemoveFriend }: any) {
+		return (
+			<div>
+				<button
+					title="Bloquer l'ami"
+					className="px-1 py-1 bg-red-100 text-red-700 rounded hover:bg-red-200 text-sm font-medium"
+					onClick={() => handleBlockedFriend(friend.id)}
+				>
+					<img src="/images/block.png" alt="Bloquer" className="w-6 h-6" />
 				</button>
 				<span> </span>
 				<button
+					title="Supprimer l'ami"
 					className="px-3 py-1 bg-red-100 text-red-700 rounded hover:bg-red-200 text-sm font-medium"
 					onClick={() => handleRemoveFriend(friend.id)}
 				>
 					<svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
 						<path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
 					</svg>
+				</button>
+				<button
+					title="Inviter à jouer à Pong"
+					className="px-3 py-1 bg-blue-100 text-blue-700 rounded hover:bg-blue-200 text-sm font-medium"
+					onClick={() => testInvitePong(friend.id)}
+				>
+					<img src="/images/intro/floating-pong.png" alt="Pong" className="w-6 h-6" />
 				</button>
 			</div>
 		);
@@ -148,6 +173,8 @@ const FriendList: React.FC<FriendListProps> = ({
 						<RelationPending friend={friend} handleAcceptFriend={handleAcceptFriend} handleRefuseFriend={handleRefuseFriend} handleCancelFriend={handleCancelFriend} />
 					) : friend.relation.status === "blocked" ? (
 						<RelationBlocked friend={friend} handleUnBlockedFriend={handleUnBlockedFriend} handleRemoveFriend={handleRemoveFriend} />
+					) : friend.relation.status === "friend" ? (
+						<RelationFriend friend={friend} handleBlockedFriend={handleBlockedFriend} handleRemoveFriend={handleRemoveFriend} />
 					) : (
 						<RelationNone friend={friend} handleBlockedFriend={handleBlockedFriend} handleAddFriend={handleAddFriend} />
 					)}

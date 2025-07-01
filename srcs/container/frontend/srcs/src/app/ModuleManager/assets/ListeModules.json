@@ -48,6 +48,12 @@
 			"title": "Jeu Pong via CLI",
 			"description": "Dans ce module majeur, l’objectif est de développer une interface CLI pour jouer à Pong contre des utilisateurs web via l’API :\n• Application CLI : reproduire l’expérience Pong du site pour les utilisateurs en ligne de commande.\n• Communication API : connecter la CLI à l’application web pour rejoindre et interagir avec des joueurs web.\n• Authentification CLI : permettre aux utilisateurs CLI de se connecter en toute sécurité.\n• Synchronisation temps réel : assurer des interactions de jeu cohérentes entre CLI et web.\n• Documentation complète : guider l’utilisation de la CLI pour jouer contre des utilisateurs web.",
 			"major": "majeur"
+		},
+		{
+			"id": "8",
+			"title": "Plusieurs joueurs",
+			"description": "Ce module majeur doit permettre d’accueillir plus de deux joueurs. Chaque joueur doit disposer d’un contrôle en temps réel (le module « Joueurs distants » est fortement recommandé). À vous de définir comment le jeu pourrait se jouer à 3, 4, 5, 6 joueurs ou plus. En plus du jeu à 2 joueurs classique, vous pouvez prévoir un nombre de joueurs supérieur à 2 pour ce module multijoueur. Par exemple : 4 joueurs pourraient jouer sur un plateau carré, chaque joueur contrôlant un côté unique du carré.",
+			"major": "majeur"
 		}
 	],
 	"undecided": [
@@ -105,12 +111,6 @@
 			"id": "7",
 			"title": "Joueurs distants",
 			"description": "Ce module majeur doit permettre à deux joueurs de jouer à distance. Chaque joueur se trouve sur un ordinateur différent, accédant au même site et jouant à la même partie de Pong. Il faut prendre en compte les problèmes réseau, tels que les déconnexions inattendues ou la latence.\n• Vous devez offrir la meilleure expérience utilisateur possible.",
-			"major": "majeur"
-		},
-		{
-			"id": "8",
-			"title": "Plusieurs joueurs",
-			"description": "Ce module majeur doit permettre d’accueillir plus de deux joueurs. Chaque joueur doit disposer d’un contrôle en temps réel (le module « Joueurs distants » est fortement recommandé). À vous de définir comment le jeu pourrait se jouer à 3, 4, 5, 6 joueurs ou plus. En plus du jeu à 2 joueurs classique, vous pouvez prévoir un nombre de joueurs supérieur à 2 pour ce module multijoueur. Par exemple : 4 joueurs pourraient jouer sur un plateau carré, chaque joueur contrôlant un côté unique du carré.",
 			"major": "majeur"
 		},
 		{

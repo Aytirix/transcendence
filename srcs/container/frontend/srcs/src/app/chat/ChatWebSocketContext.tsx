@@ -3,6 +3,7 @@
 import React, { createContext, useContext, useCallback, useState, useEffect, useRef } from 'react';
 import useSafeWebSocket, { WebSocketStatus } from '../../api/useSafeWebSocket';
 import { Group, Message, Friend, Member } from './types/chat';
+import notification from '../components/Notifications'
 
 interface ChatWebSocketContextType {
 	// WebSocket status
@@ -35,6 +36,7 @@ interface ChatWebSocketContextType {
 	handleBlockedFriend: (userId: number) => void;
 	handleUnBlockedFriend: (userId: number) => void;
 	getFriendshipStatus: (userId: number) => string;
+	setNavigateFunction: (navigate: (url: string) => void) => void;
 }
 
 const ChatWebSocketContext = createContext<ChatWebSocketContextType | undefined>(undefined);
@@ -59,6 +61,11 @@ export const ChatWebSocketProvider: React.FC<ChatWebSocketProviderProps> = ({ ch
 	const [currentUserId, setCurrentUserId] = useState<number | null>(null);
 	const [searchResults, setSearchResults] = useState<Friend[] | null>(null);
 	const [inputSearch, setInputSearch] = useState("");
+	const navigateRef = useRef<((url: string) => void) | null>(null);
+
+    const setNavigateFunction = useCallback((navigate: (url: string) => void) => {
+        navigateRef.current = navigate;
+    }, []);
 
 	// Pour la recherche avec debounce
 	const searchTimeout = useRef<NodeJS.Timeout | null>(null);
@@ -152,47 +159,43 @@ export const ChatWebSocketProvider: React.FC<ChatWebSocketProviderProps> = ({ ch
 					break;
 
 				case "add_friend":
-					if (data.result === "ok") {
-						if (data.user) {
-							if (!friends.some(f => f.id === data.user.id)) {
-								console.log("Adding new friend to the list:", data.user);
-								const newFriend: Friend = {
-									...data.user,
-									relation: {
-										status: "pending",
-										target: data.user.id,
-										privmsg_id: null
-									},
-									online: false
-								};
-								setFriends(prev => [...prev, newFriend]);
-								setSearchResults(prev =>
-									prev
-										? prev.map(user =>
-											user.id === data.user.id
-												? { ...user, relation: { ...user.relation, status: "pending" } }
-												: user
-										)
-										: null
-								);
-							} else {
-								console.log("Friend already exists in the list, updating status");
-								setFriends(prev => prev.map(friend =>
-									friend.id === data.user.id
-										? { ...friend, relation: { ...friend.relation, status: "pending" } }
-										: friend
-								));
-								setSearchResults(prev =>
-									prev
-										? prev.map(user =>
-											user.id === data.user.id
-												? { ...user, relation: { ...user.relation, status: "pending" } }
-												: user
-										)
-										: null
-								);
-							}
+					if (data.result === "ok" && data.user) {
+						const updateUserStatus = (user: Friend) => ({
+							...user,
+							relation: { ...user.relation, status: "pending" as const }
+						});
+
+						const existingFriend = friends.find(f => f.id === data.user.id);
+
+						if (!existingFriend) {
+							const newFriend: Friend = {
+								...data.user,
+								relation: {
+									status: "pending",
+									target: data.user.id,
+									privmsg_id: null
+								},
+								online: false
+							};
+							setFriends(prev => [...prev, newFriend]);
+						} else {
+							setFriends(prev => prev.map(friend =>
+								friend.id === data.user.id ? updateUserStatus(friend) : friend
+							));
 						}
+
+						const updateSearchResults = (user: Friend) => ({
+							...user,
+							relation: { ...user.relation, status: "pending" as const, target: data.user.id }
+						});
+
+						setSearchResults(prev =>
+							prev
+								? prev.map(user =>
+									user.id === data.user.id ? updateSearchResults(user) : user
+								)
+								: null
+						);
 					}
 					break;
 
@@ -203,7 +206,15 @@ export const ChatWebSocketProvider: React.FC<ChatWebSocketProviderProps> = ({ ch
 								? { ...friend, relation: { ...friend.relation, status: "friend" } }
 								: friend
 						));
-					} else {
+						setSearchResults(prev =>
+							prev
+								? prev.map(user =>
+									user.id === data.user_id
+										? { ...user, relation: { ...user.relation, status: "friend" } }
+										: user
+								)
+								: null
+						);
 					}
 					break;
 
@@ -227,6 +238,15 @@ export const ChatWebSocketProvider: React.FC<ChatWebSocketProviderProps> = ({ ch
 					if (data.result === "ok") {
 						setFriends(prev => prev.filter(friend => friend.id !== data.user_id));
 					}
+					setSearchResults(prev =>
+						prev
+							? prev.map(user =>
+								user.id === data.user_id
+									? { ...user, relation: { ...user.relation, status: '' } }
+									: user
+							)
+							: null
+					);
 					break;
 
 				case "block_user":
@@ -236,6 +256,15 @@ export const ChatWebSocketProvider: React.FC<ChatWebSocketProviderProps> = ({ ch
 								? { ...friend, relation: { ...friend.relation, status: "blocked" } }
 								: friend
 						));
+						setSearchResults(prev =>
+							prev
+								? prev.map(user =>
+									user.id === data.user_id
+										? { ...user, relation: { ...user.relation, status: "blocked" } }
+										: user
+								)
+								: null
+						);
 					}
 					break;
 
@@ -243,9 +272,18 @@ export const ChatWebSocketProvider: React.FC<ChatWebSocketProviderProps> = ({ ch
 					if (data.result === "ok") {
 						setFriends(prev => prev.map(friend =>
 							friend.id === data.user_id
-								? { ...friend, relation: { ...friend.relation, status: "friend" } }
+								? { ...friend, relation: { ...friend.relation, status: "" } }
 								: friend
 						));
+						setSearchResults(prev =>
+							prev
+								? prev.map(user =>
+									user.id === data.user_id
+										? { ...user, relation: { ...user.relation, status: "" } }
+										: user
+								)
+								: null
+						);
 					}
 					break;
 
@@ -254,6 +292,15 @@ export const ChatWebSocketProvider: React.FC<ChatWebSocketProviderProps> = ({ ch
 						setFriends(prev => prev.map(f =>
 							f.id === data.user_id ? { ...f, online: true } : f
 						));
+						setSearchResults(prev =>
+							prev
+								? prev.map(user =>
+									user.id === data.user_id
+										? { ...user, online: true }
+										: user
+								)
+								: null
+						);
 					}
 					break;
 
@@ -262,9 +309,26 @@ export const ChatWebSocketProvider: React.FC<ChatWebSocketProviderProps> = ({ ch
 						setFriends(prev => prev.map(f =>
 							f.id === data.user_id ? { ...f, online: false } : f
 						));
+						setSearchResults(prev =>
+							prev
+								? prev.map(user =>
+									user.id === data.user_id
+										? { ...user, online: false }
+										: user
+								)
+								: null
+						);
 					}
 					break;
-
+				case "MultiInvite":
+					notification.confirm(`${data.username} vous invite à jouer à Pong`)
+						.then((result) => {
+							if (result && navigateRef.current) {
+								navigateRef.current(data.url);
+							} else {
+							}
+						});
+					break;
 				default:
 					console.log("Unhandled WebSocket action:", data.action);
 					break;
@@ -446,6 +510,7 @@ export const ChatWebSocketProvider: React.FC<ChatWebSocketProviderProps> = ({ ch
 		handleBlockedFriend,
 		handleUnBlockedFriend,
 		getFriendshipStatus,
+		setNavigateFunction
 	};
 
 	return (

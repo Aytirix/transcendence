@@ -11,13 +11,15 @@ export interface playerStat {
 	matchTournamentNB?: number;
 	resultMatchTournament?: "Loose" | "Win" | "Current";
 	resultMatch?: "Loose" | "win";
-	mode?: "Multi" | "Solo" | "SameKeyboard" | "Tournament" | "Undefined" | "Move" | "EXIT" | "Pause" | "Ping";
+	mode?: "Multi" | "MultiInvite" | "Solo" | "SameKeyboard" | "Tournament" | "Undefined" | "Move" | "EXIT" | "Pause" | "Ping";
 	inGame : boolean;
 	inRoom: boolean;
 	socket: WebSocket;
 	lastping?: number;
 	timePause?: number;
 	pauseGame?: boolean;
+	friendId?: number;
+	isReady?: boolean;
 };
 
 export interface Tournament {
