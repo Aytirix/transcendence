@@ -132,7 +132,7 @@ const UserProfile: React.FC = () => {
 
 			<form className="z-10 w-full max-w-lg" onSubmit={handleSubmit}>
 				<fieldset className="bg-gray-900 bg-opacity-90 border border-gray-700 rounded-2xl shadow-2xl p-6 flex flex-col gap-4">
-					<legend className="text-xl font-bold text-center text-white tracking-widest gradient-text mb-2">Mon profil</legend>
+					<legend className="text-2xl font-bold text-center text-white tracking-widest gradient-text mb-2">Mon profil</legend>
 
 					{/* AVATAR SELECTIONNE */}
 					<div className="w-full flex flex-col items-center mb-4">
@@ -203,50 +203,6 @@ const UserProfile: React.FC = () => {
 					</div>
 				</fieldset>
 			</form>
-
-			<style>{`
-				@keyframes bounce-slow {
-					0%, 20%, 50%, 80%, 100% {
-						transform: translateY(0);
-					}
-					40% {
-						transform: translateY(-10px);
-					}
-					60% {
-						transform: translateY(-5px);
-					}
-				}
-
-				@keyframes float {
-					0%, 100% {
-						transform: translateY(0px);
-					}
-					50% {
-						transform: translateY(-15px);
-					}
-				}
-
-				@keyframes float2 {
-					0%, 100% {
-						transform: translateY(0px) rotate(0deg);
-					}
-					50% {
-						transform: translateY(-20px) rotate(180deg);
-					}
-				}
-
-				.animate-bounce-slow {
-					animation: bounce-slow 3s infinite;
-				}
-
-				.animate-float {
-					animation: float 4s ease-in-out infinite;
-				}
-
-				.animate-float2 {
-					animation: float2 6s ease-in-out infinite;
-				}
-			`}</style>
 		</div>
 	);
 };

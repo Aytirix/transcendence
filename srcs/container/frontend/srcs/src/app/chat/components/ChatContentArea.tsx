@@ -2,7 +2,6 @@
 import React from 'react';
 import { Group, Message, Friend, Member } from '../types/chat'; // Assurez-vous que le chemin est correct
 import MessageList from './MessageList'; // Assurez-vous que le chemin est correct
-import FriendList from './FriendList'; // Assurez-vous que le chemin est correct
 import SearchResults from './SearchResults'; // Assurez-vous que le chemin est correct
 import MessageInput from './MessageInput'; // Assurez-vous que le chemin est correct
 import { WebSocketStatus } from '../../../api/useSafeWebSocket'; // Assurez-vous que le chemin est correct
@@ -49,16 +48,6 @@ const ChatContentArea: React.FC<ChatContentAreaProps> = ({
   setInput,
 }) => {
   const renderContent = () => {
-    if (showFriends) {
-      return (
-        <FriendList
-          friends={friends}
-          handleAcceptFriend={handleAcceptFriend}
-          handleRefuseFriend={handleRefuseFriend}
-          handleRemoveFriend={handleRemoveFriend}
-        />
-      );
-    }
 
     if (searchResults) {
       return (
