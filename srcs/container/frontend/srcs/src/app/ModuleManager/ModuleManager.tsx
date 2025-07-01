@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
 	DndContext,
 	DragOverlay,
@@ -9,45 +9,13 @@ import {
 	DragStartEvent
 } from '@dnd-kit/core';
 import './assets/styles/ModuleManager.scss';
-import modulesDataImport from './assets/ListeModules.json';
+import { useLanguage } from '../../contexts/LanguageContext';
 
 interface ModuleItem {
 	id: string;
 	title: string;
 	description: string;
 	major: boolean;
-}
-
-const modulesData: ModuleColumns = {
-	rejected: [],
-	undecided: [],
-	accepted: []
-};
-
-// Charger les données du JSON et les traiter
-if (typeof modulesDataImport === 'object' && modulesDataImport !== null) {
-	// Vérifier si c'est déjà une structure avec colonnes
-	if ('rejected' in modulesDataImport && Array.isArray((modulesDataImport as any).rejected)) {
-		// Structure avec colonnes
-		(Object.keys(modulesData) as ColumnKey[]).forEach(col => {
-			if (col in modulesDataImport && Array.isArray((modulesDataImport as any)[col])) {
-				modulesData[col] = (modulesDataImport as any)[col].map((item: any) => ({
-					...item,
-					major: typeof item.major === 'string'
-						? item.major.toLowerCase() === 'majeur'
-						: Boolean(item.major)
-				}));
-			}
-		});
-	} else if (Array.isArray(modulesDataImport)) {
-		// Structure simple avec array
-		modulesData.undecided = modulesDataImport.map((item: any) => ({
-			...item,
-			major: typeof item.major === 'string'
-				? item.major.toLowerCase() === 'majeur'
-				: Boolean(item.major)
-		}));
-	}
 }
 
 type ColumnKey = 'rejected' | 'undecided' | 'accepted';
@@ -57,6 +25,68 @@ enum SubKey {
 	major = 'majeur',
 	minor = 'mineur'
 }
+
+// Fonction pour charger dynamiquement les données selon la langue
+const loadModulesData = async (language: string): Promise<ModuleColumns> => {
+
+	const defaultData: ModuleColumns = {
+		rejected: [],
+		undecided: [],
+		accepted: []
+	};
+
+	try {
+		let modulesDataImport;
+
+		switch (language) {
+			case 'en':
+				modulesDataImport = await import('./assets/en_ListeModules.json');
+				break;
+			case 'es':
+				modulesDataImport = await import('./assets/es_ListeModules.json');
+				break;
+			case 'it':
+				modulesDataImport = await import('./assets/it_ListeModules.json');
+				break;
+			case 'fr':
+			default:
+				modulesDataImport = await import('./assets/fr_ListeModules.json');
+				break;
+		}
+
+		const data = modulesDataImport.default;
+
+		if (typeof data === 'object' && data !== null) {
+			// Vérifier si c'est déjà une structure avec colonnes
+			if ('rejected' in data && Array.isArray((data as any).rejected)) {
+				// Structure avec colonnes
+				(Object.keys(defaultData) as ColumnKey[]).forEach(col => {
+					if (col in data && Array.isArray((data as any)[col])) {
+						defaultData[col] = (data as any)[col].map((item: any) => ({
+							...item,
+							major: typeof item.major === 'string'
+								? item.major.toLowerCase() === 'majeur' || item.major.toLowerCase() === 'mayor' || item.major.toLowerCase() === 'maggiore' || item.major.toLowerCase() === 'major'
+								: Boolean(item.major)
+						}));
+					}
+				});
+			} else if (Array.isArray(data)) {
+				// Structure simple avec array
+				defaultData.undecided = data.map((item: any) => ({
+					...item,
+					major: typeof item.major === 'string'
+						? item.major.toLowerCase() === 'majeur' || item.major.toLowerCase() === 'mayor' || item.major.toLowerCase() === 'maggiore' || item.major.toLowerCase() === 'major'
+						: Boolean(item.major)
+				}));
+			}
+		}
+
+		return defaultData;
+	} catch (error) {
+		console.error('Erreur lors du chargement des données des modules:', error);
+		return defaultData;
+	}
+};
 
 const DroppableArea: React.FC<{ id: string; children: React.ReactNode }> = ({ id, children }) => {
 	const { isOver, setNodeRef } = useDroppable({ id });
@@ -95,6 +125,7 @@ const DraggableItem: React.FC<ModuleItem & { onContextMenu: (id: string) => void
 };
 
 const Modal: React.FC<{ item: ModuleItem; onClose: () => void }> = ({ item, onClose }) => {
+	const { t } = useLanguage();
 	const [isClosing, setIsClosing] = useState(false);
 
 	const handleClose = () => {
@@ -111,19 +142,43 @@ const Modal: React.FC<{ item: ModuleItem; onClose: () => void }> = ({ item, onCl
 			<div className={`modal-content-center ${isClosing ? 'slide-out' : 'slide-in'}`}>
 				<h2>{item.title}</h2>
 				<pre>{item.description}</pre>
-				<button onClick={handleClose}>Fermer</button>
+				<button onClick={handleClose}>{t('close')}</button>
 			</div>
 		</>
 	);
 };
 
 const DragAndDropModules: React.FC = () => {
-	const [columns, setColumns] = useState<ModuleColumns>(() => {
-		return { ...modulesData };
-	});
+	const { t, currentLanguage } = useLanguage();
 
+	const [columns, setColumns] = useState<ModuleColumns>({
+		rejected: [],
+		undecided: [],
+		accepted: []
+	});
+	const [isLoading, setIsLoading] = useState(true);
 	const [activeId, setActiveId] = useState<string | null>(null);
 	const [modalItem, setModalItem] = useState<ModuleItem | null>(null);
+
+	// Charger les données selon la langue courante
+	useEffect(() => {
+		const loadData = async () => {
+			setIsLoading(true);
+			const data = await loadModulesData(currentLanguage);
+			setColumns(data);
+			setIsLoading(false);
+		};
+
+		loadData();
+	}, [currentLanguage]);
+
+	if (isLoading) {
+		return (
+			<div className="module-manager loading">
+				<div>{t('loading')}...</div>
+			</div>
+		);
+	}
 
 	const handleDragStart = ({ active }: DragStartEvent) => {
 		setActiveId(String(active.id));
@@ -221,9 +276,9 @@ const DragAndDropModules: React.FC = () => {
 						marginBottom: '1rem'
 					}}
 				>
-					<div>Mineur : {acceptedMinor} / {totalMinor}</div>
-					<div>Majeur : {acceptedMajor} / {totalMajor}</div>
-					<div>Total de points : {points} / 100</div>
+					<div>{t('modules.stats.minor')}: {acceptedMinor} / {totalMinor}</div>
+					<div>{t('modules.stats.major')}: {acceptedMajor} / {totalMajor}</div>
+					<div>{t('modules.stats.total')}: {points} / 100</div>
 				</div>
 
 
@@ -234,12 +289,12 @@ const DragAndDropModules: React.FC = () => {
 						const subs = splitSubColumns(columns[col]);
 						return (
 							<div key={col} className="list-box">
-								<h3>{col.toUpperCase()}</h3>
+								<h3>{t(`modules.columns.${col}`)}</h3>
 								<div className="sublists">
 									{subs.minor.length > 0 && (
 										<DroppableArea id={`${col}:${SubKey.minor}`}>
 											<div className="sublist minor">
-												<h3>Mineurs</h3>
+												<h3>{t('modules.types.minor')}</h3>
 												{subs.minor.map(item => (
 													<DraggableItem
 														key={item.id}
@@ -254,7 +309,7 @@ const DragAndDropModules: React.FC = () => {
 									{subs.major.length > 0 && (
 										<DroppableArea id={`${col}:${SubKey.major}`}>
 											<div className="sublist major">
-												<h3>Majeurs</h3>
+												<h3>{t('modules.types.major')}</h3>
 												{subs.major.map(item => (
 													<DraggableItem
 														key={item.id}

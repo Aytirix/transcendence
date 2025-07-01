@@ -1,6 +1,7 @@
 {
 	"hello": "Ciao",
 	"logout": "Disconnetti",
+	"loading": "Caricamento...",
 	"username": "Nome utente",
 	"password": "Password",
 	"login": {
@@ -379,5 +380,21 @@
 		"resourcePacksSize": "Dimensione resource packs",
 		"totalSize": "Dimensione totale salvata",
 		"closeSettings": "Chiudi"
+	},
+	"modules": {
+		"stats": {
+			"minor": "Minore",
+			"major": "Maggiore",
+			"total": "Totale punti"
+		},
+		"columns": {
+			"rejected": "RIFIUTATI",
+			"undecided": "INDECISI",
+			"accepted": "ACCETTATI"
+		},
+		"types": {
+			"minor": "Minori",
+			"major": "Maggiori"
+		}
 	}
 }

@@ -1,6 +1,7 @@
 {
 	"hello": "Hello",
 	"logout": "Logout",
+	"loading": "Loading...",
 	"username": "Username",
 	"password": "Password",
 	"login": {
@@ -265,47 +266,6 @@
 		"blockUser": "Block user",
 		"unblockUser": "Unblock user"
 	},
-	"pong": {
-		"title": "Pong",
-		"menu": {
-			"play": "Play",
-			"quickMatch": "Quick match",
-			"createRoom": "Create a room",
-			"joinRoom": "Join a room",
-			"tournament": "Tournament",
-			"statistics": "Statistics",
-			"rules": "Rules"
-		},
-		"game": {
-			"waitingForPlayer": "Waiting for a player...",
-			"gameStarting": "Game starting...",
-			"score": "Score",
-			"pause": "Pause",
-			"resume": "Resume",
-			"quit": "Quit",
-			"winner": "Winner",
-			"loser": "Loser",
-			"draw": "Draw"
-		},
-		"rules": {
-			"title": "Pong Rules",
-			"objective": "Objective: Score points by sending the ball into the opponent's goal",
-			"controls": "Controls: Use up/down arrows or W/S to move your paddle",
-			"scoring": "Scoring: First to 11 points wins",
-			"powerUps": "Power-ups: Collect bonuses for special effects"
-		},
-		"statistics": {
-			"title": "Pong Statistics",
-			"gamesPlayed": "Games played",
-			"gamesWon": "Games won",
-			"gamesLost": "Games lost",
-			"winRate": "Win rate",
-			"totalScore": "Total score",
-			"averageScore": "Average score",
-			"bestStreak": "Best streak",
-			"ranking": "Ranking"
-		}
-	},
 	"common": {
 		"loading": "Loading...",
 		"error": "Error",
@@ -380,5 +340,21 @@
 		"totalSize": "Total size",
 		"totalSaved": "Total saved",
 		"closeSettings": "Close"
+	},
+	"modules": {
+		"stats": {
+			"minor": "Minor",
+			"major": "Major",
+			"total": "Total points"
+		},
+		"columns": {
+			"rejected": "REJECTED",
+			"undecided": "UNDECIDED",
+			"accepted": "ACCEPTED"
+		},
+		"types": {
+			"minor": "Minor",
+			"major": "Major"
+		}
 	}
 }

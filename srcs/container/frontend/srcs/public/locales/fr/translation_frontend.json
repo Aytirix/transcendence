@@ -60,7 +60,6 @@
 		"epic_games": "Jeux Épiques",
 		"hours_of_fun": "Heures de Plaisir",
 		"school_spirit": "Esprit 42",
-		
 		"choose_your_adventure": "Choisissez votre aventure",
 		"classic_pong_description": "Le classique jeu de Pong avec une touche moderne et multijoueur",
 		"classic_pacman_description": "L'iconique Pac-Man avec des fonctionnalités améliorées",
@@ -71,15 +70,13 @@
 		"high_scores": "Meilleurs scores",
 		"nostalgic": "Nostalgique",
 		"play_now": "Jouer maintenant",
-		
 		"made_with": "Fait avec",
 		"at_42_school": "à l'école 42",
 		"developed_by": "Développé par"
 	},
-	
 	"credits": {
 		"contributions_title": "Contributions",
-		"role" : {
+		"role": {
 			"lead": "Développeur principal",
 			"pongFullstack": "Développeur Fullstack Pong",
 			"generalFrontend": "Développeur Frontend général",
@@ -116,10 +113,9 @@
 			"pongAI": "Développement de l'IA pour le jeu Pong"
 		}
 	},
-
 	"pacman": {
 		"title": "Pacman",
-		"menu" : {
+		"menu": {
 			"home": "Accueil",
 			"lobby": {
 				"button": "Lobby",
@@ -135,7 +131,7 @@
 					"waitingForPlayers": "En attente de joueurs"
 				}
 			},
-			"liveGames" : {
+			"liveGames": {
 				"button": "En direct",
 				"title": "Parties en cours",
 				"noGamesFound": "Aucune partie en cours",
@@ -179,7 +175,7 @@
 				"valid": "Valide",
 				"invalid": "Invalide",
 				"noMapsFound": "Aucune carte trouvée",
-				"suppress" : "Supprimer",
+				"suppress": "Supprimer",
 				"edit": "Éditer",
 				"mapEditor": {
 					"title": "Créer une carte Pacman",
@@ -267,47 +263,6 @@
 		"blockUser": "Bloquer l'utilisateur",
 		"unblockUser": "Débloquer l'utilisateur"
 	},
-	"pong": {
-		"title": "Pong",
-		"menu": {
-			"play": "Jouer",
-			"quickMatch": "Match rapide",
-			"createRoom": "Créer une salle",
-			"joinRoom": "Rejoindre une salle",
-			"tournament": "Tournoi",
-			"statistics": "Statistiques",
-			"rules": "Règles"
-		},
-		"game": {
-			"waitingForPlayer": "En attente d'un joueur...",
-			"gameStarting": "La partie commence...",
-			"score": "Score",
-			"pause": "Pause",
-			"resume": "Reprendre",
-			"quit": "Quitter",
-			"winner": "Gagnant",
-			"loser": "Perdant",
-			"draw": "Match nul"
-		},
-		"rules": {
-			"title": "Règles du Pong",
-			"objective": "Objectif : Marquer des points en envoyant la balle dans le but adverse",
-			"controls": "Contrôles : Utilisez les flèches haut/bas ou W/S pour déplacer votre raquette",
-			"scoring": "Score : Premier à 11 points gagne",
-			"powerUps": "Power-ups : Collectez les bonus pour des effets spéciaux"
-		},
-		"statistics": {
-			"title": "Statistiques Pong",
-			"gamesPlayed": "Parties jouées",
-			"gamesWon": "Parties gagnées",
-			"gamesLost": "Parties perdues",
-			"winRate": "Taux de victoire",
-			"totalScore": "Score total",
-			"averageScore": "Score moyen",
-			"bestStreak": "Meilleure série",
-			"ranking": "Classement"
-		}
-	},
 	"common": {
 		"loading": "Chargement...",
 		"error": "Erreur",
@@ -390,6 +345,22 @@
 			"nameJoueurs": "joueurs noms",
 			"place": "Place",
 			"nextaQualifierRounds": "Vous êtes qualifié d’office pour la prochaine manche !"
+		}
+	},
+	"modules": {
+		"stats": {
+			"minor": "Mineur",
+			"major": "Majeur",
+			"total": "Total de points"
+		},
+		"columns": {
+			"rejected": "REFUSÉS",
+			"undecided": "INDÉCIS",
+			"accepted": "ACCEPTÉS"
+		},
+		"types": {
+			"minor": "Mineurs",
+			"major": "Majeurs"
 		}
 	}
 }
