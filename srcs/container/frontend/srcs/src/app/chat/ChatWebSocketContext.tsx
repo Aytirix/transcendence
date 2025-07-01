@@ -18,7 +18,7 @@ interface ChatWebSocketContextType {
 	currentUserId: number | null;
 
 	// Search
-	searchResults: Friend[] | null;
+	searchResults: Friend[];
 	inputSearch: string;
 	setInputSearch: (value: string) => void;
 
@@ -63,7 +63,7 @@ export const ChatWebSocketProvider: React.FC<ChatWebSocketProviderProps> = ({ ch
 	const [groupMessages, setGroupMessages] = useState<{ [groupId: number]: Message[] }>({});
 	const [wsStatus, setWsStatus] = useState<WebSocketStatus>("Connecting...");
 	const [currentUserId, setCurrentUserId] = useState<number | null>(null);
-	const [searchResults, setSearchResults] = useState<Friend[] | null>(null);
+	const [searchResults, setSearchResults] = useState<Friend[]>([]);
 	const [inputSearch, setInputSearch] = useState("");
 	const navigateRef = useRef<((url: string) => void) | null>(null);
 	const [currentPathname, setCurrentPathname] = useState<string>("/login");
@@ -228,7 +228,7 @@ export const ChatWebSocketProvider: React.FC<ChatWebSocketProviderProps> = ({ ch
 								? prev.map(user =>
 									user.id === data.user.id ? updateSearchResults(user) : user
 								)
-								: null
+								: []
 						);
 					}
 					break;
@@ -247,7 +247,7 @@ export const ChatWebSocketProvider: React.FC<ChatWebSocketProviderProps> = ({ ch
 										? { ...user, relation: { ...user.relation, status: "friend" } }
 										: user
 								)
-								: null
+								: []
 						);
 					}
 					break;
@@ -263,7 +263,7 @@ export const ChatWebSocketProvider: React.FC<ChatWebSocketProviderProps> = ({ ch
 										? { ...user, relation: { ...user.relation, status: '' } }
 										: user
 								)
-								: null
+								: []
 						);
 					}
 					break;
@@ -279,7 +279,7 @@ export const ChatWebSocketProvider: React.FC<ChatWebSocketProviderProps> = ({ ch
 									? { ...user, relation: { ...user.relation, status: '' } }
 									: user
 							)
-							: null
+							: []
 					);
 					break;
 
@@ -298,12 +298,12 @@ export const ChatWebSocketProvider: React.FC<ChatWebSocketProviderProps> = ({ ch
 										? { ...user, relation: { ...user.relation, status: "blocked" } }
 										: user
 								)
-								: null
+								: []
 						);
 
 						if (data.targetId === currentUserIdRef.current) {
 							setFriends(prev => prev.filter(friend => friend.id !== data.user_id));
-							setSearchResults(prev => prev ? prev.filter(user => user.id !== data.user_id) : null);
+							setSearchResults(prev => prev ? prev.filter(user => user.id !== data.user_id) : []);
 						}
 					}
 					break;
@@ -322,7 +322,7 @@ export const ChatWebSocketProvider: React.FC<ChatWebSocketProviderProps> = ({ ch
 										? { ...user, relation: { ...user.relation, status: "" } }
 										: user
 								)
-								: null
+								: []
 						);
 					}
 					break;
@@ -339,7 +339,7 @@ export const ChatWebSocketProvider: React.FC<ChatWebSocketProviderProps> = ({ ch
 										? { ...user, online: true }
 										: user
 								)
-								: null
+								: []
 						);
 					}
 					break;
@@ -356,7 +356,7 @@ export const ChatWebSocketProvider: React.FC<ChatWebSocketProviderProps> = ({ ch
 										? { ...user, online: false }
 										: user
 								)
-								: null
+								: []
 						);
 					}
 					break;
@@ -393,7 +393,7 @@ export const ChatWebSocketProvider: React.FC<ChatWebSocketProviderProps> = ({ ch
 			setGroups([]);
 			setFriends([]);
 			setGroupMessages({});
-			setSearchResults(null);
+			setSearchResults([]);
 			setInputSearch("");
 		}
 	}, [shouldConnectWebSocket, socket]);
@@ -406,7 +406,7 @@ export const ChatWebSocketProvider: React.FC<ChatWebSocketProviderProps> = ({ ch
 
 		// Si l'input est vide, arrêter toute recherche
 		if (!inputSearch.trim()) {
-			setSearchResults(null);
+			setSearchResults([]);
 			return;
 		}
 
@@ -426,7 +426,7 @@ export const ChatWebSocketProvider: React.FC<ChatWebSocketProviderProps> = ({ ch
 			// Première recherche après le debounce
 			performSearch();
 
-			// Démarrer l'interval pour répéter la recherche toutes les 500ms
+			// Démarrer l'interval pour répéter la recherche toutes les 100ms
 			searchInterval.current = setInterval(() => {
 				if (!inputSearch.trim()) {
 					// Si l'input devient vide, arrêter l'interval
@@ -435,7 +435,7 @@ export const ChatWebSocketProvider: React.FC<ChatWebSocketProviderProps> = ({ ch
 				}
 				performSearch();
 			}, 500);
-		}, 500);
+		}, 10);
 
 		// Cleanup function
 		return () => {
