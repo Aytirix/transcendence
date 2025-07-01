@@ -6,6 +6,7 @@ import { sockets, waitingID } from './state/serverState';
 import { handleMove } from './handlers/handleMove';
 import { handleSameKeyboard } from './handlers/handleSameKeyboard';
 import { handleMulti } from './handlers/handleMulti';
+import { handleMultiInvite } from './handlers/handleMultiInvite';
 import { handleClose } from './handlers/handleClose';
 import { handlePing, startingPing } from './handlers/handlePing';
 import { playerStat } from './types/playerStat';
@@ -33,6 +34,7 @@ export function pongWebSocket(socket: WebSocket, user: User) {
 				lastping: Date.now(),
 				timePause: 0,
 				pauseGame: false,
+				isReady: false,
 			};
 			sockets.set(socket, playerInfos);
 	}
@@ -52,6 +54,10 @@ export function pongWebSocket(socket: WebSocket, user: User) {
 				console.log("relance une partie")
 				handleMulti(playerInfos, msg);
 				break ;
+			case "MultiInvite" :
+				console.log("MultiInvite")
+				handleMultiInvite(playerInfos, msg);
+				break ;
 			case "Solo" :
 				handleSolo(playerInfos, msg);
 				break ;
@@ -63,7 +69,7 @@ export function pongWebSocket(socket: WebSocket, user: User) {
 				handleMove(playerInfos, msg.value);
 				break ;
 			case "EXIT" :
-				if (playerInfos.mode === "Multi") {
+				if (playerInfos.mode === "Multi" || playerInfos.mode === "MultiInvite") {
 					playerInfos.resultMatch = "Loose"
 					if (playerInfos.name !== playerInfos.game.getPlayer1().getPlayerInfos().name)
 						playerInfos.game.getPlayer1().getPlayerInfos().resultMatch = "win"
@@ -84,7 +90,7 @@ export function pongWebSocket(socket: WebSocket, user: User) {
 		const playerInfos = sockets.get(socket);
 		console.log("close");
 		if (playerInfos) handleClose(playerInfos);
-		if ((playerInfos && playerInfos.mode === "Multi") || (playerInfos && playerInfos.mode === "Tournament")) {
+		if ((playerInfos && playerInfos.mode === "Multi") || (playerInfos && playerInfos.mode === "Tournament") || (playerInfos && playerInfos.mode === "MultiInvite")) {
 			if (playerInfos && playerInfos.game) {
 				if (playerInfos.name !== playerInfos.game.getPlayer1().getPlayerInfos().name) //if multi
 					playerInfos.game.getPlayer1().getPlayerInfos().socket.send(JSON.stringify({type: "Pause", value: true}))

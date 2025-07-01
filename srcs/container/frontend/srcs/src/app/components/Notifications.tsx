@@ -61,6 +61,58 @@ class ToastNotification {
 			</div>
 		);
 	}
+
+	static confirm(
+		message: string, 
+		options = {}
+	): Promise<boolean> {
+		return new Promise((resolve) => {
+			const toastId = toast(
+				<div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+					{ToastNotification.formatMessage(message)}
+					<div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end' }}>
+						<button
+							onClick={() => {
+								resolve(true);
+								toast.dismiss(toastId);
+							}}
+							style={{
+								padding: '5px 15px',
+								backgroundColor: '#4CAF50',
+								color: 'white',
+								border: 'none',
+								borderRadius: '4px',
+								cursor: 'pointer'
+							}}
+						>
+							Accepter
+						</button>
+						<button
+							onClick={() => {
+								resolve(false);
+								toast.dismiss(toastId);
+							}}
+							style={{
+								padding: '5px 15px',
+								backgroundColor: '#f44336',
+								color: 'white',
+								border: 'none',
+								borderRadius: '4px',
+								cursor: 'pointer'
+							}}
+						>
+							Refuser
+						</button>
+					</div>
+				</div>,
+				{
+					autoClose: false,
+					closeOnClick: false,
+					...options
+				}
+			);
+		});
+	}
 }
 
 // Exporter à la fois la classe et le composant ToastContainer
@@ -99,3 +151,8 @@ export default ToastNotification;
 //   "Data successfully loaded!",
 //   "Failed to load data"
 // );
+
+// Confirm dialog example
+// ToastNotification.confirm("Are you sure you want to proceed?")
+//   .then((result) => {
+//     if (result) {

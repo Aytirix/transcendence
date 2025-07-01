@@ -19,6 +19,16 @@ let state: State = {
 	state.friends = await modelsFriends.loadAllFriendRelationsFromDB();
 })();
 
+export const getSocketByUserId = (userId: number): WebSocket | null => {
+	if (state.onlineSockets.has(userId)) {
+		const ws = state.onlineSockets.get(userId);
+		if (ws && ws.readyState === ws.OPEN) {
+			return ws;
+		}
+	}
+	return null;
+}
+
 async function chatWebSocket(ws: WebSocket, user: User): Promise<void> {
 	controllersChat.init_connexion(ws, user, state);
 	ws.on('message', (message: Buffer) => {

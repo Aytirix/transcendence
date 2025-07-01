@@ -16,7 +16,7 @@ export function startingPing(sockets: Map<WebSocket, playerStat>) {
 			if (isInactive) {
 				console.log(`Deconnection of player username => ${playerInfos.name}`);
 				playerInfos.resultMatch = "Loose"
-				if (playerInfos.mode === "Multi") {
+				if (playerInfos.mode === "Multi" || playerInfos.mode === "MultiInvite") {
 					if (playerInfos && playerInfos.game) {
 						if (playerInfos.name !== playerInfos.game.getPlayer1().getPlayerInfos().name) {
 							playerInfos.game.getPlayer1().getPlayerInfos().resultMatch = "win"
@@ -31,7 +31,7 @@ export function startingPing(sockets: Map<WebSocket, playerStat>) {
 				sockets.delete(playerSocket);
 				playerSocket.close();
 			}
-			if (playerInfos.mode === "Multi" && playerInfos.timePause) {
+			if ((playerInfos.mode === "MultiInvite" || playerInfos.mode === "Multi") && playerInfos.timePause) {
 				const isInactivePause = (Date.now() - playerInfos.timePause) > 30000
 				if (isInactivePause) {
 						playerInfos.resultMatch = "Loose"

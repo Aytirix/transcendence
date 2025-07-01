@@ -11,6 +11,8 @@ export const waitingID = new Map<number, playerStat>();
 //information : set -> player waiting for multi
 export const waitingMulti = new Set<playerStat>();
 
+export const waitingMultiInvite = new Set<playerStat>();
+
 //information : set -> player waiting for tournament
 export const listTournament = new Map<number, Tournament>();
 
@@ -35,6 +37,9 @@ export function getIngame(id: number): { inGame: boolean, nav: string } {
 					if (player.inRoom) {
 						redirection = "/pong/menu/Tournament";
 					}
+					break;
+				case "MultiInvite":
+					redirection = "/pong/menu/MultiPlayersInvite";
 					break;
 			}
 			return {

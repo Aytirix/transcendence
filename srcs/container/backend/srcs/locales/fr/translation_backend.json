@@ -209,5 +209,17 @@
 			"ForgetPasswordOk": "La réinitialisation de votre mot de passe a été effectuée avec succès.",
 			"expiryTime": "minutes"
 		}
+	},
+	"pong": {
+		"invitePlayer": {
+			"friendId": "ID de l'ami à inviter",
+			"required": "L'ID de l'ami est requis.",
+			"invalid": "L'ID de l'ami doit être un nombre valide.",
+			"success": "Invitation envoyée à {{username}}.",
+			"notFriend": "Vous ne pouvez pas inviter un joueur qui n'est pas dans votre liste d'amis.",
+			"alreadyInGame": "Le joueur {{username}} est déjà en jeu.",
+			"notFound": "Aucun joueur trouvé avec l'ID {{friendId}}.",
+			"notOnline": "Le joueur {{username}} n'est pas en ligne."
+		}
 	}
 }

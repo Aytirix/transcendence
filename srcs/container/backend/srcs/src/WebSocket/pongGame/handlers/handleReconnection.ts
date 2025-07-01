@@ -54,6 +54,26 @@ export function handleReconnection(socket: WebSocket, user: User) : boolean {
 				// console.log("essai")
 				return (true);
 			}
+			else if (tempPlayer.mode === "MultiInvite") {
+				const user1 = tempPlayer.game.getPlayer1().getPlayerInfos().id;
+				sockets.delete(tempPlayer.socket)
+				tempPlayer.socket = socket;
+				tempPlayer.lastping = Date.now();
+				sockets.set(socket, tempPlayer);
+				waitingID.delete(user.id);
+				if (user1 === user.id) {
+					tempPlayer.game.getPlayer1().getPlayerInfos().socket = socket;
+					tempPlayer.game.getPlayer1().getPlayerInfos().socket.send(JSON.stringify({ type: "assign", value: "p1" }))
+				}
+				else {
+					tempPlayer.game.getPlayer2().getPlayerInfos().socket = socket;
+					tempPlayer.game.getPlayer2().getPlayerInfos().socket.send(JSON.stringify({ type: "assign", value: "p2" }))
+				}
+
+				tempPlayer.game.setStatus("KICKOFF"); //KICKOFF
+				// console.log("essai")
+				return (true);
+			}
 			else if (tempPlayer.mode === "Tournament") {
 				let user1: number;
 				if (tempPlayer.game)

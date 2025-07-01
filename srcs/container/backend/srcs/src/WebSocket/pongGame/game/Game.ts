@@ -76,8 +76,8 @@ export class Game {
 				score: this.player2.getScore()
 			}
 		});
-		if (this.player1.getPlayerInfos().mode === "Multi"
-			&& this.player2.getPlayerInfos().mode === "Multi") {
+		if ((this.player1.getPlayerInfos().mode === "Multi" && this.player2.getPlayerInfos().mode === "Multi") ||
+			(this.player1.getPlayerInfos().mode === "MultiInvite" && this.player2.getPlayerInfos().mode === "MultiInvite")) {
 				this.player1.getPlayerInfos().socket.send(this.jsonWebsocket);
 				this.player2.getPlayerInfos().socket.send(this.jsonWebsocket);
 			}
@@ -94,8 +94,8 @@ export class Game {
 				this.player2.move(this.player2.getAi().getAction());
 		}
 		if (this.checkScore(this.player1, this.player2)) {
-			if (this.player1.getPlayerInfos().mode === "Multi"
-			&& this.player2.getPlayerInfos().mode === "Multi") {
+		if ((this.player1.getPlayerInfos().mode === "Multi" && this.player2.getPlayerInfos().mode === "Multi") ||
+			(this.player1.getPlayerInfos().mode === "MultiInvite" && this.player2.getPlayerInfos().mode === "MultiInvite")) {
 				this.player1.getPlayerInfos().socket.send(JSON.stringify({type: "EXIT"}));
 				this.player2.getPlayerInfos().socket.send(JSON.stringify({type: "EXIT"}));
 				handleFinish(this.player1.getPlayerInfos())
@@ -126,8 +126,8 @@ export class Game {
 			return (true);
 		}
 		if (this.getStatus() === "EXIT") {
-			if (this.player1.getPlayerInfos().mode === "Multi"
-			&& this.player2.getPlayerInfos().mode === "Multi") {
+		if ((this.player1.getPlayerInfos().mode === "Multi" && this.player2.getPlayerInfos().mode === "Multi") ||
+			(this.player1.getPlayerInfos().mode === "MultiInvite" && this.player2.getPlayerInfos().mode === "MultiInvite")) {
 				// console.log("test exit pause ")
 				this.player1.getPlayerInfos().socket.send(JSON.stringify({type: "FINISHED", value: this.player1.getPlayerInfos().resultMatch}));
 				this.player2.getPlayerInfos().socket.send(JSON.stringify({type: "FINISHED", value: this.player2.getPlayerInfos().resultMatch}));
@@ -255,7 +255,7 @@ export class Game {
 	resetDisplay(msg: string) {
 		if (msg === "SameKeyboard")
 			this.player1.getPlayerInfos().socket.send(JSON.stringify({ type: "reset" }));
-		else if (msg === "Multi") {
+		else if (msg === "Multi" || msg === "MultiInvite") {
 			this.player1.getPlayerInfos().socket.send(JSON.stringify({ type: "reset" }));
 			this.player2.getPlayerInfos().socket.send(JSON.stringify({ type: "reset" }));
 		}

@@ -1,5 +1,6 @@
 export interface webMsg {
 	type:  "Multi"
+		| "MultiInvite"
 		| "Solo"
 		| "SameKeyboard" 
 		| "Tournament" 
@@ -22,5 +23,6 @@ export interface webMsg {
 				| 16
 				| 32;
 	id?: number;
-	value?: string; 
+	value?: string;
+	data?: string;
 };

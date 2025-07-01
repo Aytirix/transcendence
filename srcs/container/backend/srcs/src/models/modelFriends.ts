@@ -118,9 +118,20 @@ async function updateFriendRelation(user: User, friend: User, status: 'friend' |
 	return true;
 }
 
+async function checkIsFriend(userId: number, friendId: number): Promise<boolean> {
+	const query = `
+		SELECT COUNT(*) as count
+		FROM friends
+		WHERE ((user_one_id = ? AND user_two_id = ?) OR (user_one_id = ? AND user_two_id = ?))
+		AND status = 'friend';
+	`;
+	const result: any = await executeReq(query, [userId, friendId, friendId, userId]);
+	return result.length == 1 && result[0].count == 1;
+}
 
 export default {
 	loadAllFriendRelationsFromDB,
 	getFriendsForUser,
 	updateFriendRelation,
+	checkIsFriend
 }
