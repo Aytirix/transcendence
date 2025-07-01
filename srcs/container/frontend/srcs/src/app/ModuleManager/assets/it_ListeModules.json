@@ -1,0 +1,171 @@
+{
+	"untouched": [],
+	"rejected": [
+		{
+			"id": "2",
+			"title": "Modulo frontend",
+			"description": "Il vostro sviluppo frontend deve utilizzare Tailwind CSS oltre a TypeScript, e nient'altro.",
+			"major": "mineur"
+		},
+		{
+			"id": "13",
+			"title": "Statistiche avanzate del gioco",
+			"description": "In questo modulo minore, l'obiettivo è introdurre dashboard che mostrano le statistiche degli utenti e delle sessioni di gioco. Obiettivi chiave:\n• Creare dashboard user-friendly che forniscano agli utenti informazioni sulle loro statistiche di gioco.\n• Sviluppare una dashboard separata per le sessioni di gioco, mostrando statistiche dettagliate, risultati e dati storici di ogni partita.\n• Assicurarsi che le dashboard offrano un'interfaccia intuitiva e informativa per tracciare e analizzare i dati.\n• Implementare tecniche di visualizzazione, come grafici, per presentare le statistiche in modo chiaro e attraente.\n• Permettere agli utenti di accedere ed esplorare facilmente la loro cronologia di gioco e gli indicatori di performance.\n• Siete liberi di aggiungere altre metriche ritenute utili.",
+			"major": "mineur"
+		},
+		{
+			"id": "14",
+			"title": "Configurare WAF/ModSecurity HashiCorp Vault",
+			"description": "L'obiettivo di questo modulo maggiore è rafforzare l'infrastruttura di sicurezza del progetto implementando diversi componenti chiave:\n• Configurare e distribuire un Web Application Firewall (WAF) e ModSecurity con una configurazione rigorosa e sicura per proteggere contro gli attacchi web.\n• Integrare HashiCorp Vault per gestire e memorizzare in sicurezza le informazioni sensibili, come chiavi API, credenziali e variabili d'ambiente, garantendo la loro crittografia e isolamento.\nQuesto modulo mira a consolidare l'infrastruttura di sicurezza del progetto attraverso misure robuste, inclusi WAF/ModSecurity per la protezione delle applicazioni web e Vault per la gestione sicura dei segreti.",
+			"major": "majeur"
+		},
+		{
+			"id": "17",
+			"title": "Infrastruttura ELK",
+			"description": "L'obiettivo di questo modulo maggiore è stabilire un'infrastruttura robusta per la gestione e l'analisi dei log utilizzando lo stack ELK:\n• Distribuire Elasticsearch per memorizzare e indicizzare efficacemente i dati dei log, assicurando una ricerca rapida e accessibile.\n• Configurare Logstash per raccogliere, elaborare e trasformare i log provenienti da varie fonti, quindi inviarli a Elasticsearch.\n• Configurare Kibana per visualizzare i dati dei log, creare dashboard e generare insights dagli eventi.\n• Definire politiche di ritenzione e archiviazione per gestire efficacemente lo storage dei log.\n• Implementare misure di sicurezza per proteggere i dati dei log e l'accesso ai componenti ELK.",
+			"major": "majeur"
+		},
+		{
+			"id": "18",
+			"title": "Sistema di monitoraggio",
+			"description": "Lo scopo di questo modulo minore è configurare un sistema di monitoraggio completo con Prometheus e Grafana:\n• Distribuire Prometheus per la raccolta di metriche, il monitoraggio e gli avvisi sulla salute e le performance dei componenti.\n• Configurare esportatori e integrazioni per catturare le metriche di servizi, database e infrastrutture.\n• Creare dashboard personalizzate in Grafana per fornire visibilità in tempo reale sulle metriche del sistema.\n• Definire regole di avviso in Prometheus per rilevare e rispondere agli incidenti critici.\n• Implementare strategie di ritenzione dei dati storici e controllo di accesso sicuro per Grafana.",
+			"major": "mineur"
+		},
+		{
+			"id": "24",
+			"title": "Accessibilità per ipovedenti",
+			"description": "In questo modulo minore, l'obiettivo è rendere il sito più accessibile agli ipovedenti:\n• Compatibilità con screen reader e tecnologie assistive.\n• Testo alternativo descrittivo per le immagini.\n• Schema di colori ad alto contrasto.\n• Navigazione da tastiera e gestione del focus.\n• Opzioni di regolazione della dimensione del testo.\n• Aggiornamenti regolari per rispettare gli standard di accessibilità.",
+			"major": "mineur"
+		},
+		{
+			"id": "25",
+			"title": "Integrazione del rendering lato server (SSR)",
+			"description": "In questo modulo minore, l'obiettivo è integrare il Server-Side Rendering per migliorare le performance:\n• Caricamento rapido: pre-renderizzare il contenuto sul server per accelerare la visualizzazione iniziale.\n• SEO ottimizzato: fornire ai motori di ricerca HTML già renderizzato.\n• Esperienza utente coerente: beneficiare dei vantaggi del SSR mantenendo la UX esistente.",
+			"major": "mineur"
+		},
+		{
+			"id": "27",
+			"title": "Gioco Pong tramite CLI",
+			"description": "In questo modulo maggiore, l'obiettivo è sviluppare un'interfaccia CLI per giocare a Pong contro utenti web tramite l'API:\n• Applicazione CLI: riprodurre l'esperienza Pong del sito per gli utenti da riga di comando.\n• Comunicazione API: connettere la CLI all'applicazione web per unirsi e interagire con i giocatori web.\n• Autenticazione CLI: permettere agli utenti CLI di accedere in sicurezza.\n• Sincronizzazione in tempo reale: assicurare interazioni di gioco coerenti tra CLI e web.\n• Documentazione completa: guidare l'utilizzo della CLI per giocare contro utenti web.",
+			"major": "majeur"
+		},
+		{
+			"id": "8",
+			"title": "Più giocatori",
+			"description": "Questo modulo maggiore deve permettere di ospitare più di due giocatori. Ogni giocatore deve avere un controllo in tempo reale (il modulo \"Giocatori remoti\" è fortemente raccomandato). Sta a voi definire come il gioco potrebbe essere giocato con 3, 4, 5, 6 giocatori o più. Oltre al classico gioco a 2 giocatori, potete prevedere un numero di giocatori superiore a 2 per questo modulo multiplayer. Per esempio: 4 giocatori potrebbero giocare su un campo quadrato, ogni giocatore controlla un lato unico del quadrato.",
+			"major": "mjeure"
+		}
+	],
+	"undecided": [
+		{
+			"id": "4",
+			"title": "Modulo Blockchain",
+			"description": "Questo modulo maggiore si concentra sull'implementazione di una funzionalità all'interno del sito Pong per memorizzare in sicurezza i punteggi dei tornei su una blockchain. È essenziale specificare che, per esigenze di sviluppo e test, utilizzeremo un ambiente blockchain di test. La blockchain scelta per questa implementazione è Avalanche, e Solidity sarà il linguaggio di programmazione utilizzato per lo sviluppo degli smart contract.\n• Integrazione blockchain: L'obiettivo principale di questo modulo è integrare in modo fluido la tecnologia blockchain, specificamente Avalanche, nel sito Pong. Questa integrazione garantisce la memorizzazione sicura e immutabile dei punteggi dei tornei, offrendo ai giocatori una registrazione trasparente e inviolabile delle loro performance.\n• Smart Contract Solidity: Per interagire con la blockchain, svilupperemo smart contract in Solidity. Questi contratti saranno responsabili della registrazione, gestione e recupero dei punteggi dei tornei.\n• Blockchain di test: Come menzionato precedentemente, una blockchain di test sarà utilizzata per le fasi di sviluppo e test. Questo garantisce che tutte le funzionalità relative alla blockchain siano validate approfonditamente senza rischi associati a una blockchain in produzione.\n• Interoperabilità: Questo modulo può dipendere da altri moduli, in particolare il modulo Framework backend. L'integrazione della funzionalità blockchain potrebbe richiedere aggiustamenti nel backend per supportare le interazioni con la blockchain.\nImplementando questo modulo, miriamo a migliorare il sito Pong introducendo un sistema di memorizzazione dei punteggi basato su blockchain. Gli utenti beneficeranno del livello aggiuntivo di sicurezza e trasparenza, assicurando l'integrità dei loro punteggi di gioco. Il modulo enfatizza l'uso di un ambiente blockchain di test per minimizzare i rischi legati allo sviluppo blockchain.",
+			"major": "majeur"
+		},
+		{
+			"id": "10",
+			"title": "Opzioni di personalizzazione del gioco",
+			"description": "In questo modulo minore, l'obiettivo è fornire opzioni di personalizzazione per tutti i giochi disponibili sulla piattaforma. Obiettivi chiave:\n• Offrire funzionalità di personalizzazione, come power-up, attacchi o mappe diverse, per arricchire l'esperienza di gioco.\n• Permettere agli utenti di scegliere una versione \"predefinita\" del gioco con funzionalità di base per un'esperienza semplificata.\n• Assicurarsi che le opzioni di personalizzazione siano disponibili e applicabili a tutti i giochi della piattaforma.\n• Implementare menu o interfacce user-friendly per regolare i parametri di gioco.\n• Assicurare la coerenza delle funzionalità di personalizzazione tra tutti i giochi per un'esperienza utente unificata.",
+			"major": "mineur"
+		},
+		{
+			"id": "15",
+			"title": "Opzioni di conformità GDPR",
+			"description": "Lo scopo di questo modulo minore è introdurre opzioni di conformità GDPR che permettano agli utenti di esercitare i loro diritti alla privacy:\n• Implementare funzionalità conformi al GDPR che permettano agli utenti di richiedere l'anonimizzazione dei loro dati personali, garantendo la protezione della loro identità e informazioni sensibili.\n• Fornire strumenti per gestire i loro dati locali, inclusa la consultazione, modifica o cancellazione delle informazioni memorizzate.\n• Offrire un processo semplificato per richiedere la cancellazione definitiva del loro account e di tutti i dati associati, assicurando il rispetto delle normative.\n• Mantenere una comunicazione chiara e trasparente sui diritti degli utenti, con opzioni facilmente accessibili per esercitare questi diritti.",
+			"major": "mineur"
+		},
+		{
+			"id": "19",
+			"title": "Microservizi",
+			"description": "L'obiettivo di questo modulo maggiore è architettare il backend del sistema secondo un approccio a microservizi:\n• Dividere il backend in microservizi indipendenti, ognuno responsabile di una funzione o funzionalità specifica.\n• Definire confini chiari e interfacce tra microservizi per permettere sviluppo, distribuzione e scalabilità autonomi.\n• Implementare meccanismi di comunicazione inter-servizi, come API RESTful o code di messaggi, per facilitare lo scambio di dati e la coordinazione.\n• Assicurarsi che ogni microservizio si concentri su un compito o capacità di business ben definita, favorendo la manutenibilità e la scalabilità.",
+			"major": "mjeure"
+		}
+	],
+	"accepted": [
+		{
+			"id": "1",
+			"title": "Modulo backend",
+			"description": "In questo modulo maggiore, dovete utilizzare un framework web specifico per lo sviluppo backend: Fastify con Node.js.",
+			"major": "majeur"
+		},
+		{
+			"id": "3",
+			"title": "Database backend",
+			"description": "Il database designato per tutte le istanze DB del vostro progetto è SQLite. Questa scelta garantisce la coerenza dei dati e la compatibilità tra tutti i componenti del progetto e può essere un prerequisito per altri moduli, come il modulo Framework backend.",
+			"major": "mineur"
+		},
+		{
+			"id": "5",
+			"title": "Gestione utenti",
+			"description": "Questo modulo esplora la gestione degli utenti, affrontando gli aspetti chiave delle interazioni e del controllo di accesso all'interno della piattaforma Pong. Include due componenti maggiori, ognuno focalizzato su elementi essenziali della gestione utenti e dell'autenticazione: la partecipazione degli utenti a più tornei e l'implementazione dell'autenticazione remota.\n• Gli utenti possono registrarsi in sicurezza sul sito.\n• Gli utenti registrati possono accedere in sicurezza.\n• Gli utenti possono scegliere un nickname unico per partecipare ai tornei.\n• Gli utenti possono aggiornare le loro informazioni.\n• Gli utenti possono caricare un avatar, con un'opzione predefinita se non ne viene fornito uno.\n• Gli utenti possono aggiungere altre persone come amici e vedere il loro stato online.\n• I profili utente mostrano statistiche, come vittorie e sconfitte.\n• Ogni utente ha una cronologia delle partite incluse le partite 1v1, le date e i dettagli pertinenti, accessibili agli utenti connessi.",
+			"major": "majeur"
+		},
+		{
+			"id": "6",
+			"title": "Autenticazione Google Sign-in",
+			"description": "In questo modulo maggiore, l'obiettivo è implementare il seguente sistema di autenticazione: Google Sign-in. Le funzionalità e gli obiettivi chiave includono:\n• Integrare il sistema di autenticazione, permettendo agli utenti di accedere in sicurezza.\n• Ottenere le credenziali e autorizzazioni necessarie dall'autorità per permettere un accesso sicuro.\n• Implementare flussi di accesso e autorizzazione user-friendly che rispettino le migliori pratiche e standard di sicurezza.\n• Assicurare lo scambio sicuro di token di autenticazione e informazioni utente tra l'applicazione web e il provider di autenticazione.\nQuesto modulo maggiore mira a fornire autenticazione remota, offrendo agli utenti un modo sicuro e conveniente per accedere all'applicazione web.",
+			"major": "majeur"
+		},
+		{
+			"id": "7",
+			"title": "Giocatori remoti",
+			"description": "Questo modulo maggiore deve permettere a due giocatori di giocare a distanza. Ogni giocatore si trova su un computer diverso, accede allo stesso sito e gioca alla stessa partita di Pong. Bisogna tenere conto dei problemi di rete, come disconnessioni inaspettate o latenza.\n• Dovete offrire la migliore esperienza utente possibile.",
+			"major": "majeur"
+		},
+		{
+			"id": "9",
+			"title": "Secondo gioco",
+			"description": "Lo scopo di questo modulo maggiore è introdurre un nuovo gioco, distinto da Pong, e integrare funzionalità come il tracciamento della cronologia utenti e il matchmaking. Obiettivi chiave:\n• Sviluppare un nuovo gioco coinvolgente per diversificare l'offerta della piattaforma.\n• Implementare il tracciamento della cronologia utenti per registrare e mostrare le statistiche di gioco individuali.\n• Creare un sistema di matchmaking per permettere agli utenti di trovare avversari e partecipare a partite eque.\n• Assicurarsi che la cronologia di gioco e i dati di matchmaking siano memorizzati in sicurezza e sempre aggiornati.\n• Ottimizzare le performance e la reattività del nuovo gioco per offrire un'esperienza utente piacevole. Mantenere e aggiornare regolarmente il gioco per correggere bug, aggiungere funzionalità e migliorare il gameplay.",
+			"major": "majeur"
+		},
+		{
+			"id": "11",
+			"title": "Chat dal vivo",
+			"description": "In questo modulo, dovete creare una funzionalità di chat per gli utenti:\n• L'utente deve poter inviare messaggi privati ad altri utenti.\n• L'utente deve poter bloccare altri account, impedendo loro di vedere qualsiasi messaggio successivo.\n• L'utente deve poter invitare altri giocatori a una partita di Pong tramite l'interfaccia di chat.\n• Il sistema di tornei deve poter notificare gli utenti della prossima partita.\n• L'utente deve poter accedere ai profili di altri giocatori dall'interfaccia di chat.",
+			"major": "majeur"
+		},
+		{
+			"id": "12",
+			"title": "Avversario IA",
+			"description": "In questo modulo maggiore, l'obiettivo è integrare un avversario IA nel gioco. L'uso dell'algoritmo A* non è permesso. Obiettivi chiave:\n• Sviluppare un'IA che offra un'esperienza di gioco stimolante e coinvolgente.\n• L'IA deve simulare un comportamento umano: può aggiornare la sua vista del gioco solo una volta al secondo, costringendola ad anticipare i rimbalzi e altre azioni.\n• L'IA deve utilizzare i power-up se il modulo \"Opzioni di personalizzazione del gioco\" è implementato.\n• Implementare logica intelligente e processi decisionali per far sì che l'IA faccia mosse strategiche.\n• Esplorare algoritmi e tecniche alternative per creare un'IA efficace senza ricorrere ad A*.\n• Assicurarsi che l'IA si adatti a diversi scenari di gioco e interazioni utente.",
+			"major": "majeur"
+		},
+		{
+			"id": "16",
+			"title": "Autenticazione 2FA JWT",
+			"description": "L'obiettivo di questo modulo maggiore è rafforzare la sicurezza e l'autenticazione degli utenti introducendo:\n• L'autenticazione a due fattori (2FA) come livello aggiuntivo di sicurezza, richiedendo un mezzo di verifica secondario (codice monouso) oltre alla password.\n• L'uso di JSON Web Token (JWT) per l'autenticazione e l'autorizzazione, assicurando una gestione sicura delle sessioni e dell'accesso alle risorse.\n• Un processo di attivazione 2FA semplice e user-friendly, con opzioni SMS, app di autenticazione o verifica email.\n• La generazione e validazione sicura dei token JWT per prevenire qualsiasi accesso non autorizzato agli account e ai dati sensibili.",
+			"major": "majeur"
+		},
+		{
+			"id": "20",
+			"title": "Modulo Babylon.js",
+			"description": "Questo modulo maggiore \"Graphics\" si concentra sul miglioramento degli aspetti visivi del gioco Pong. Introduce l'uso di tecniche 3D avanzate per creare un'esperienza di gioco più immersiva:\n• Grafica 3D avanzata: l'obiettivo principale è implementare tecniche 3D avanzate per elevare la qualità visiva del gioco Pong, utilizzando Babylon.js per ottenere effetti visivi mozzafiato.\n• Gameplay immersivo: l'incorporazione di tecniche 3D avanzate migliora l'esperienza complessiva offrendo ai giocatori un gioco Pong visivamente accattivante.\n• Integrazione tecnologica: la tecnologia scelta è Babylon.js, garantendo compatibilità e performance ottimali.",
+			"major": "majeur"
+		},
+		{
+			"id": "21",
+			"title": "Supporto su tutti i dispositivi",
+			"description": "In questo modulo minore, l'obiettivo è garantire che il sito funzioni perfettamente su tutti i tipi di dispositivi:\n• Adattabilità responsive: assicurare che il sito si adatti a diverse dimensioni e orientamenti dello schermo (desktop, laptop, tablet, smartphone).\n• Metodi di interazione: garantire navigazione e interazione fluide indipendentemente dal dispositivo (schermi touch, tastiere, mouse).",
+			"major": "mineur"
+		},
+		{
+			"id": "22",
+			"title": "Estensione della compatibilità browser",
+			"description": "In questo modulo minore, l'obiettivo è aggiungere il supporto per un browser aggiuntivo:\n• Supporto browser esteso: includere un browser aggiuntivo affinché tutti gli utenti possano accedere all'applicazione senza problemi.\n• Test e ottimizzazione: verificare e regolare il rendering e il funzionamento nel nuovo browser.\n• Uniformità UX: mantenere un'esperienza utente coerente su tutti i browser supportati.",
+			"major": "mineur"
+		},
+		{
+			"id": "23",
+			"title": "Supporto multilingue",
+			"description": "In questo modulo minore, l'obiettivo è offrire più lingue sul sito:\n• Almeno tre lingue: implementare il supporto per un minimo di tre lingue.\n• Selettore di lingua: fornire un interruttore che permetta agli utenti di cambiare facilmente lingua.\n• Traduzione del contenuto essenziale: menu, titoli e informazioni chiave.\n• Preferenza utente: permettere di impostare una lingua predefinita per le visite successive.\n• Librerie di localizzazione: utilizzare pacchetti o librerie per semplificare la traduzione e garantire la coerenza.",
+			"major": "mineur"
+		},
+		{
+			"id": "26",
+			"title": "Pong lato server",
+			"description": "In questo modulo maggiore, l'obiettivo è sostituire il gioco Pong base con una versione lato server e implementare un'API:\n• Logica server: gestire la partita, il movimento della palla, il punteggio e le interazioni.\n• API REST: esporre risorse e punti di accesso per l'inizializzazione del gioco, il controllo dei giocatori e l'aggiornamento dello stato.\n• CLI e interfaccia web: permettere l'uso parziale del gioco tramite riga di comando e browser.\n• Esperienza reattiva: assicurare un gameplay fluido e coinvolgente lato server.\n• Integrazione web: permettere agli utenti di giocare direttamente sul sito.",
+			"major": "mjeure"
+		}
+	]
+}
