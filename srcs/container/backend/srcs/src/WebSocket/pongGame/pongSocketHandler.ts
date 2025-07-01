@@ -2,7 +2,7 @@ import { WebSocket, RawData } from 'ws'
 import { User } from '@types'
 import { webMsg } from './types/webMsg';
 import { isJson } from './utils/isJson';
-import { sockets, waitingID } from './state/serverState';
+import { sockets, waitingID, waitingMulti } from './state/serverState';
 import { handleMove } from './handlers/handleMove';
 import { handleSameKeyboard } from './handlers/handleSameKeyboard';
 import { handleMulti } from './handlers/handleMulti';
@@ -21,7 +21,6 @@ export let pingMonitoring: boolean = false;
 export function pongWebSocket(socket: WebSocket, user: User) {
 	if (handleReconnection(socket, user)){}
 	else {
-		// console.log("reset")
 		const playerInfos: playerStat = {
 				avatar: user.avatar,
 				email: user.email,
@@ -35,6 +34,8 @@ export function pongWebSocket(socket: WebSocket, user: User) {
 				timePause: 0,
 				pauseGame: false,
 				isReady: false,
+				readyToNext: false,
+				switchManche: false,
 			};
 			sockets.set(socket, playerInfos);
 	}
@@ -51,7 +52,6 @@ export function pongWebSocket(socket: WebSocket, user: User) {
 				handleSameKeyboard(playerInfos, msg);
 				break ;
 			case "Multi" :
-				console.log("relance une partie")
 				handleMulti(playerInfos, msg);
 				break ;
 			case "MultiInvite" :
@@ -62,7 +62,6 @@ export function pongWebSocket(socket: WebSocket, user: User) {
 				handleSolo(playerInfos, msg);
 				break ;
 			case "Tournament" :
-				console.log("Tournament")
 				handleTournament(playerInfos, msg);
 				break ;
 			case "Move" :
@@ -71,10 +70,28 @@ export function pongWebSocket(socket: WebSocket, user: User) {
 			case "EXIT" :
 				if (playerInfos.mode === "Multi" || playerInfos.mode === "MultiInvite") {
 					playerInfos.resultMatch = "Loose"
-					if (playerInfos.name !== playerInfos.game.getPlayer1().getPlayerInfos().name)
+					if (!playerInfos.game) {
+						waitingMulti.delete(playerInfos);
+						playerInfos.socket.send(JSON.stringify({type: "EXIT"}));
+						playerInfos.mode = "Undefined";
+						playerInfos.inGame = false;
+						return ;
+					}
+					if (playerInfos.name !== playerInfos.game.getPlayer1().getPlayerInfos().name) 
 						playerInfos.game.getPlayer1().getPlayerInfos().resultMatch = "win"
-					else
+					else 
 						playerInfos.game.getPlayer2().getPlayerInfos().resultMatch = "win"
+				}
+				else if (playerInfos.mode === "Tournament") {
+					playerInfos.resultMatch = "Loose"
+					if (playerInfos.name !== playerInfos.game.getPlayer1().getPlayerInfos().name) {
+						playerInfos.game.getPlayer2().getPlayerInfos().socket.send(JSON.stringify({type: "FINISHED", value: "win"}));
+						playerInfos.game.getPlayer1().getPlayerInfos().resultMatchTournament = "Win"
+					}
+					else {
+						playerInfos.game.getPlayer1().getPlayerInfos().socket.send(JSON.stringify({type: "FINISHED", value: "win"}));
+						playerInfos.game.getPlayer2().getPlayerInfos().resultMatchTournament = "Win"
+					}
 				}
 				handleFinish(playerInfos);
 				break ;
@@ -90,12 +107,14 @@ export function pongWebSocket(socket: WebSocket, user: User) {
 		const playerInfos = sockets.get(socket);
 		console.log("close");
 		if (playerInfos) handleClose(playerInfos);
-		if ((playerInfos && playerInfos.mode === "Multi") || (playerInfos && playerInfos.mode === "Tournament") || (playerInfos && playerInfos.mode === "MultiInvite")) {
+		if ((playerInfos && playerInfos.mode === "Multi")|| (playerInfos && playerInfos.mode === "Tournament") || (playerInfos && playerInfos.mode === "MultiInvite")) {
 			if (playerInfos && playerInfos.game) {
-				if (playerInfos.name !== playerInfos.game.getPlayer1().getPlayerInfos().name) //if multi
-					playerInfos.game.getPlayer1().getPlayerInfos().socket.send(JSON.stringify({type: "Pause", value: true}))
-				else
-					playerInfos.game.getPlayer2().getPlayerInfos().socket.send(JSON.stringify({type: "Pause", value: true}))
+				if (playerInfos.name !== playerInfos.game.getPlayer1().getPlayerInfos().name) {
+					playerInfos.game.getPlayer1().getPlayerInfos().socket.send(JSON.stringify({type: "Pause", value: true, message: "Adversaire en pause. Reprise imminente."}))
+				}//if multi
+				else {
+					playerInfos.game.getPlayer2().getPlayerInfos().socket.send(JSON.stringify({type: "Pause", value: true, message: "Adversaire en pause. Reprise imminente."}))
+				}
 			}
 		}
 	});

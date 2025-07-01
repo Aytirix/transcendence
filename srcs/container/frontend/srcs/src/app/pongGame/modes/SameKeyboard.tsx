@@ -21,13 +21,14 @@ const SameKeyboard: React.FC = () => {
 	const engine = useRef<Engine | null>(null);
 	const socketRef = useRef<WebSocket | null>(null);
 	const deleteGo = useRef(false);
+	const messagePause = useRef("Press [ ESP ] for PLAY")
 	
 	const [isReady3d, setIsReady3d] = useState(false);
 	const [isCinematic, setIscinematic] = useState(false);
 	const [parsedData, setParsedData] = useState<Parse | null>(null);
 	const [count, setCount] = useState(3);
-	const [namePlayer1] = useState("Player1");
-	const [namePlayer2] = useState("Player2");
+	const [namePlayer1] = useState("Thanos");
+	const [namePlayer2] = useState("Ironman");
 	const [startReco, setStartReco] = useState(false);
 	const [isPause, setIsPause] = useState(false);
 	const [isWinner, setisWinner] = useState(false);
@@ -114,8 +115,9 @@ const SameKeyboard: React.FC = () => {
 
 			}
 			if (data.type === "Pause") {
-				console.log(camera.current)
 				setIsPause(data.value);
+				if (data.message)
+					messagePause.current = data.message;
 			}
 			if (data.type === "FINISHED") {
 				localStorage.removeItem("reconnection");
@@ -295,7 +297,7 @@ const SameKeyboard: React.FC = () => {
 					 {/* jeu en pause */}
 					{isPause && isReady3d && isCinematic && (
 						<h1 className='Start-go'>
-							[ Pause ]
+							{messagePause.current}
 						</h1>
 					)}
 
@@ -308,9 +310,17 @@ const SameKeyboard: React.FC = () => {
 
 					{/* Dashboard des scores et exit */}
 					{isCinematic && !isWinner && (
-						<>
-							<h1 className="DashBoardp1">{namePlayer1} : Score {parsedData?.player1.score}</h1>
-							<h1 className="DashBoardp2">{namePlayer2} : Score {parsedData?.player2.score}</h1>
+								<>
+									<h1 className="DashBoardp1">{namePlayer1}</h1>
+									<h1 className='DashScore1'>{parsedData?.player1.score}</h1>
+										<div className='popup-avatar1'>
+											<img src="/images/Thanos.png" alt="Avatar"/>
+										</div>
+									<h1 className="DashBoardp2">{namePlayer2}</h1>
+									<h1 className='DashScore2'>{parsedData?.player2.score}</h1>
+										<div className='popup-avatar2'>
+											<img src="/images/IronmanProfil.png" alt="Avatar"/>
+										</div>
 							<button onClick={returnMenu} className="Return-button">Exit Game</button>
 						</>
 					)}

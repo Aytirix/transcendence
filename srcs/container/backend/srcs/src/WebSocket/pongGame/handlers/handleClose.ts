@@ -2,7 +2,6 @@ import { playerStat } from "../types/playerStat";
 import { waitingID, waitingMulti } from "../state/serverState";
 
 export function handleClose(playerInfos: playerStat) {
-	console.log("waiting close set")
 	if (!playerInfos.game && playerInfos.mode !== "Tournament") {
 		if (playerInfos.mode === "Multi" || playerInfos.mode === "MultiInvite") {
 			if (waitingMulti.has(playerInfos)) //if
@@ -11,8 +10,9 @@ export function handleClose(playerInfos: playerStat) {
 		return;
 	}
 	if (playerInfos.game) {
-		playerInfos.game.setStatus("KICKOFF") //deconnexion
-		playerInfos.pauseGame = true;
+		playerInfos.game.setStatus("KICKOFF")
+		if (playerInfos.game.getIsStarted())
+			playerInfos.pauseGame = true;
 		if (playerInfos.mode === "Multi" || playerInfos.mode === "Tournament" || playerInfos.mode === "MultiInvite") {
 			if (playerInfos.name !== playerInfos.game.getPlayer1().getPlayerInfos().name)
 				playerInfos.game.getPlayer1().getPlayerInfos().pauseGame = false;

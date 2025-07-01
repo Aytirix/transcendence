@@ -5,6 +5,7 @@ import { Engine, Scene, Mesh, AbstractMesh, FreeCamera} from '@babylonjs/core';
 import { initBabylon } from '../initBabylon';
 import { Parse} from '../types/data';
 import { handleKeyDown, handleKeyUp } from '../types/handleKey';
+import ApiService from '../../../api/ApiService';
 
 const Solo: React.FC = () => {
 		const navigate = useNavigate();
@@ -21,6 +22,7 @@ const Solo: React.FC = () => {
 		const engine = useRef<Engine | null>(null);
 		const socketRef = useRef<WebSocket | null>(null);
 		const deleteGo = useRef(false);
+		const messagePause = useRef("Press [ ESP ] for PLAY")
 		
 		const [isReady3d, setIsReady3d] = useState(false);
 		const [isCinematic, setIscinematic] = useState(false);
@@ -32,6 +34,8 @@ const Solo: React.FC = () => {
 		const [isPause, setIsPause] = useState(false);
 		const [isWinner, setisWinner] = useState(false);
 		const [nameWinner, setNameWinner] = useState<string | null>(null);
+		const [player1Avatar, setPlayer1Avatar] = useState<string | undefined>(undefined)
+		
 	
 		const reconnection = localStorage.getItem("reconnection");
 	
@@ -116,6 +120,8 @@ const Solo: React.FC = () => {
 				}
 				if (data.type === "Pause") {
 					setIsPause(data.value);
+					if (data.message)
+						messagePause.current = data.message;
 				}
 				if (data.type === "FINISHED") {
 					localStorage.removeItem("reconnection");
@@ -133,6 +139,8 @@ const Solo: React.FC = () => {
 				}
 				if (data.ball && data.player1 && data.player2) {
 					setParsedData(data)
+					if (!player1Avatar)
+						setPlayer1Avatar(ApiService.getFile(data.player1.avatar))
 					if (!namePlayer1)
 						setNamePlayer1(data.player1.userName);
 					localStorage.setItem("data", JSON.stringify({
@@ -292,7 +300,7 @@ const Solo: React.FC = () => {
 						 {/* jeu en pause */}
 						{isPause && isReady3d && isCinematic && (
 							<h1 className='Start-go'>
-								[ Pause ]
+								{messagePause.current}
 							</h1>
 						)}
 	
@@ -305,9 +313,25 @@ const Solo: React.FC = () => {
 	
 						{/* Dashboard des scores et exit */}
 						{isCinematic && !isWinner && (
-							<>
-								<h1 className="DashBoardp1">{!namePlayer1 ? "" : `${namePlayer1} : Score ${parsedData?.player1.score}`}</h1>
-								<h1 className="DashBoardp2">{!namePlayer1 ? "" : `${namePlayer2} : Score ${parsedData?.player2.score}`}</h1>
+								<>
+									<h1 className="DashBoardp1">{!namePlayer1 ? "" : `${namePlayer1}`}</h1>
+									<h1 className='DashScore1'>{!namePlayer1 ? "" : `${parsedData?.player1.score}`}</h1>
+										{!namePlayer1 ? (
+											""
+											) : (
+											<div className='popup-avatar1'>
+												<img src={player1Avatar} alt="Avatar"/>
+											</div>
+											)}
+									<h1 className="DashBoardp2">{!namePlayer1 ? "" : `${namePlayer2}`}</h1>
+									<h1 className='DashScore2'>{!namePlayer1 ? "" : `${parsedData?.player2.score}`}</h1>
+										{!namePlayer1 ? (
+											""
+											) : (
+											<div className='popup-avatar2'>
+												<img src="/images/IronmanProfil.png" alt="Avatar"/>
+											</div>
+											)}
 								<button onClick={returnMenu} className="Return-button">Exit Game</button>
 							</>
 						)}

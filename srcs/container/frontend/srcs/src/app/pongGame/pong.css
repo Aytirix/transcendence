@@ -306,8 +306,67 @@
 	border: none;
 	position: absolute;
 	border-radius: 10px;
-	top: 20px;
-	right: 20px;
+	top: 0%;
+	right: 65px;
+	z-index: 2;
+	background: transparent;
+	font-size: 30px;
+	color: rgb(241, 247, 247);
+	font-weight: bold;
+	animation: textGlowMenu 1.7s linear infinite;
+}
+.DashScore1 {
+	border: none;
+	position: absolute;
+	border-radius: 10px;
+	top: 60px;
+	right: 200px;
+	z-index: 2;
+	background: transparent;
+	font-size: 70px;
+	color: rgb(241, 247, 247);
+	font-weight: bold;
+	animation: textGlowMenu 1.7s linear infinite;
+}
+
+.DashScore2 {
+	border: none;
+	position: absolute;
+	border-radius: 10px;
+	top: 60px;
+	left: 200px;
+	z-index: 2;
+	background: transparent;
+	font-size: 70px;
+	color: rgb(241, 247, 247);
+	font-weight: bold;
+	animation: textGlowMenu 1.7s linear infinite;
+}
+
+.popup-avatar1 {
+  position: fixed;
+  width: 120px;
+  height: 120px;
+  right: 50px;
+  top: 5%;
+  padding: 17px;
+  background-color: #fbf9f900;
+  color: white;
+  border-radius: 20px;     /* 👈 Coins arrondis */
+  border: 1px solid rgba(238, 3, 3, 0.542);
+  box-shadow: 0 0 40px rgba(238, 3, 3, 0.5);
+  display: flex;
+  justify-content: center;
+  /* align-items: center;     centre verticalement */
+  text-align: center;
+}
+
+.DashBoardp2 {
+	border: none;
+	position: absolute;
+	border-radius: 10px;
+	top: 0%;
+	left: 60px;
 	z-index: 2;
 	background: transparent;
 	font-size: 30px;
@@ -316,18 +375,31 @@
 	animation: textGlowMenu 1.7s linear infinite;
 }
 
-.DashBoardp2 {
-	border: none;
+.popup-avatar2{
+  position: fixed;
+  width: 120px;
+  height: 120px;
+  left: 50px;
+  top: 5%;
+  padding: 17px;
+  background-color: #fbf9f900;
+  color: white;
+  border-radius: 20px;     /* 👈 Coins arrondis */
+  border: 1px solid rgba(238, 3, 3, 0.542);
+  box-shadow: 0 0 40px rgba(238, 3, 3, 0.5);
+  display: flex;
+  justify-content: center;
+  /* align-items: center;     centre verticalement */
+  text-align: center;
+}
+
+.avatar2 {
 	position: absolute;
-	border-radius: 10px;
-	top: 20px;
+	top: 70px;
 	left: 20px;
 	z-index: 2;
-	background: transparent;
-	font-size: 30px;
-	color: rgb(241, 247, 247);
-	font-weight: bold;
-	animation: textGlowMenu 1.7s linear infinite;
+	width: 60px;
+	height: auto;
 }
 
 .Start-go {

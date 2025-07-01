@@ -53,11 +53,6 @@ class AppRouter extends Component {
 							<Pong />
 						</MinSizeGuard>
 					} />
-					<Route path="/pong/menu" element={
-						<MinSizeGuard minWidth={1200} minHeight={870} message="Écran trop petit">
-							<GameMenu />
-						</MinSizeGuard>
-					} />
 					<Route path="/pong/menu/SameKeyboard" element={
 						<MinSizeGuard minWidth={1200} minHeight={870} message="Écran trop petit">
 							<SameKeyboard />

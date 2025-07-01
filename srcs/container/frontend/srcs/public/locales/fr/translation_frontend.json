@@ -381,5 +381,15 @@
 		"resourcePacksSize": "Taille des resource packs",
 		"totalSize": "Taille totale sauvegardée",
 		"closeSettings": "Fermer"
+	},
+	"pong": {
+		"tournament": {
+			"title": "Tournois",
+			"manches": "Manches",
+			"quitter": "Quitter",
+			"nameJoueurs": "joueurs noms",
+			"place": "Place",
+			"nextaQualifierRounds": "Vous êtes qualifié d’office pour la prochaine manche !"
+		}
 	}
 }

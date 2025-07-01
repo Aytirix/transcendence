@@ -5,6 +5,7 @@ import { Engine, Scene, Mesh, AbstractMesh, FreeCamera} from '@babylonjs/core';
 import { initBabylon } from '../initBabylon';
 import { Parse} from '../types/data';
 import { handleKeyDown, handleKeyUp } from '../types/handleKey';
+import ApiService from '../../../api/ApiService';
 
 const MultiPlayers: React.FC = () => {
 			const navigate = useNavigate();
@@ -36,6 +37,9 @@ const MultiPlayers: React.FC = () => {
 			const [isWinner, setisWinner] = useState(false);
 			const [waitingPlayers, setWaitingPlayers] = useState(false);
 			const [isPause, setIsPause] = useState(false);
+			const messagePause = useRef("Press [ ESP ] for PLAY")
+			const [player1Avatar, setPlayer1Avatar] = useState<string | undefined>(undefined)
+			const [player2Avatar, setPlayer2Avatar] = useState<string | undefined>(undefined)
 		
 			const reconnection = localStorage.getItem("reconnection");
 		
@@ -119,8 +123,9 @@ const MultiPlayers: React.FC = () => {
 		
 					}
 					if (data.type === "Pause") {
-						console.log(`pause = ${isPause}`)
 						setIsPause(data.value);
+						if (data.message)
+							messagePause.current = data.message;
 					}
 					if (data.type === "assign") {
 						assignPlayer.current = data.value;
@@ -167,7 +172,10 @@ const MultiPlayers: React.FC = () => {
 					}
 					if (data.ball && data.player1 && data.player2) {
 						setParsedData(data)
-
+						if (!player1Avatar)
+							setPlayer1Avatar(ApiService.getFile(data.player1.avatar))
+						if (!player2Avatar)
+							setPlayer2Avatar(ApiService.getFile(data.player2.avatar))
 						if (!namePlayer1.current) {
 							namePlayer1.current = (data.player1.userName);
 						}
@@ -330,7 +338,7 @@ const MultiPlayers: React.FC = () => {
 							 {/* jeu en pause */}
 							{isPause && isReady3d && isCinematic && !isWinner && (
 								<h1 className='Start-go'>
-									[ Pause ]
+									{messagePause.current}
 								</h1>
 							)}
 		
@@ -350,8 +358,24 @@ const MultiPlayers: React.FC = () => {
 							{/* Dashboard des scores et exit */}
 							{isCinematic && !isWinner && (
 								<>
-									<h1 className="DashBoardp1">{!namePlayer1.current ? "" : `${namePlayer1.current} : Score ${parsedData?.player1.score}`}</h1>
-									<h1 className="DashBoardp2">{!namePlayer2.current ? "" : `${namePlayer2.current} : Score ${parsedData?.player2.score}`}</h1>
+									<h1 className="DashBoardp1">{!namePlayer1.current ? "" : `${namePlayer1.current}`}</h1>
+									<h1 className='DashScore1'>{!namePlayer1.current ? "" : `${parsedData?.player1.score}`}</h1>
+										{!namePlayer1.current ? (
+											""
+											) : (
+											<div className='popup-avatar1'>
+												<img src={player1Avatar} alt="Avatar"/>
+											</div>
+											)}
+									<h1 className="DashBoardp2">{!namePlayer2.current ? "" : `${namePlayer2.current}`}</h1>
+									<h1 className='DashScore2'>{!namePlayer2.current ? "" : `${parsedData?.player2.score}`}</h1>
+										{!namePlayer2.current ? (
+											""
+											) : (
+											<div className='popup-avatar2'>
+												<img src={player2Avatar} alt="Avatar"/>
+											</div>
+											)}
 									<button onClick={returnMenu} className="Return-button">Exit Game</button>
 								</>
 							)}

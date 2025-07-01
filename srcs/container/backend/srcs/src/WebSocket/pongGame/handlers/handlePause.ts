@@ -1,36 +1,8 @@
 import { playerStat } from "../types/playerStat";
 
-// export function handlePause(playerInfos: playerStat) {
-
-
-// 	if (playerInfos.game.getStatus() === "KICKOFF" && playerInfos.game.getStatus() !== "SERVICE") {
-// 		playerInfos.game.setStatus("PLAYING")
-// 		playerInfos.socket.send(JSON.stringify({type: "Pause", value: false}))
-// 		if (playerInfos.mode === "Multi") {
-// 			playerInfos.timePause = 0;
-// 			if (playerInfos.name !== playerInfos.game.getPlayer1().getPlayerInfos().name)
-// 				playerInfos.game.getPlayer1().getPlayerInfos().socket.send(JSON.stringify({type: "Pause", value: false}))
-// 			else
-// 				playerInfos.game.getPlayer2().getPlayerInfos().socket.send(JSON.stringify({type: "Pause", value: false}))
-// 		}
-// 	}
-// 	else if (playerInfos.game.getStatus() === "PLAYING" && playerInfos.game.getStatus() !== "SERVICE") {
-// 		playerInfos.game.setStatus("KICKOFF")
-// 		playerInfos.socket.send(JSON.stringify({type: "Pause", value: true}))
-// 		if (playerInfos.mode === "Multi") {
-// 			playerInfos.timePause = Date.now()
-// 			if (playerInfos.name !== playerInfos.game.getPlayer1().getPlayerInfos().name)
-// 				playerInfos.game.getPlayer1().getPlayerInfos().socket.send(JSON.stringify({type: "Pause", value: true}))
-// 			else
-// 				playerInfos.game.getPlayer2().getPlayerInfos().socket.send(JSON.stringify({type: "Pause", value: true}))
-// 		}
-// 	}
-// }
-
 export function handlePause(playerInfos: playerStat) {
 
 
-	console.log(playerInfos.game.getStatus());
 	if (playerInfos.game.getStatus() === "KICKOFF" 
 	&& playerInfos.game.getStatus() !== "SERVICE") {
 		if (playerInfos.mode === "Multi" || playerInfos.mode === "Tournament" || playerInfos.mode === "MultiInvite") {
@@ -44,7 +16,6 @@ export function handlePause(playerInfos: playerStat) {
 				}
 			}
 			else {
-				console.log("pause2")
 				if (!playerInfos.game.getPlayer2().getPlayerInfos().pauseGame) {
 					playerInfos.game.setStatus("PLAYING")
 					playerInfos.timePause = 0;
@@ -67,8 +38,8 @@ export function handlePause(playerInfos: playerStat) {
 					playerInfos.game.setStatus("KICKOFF")
 					playerInfos.timePause = Date.now()
 					playerInfos.pauseGame = true;
-					playerInfos.socket.send(JSON.stringify({type: "Pause", value: true}))
-					playerInfos.game.getPlayer1().getPlayerInfos().socket.send(JSON.stringify({type: "Pause", value: true}))
+					playerInfos.socket.send(JSON.stringify({type: "Pause", value: true, message: "Press [ ESP ] for PLAY"}))
+					playerInfos.game.getPlayer1().getPlayerInfos().socket.send(JSON.stringify({type: "Pause", value: true, message: "Adversaire en pause. Reprise imminente."}))
 				}
 			}
 			else {
@@ -76,14 +47,14 @@ export function handlePause(playerInfos: playerStat) {
 					playerInfos.game.setStatus("KICKOFF")
 					playerInfos.timePause = Date.now()
 					playerInfos.pauseGame = true;
-					playerInfos.socket.send(JSON.stringify({type: "Pause", value: true}))
-					playerInfos.game.getPlayer2().getPlayerInfos().socket.send(JSON.stringify({type: "Pause", value: true}))
+					playerInfos.socket.send(JSON.stringify({type: "Pause", value: true, message: "Press [ ESP ] for PLAY"}))
+					playerInfos.game.getPlayer2().getPlayerInfos().socket.send(JSON.stringify({type: "Pause", value: true, message: "Adversaire en pause. Reprise imminente."}))
 				}
 			}
 		}
 		else {
 				playerInfos.game.setStatus("KICKOFF")
-				playerInfos.socket.send(JSON.stringify({type: "Pause", value: true}))
-			}
+				playerInfos.socket.send(JSON.stringify({type: "Pause", value: true, message: "Press [ ESP ] for PLAY"}))
 		}
+	}
 }
