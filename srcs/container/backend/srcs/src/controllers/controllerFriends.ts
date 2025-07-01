@@ -26,6 +26,10 @@ export async function getFriends(userId: number, state: State): Promise<User[]> 
 	for (const friend of friendsIds) {
 		if (state.onlineSockets.has(friend.id)) { friend.online = true; }
 		else { friend.online = false; }
+		if (friend.relation.status === 'blocked' && friend.relation.target === userId) {
+			friendsIds.splice(friendsIds.indexOf(friend), 1);
+			continue;
+		}
 	}
 	return friendsIds;
 }
@@ -168,28 +172,28 @@ export const addFriend = async (ws: WebSocket, user: User, state: State, text: r
 
 	if (await modelsFriends.updateFriendRelation(user, friend, 'pending', null, state) == false) return ws.send(JSON.stringify({ action: 'error', result: 'error', notification: ws.i18n.t('RelationFriends.errorSendingRequest') } as reponse));
 
-	if (friend.online) {
-		const wsFriend = state.onlineSockets.get(friend.id);
-		if (wsFriend) {
-			wsFriend.send(JSON.stringify({
-				action: 'add_friend',
-				result: 'ok',
-				user: {
-					id: user.id,
-					username: user.username,
-					avatar: user.avatar,
-					lang: user.lang,
-					online: user.online
-				},
-				notification: [ws.i18n.t('RelationFriends.receivedFriendRequest', { username: user.username })],
-			} as res_add_friend));
-		}
+	const wsFriend = state.onlineSockets.get(friend.id);
+	if (wsFriend) {
+		wsFriend.send(JSON.stringify({
+			action: 'add_friend',
+			result: 'ok',
+			targetId: friend.id,
+			user: {
+				id: user.id,
+				username: user.username,
+				avatar: user.avatar,
+				lang: user.lang,
+				online: user.online
+			},
+			notification: [ws.i18n.t('RelationFriends.receivedFriendRequest', { username: user.username })],
+		} as res_add_friend));
 	}
 
 	const msg = ws.i18n.t('RelationFriends.sentFriendRequest', { username: friend.username });
 	ws.send(JSON.stringify({
 		action: 'add_friend',
 		result: 'ok',
+		targetId: friend.id,
 		user: {
 			id: friend.id,
 			username: friend.username,
@@ -217,17 +221,15 @@ export const removeFriend = async (ws: WebSocket, user: User, state: State, text
 				ws.send(JSON.stringify({ action: 'error', result: 'error', notification: ws.i18n.t('RelationFriends.errorRemoveFriend') } as reponse));
 				break;
 			}
-			if (friend.online) {
-				const wsFriend = state.onlineSockets.get(friend.id);
-				if (wsFriend) {
-					wsFriend.send(JSON.stringify({
-						action: 'remove_friend',
-						user_id: user.id,
-						group_id: relation.group_id,
-						result: 'ok',
-						notification: ws.i18n.t('RelationFriends.friendRemovedYou', { username: user.username }),
-					} as res_remove_friend));
-				}
+			const wsFriend = state.onlineSockets.get(friend.id);
+			if (wsFriend) {
+				wsFriend.send(JSON.stringify({
+					action: 'remove_friend',
+					user_id: user.id,
+					group_id: relation.group_id,
+					result: 'ok',
+					notification: ws.i18n.t('RelationFriends.friendRemovedYou', { username: user.username }),
+				} as res_remove_friend));
 			}
 			ws.send(JSON.stringify({
 				action: 'remove_friend',
@@ -266,34 +268,22 @@ export const acceptFriend = async (ws: WebSocket, user: User, state: State, text
 			ws.send(JSON.stringify({
 				action: 'accept_friend',
 				result: 'ok',
-				user: {
-					id: friend.id,
-					username: friend.username,
-					avatar: friend.avatar,
-					lang: friend.lang,
-					online: friend.online,
-				},
+				user_id: friend.id,
+				isConnected: userIsConnected(user, state),
 				group: groupPrivMsg,
 				notification: ws.i18n.t('RelationFriends.acceptedFriendRequestYou', { username: friend.username }),
 			} as res_accept_friend));
 		}
-		if (friend.online) {
-			const wsFriend = state.onlineSockets.get(friend.id);
-			if (wsFriend) {
-				wsFriend.send(JSON.stringify({
-					action: 'accept_friend',
-					result: 'ok',
-					user: {
-						id: user.id,
-						username: user.username,
-						avatar: user.avatar,
-						lang: user.lang,
-						online: user.online
-					},
-					group: groupPrivMsg,
-					notification: ws.i18n.t('RelationFriends.acceptedFriendRequest', { username: user.username }),
-				} as res_accept_friend));
-			}
+		const wsFriend = state.onlineSockets.get(friend.id);
+		if (wsFriend) {
+			wsFriend.send(JSON.stringify({
+				action: 'accept_friend',
+				result: 'ok',
+				user_id: user.id,
+				isConnected: userIsConnected(friend, state),
+				group: groupPrivMsg,
+				notification: ws.i18n.t('RelationFriends.acceptedFriendRequest', { username: user.username }),
+			} as res_accept_friend));
 		}
 	}
 }
@@ -325,17 +315,15 @@ export const refuseFriend = async (ws: WebSocket, user: User, state: State, text
 				notification: ws.i18n.t('RelationFriends.refusedFriendRequestYou', { username: friend.username }),
 			} as res_refuse_friend));
 		}
-		if (friend.online) {
-			const wsFriend = state.onlineSockets.get(friend.id);
-			if (wsFriend) {
-				wsFriend.send(JSON.stringify({
-					action: 'refuse_friend',
-					user_id: user.id,
-					group_id: groupPrivMsg.id,
-					result: 'ok',
-					notification: ws.i18n.t('RelationFriends.refusedFriendRequest', { username: user.username }),
-				} as res_refuse_friend));
-			}
+		const wsFriend = state.onlineSockets.get(friend.id);
+		if (wsFriend) {
+			wsFriend.send(JSON.stringify({
+				action: 'refuse_friend',
+				user_id: user.id,
+				group_id: groupPrivMsg.id,
+				result: 'ok',
+				notification: ws.i18n.t('RelationFriends.refusedFriendRequest', { username: user.username }),
+			} as res_refuse_friend));
 		}
 	}
 }
@@ -360,17 +348,15 @@ export const cancelFriend = async (ws: WebSocket, user: User, state: State, text
 				notification: ws.i18n.t('RelationFriends.canceledRequestYou', { username: friend.username }),
 			} as res_refuse_friend));
 		}
-		if (friend.online) {
-			const wsFriend = state.onlineSockets.get(friend.id);
-			if (wsFriend) {
-				wsFriend.send(JSON.stringify({
-					action: 'refuse_friend',
-					result: 'ok',
-					user_id: user.id,
-					group_id: relation.group_id,
-					notification: ws.i18n.t('RelationFriends.canceledRequest', { username: user.username }),
-				} as res_refuse_friend));
-			}
+		const wsFriend = state.onlineSockets.get(friend.id);
+		if (wsFriend) {
+			wsFriend.send(JSON.stringify({
+				action: 'refuse_friend',
+				result: 'ok',
+				user_id: user.id,
+				group_id: relation.group_id,
+				notification: ws.i18n.t('RelationFriends.canceledRequest', { username: user.username }),
+			} as res_refuse_friend));
 		}
 	}
 }
@@ -392,16 +378,14 @@ export const blockFriend = async (ws: WebSocket, user: User, state: State, text:
 		group_id: relation.group_id,
 		notification: ws.i18n.t('RelationFriends.youBlockedUserNotification', { username: friend.username }),
 	} as res_block_user));
-	if (friend.online) {
-		const wsFriend = state.onlineSockets.get(friend.id);
-		if (wsFriend) {
-			wsFriend.send(JSON.stringify({
-				action: 'block_user',
-				result: 'ok',
-				user_id: user.id,
-				notification: ws.i18n.t('RelationFriends.userBlockedYouNotification', { username: user.username }),
-			} as res_block_user));
-		}
+	const wsFriend = state.onlineSockets.get(friend.id);
+	if (wsFriend) {
+		wsFriend.send(JSON.stringify({
+			action: 'block_user',
+			result: 'ok',
+			targetId: friend.id,
+			user_id: user.id,
+		} as res_block_user));
 	}
 }
 
@@ -429,16 +413,14 @@ export const unBlockFriend = async (ws: WebSocket, user: User, state: State, tex
 		user_id: friend.id,
 		notification: ws.i18n.t('RelationFriends.youUnblockedUserNotification', { username: friend.username }),
 	} as res_block_user));
-	if (friend.online) {
-		const wsFriend = state.onlineSockets.get(friend.id);
-		if (wsFriend) {
-			wsFriend.send(JSON.stringify({
-				action: 'unblock_user',
-				result: 'ok',
-				user_id: user.id,
-				notification: ws.i18n.t('RelationFriends.userUnblockedYouNotification', { username: user.username }),
-			} as res_block_user));
-		}
+	const wsFriend = state.onlineSockets.get(friend.id);
+	console.log('wsFriend', wsFriend);
+	if (wsFriend) {
+		wsFriend.send(JSON.stringify({
+			action: 'unblock_user',
+			result: 'ok',
+			user_id: user.id,
+		} as res_block_user));
 	}
 }
 

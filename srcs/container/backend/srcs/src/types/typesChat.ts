@@ -118,7 +118,7 @@ export interface req_accept_friend {
 // Reponse : Envoyer le message que x a accepté la demande d'ami
 export interface res_accept_friend extends reponse {
 	action: 'accept_friend';
-	user: User;
+	user_id: number;
 	group: Group;
 }
 
@@ -171,6 +171,7 @@ export interface req_block_user {
 export interface res_block_user extends reponse {
 	action: 'block_user' | 'unblock_user';
 	user_id: number;
+	targetId: number;
 	group_id: number;
 }
 

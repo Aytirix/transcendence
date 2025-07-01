@@ -7,7 +7,7 @@ const url = `wss://${window.location.host}/api`;
 export type WebSocketStatus = 'Connecting...' | 'Connected' | 'Closed' | 'Error' | 'Reconnecting';
 
 export interface SafeWebSocketProps {
-	endpoint: string;
+	endpoint: string | null;
 	onMessage: (data: any) => void;
 	onStatusChange?: (status: WebSocketStatus) => void;
 	reconnectDelay?: number;  // en ms, ex: 3000ms = 3 secondes
@@ -23,6 +23,8 @@ export function useSafeWebSocket({ endpoint, onMessage, onStatusChange, reconnec
 	const isManuallyClosed = useRef(false);
 
 	const setupWebSocket = () => {
+		if (!endpoint) return;
+		
 		if (socketRef.current?.readyState === WebSocket.OPEN || socketRef.current?.readyState === WebSocket.CONNECTING || reconnectAttemptsRef.current >= maxReconnectAttempts) {
 			return;
 		}

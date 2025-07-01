@@ -1,9 +1,10 @@
 // src/contexts/ChatWebSocketContext.tsx
 
-import React, { createContext, useContext, useCallback, useState, useEffect, useRef } from 'react';
+import React, { createContext, useContext, useCallback, useState, useEffect, useRef, useMemo } from 'react';
 import useSafeWebSocket, { WebSocketStatus } from '../../api/useSafeWebSocket';
 import { Group, Message, Friend, Member } from './types/chat';
 import notification from '../components/Notifications'
+import { useAuth } from '../../contexts/AuthContext';
 
 interface ChatWebSocketContextType {
 	// WebSocket status
@@ -36,7 +37,10 @@ interface ChatWebSocketContextType {
 	handleBlockedFriend: (userId: number) => void;
 	handleUnBlockedFriend: (userId: number) => void;
 	getFriendshipStatus: (userId: number) => string;
+
+	// Navigation
 	setNavigateFunction: (navigate: (url: string) => void) => void;
+	setLocationFunction: (pathname: string) => void;
 }
 
 const ChatWebSocketContext = createContext<ChatWebSocketContextType | undefined>(undefined);
@@ -62,19 +66,46 @@ export const ChatWebSocketProvider: React.FC<ChatWebSocketProviderProps> = ({ ch
 	const [searchResults, setSearchResults] = useState<Friend[] | null>(null);
 	const [inputSearch, setInputSearch] = useState("");
 	const navigateRef = useRef<((url: string) => void) | null>(null);
+	const [currentPathname, setCurrentPathname] = useState<string>("/login");
 
-    const setNavigateFunction = useCallback((navigate: (url: string) => void) => {
-        navigateRef.current = navigate;
-    }, []);
+	// Refs pour éviter les re-renders constants
+	const friendsRef = useRef<Friend[]>(friends);
+	const currentUserIdRef = useRef<number | null>(currentUserId);
+
+	// Mettre à jour les refs quand les states changent
+	useEffect(() => {
+		friendsRef.current = friends;
+	}, [friends]);
+
+	useEffect(() => {
+		currentUserIdRef.current = currentUserId;
+	}, [currentUserId]);
+
+	// --- Authentification ---
+
+	// Pages où on ne veut pas ouvrir la socket du chat
+	const authPages = useMemo(() => ["/login", "/register", "/forget-password", "/auth/checkCode"], []);
+	const shouldConnectWebSocket = useMemo(() => !authPages.includes(currentPathname), [currentPathname, authPages]);
+
+	const setNavigateFunction = useCallback((navigate: (url: string) => void) => {
+		navigateRef.current = navigate;
+	}, []);
+
+	const setLocationFunction = useCallback((pathname: string) => {
+		setCurrentPathname(pathname);
+	}, []);
+
+	const setInputSearchCallback = useCallback((value: string) => {
+		setInputSearch(value);
+	}, []);
 
 	// Pour la recherche avec debounce
 	const searchTimeout = useRef<NodeJS.Timeout | null>(null);
+	const searchInterval = useRef<NodeJS.Timeout | null>(null);
 
 	// --- Gestion des messages WebSocket ---
 	const handleWebSocketMessage = useCallback((data: any) => {
 		try {
-			console.log("WebSocket data received:", data);
-
 			switch (data.action) {
 				case "new_message":
 					if (data.group_id && data.result === "ok" && data.message) {
@@ -97,9 +128,9 @@ export const ChatWebSocketProvider: React.FC<ChatWebSocketProviderProps> = ({ ch
 						// Map sender_id to username
 						for (const key in arr) {
 							const sender_id = arr[key].sender_id;
-							const username = friends.find(f => f.id === sender_id)?.username;
+							const username = friendsRef.current.find(f => f.id === sender_id)?.username;
 							console.log("Message mapping:", username, sender_id, arr[key].message);
-							console.log("Available friends:", friends);
+							console.log("Available friends:", friendsRef.current);
 							arr[key].sender_id = username || "moi";
 						}
 
@@ -118,8 +149,10 @@ export const ChatWebSocketProvider: React.FC<ChatWebSocketProviderProps> = ({ ch
 				case "init_connected": {
 					const groupArray: Group[] = Object.values(data.groups || {});
 					setGroups(groupArray);
+					console.log("Groups initialized:", groupArray);
 
-					if (data.user?.id) setCurrentUserId(data.user.id);
+					setCurrentUserId(data.user.id);
+					console.log(`Current user ID: ${data.user.id}`);
 
 					console.log("FRIENDS init:", data.friends);
 					const groupFriends: Friend[] = Object.values(data.friends || {});
@@ -162,17 +195,18 @@ export const ChatWebSocketProvider: React.FC<ChatWebSocketProviderProps> = ({ ch
 					if (data.result === "ok" && data.user) {
 						const updateUserStatus = (user: Friend) => ({
 							...user,
-							relation: { ...user.relation, status: "pending" as const }
+							relation: { ...user.relation, status: "pending" as const, target: data.targetId },
 						});
 
-						const existingFriend = friends.find(f => f.id === data.user.id);
+						const existingFriend = friendsRef.current.find(f => f.id === data.user.id);
+						console.log("Existing friend:", existingFriend, "Data user:", data.user);
 
 						if (!existingFriend) {
 							const newFriend: Friend = {
 								...data.user,
 								relation: {
 									status: "pending",
-									target: data.user.id,
+									target: data.targetId,
 									privmsg_id: null
 								},
 								online: false
@@ -186,7 +220,7 @@ export const ChatWebSocketProvider: React.FC<ChatWebSocketProviderProps> = ({ ch
 
 						const updateSearchResults = (user: Friend) => ({
 							...user,
-							relation: { ...user.relation, status: "pending" as const, target: data.user.id }
+							relation: { ...user.relation, status: "pending" as const, target: data.targetId }
 						});
 
 						setSearchResults(prev =>
@@ -203,7 +237,7 @@ export const ChatWebSocketProvider: React.FC<ChatWebSocketProviderProps> = ({ ch
 					if (data.result === "ok") {
 						setFriends(prev => prev.map(friend =>
 							friend.id === data.user_id
-								? { ...friend, relation: { ...friend.relation, status: "friend" } }
+								? { ...friend, relation: { ...friend.relation, status: "friend" }, online: data.isConnected }
 								: friend
 						));
 						setSearchResults(prev =>
@@ -251,6 +285,7 @@ export const ChatWebSocketProvider: React.FC<ChatWebSocketProviderProps> = ({ ch
 
 				case "block_user":
 					if (data.result === "ok") {
+						setGroups(prev => prev.filter(group => group.id !== data.group_id));
 						setFriends(prev => prev.map(friend =>
 							friend.id === data.user_id
 								? { ...friend, relation: { ...friend.relation, status: "blocked" } }
@@ -265,6 +300,11 @@ export const ChatWebSocketProvider: React.FC<ChatWebSocketProviderProps> = ({ ch
 								)
 								: null
 						);
+
+						if (data.targetId === currentUserIdRef.current) {
+							setFriends(prev => prev.filter(friend => friend.id !== data.user_id));
+							setSearchResults(prev => prev ? prev.filter(user => user.id !== data.user_id) : null);
+						}
 					}
 					break;
 
@@ -336,38 +376,71 @@ export const ChatWebSocketProvider: React.FC<ChatWebSocketProviderProps> = ({ ch
 		} catch (error) {
 			console.error("Error handling WebSocket message:", error);
 		}
-	}, [friends]);
+	}, []); // Pas de dépendances car on utilise les refs
 
 	// --- Configuration WebSocket ---
 	const socket = useSafeWebSocket({
-		endpoint: '/chat',
+		endpoint: shouldConnectWebSocket ? '/chat' : null,
 		onMessage: handleWebSocketMessage,
 		onStatusChange: setWsStatus,
 		pingInterval: 30000,
 	});
 
-	// --- Recherche d'ami (debounce) ---
 	useEffect(() => {
+		if (!shouldConnectWebSocket && socket) {
+			console.log("Closing WebSocket connection as it's not needed");
+			socket.close();
+			setGroups([]);
+			setFriends([]);
+			setGroupMessages({});
+			setSearchResults(null);
+			setInputSearch("");
+		}
+	}, [shouldConnectWebSocket, socket]);
+
+	// --- Recherche d'ami (debounce + interval) ---
+	useEffect(() => {
+		// Nettoyer les timers existants
+		if (searchTimeout.current) clearTimeout(searchTimeout.current);
+		if (searchInterval.current) clearInterval(searchInterval.current);
+
+		// Si l'input est vide, arrêter toute recherche
 		if (!inputSearch.trim()) {
 			setSearchResults(null);
-			if (searchTimeout.current) clearTimeout(searchTimeout.current);
 			return;
 		}
 
-		if (searchTimeout.current) clearTimeout(searchTimeout.current);
-
-		searchTimeout.current = setTimeout(() => {
+		// Fonction de recherche réutilisable
+		const performSearch = () => {
 			if (socket?.readyState !== WebSocket.OPEN) return;
-			setSearchResults(null);
+			console.log("🔍 Searching for:", inputSearch);
 			socket.send(JSON.stringify({
 				action: "search_user",
 				name: inputSearch,
 				group_id: null,
 			}));
+		};
+
+		// Debounce initial : attendre 500ms après la dernière modification
+		searchTimeout.current = setTimeout(() => {
+			// Première recherche après le debounce
+			performSearch();
+
+			// Démarrer l'interval pour répéter la recherche toutes les 500ms
+			searchInterval.current = setInterval(() => {
+				if (!inputSearch.trim()) {
+					// Si l'input devient vide, arrêter l'interval
+					if (searchInterval.current) clearInterval(searchInterval.current);
+					return;
+				}
+				performSearch();
+			}, 500);
 		}, 500);
 
+		// Cleanup function
 		return () => {
 			if (searchTimeout.current) clearTimeout(searchTimeout.current);
+			if (searchInterval.current) clearInterval(searchInterval.current);
 		};
 	}, [inputSearch, socket]);
 
@@ -483,12 +556,12 @@ export const ChatWebSocketProvider: React.FC<ChatWebSocketProviderProps> = ({ ch
 	}, [socket]);
 
 	const getFriendshipStatus = useCallback((userId: number) => {
-		const friend = friends.find(f => f.id === userId);
+		const friend = friendsRef.current.find(f => f.id === userId);
 		if (!friend) return "none";
 		return friend.relation.status;
-	}, [friends]);
+	}, []); // Utilise friendsRef donc pas de dépendance
 
-	const contextValue: ChatWebSocketContextType = {
+	const contextValue: ChatWebSocketContextType = useMemo(() => ({
 		wsStatus,
 		socket,
 		groups,
@@ -497,7 +570,7 @@ export const ChatWebSocketProvider: React.FC<ChatWebSocketProviderProps> = ({ ch
 		currentUserId,
 		searchResults,
 		inputSearch,
-		setInputSearch,
+		setInputSearch: setInputSearchCallback,
 		sendMessage,
 		loadMessages,
 		createGroup,
@@ -510,8 +583,33 @@ export const ChatWebSocketProvider: React.FC<ChatWebSocketProviderProps> = ({ ch
 		handleBlockedFriend,
 		handleUnBlockedFriend,
 		getFriendshipStatus,
-		setNavigateFunction
-	};
+		setNavigateFunction,
+		setLocationFunction
+	}), [
+		wsStatus,
+		socket,
+		groups,
+		friends,
+		groupMessages,
+		currentUserId,
+		searchResults,
+		inputSearch,
+		setInputSearchCallback,
+		sendMessage,
+		loadMessages,
+		createGroup,
+		deleteGroup,
+		handleAddFriend,
+		handleAcceptFriend,
+		handleRefuseFriend,
+		handleCancelFriend,
+		handleRemoveFriend,
+		handleBlockedFriend,
+		handleUnBlockedFriend,
+		getFriendshipStatus,
+		setNavigateFunction,
+		setLocationFunction
+	]);
 
 	return (
 		<ChatWebSocketContext.Provider value={contextValue}>

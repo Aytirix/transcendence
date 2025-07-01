@@ -164,9 +164,18 @@ const FriendList: React.FC<FriendListProps> = ({
 							? "text-green-700"
 							: friend.relation.status === "pending"
 								? "text-yellow-600"
-								: "text-gray-500"
+								: friend.relation.status === "blocked"
+									? "text-red-700"
+									: "text-gray-500"
 							}`}>
-							{friend.relation.status === "pending" ? "En attente" : "Ami"}
+							{friend.relation.status === "pending"
+								? "En attente"
+								: friend.relation.status === "blocked"
+									? "Bloqué"
+									: friend.relation.status === "friend"
+										? "Ami"
+										: ""
+							}
 						</div>
 					</div>
 					{friend.relation.status === "pending" ? (
