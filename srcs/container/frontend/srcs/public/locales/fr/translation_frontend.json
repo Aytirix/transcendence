@@ -370,5 +370,15 @@
 		"chromiumMessage": "Le jeu Pong 3D n'est pas disponible sur les navigateurs basés sur Chrome/Chromium.",
 		"chromiumWarning": "Ces navigateurs ne supportent pas correctement la librairie Babylon.js utilisée pour le rendu 3D. Il est vivement conseillé d'utiliser Firefox, Safari ou un autre navigateur pour une expérience de jeu optimale.",
 		"currentBrowser": "Navigateur actuel"
+	},
+	"pong": {
+		"tournament": {
+			"title": "Tournois",
+			"manches": "Manches",
+			"quitter": "Quitter",
+			"nameJoueurs": "joueurs noms",
+			"place": "Place",
+			"nextaQualifierRounds": "Vous êtes qualifié d’office pour la prochaine manche !"
+		}
 	}
 }

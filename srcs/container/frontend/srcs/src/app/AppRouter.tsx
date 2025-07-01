@@ -47,11 +47,6 @@ class AppRouter extends Component {
 						</MinecraftRouteGuard>
 					} />
 					{/* Route pour le jeu Pong */}
-					<Route path="/pong" element={
-						<MinSizeGuard minWidth={0} minHeight={0} message="Écran trop petit">
-							<Pong />
-						</MinSizeGuard>
-					} />
 					<Route path="/pong/menu" element={
 						<MinSizeGuard minWidth={0} minHeight={0} message="Écran trop petit">
 							<GameMenu />

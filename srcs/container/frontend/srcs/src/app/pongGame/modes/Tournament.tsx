@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from "react-router-dom";
 import { MatchDisplayData, Tournament } from '../types/data';
 import ApiService from '../../../api/ApiService';
+import { useLanguage } from '../../../contexts/LanguageContext';
 
 const TournamentPage: React.FC = () => {
 	const [listTournament, setListTournament] = useState<Tournament[]>([])
@@ -19,6 +20,7 @@ const TournamentPage: React.FC = () => {
 	const [nameWinner, setNameWinner] = useState<string | null>(null)
 	const [autoQualified, setAutoQualified] = useState(false);
 	const switchDisplay = useRef(false);
+	const {t} = useLanguage();
 	
 	const [idTournament, setIdTournament] = useState<number>(0);
 	const socketRef = useRef<WebSocket | null>(null);
@@ -123,21 +125,21 @@ const TournamentPage: React.FC = () => {
 						( <>
 							<div>
 								{!startTournament ?
-									<h1 className='Title'>Tournament</h1>
+									<h1 className='Title'>{t("pong.tournament.title")}</h1>
 									: <>
-										<h1 className='Title'>Rounds {rounds} / {nbRounds}</h1>
+										<h1 className='Title'>{t("pong.tournament.manches")} {rounds} / {nbRounds}</h1>
 										<h1 className='VS'>VS</h1>
 									</>
 								}
-								<button onClick={quit} className='button-accueil'>Quit</button>
+								<button onClick={quit} className='button-accueil'>{t("pong.tournament.quitter")}</button>
 							</div>
 							{!startTournament ?
 								<div className="popup">
 									<table className="table-menu">
 										<thead>
 											<tr>
-												<th className="th-menu">Players Name</th>
-												<th className="th-menu">Place</th>
+												<th className="th-menu">{t("pong.tournament.nameJoueurs")}</th>
+												<th className="th-menu">{t("pong.tournament.place")}</th>
 											</tr>
 										</thead>
 										<tbody>
@@ -152,7 +154,7 @@ const TournamentPage: React.FC = () => {
 								</div>
 								:	<>
 										{autoQualified && (
-											<h2 className='Info'>Vous êtes qualifié d’office pour la prochaine manche !</h2>
+											<h2 className='Info'>{t("pong.tournament.nextQualifierRounds")}</h2>
 										)}
 										<div className='popup-player1'>
 											<img src={player1Avatar} alt='Avatar'/>
