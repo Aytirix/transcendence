@@ -63,17 +63,23 @@ export class Game {
 				width: this.player1.width,
 				margin: this.player1.margin,
 				speed: this.player1.speed,
-				score: this.player1.getScore()
+				score: this.player1.getScore(),
+				avatar: this.player1.getPlayerInfos().avatar
 			},
 			player2: {
 				pos_x: this.player2.pos_x,
 				pos_y: this.player2.pos_y,
-				userName: this.player1.getPlayerInfos().mode !== "SameKeyboard" ? this.player2.getPlayerInfos().name : "player2",
+				userName: this.player1.getPlayerInfos().mode !== "SameKeyboard" 
+					? this.player2.getPlayerInfos().name 
+					: "player2",
 				height: this.player2.height,
 				width: this.player2.width,
 				margin: this.player2.margin,
 				speed: this.player2.speed,
-				score: this.player2.getScore()
+				score: this.player2.getScore(),
+				avatar: this.player1.getPlayerInfos().mode === "SameKeyboard" || this.player1.getPlayerInfos().mode === "Solo"
+					? null
+					: this.player2.getPlayerInfos().avatar
 			}
 		});
 		if ((this.player1.getPlayerInfos().mode === "Multi" && this.player2.getPlayerInfos().mode === "Multi") ||
@@ -104,10 +110,7 @@ export class Game {
 			}
 			else if (this.player1.getPlayerInfos().mode === "Tournament"
 			&& this.player2.getPlayerInfos().mode === "Tournament") {
-				this.player1.getPlayerInfos().socket.send(JSON.stringify({type: "EXIT"}));
-				this.player2.getPlayerInfos().socket.send(JSON.stringify({type: "EXIT"}));
-				handleFinish(this.player1.getPlayerInfos())
-				handleFinish(this.player2.getPlayerInfos())
+
 				this.resetDisplay("Tournament");
 				isOnFinishMatch(this.tournament, this.player1.getPlayerInfos(), this.player2.getPlayerInfos());
 				//determiner le finish du tournois en fonction des manche
@@ -137,11 +140,6 @@ export class Game {
 			}
 			else if (this.player1.getPlayerInfos().mode === "Tournament"
 			&& this.player2.getPlayerInfos().mode === "Tournament") {
-				this.player1.getPlayerInfos().socket.send(JSON.stringify({type: "EXIT"}));
-				this.player2.getPlayerInfos().socket.send(JSON.stringify({type: "EXIT"}));
-				//checker lequel fait exit pour donner gagnant l adversaire si cest un exit avant la fin du match 
-				handleFinish(this.player1.getPlayerInfos())
-				handleFinish(this.player2.getPlayerInfos())
 				this.resetDisplay("Tournament");
 				isOnFinishMatch(this.tournament, this.player1.getPlayerInfos(), this.player2.getPlayerInfos());
 			}
@@ -234,18 +232,20 @@ export class Game {
 		}, 1000); //2000
 	}
 	checkScore(player1: Paddle, player2: Paddle) : boolean {
-		if (player1.getScore() == 21) {
+		if (player1.getScore() == 3) {
 			if (player1.getPlayerInfos().mode === "Tournament") {
 				player1.getPlayerInfos().resultMatchTournament = "Win";
 				player2.getPlayerInfos().resultMatchTournament = "Loose";
+				player2.getPlayerInfos().socket.send(JSON.stringify({type: "FINISHED", value: player1.getPlayerInfos().resultMatchTournament}))
 			}
 			console.log("Winner is player 1")
 			return (true);
 		}
-		else if (player2.getScore() == 21){
+		else if (player2.getScore() == 3){
 			if (player1.getPlayerInfos().mode === "Tournament") {
 				player2.getPlayerInfos().resultMatchTournament = "Win";
 				player1.getPlayerInfos().resultMatchTournament = "Loose";
+				player1.getPlayerInfos().socket.send(JSON.stringify({type: "FINISHED", value: player2.getPlayerInfos().resultMatchTournament}))
 			}
 			console.log("Winner is player 2")
 			return (true);
@@ -276,6 +276,7 @@ export class Game {
 	setTournament(tournament: Tournament) { this.tournament = tournament; }
 	getPlayer1Ready() : boolean {return (this.player1Ready)}
 	getPlayer2Ready() : boolean {return (this.player2Ready)}
+	getIsStarted() : boolean {return (this.isStarted)}
 	setPlayer1Ready(boolean: boolean) { this.player1Ready = boolean }
 	setPlayer2Ready(boolean: boolean) { this.player2Ready = boolean }
 	setIsStarted(boolean: boolean) {this.isStarted = boolean}

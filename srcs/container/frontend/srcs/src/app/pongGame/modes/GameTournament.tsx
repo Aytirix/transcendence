@@ -5,11 +5,12 @@ import { Engine, Scene, Mesh, AbstractMesh, FreeCamera} from '@babylonjs/core';
 import { initBabylon } from '../initBabylon';
 import { Parse} from '../types/data';
 import { handleKeyDown, handleKeyUp } from '../types/handleKey';
+import ApiService from '../../../api/ApiService';
 
 const GameTournament: React.FC = () => {
 
 			const navigate = useNavigate();
-			const returnMenu = () => socketRef.current?.send(JSON.stringify({type: "EXIT", value: assignPlayer}));			
+			const returnMenu = () => socketRef.current?.send(JSON.stringify({type: "EXIT", value: assignPlayer}));
 			const returnMenuWinner = () => { 
 				navigate('/pong/menu')
 				engine.current?.dispose();
@@ -30,13 +31,17 @@ const GameTournament: React.FC = () => {
 			const namePlayer2 = useRef<string | null>(null);
 			const assignPlayer = useRef<"p1" | "p2" | null>(null);
 			const [isReady3d, setIsReady3d] = useState(false);
-			// const [isCinematic, setIscinematic] = useState(false);
 			const [parsedData, setParsedData] = useState<Parse | null>(null);
 			const [count, setCount] = useState(3);
 			const [startReco, setStartReco] = useState(false);
 			const [isWinner, setisWinner] = useState(false);
 			const [waitingPlayers, setWaitingPlayers] = useState(false);
 			const [isPause, setIsPause] = useState(false);
+			const [isStarted, setIsStarted] = useState(false);
+			const messagePause = useRef("Press [ ESP ] for PLAY")
+			const [player1Avatar, setPlayer1Avatar] = useState<string | undefined>(undefined)
+			const [player2Avatar, setPlayer2Avatar] = useState<string | undefined>(undefined)
+			
 		
 			const reconnection = localStorage.getItem("reconnection");
 		
@@ -69,6 +74,7 @@ const GameTournament: React.FC = () => {
 						// setIscinematic(true);
 						setStartReco(true);
 						setIsPause(true);
+						setIsStarted(true);
 						console.log("reconnection")
 					}
 					else {
@@ -120,8 +126,17 @@ const GameTournament: React.FC = () => {
 		
 					}
 					if (data.type === "Pause") {
-						console.log(`pause = ${isPause}`)
 						setIsPause(data.value);
+						if (data.message)
+							messagePause.current = data.message;
+					}
+					if (data.type === "Win") {
+						// socket.close();
+						console.log("win")
+						engine.current?.dispose();
+						localStorage.removeItem("reconnection");
+						localStorage.removeItem("data");
+						navigate("/pong/menu/Tournament");
 					}
 					if (data.type === "assign") {
 						assignPlayer.current = data.value;
@@ -131,6 +146,15 @@ const GameTournament: React.FC = () => {
 							camera.current.position.z = -0.804;
 							camera.current.rotation.x = 0.363
 							camera.current.rotation.y = 1.570;
+							localStorage.setItem("data", JSON.stringify({
+								camera: {
+									pos_x: camera!.current!.position.x,
+									pos_y: camera!.current!.position.y,
+									pos_z: camera!.current!.position.z,
+									rot_x: camera!.current!.rotation.x,
+									rot_y: camera!.current!.rotation.y
+								}
+							}))
 						}
 						else if (assignPlayer.current === "p1" && camera.current){
 							camera.current.position.x = 130.38;
@@ -144,7 +168,6 @@ const GameTournament: React.FC = () => {
 					if (data.type === "FINISHED") {
 						localStorage.removeItem("reconnection");
 						localStorage.removeItem("data");
-						console.log(data.value)
 						if (data.value === "win") {
 							if (assignPlayer.current === "p1")
 								nameWinner.current = namePlayer1!.current
@@ -164,15 +187,16 @@ const GameTournament: React.FC = () => {
 						camera!.current!.position.z = -481.417;
 						camera!.current!.rotation.x = 0.280;
 						camera!.current!.rotation.y = -0.561;
-						socket.close(); //ici
+						// socket.close(); //ici
 					}
 					if (data.ball && data.player1 && data.player2) {
-						console.log("reception data")
 						setParsedData(data)
-
-						if (!namePlayer1.current) {
+						if (!player1Avatar)
+							setPlayer1Avatar(ApiService.getFile(data.player1.avatar))
+						if (!player2Avatar)
+							setPlayer2Avatar(ApiService.getFile(data.player2.avatar))
+						if (!namePlayer1.current)
 							namePlayer1.current = (data.player1.userName);
-						}
 						if (!namePlayer2.current)
 							namePlayer2.current = data.player2.userName;
 						localStorage.setItem("data", JSON.stringify({
@@ -206,7 +230,7 @@ const GameTournament: React.FC = () => {
 					}
 					return;
 				}
-				socketRef.current.send(JSON.stringify({ type: "Tournament", action: "Start"}));
+				socketRef.current.send(JSON.stringify({ type: "Tournament", action: "assign"}));
 				if (count > 0) {
 					const timeout = setTimeout(() => {
 						setCount((count) => count - 1);
@@ -219,6 +243,9 @@ const GameTournament: React.FC = () => {
 						return () => clearTimeout(goTimeout);
 					}, 500);
 				}
+				socketRef.current.send(JSON.stringify({ type: "Tournament", action: "Start"}));
+				localStorage.setItem("reconnection", "Tournament");
+				setIsStarted(true);
 			}, [isReady3d, count]);
 		
 			// Mise à jour des positions
@@ -251,7 +278,7 @@ const GameTournament: React.FC = () => {
 		
 			// Gestion des touches clavier
 			useEffect(() => {
-				if (!isReady3d || !socketRef.current || !waitingPlayers) return;
+				if (!isReady3d || !socketRef.current || !waitingPlayers || !isStarted) return;
 				const handlePause = (event: KeyboardEvent) => {
 					if (event.key === ' ') {
 						socketRef.current?.send(JSON.stringify({type: "Pause"})); //value p1
@@ -261,7 +288,7 @@ const GameTournament: React.FC = () => {
 				return (() => {
 					window.removeEventListener('keydown', handlePause);
 				})
-			}, [isPause, isReady3d, waitingPlayers])
+			}, [isPause, isReady3d, waitingPlayers, isStarted])
 		
 			useEffect(() => {
 				if (!isReady3d || !socketRef.current) return;
@@ -288,35 +315,6 @@ const GameTournament: React.FC = () => {
 				};
 			}, [isReady3d]);
 		
-			// useEffect(() => {
-			// 	if (!isReady3d || !socketRef.current || isCinematic) return;
-			// 	localStorage.setItem("reconnection", "Tournament"); //certqinement a cause de ca
-
-			// 	let i: number = -1209
-			// 	camera.current!.rotation.x = 0.081;
-			// 	camera.current!.rotation.y = 1.599;
-			// 	camera.current!.position.y = 21.71;
-			// 	camera.current!.position.z = -1.446;
-			// 		const interval = setInterval(() => {
-			// 			if (!camera.current) return;
-			// 			if (i <= - 21) {
-			// 				camera.current.position.x = i;
-			// 				i++;
-			// 			}
-			// 			else if (i >= 200) {
-			// 				camera.current.position.x = 338.131;
-			// 				camera.current.position.y = 136.188;
-			// 				camera.current.position.z = -481.417;
-			// 				camera.current.rotation.x = 0.280;
-			// 				camera.current.rotation.y = -0.561;
-			// 				clearInterval(interval);
-			// 				setIscinematic(true)
-			// 			}
-			// 			else
-			// 				i++;
-			// 		}, 6);
-			// }, [isReady3d])
-		
 			return (
 				<>
 					{/* Loading plein écran */}
@@ -330,9 +328,9 @@ const GameTournament: React.FC = () => {
 							<canvas ref={canvasRef} className="game-canvas"/>
 		
 							 {/* jeu en pause */}
-							{isPause && isReady3d && !isWinner && (
+							{isPause && isReady3d && !isWinner && isStarted &&(
 								<h1 className='Start-go'>
-									[ Pause ]
+									{messagePause.current}
 								</h1>
 							)}
 		
@@ -342,18 +340,27 @@ const GameTournament: React.FC = () => {
 									? <h1 className="Start-go">{count}</h1>
 									: <h1 className="Start-go">Go</h1>
 							)}
-
-							{/* waiting Players */}
-							{!startReco && !waitingPlayers && (
-								<>
-									<h1 className='Start-go' > attente du second joueur </h1>
-								</>
-							)}
 							{/* Dashboard des scores et exit */}
-							{!isWinner && (
+							{!isWinner && isStarted &&(
 								<>
-									<h1 className="DashBoardp1">{!namePlayer1.current ? "" : `${namePlayer1.current} : Score ${parsedData?.player1.score}`}</h1>
-									<h1 className="DashBoardp2">{!namePlayer2.current ? "" : `${namePlayer2.current} : Score ${parsedData?.player2.score}`}</h1>
+									<h1 className="DashBoardp1">{!namePlayer1.current ? "" : `${namePlayer1.current}`}</h1>
+									<h1 className='DashScore1'>{!namePlayer1.current ? "" : `${parsedData?.player1.score}`}</h1>
+										{!namePlayer1.current ? (
+											""
+											) : (
+											<div className='popup-avatar1'>
+												<img src={player1Avatar} alt="Avatar"/>
+											</div>
+											)}
+									<h1 className="DashBoardp2">{!namePlayer2.current ? "" : `${namePlayer2.current}`}</h1>
+									<h1 className='DashScore2'>{!namePlayer2.current ? "" : `${parsedData?.player2.score}`}</h1>
+										{!namePlayer2.current ? (
+											""
+											) : (
+											<div className='popup-avatar2'>
+												<img src={player2Avatar} alt="Avatar"/>
+											</div>
+											)}
 									<button onClick={returnMenu} className="Return-button">Exit Game</button>
 								</>
 							)}

@@ -20,6 +20,8 @@ export interface playerStat {
 	pauseGame?: boolean;
 	friendId?: number;
 	isReady?: boolean;
+	readyToNext?: boolean;
+	switchManche?: boolean;
 };
 
 export interface Tournament {
@@ -32,6 +34,7 @@ export interface Tournament {
 	currentMatch?: {player1: playerStat, player2:playerStat} [];
 	currentManche?: number;
 	waitingWinner?: playerStat [];
+	nextManche?: boolean;
 	historyTournament?: {
 		nbRound: number,
 		round: number, 
