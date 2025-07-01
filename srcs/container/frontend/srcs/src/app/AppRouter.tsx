@@ -3,7 +3,6 @@ import { Routes, Route, Navigate } from 'react-router-dom';
 
 
 // import WebSocketTest from './users/WebSocketTest';
-import { Pong } from './pongGame/client'
 import GameMenu from './pongGame/GameMenu';
 import WebSocketPacman from './Pacman/Init'
 import Intro from './Intro';
@@ -50,7 +49,7 @@ class AppRouter extends Component {
 					{/* Route pour le jeu Pong */}
 					<Route path="/pong" element={
 						<MinSizeGuard minWidth={1200} minHeight={870} message="Écran trop petit">
-							<Pong />
+							<GameMenu />
 						</MinSizeGuard>
 					} />
 					<Route path="/pong/menu/SameKeyboard" element={

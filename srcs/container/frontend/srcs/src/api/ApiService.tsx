@@ -1,5 +1,4 @@
 import notification from '../app/components/Notifications';
-import { useNavigate } from 'react-router-dom';
 
 class ApiService {
 	private static apiURL = `${window.location.protocol}//${window.location.host}/api`;
@@ -42,7 +41,7 @@ class ApiService {
 				if (this.navigate) {
 					this.navigate(resJson.redirect);
 				} else {
-					window.location.href = resJson.redirect;
+					console.warn('Navigation function not available, redirect requested to:', resJson.redirect);
 				}
 			}
 

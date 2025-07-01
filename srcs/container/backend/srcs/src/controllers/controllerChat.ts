@@ -129,7 +129,6 @@ export const init_connexion = async (ws: WebSocket, user: User, state: State) =>
 				if (member.id !== user.id) {
 					const relation = controllerFriends.getRelationFriend(user.id, member.id, state);
 					if (relation && relation.status === 'friend') isFriend = true;
-					console.log('Relation found:', relation);
 					break;
 				}
 			}

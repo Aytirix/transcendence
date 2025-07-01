@@ -27,10 +27,10 @@ function DisableNativeContextMenu({ children }: { children: React.ReactNode }) {
 }
 
 function AppContent() {
-	const { setNavigateFunction } = useChatWebSocket();
+	const { setNavigateFunction, setLocationFunction } = useChatWebSocket();
 
 	return (
-		<NavigationBridge onNavigateReady={setNavigateFunction}>
+		<NavigationBridge onNavigateReady={setNavigateFunction} onLocationReady={setLocationFunction}>
 			<SingletonGuard>
 				<LanguageProvider>
 					<AuthProvider>
