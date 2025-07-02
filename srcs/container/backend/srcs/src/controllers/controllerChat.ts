@@ -61,6 +61,8 @@ export function broadcastAllGroupUsers(user: User, state: State, group: Group, t
 	for (const [, group] of state.groups) {
 		const members = group.members.filter(member => member.id !== user.id);
 		members.forEach(member => {
+			const relation = controllerFriends.getRelationFriend(user.id, member.id, state);
+			if (relation && relation.status === 'blocked') return;
 			const wsMember = state.onlineSockets.get(member.id);
 			if (wsMember && wsMember.readyState === WebSocket.OPEN && send.indexOf(member.id) === -1) {
 				send.push(member.id);
