@@ -244,47 +244,6 @@
 		"blockUser": "Blocca utente",
 		"unblockUser": "Sblocca utente"
 	},
-	"pong": {
-		"title": "Pong",
-		"menu": {
-			"play": "Gioca",
-			"quickMatch": "Partita veloce",
-			"createRoom": "Crea una stanza",
-			"joinRoom": "Unisciti a una stanza",
-			"tournament": "Torneo",
-			"statistics": "Statistiche",
-			"rules": "Regole"
-		},
-		"game": {
-			"waitingForPlayer": "In attesa di un giocatore...",
-			"gameStarting": "La partita sta iniziando...",
-			"score": "Punteggio",
-			"pause": "Pausa",
-			"resume": "Riprendi",
-			"quit": "Esci",
-			"winner": "Vincitore",
-			"loser": "Perdente",
-			"draw": "Pareggio"
-		},
-		"rules": {
-			"title": "Regole del Pong",
-			"objective": "Obiettivo: Segnare punti mandando la palla nella porta avversaria",
-			"controls": "Controlli: Usa le frecce su/giù o W/S per muovere la tua racchetta",
-			"scoring": "Punteggio: Il primo a 11 punti vince",
-			"powerUps": "Power-up: Raccogli i bonus per effetti speciali"
-		},
-		"statistics": {
-			"title": "Statistiche Pong",
-			"gamesPlayed": "Partite giocate",
-			"gamesWon": "Partite vinte",
-			"gamesLost": "Partite perse",
-			"winRate": "Tasso di vittoria",
-			"totalScore": "Punteggio totale",
-			"averageScore": "Punteggio medio",
-			"bestStreak": "Miglior serie",
-			"ranking": "Classifica"
-		}
-	},
 	"common": {
 		"loading": "Caricamento...",
 		"error": "Errore",
@@ -359,6 +318,60 @@
 		"totalSize": "Dimensione totale salvata",
 		"closeSettings": "Chiudi"
 	},
+	"pong": {
+		"tournament": {
+			"title": "Torneo",
+			"manches": "Round",
+			"quitter": "Esci",
+			"nameJoueurs": "Nomi dei giocatori",
+			"place": "Posizione",
+			"nextaQualifierRounds": "Sei automaticamente qualificato per il prossimo round!"
+		},
+		"gamemenu": {
+			"samekeyboard": "Gioca in due (stessa tastiera)",
+			"solo": "Singolo",
+			"multi": "Contro un giocatore online",
+			"tournament": "Torneo online",
+			"exit": "Esci",
+			"create": "Crea",
+			"join": "Unisciti",
+			"name": "Nomi dei giocatori",
+			"place": "Posizione",
+			"valider": "Conferma",
+			"jointournament": "Unisciti al torneo",
+			"size": "Dimensione",
+			"entrerid": "Inserisci ID",
+			"entrernom": "Inserisci nome",
+			"joueurs": "Giocatori"
+		},
+		"samekeyboard": {
+			"go": "Si parte!",
+			"exitgame": "Esci dal gioco",
+			"winner": "Il vincitore è",
+			"returnmenu": "Torna al menu",
+			"pause": "Premi [ESP] per giocare",
+			"loading": "Caricamento..."
+		},
+		"solo": {
+			"go": "Si parte!",
+			"exitgame": "Esci dal gioco",
+			"winner": "Il vincitore è",
+			"returnmenu": "Torna al menu",
+			"pause": "Premi [ESP] per giocare",
+			"loading": "Caricamento..."
+		},
+		"multi": {
+			"go": "Si parte!",
+			"exitgame": "Esci dal gioco",
+			"winner": "Il vincitore è",
+			"returnmenu": "Torna al menu",
+			"pause": "Premi [ESP] per giocare",
+			"pausead": "Avversario in pausa. Ripresa imminente.",
+			"loading": "Caricamento...",
+			"attenteplayer": "In attesa del secondo giocatore"
+		}
+	},
+
 	"modules": {
 		"stats": {
 			"minor": "Minore",

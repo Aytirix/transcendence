@@ -323,6 +323,60 @@
 		"totalSaved": "Total saved",
 		"closeSettings": "Close"
 	},
+	"pong": {
+		"tournament": {
+			"title": "Tournament",
+			"manches": "Rounds",
+			"quitter": "Exit",
+			"nameJoueurs": "Player names",
+			"place": "Rank",
+			"nextaQualifierRounds": "You are automatically qualified for the next round!"
+		},
+		"gamemenu": {
+			"samekeyboard": "Play together (same keyboard)",
+			"solo": "Solo",
+			"multi": "Play against an online player",
+			"tournament": "Online Tournament",
+			"exit": "Exit",
+			"create": "Create",
+			"join": "Join",
+			"name": "Player names",
+			"place": "Rank",
+			"valider": "Validate",
+			"jointournament": "Join Tournament",
+			"size": "Size",
+			"entrerid": "Enter ID",
+			"entrernom": "Enter name",
+			"joueurs": "Players"
+		},
+		"samekeyboard": {
+			"go": "Let's go",
+			"exitgame": "Exit game",
+			"winner": "The winner is",
+			"returnmenu": "Return to menu",
+			"pause": "Press [ESP] to play",
+			"loading": "Loading..."
+		},
+		"solo": {
+			"go": "Let's go",
+			"exitgame": "Exit game",
+			"winner": "The winner is",
+			"returnmenu": "Return to menu",
+			"pause": "Press [ESP] to play",
+			"loading": "Loading..."
+		},
+		"multi": {
+			"go": "Let's go",
+			"exitgame": "Exit game",
+			"winner": "The winner is",
+			"returnmenu": "Return to menu",
+			"pause": "Press [ESP] to play",
+			"pausead": "Opponent is paused. Resuming soon.",
+			"loading": "Loading...",
+			"attenteplayer": "Waiting for the second player"
+		}
+	},
+
 	"modules": {
 		"stats": {
 			"minor": "Minor",

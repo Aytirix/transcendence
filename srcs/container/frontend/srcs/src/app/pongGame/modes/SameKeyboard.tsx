@@ -5,6 +5,7 @@ import { Engine, Scene, Mesh, AbstractMesh, FreeCamera} from '@babylonjs/core';
 import { initBabylon } from '../initBabylon';
 import { Parse} from '../types/data';
 import { handleKeyDown, handleKeyUp } from '../types/handleKey';
+import { useLanguage } from '../../../contexts/LanguageContext';
 
 const SameKeyboard: React.FC = () => {
 	const navigate = useNavigate();
@@ -21,7 +22,6 @@ const SameKeyboard: React.FC = () => {
 	const engine = useRef<Engine | null>(null);
 	const socketRef = useRef<WebSocket | null>(null);
 	const deleteGo = useRef(false);
-	const messagePause = useRef("Press [ ESP ] for PLAY")
 	
 	const [isReady3d, setIsReady3d] = useState(false);
 	const [isCinematic, setIscinematic] = useState(false);
@@ -33,8 +33,10 @@ const SameKeyboard: React.FC = () => {
 	const [isPause, setIsPause] = useState(false);
 	const [isWinner, setisWinner] = useState(false);
 	const [nameWinner, setNameWinner] = useState<string | null>(null);
-
+	
 	const reconnection = localStorage.getItem("reconnection");
+	const {t} = useLanguage();
+	const messagePause = useRef(t("pong.multi.pause"))
 
 	const keyPressed = useRef({
 		p1_up: false,
@@ -116,8 +118,10 @@ const SameKeyboard: React.FC = () => {
 			}
 			if (data.type === "Pause") {
 				setIsPause(data.value);
-				if (data.message)
-					messagePause.current = data.message;
+				if (data.message) {
+					if (data.message === "Press [ ESP ] for PLAY")
+						messagePause.current = t("pong.samekeyboard.pause");
+				}
 			}
 			if (data.type === "FINISHED") {
 				localStorage.removeItem("reconnection");
@@ -287,7 +291,7 @@ const SameKeyboard: React.FC = () => {
 			{/* Loading plein écran */}
 			{!isReady3d && (
 				<div>
-					{/* <h1 className="loading">Loading ...</h1> */}
+					<h1 className="loading1">{t("pong.samekeyboard.loading")}</h1>
 				</div>
 			)}
 			{/* jeu */}
@@ -305,7 +309,7 @@ const SameKeyboard: React.FC = () => {
 					{!deleteGo.current && isCinematic && !startReco && (
 						count > 0 
 							? <h1 className="Start-go">{count}</h1>
-							: <h1 className="Start-go">Go</h1>
+							: <h1 className="Start-go">{t("pong.samekeyboard.go")}</h1>
 					)}
 
 					{/* Dashboard des scores et exit */}
@@ -321,13 +325,13 @@ const SameKeyboard: React.FC = () => {
 										<div className='popup-avatar2'>
 											<img src="/images/IronmanProfil.png" alt="Avatar"/>
 										</div>
-							<button onClick={returnMenu} className="Return-button">Exit Game</button>
+							<button onClick={returnMenu} className="Return-button">{t("pong.samekeyboard.exitgame")}</button>
 						</>
 					)}
 					{isWinner && (
 						<>
-							<h1 className='Winner'>Winner is {nameWinner}</h1>
-							<button onClick={returnMenuWinner} className="Return-Menu">Return Menu</button>
+							<h1 className='Winner'>{t("pong.samekeyboard.winner")} {nameWinner}</h1>
+							<button onClick={returnMenuWinner} className="Return-Menu">{t("pong.samekeyboard.returnmenu")}</button>
 						</>
 					)}
 

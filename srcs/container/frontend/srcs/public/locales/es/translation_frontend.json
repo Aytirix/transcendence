@@ -318,6 +318,60 @@
 		"totalSize": "Tamaño total guardado",
 		"closeSettings": "Cerrar"
 	},
+	"pong": {
+		"tournament": {
+			"title": "Torneo",
+			"manches": "Rondas",
+			"quitter": "Salir",
+			"nameJoueurs": "Nombres de los jugadores",
+			"place": "Puesto",
+			"nextaQualifierRounds": "¡Estás clasificado automáticamente para la próxima ronda!"
+		},
+		"gamemenu": {
+			"samekeyboard": "Jugar a dos (mismo teclado)",
+			"solo": "Solo",
+			"multi": "Contra un jugador en línea",
+			"tournament": "Torneo en línea",
+			"exit": "Salir",
+			"create": "Crear",
+			"join": "Unirse",
+			"name": "Nombres de los jugadores",
+			"place": "Puesto",
+			"valider": "Validar",
+			"jointournament": "Unirse al torneo",
+			"size": "Tamaño",
+			"entrerid": "Introduce el ID",
+			"entrernom": "Introduce el nombre",
+			"joueurs": "Jugadores"
+		},
+		"samekeyboard": {
+			"go": "¡Vamos!",
+			"exitgame": "Salir del juego",
+			"winner": "El ganador es",
+			"returnmenu": "Volver al menú",
+			"pause": "Presiona [ESP] para jugar",
+			"loading": "Cargando..."
+		},
+		"solo": {
+			"go": "¡Vamos!",
+			"exitgame": "Salir del juego",
+			"winner": "El ganador es",
+			"returnmenu": "Volver al menú",
+			"pause": "Presiona [ESP] para jugar",
+			"loading": "Cargando..."
+		},
+		"multi": {
+			"go": "¡Vamos!",
+			"exitgame": "Salir del juego",
+			"winner": "El ganador es",
+			"returnmenu": "Volver al menú",
+			"pause": "Presiona [ESP] para jugar",
+			"pausead": "El oponente está en pausa. Reanudación en breve.",
+			"loading": "Cargando...",
+			"attenteplayer": "Esperando al segundo jugador"
+		}
+	},
+
 	"modules": {
 		"stats": {
 			"minor": "Menor",

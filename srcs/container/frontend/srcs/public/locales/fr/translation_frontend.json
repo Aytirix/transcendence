@@ -328,6 +328,49 @@
 			"nameJoueurs": "joueurs noms",
 			"place": "Place",
 			"nextaQualifierRounds": "Vous êtes qualifié d’office pour la prochaine manche !"
+		},
+		"gamemenu": {
+			"samekeyboard": "jouer à deux (même clavier)",
+			"solo": "seul",
+			"multi": "Contre un joueur en ligne",
+			"tournament": "Tournois en ligne",
+			"exit": "Quitter",
+			"create": "Creer",
+			"join": "Rejoindre",
+			"name": "Joueurs noms",
+			"place": "Place",
+			"valider": "Valider",
+			"jointournament": "Rejoindre Tournois",
+			"size": "Taille",
+			"entrerid": "Entrez id",
+			"entrernom": "Entrez le nom",
+			"joueurs": "Joueurs"
+		},
+		"samekeyboard": {
+			"go": "C'est parti",
+			"exitgame": "Quitter le jeu",
+			"winner": "Le gagnant est",
+			"returnmenu": "Revenir au menu",
+			"pause": "Appuyez sur [ESP] pour jouer",
+			"loading": "Chargement ..."
+		},
+		"solo": {
+			"go": "C'est parti",
+			"exitgame": "Quitter le jeu",
+			"winner": "Le gagnant est",
+			"returnmenu": "Revenir au menu",
+			"pause": "Appuyez sur [ESP] pour jouer",
+			"loading": "Chargement ..."
+		},
+		"multi": {
+			"go": "C'est parti",
+			"exitgame": "Quitter le jeu",
+			"winner": "Le gagnant est",
+			"returnmenu": "Revenir au menu",
+			"pause": "Appuyez sur [ESP] pour jouer",
+			"pausead": "Adversaire en pause. Reprise imminente.",
+			"loading": "Chargement ...",
+			"attenteplayer": "attente du second joueur"
 		}
 	},
 	"modules": {
