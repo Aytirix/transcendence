@@ -435,6 +435,9 @@
 			"updateError": "Erreur lors de la mise à jour du profil",
 			"passwordMismatch": "Les mots de passe ne correspondent pas",
 			"networkError": "Erreur réseau ou serveur"
+		},
+		"email": {
+			"confirmationRequired": "Veuillez consulter votre boîte mail\n{{email}}\npour confirmer votre changement.\nL'email expire dans 15 minutes."
 		}
 	},
 	"singlePage": {

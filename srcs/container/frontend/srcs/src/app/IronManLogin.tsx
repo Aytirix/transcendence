@@ -52,7 +52,7 @@ const IronManLogin: React.FC = () => {
 			<form className="z-10 w-full max-w-md" onSubmit={handleSubmit}>
 				<fieldset className="bg-gray-900 bg-opacity-90 border border-gray-700 rounded-2xl shadow-2xl p-8 flex flex-col gap-4 items-center">
 					<legend className="text-2xl font-bold text-center text-white tracking-widest gradient-text">{t('login.title')}</legend>
-					
+
 
 					<div className="flex justify-center mb-3">
 						<GoogleLoginButton textbtn="login" />

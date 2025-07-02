@@ -434,6 +434,9 @@
 			"updateError": "Errore durante l'aggiornamento del profilo",
 			"passwordMismatch": "Le password non corrispondono",
 			"networkError": "Errore di rete o server"
+		},
+		"email": {
+			"confirmationRequired": "Si prega di controllare la tua email\n{{email}}\nper confermare la modifica.\nL'email scade tra 15 minuti."
 		}
 	},
 	"singlePage": {

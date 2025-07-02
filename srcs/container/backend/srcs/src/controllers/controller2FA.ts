@@ -219,21 +219,25 @@ export async function verifyCode(req: FastifyRequest, reply: FastifyReply) {
 	const { code, password, confirmPassword } = req.body as { code: string, password?: string, confirmPassword?: string };
 	const json = tools.decrypt(code);
 	if (!json) {
+		console.error('000 : Invalid code format');
 		return reply.status(400).send({ success: false, message: i18n.t('errors.code.invalid') });
 	}
 	const { userCode, email, originalEmail, type } = JSON.parse(json);
 
 	if (!userCode || !email || !type) {
+		console.error('001 : Missing required fields in code');
 		return reply.status(400).send({ success: false, message: i18n.t('errors.code.invalid') });
 	}
 
 	// Vérifier si l'utilisateur est déjà connecté pour certains types
 	if (['createAccount_confirm_email'].includes(type) && req.session.user) {
+		console.error('002 : User already logged in');
 		return reply.status(400).send({ success: false, message: i18n.t('login.alreadyLoggedIn') });
 	} else if (['update_confirm_email'].includes(type)) {
 		if (!req.session.user) return reply.status(400).send({ success: false, message: i18n.t('login.notLoggedIn') });
 
 		if (originalEmail && originalEmail !== req.session.user.email) {
+			console.error('004 : Original email does not match session email');
 			return reply.status(400).send({ success: false, message: i18n.t('errors.code.invalid') });
 		}
 	} else if (['forget_password'].includes(type)) {
@@ -244,6 +248,7 @@ export async function verifyCode(req: FastifyRequest, reply: FastifyReply) {
 	const isValid = await model2FA.verifyCode(originalEmail || email, type, userCode);
 
 	if (!isValid) {
+		console.error('005 : Invalid code or email');
 		return reply.status(400).send({ success: false, message: i18n.t('errors.code.invalid') });
 	}
 
@@ -262,6 +267,7 @@ export async function verifyCode(req: FastifyRequest, reply: FastifyReply) {
 		} else if (type == 'forget_password') {
 			let user = await userModel.getUserByEmail(email);
 			if (!user) {
+				console.error('006 : User not found for forget password');
 				return reply.status(400).send({ success: false, message: i18n.t('errors.code.invalid') });
 			}
 			await userModel.UpdateUser(user.id.toString(), null, null, password);
@@ -270,6 +276,7 @@ export async function verifyCode(req: FastifyRequest, reply: FastifyReply) {
 			return reply.status(200).send({ success: true, message: i18n.t('email.verificationCode.ForgetPasswordOk') });
 		}
 	}
+	console.error('007 : Code verification failed');
 	return reply.status(400).send({ success: false, message: i18n.t('errors.code.invalid') });
 }
 

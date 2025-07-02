@@ -85,6 +85,13 @@ const UserProfile: React.FC = () => {
 			formData.append("file", file);
 
 			const result: any = await ApiService.uploadFile("/upload-avatar", formData);
+			if (!result.ok) {
+				if (result.statusCode === 413) {
+					notification.error(t('profile.avatar.errors.fileTooLarge'));
+					setUploading(false);
+				}
+				return;
+			}
 			setCustomAvatarUrl(result.url);
 			setForm({ ...form, avatar: result.fileName });
 			setUploading(false);
@@ -107,12 +114,19 @@ const UserProfile: React.FC = () => {
 				tab.avatar = '';
 			}
 
+			// Vérifier si l'email a été modifié
+			const emailChanged = tab.email && tab.email !== user?.email;
+
 			const res = await ApiService.put('/update-user', tab as JSON);
 			if (res.ok) {
 				setUser((prevUser) => prevUser ? { ...prevUser, ...res.user } : null);
 
 				if (tab.lang && tab.lang !== user?.lang) {
 					setLanguage(tab.lang, false);
+				}
+
+				if (emailChanged) {
+					notification.alert(t('profile.email.confirmationRequired', { email: tab.email }), 'email-confirmation-alert');
 				}
 			}
 		} catch {
@@ -177,20 +191,6 @@ const UserProfile: React.FC = () => {
 							</label>
 						</div>
 
-						{/* Infos upload */}
-						{(preview || customAvatarUrl || uploading) && (
-							<div className="mt-4 flex flex-col items-center">
-								{uploading && <span className="loading loading-dots loading-sm mt-1 text-yellow-400"></span>}
-								{customAvatarUrl && (
-									<a
-										href={customAvatarUrl}
-										className="text-blue-400 hover:text-blue-300 break-all text-xs mt-2 underline"
-										target="_blank"
-										rel="noopener noreferrer"
-									>{customAvatarUrl}</a>
-								)}
-							</div>
-						)}
 					</div>
 
 					{/* Conteneur pour ProfileInputs avec styling cohérent */}
