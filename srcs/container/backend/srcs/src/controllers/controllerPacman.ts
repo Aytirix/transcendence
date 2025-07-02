@@ -264,6 +264,7 @@ export async function setRoomMap(ws: WebSocket, player: player, json: any): Prom
 
 export const getStatisticsForUser = async (request: FastifyRequest, reply: FastifyReply) => {
 	const stats = await pacmanModel.getStatisticsForUser(request.session.user.id);
+	console.log('getStatisticsForUser', stats);
 	return reply.status(200).send({ success: true, stats });
 }
 
