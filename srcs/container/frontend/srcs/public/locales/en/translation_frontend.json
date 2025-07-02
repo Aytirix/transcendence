@@ -374,6 +374,18 @@
 			"pausead": "Opponent is paused. Resuming soon.",
 			"loading": "Loading...",
 			"attenteplayer": "Waiting for the second player"
+		},
+		"parametre": {
+		"cmd": "General Controls",
+		"chgvue": "Change view",
+		"pause": "Pause / Resume",
+		"esp": "SPACE",
+		"samekeyboard": "Play together (same keyboard)",
+		"joueur1": "Player 1: left / right",
+		"joueur2": "Player 2: left / right",
+		"solo": "Solo vs AI",
+		"raquette": "Paddle movement",
+		"multi": "Multiplayer"
 		}
 	},
 

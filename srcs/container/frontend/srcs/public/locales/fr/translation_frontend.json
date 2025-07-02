@@ -344,7 +344,8 @@
 			"size": "Taille",
 			"entrerid": "Entrez id",
 			"entrernom": "Entrez le nom",
-			"joueurs": "Joueurs"
+			"joueurs": "Joueurs",
+			"parametres": "Paramètres"
 		},
 		"samekeyboard": {
 			"go": "C'est parti",
@@ -371,6 +372,18 @@
 			"pausead": "Adversaire en pause. Reprise imminente.",
 			"loading": "Chargement ...",
 			"attenteplayer": "attente du second joueur"
+		},
+		"parametre": {
+			"cmd": "Commandes générales",
+			"chgvue": "Changer la vue",
+			"pause": "Pause / Reprendre",
+			"esp": "ESPACE",
+			"samekeyboard": "jouer à deux (même clavier)",
+			"joueur1": "Joueur 1 : gauche / droite",
+			"joueur2": "Joueur 2 : gauche / droite",
+			"solo": "seul vs ia",
+			"raquette": "Déplacement de la raquette",
+			"multi": "multijoueur"
 		}
 	},
 	"modules": {

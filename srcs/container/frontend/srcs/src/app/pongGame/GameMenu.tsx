@@ -14,13 +14,14 @@ const GameMenu: React.FC = () => {
 	const [showTournament, setShowTournament] = useState(false);
 	const [showCreate, setShowCreate] = useState(false);
 	const [showJoin, setShowJoin] = useState(false);
+	const [showParametre, setShowparametre] = useState(false);
 
 	const SameKeyboard = () => navigate('/pong/menu/SameKeyboard');
 	const Solo = () => navigate('/pong/menu/Solo');
 	const MultiPlayers = () => navigate('/pong/menu/MultiPlayers');
-
+	
 	const {t} = useLanguage();
-
+	
 	const Validation = () => {
 		showCreate 
 		? 	socketRef.current?.send(JSON.stringify({
@@ -39,6 +40,21 @@ const GameMenu: React.FC = () => {
 		navigate('/pong/menu/Tournament');
 	};
 
+	const Parametre = () => {
+		if (!showParametre) {
+			if (!showTournament)
+				setShowparametre(true);
+			if (showTournament) {
+				setShowTournament(false);
+				setShowJoin(false);
+				setShowCreate(false)
+				setShowparametre(true);
+			}
+		}
+		else
+			setShowparametre(false);
+	};
+	
 	const Tournament = () => {
 		if (showTournament) {
 			setShowTournament(false);
@@ -47,6 +63,8 @@ const GameMenu: React.FC = () => {
 			setShowJoin(false);
 		} else {
 			setShowTournament(true);
+			if (showParametre)
+				setShowparametre(false);
 			socketRef.current?.send(JSON.stringify({ type: "Tournament", action: "Display" }));
 			console.log("test")
 		}
@@ -132,6 +150,9 @@ const GameMenu: React.FC = () => {
 				<button className="Menu-button" onClick={MultiPlayers}>{t("pong.gamemenu.multi")}</button>
 				<button className="Menu-button" onClick={Tournament}>{t("pong.gamemenu.tournament")}</button>
 			</div>
+			<div className="parametre">
+				<button className="style-button-accueil" onClick={Parametre}> {t("pong.gamemenu.parametres")}</button>
+			</div>
 			{showTournament && (
 				<>
 					<div className="popup">
@@ -165,6 +186,50 @@ const GameMenu: React.FC = () => {
 					)}
 				</>
 			)}
+			{showParametre && (
+				<div className="popup">
+					<table className="table-menu">
+					<thead>
+						<tr>
+						<th className="th-menu" colSpan={2}>{t("pong.parametre.cmd")}</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr><td>1 → 4</td><td>{t("pong.parametre.chgvue")}</td></tr>
+						<tr><td>{t("pong.parametre.esp")}</td><td>{t("pong.parametre.pause")}</td></tr>
+					</tbody>
+
+					<thead>
+						<tr>
+						<th className="th-menu" colSpan={2}>{t("pong.parametre.samekeyboard")}</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr><td>← / →</td><td>{t("pong.parametre.joueur1")}</td></tr>
+						<tr><td>a / d</td><td>{t("pong.parametre.joueur2")}</td></tr>
+					</tbody>
+
+					<thead>
+						<tr>
+						<th className="th-menu" colSpan={2}>{t("pong.parametre.solo")}</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr><td>← / →</td><td>{t("pong.parametre.raquette")}</td></tr>
+					</tbody>
+
+					<thead>
+						<tr>
+						<th className="th-menu" colSpan={2}>{t("pong.parametre.multi")}</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr><td>← / →</td><td>{t("pong.parametre.raquette")}</td></tr>
+					</tbody>
+					</table>
+				</div>
+			)}
+
 
 			{showCreate && (
 				<div className="popup_create">
