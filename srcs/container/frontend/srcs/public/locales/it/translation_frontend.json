@@ -54,9 +54,10 @@
 		}
 	},
 	"project_credits": "Crediti",
-	"project_transcendence": "Progetto Transcendence",
+	"name_project": "Trascendenza",
+	"project_transcendence": "Progetto Trascendenza",
 	"home": {
-		"welcome_to_transcendence": "Benvenuto su Transcendence",
+		"welcome_to_transcendence": "Benvenuto su Trascendenza",
 		"experience_classic_games": "Scopri giochi classici reinventati con tecnologia moderna",
 		"epic_games": "Giochi Epici",
 		"hours_of_fun": "Ore di Divertimento",

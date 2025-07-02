@@ -113,7 +113,7 @@
 					scrollbar-color: #4b5563 transparent;
 
 					.module-item {
-						z-index: 100;
+						z-index: 10;
 						display: flex;
 						justify-content: center;
 						align-items: center;
@@ -144,7 +144,7 @@
 		color: #e5e7eb;
 		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
 		cursor: grabbing;
-		z-index: 101;
+		z-index: 11;
 	}
 }
 
