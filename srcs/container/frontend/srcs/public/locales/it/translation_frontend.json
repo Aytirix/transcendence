@@ -79,7 +79,7 @@
 	"credits": {
 		"contributions_title": "Contributi",
 		"role": {
-			"lead": "Sviluppatore principale",
+			"lead": "Chef di progetto",
 			"pongFullstack": "Sviluppatore Fullstack Pong",
 			"generalFrontend": "Sviluppatore Frontend generale",
 			"pacManFrontend": "Sviluppatore Frontend Pac-Man"
@@ -99,7 +99,7 @@
 			"pongBackendLogic": "Logica backend Pong",
 			"realTimeMultiplayerSystem": "Sistema multiplayer in tempo reale",
 			"uiUxDesign": "Design UI/UX",
-			"gameMatchmaking": "Sistema di matchmaking",
+			"gameMatchmaking": "Sistema di matchmaking online",
 			"pongStatisticsScoring": "Statistiche e punteggio Pong",
 			"loginRegisterInterfaces": "Interfacce di accesso/registrazione",
 			"userProfileManagement": "Gestione profilo utente",
