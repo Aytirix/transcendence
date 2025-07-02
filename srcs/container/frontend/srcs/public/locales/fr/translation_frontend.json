@@ -52,7 +52,7 @@
 			}
 		}
 	},
-	"project_credits": "Crédits du Projet",
+	"project_credits": "Crédits",
 	"project_transcendence": "Projet Transcendence",
 	"home": {
 		"welcome_to_transcendence": "Bienvenue sur Transcendence",
@@ -225,26 +225,9 @@
 		"pacman": "Pac-Man",
 		"profile": "Profil",
 		"chat": "Chat",
-		"logout": "Déconnexion"
-	},
-	"profile": {
-		"title": "Profil",
-		"edit": "Modifier le profil",
-		"save": "Sauvegarder",
-		"cancel": "Annuler",
-		"avatar": "Avatar",
-		"changeAvatar": "Changer d'avatar",
-		"uploadAvatar": "Télécharger un avatar",
-		"username": "Nom d'utilisateur",
-		"email": "Email",
-		"language": "Langue",
-		"twoFA": "Authentification à deux facteurs",
-		"enable2FA": "Activer la 2FA",
-		"disable2FA": "Désactiver la 2FA",
-		"statistics": "Statistiques",
-		"matchHistory": "Historique des matchs",
+		"logout": "Déconnexion",
 		"friends": "Amis",
-		"achievements": "Succès"
+		"modules": "Modules"
 	},
 	"chat": {
 		"title": "Chat",
@@ -361,6 +344,53 @@
 		"types": {
 			"minor": "Mineurs",
 			"major": "Majeurs"
+		}
+	},
+	"profile": {
+		"title": "Mon profil",
+		"legend": "Mon profil",
+		"avatar": {
+			"selected": "Avatar sélectionné",
+			"choose": "Choisir votre avatar",
+			"custom": "Custom",
+			"uploading": "Téléchargement en cours...",
+			"errors": {
+				"invalidFormat": "Seuls JPEG, PNG ou WEBP acceptés.",
+				"fileTooLarge": "Fichier trop volumineux (3Mo max)"
+			}
+		},
+		"form": {
+			"username": {
+				"placeholder": "Pseudo"
+			},
+			"email": {
+				"placeholder": "E-mail"
+			},
+			"password": {
+				"placeholder": "Nouveau mot de passe"
+			},
+			"confirmPassword": {
+				"placeholder": "Confirmer le mot de passe"
+			},
+			"language": {
+				"placeholder": "Langue...",
+				"options": {
+					"fr": "Français",
+					"en": "English",
+					"es": "Español",
+					"it": "Italia"
+				}
+			}
+		},
+		"actions": {
+			"update": "Mettre à jour",
+			"updating": "Mise à jour..."
+		},
+		"notifications": {
+			"updateSuccess": "Profil mis à jour avec succès",
+			"updateError": "Erreur lors de la mise à jour du profil",
+			"passwordMismatch": "Les mots de passe ne correspondent pas",
+			"networkError": "Erreur réseau ou serveur"
 		}
 	}
 }

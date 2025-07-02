@@ -53,7 +53,7 @@
 			}
 		}
 	},
-	"project_credits": "Project Credits",
+	"project_credits": "Credits",
 	"project_transcendence": "Transcendence Project",
 	"home": {
 		"welcome_to_transcendence": "Welcome to Transcendence",
@@ -228,26 +228,8 @@
 		"pacman": "Pac-Man",
 		"profile": "Profile",
 		"chat": "Chat",
-		"logout": "Logout"
-	},
-	"profile": {
-		"title": "Profile",
-		"edit": "Edit profile",
-		"save": "Save",
-		"cancel": "Cancel",
-		"avatar": "Avatar",
-		"changeAvatar": "Change avatar",
-		"uploadAvatar": "Upload an avatar",
-		"username": "Username",
-		"email": "Email",
-		"language": "Language",
-		"twoFA": "Two-factor authentication",
-		"enable2FA": "Enable 2FA",
-		"disable2FA": "Disable 2FA",
-		"statistics": "Statistics",
-		"matchHistory": "Match history",
 		"friends": "Friends",
-		"achievements": "Achievements"
+		"logout": "Logout"
 	},
 	"chat": {
 		"title": "Chat",
@@ -356,5 +338,53 @@
 			"minor": "Minor",
 			"major": "Major"
 		}
+	},
+	"profile": {
+		"title": "My profile",
+		"legend": "My profile",
+		"avatar": {
+			"selected": "Selected avatar",
+			"choose": "Choose your avatar",
+			"custom": "Custom",
+			"uploading": "Uploading...",
+			"errors": {
+				"invalidFormat": "Only JPEG, PNG or WEBP accepted.",
+				"fileTooLarge": "File too large (3MB max)"
+			}
+		},
+		"form": {
+			"username": {
+				"placeholder": "Username"
+			},
+			"email": {
+				"placeholder": "Email"
+			},
+			"password": {
+				"placeholder": "New password"
+			},
+			"confirmPassword": {
+				"placeholder": "Confirm password"
+			},
+			"language": {
+				"placeholder": "Language...",
+				"options": {
+					"fr": "Français",
+					"en": "English",
+					"es": "Español",
+					"it": "Italia"
+				}
+			}
+		},
+		"actions": {
+			"update": "Update",
+			"updating": "Updating..."
+		},
+		"notifications": {
+			"updateSuccess": "Profile updated successfully",
+			"updateError": "Error updating profile",
+			"passwordMismatch": "Passwords do not match",
+			"networkError": "Network or server error"
+		}
 	}
+	
 }

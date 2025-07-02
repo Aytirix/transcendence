@@ -1,5 +1,6 @@
 import React, { ChangeEvent } from 'react';
 import { ProfileForm } from '../../IronManProfile';
+import { useLanguage } from '../../../contexts/LanguageContext';
 
 interface ProfileInputsProps {
 	form: ProfileForm;
@@ -7,13 +8,16 @@ interface ProfileInputsProps {
 	user: any;
 }
 
-const ProfileInputs: React.FC<ProfileInputsProps> = ({ form, handleChange }) => (
+const ProfileInputs: React.FC<ProfileInputsProps> = ({ form, handleChange }) => {
+	const { t } = useLanguage();
+	
+	return (
 	<div className="flex flex-col items-center gap-4 w-full">
 		<input
 			className="input w-full max-w-md bg-gray-800 text-white"
 			type="text"
 			name="username"
-			placeholder={form?.username || "Pseudo"}
+			placeholder={form?.username || t('profile.form.username.placeholder')}
 			value={form.username}
 			maxLength={10}
 			onChange={handleChange}
@@ -23,7 +27,7 @@ const ProfileInputs: React.FC<ProfileInputsProps> = ({ form, handleChange }) => 
 			className="input w-full max-w-md bg-gray-800 text-white"
 			type="email"
 			name="email"
-			placeholder={form?.email || "E-mail"}
+			placeholder={form?.email || t('profile.form.email.placeholder')}
 			value={form.email}
 			maxLength={50}
 			onChange={handleChange}
@@ -32,7 +36,7 @@ const ProfileInputs: React.FC<ProfileInputsProps> = ({ form, handleChange }) => 
 			className="input w-full max-w-md bg-gray-800 text-white"
 			type="password"
 			name="password"
-			placeholder="Nouveau mot de passe"
+			placeholder={t('profile.form.password.placeholder')}
 			value={form.password}
 			onChange={handleChange}
 		/>
@@ -40,18 +44,19 @@ const ProfileInputs: React.FC<ProfileInputsProps> = ({ form, handleChange }) => 
 			className="input w-full max-w-md bg-gray-800 text-white"
 			type="password"
 			name="confirmPassword"
-			placeholder="Confirmer le mot de passe"
+			placeholder={t('profile.form.confirmPassword.placeholder')}
 			value={form.confirmPassword}
 			onChange={handleChange}
 		/>
 		<select className="select w-full max-w-md bg-gray-800 text-white" value={form.lang} name="lang" onChange={handleChange}>
-			<option disabled={true} value="">Langue...</option>
-			<option value="fr">Français</option>
-			<option value="en">English</option>
-			<option value="es">Español</option>
-			<option value="it">Italia</option>
+			<option disabled={true} value="">{t('profile.form.language.placeholder')}</option>
+			<option value="fr">{t('profile.form.language.options.fr')}</option>
+			<option value="en">{t('profile.form.language.options.en')}</option>
+			<option value="es">{t('profile.form.language.options.es')}</option>
+			<option value="it">{t('profile.form.language.options.it')}</option>
 		</select>
 	</div>
 );
+};
 
 export default ProfileInputs;
