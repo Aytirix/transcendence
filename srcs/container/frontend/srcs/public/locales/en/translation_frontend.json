@@ -347,7 +347,8 @@
 			"size": "Size",
 			"entrerid": "Enter ID",
 			"entrernom": "Enter name",
-			"joueurs": "Players"
+			"joueurs": "Players",
+			"parametres": "Settings"
 		},
 		"samekeyboard": {
 			"go": "Let's go",
