@@ -119,8 +119,8 @@ const GameTournament: React.FC = () => {
 					}
 					if (data.type === "Remove") {
 						setStartReco(false);
-						// setIscinematic(false);
 						setIsPause(false);
+						setIsStarted(false);
 						localStorage.removeItem("reconnection");
 						localStorage.removeItem("data");
 		
