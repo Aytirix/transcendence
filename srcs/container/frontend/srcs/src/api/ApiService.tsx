@@ -77,7 +77,12 @@ class ApiService {
 
 		try {
 			const response = await fetch(`${this.apiURL}${endpoint}`, config);
-			const resJson = await response.json();
+			let resJson: any = {};
+			try {
+				resJson = await response.json();
+			} catch (error) { }
+			resJson.ok = response.ok;
+			resJson.statusCode = response.status;
 			if (resJson.message) {
 				if (notif && response.ok) {
 					notification.success(resJson.message);

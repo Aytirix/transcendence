@@ -372,7 +372,6 @@
 			"attenteplayer": "Esperando al segundo jugador"
 		}
 	},
-
 	"modules": {
 		"stats": {
 			"minor": "Menor",
@@ -434,6 +433,9 @@
 			"updateError": "Error al actualizar el perfil",
 			"passwordMismatch": "Las contraseñas no coinciden",
 			"networkError": "Error de red o servidor"
+		},
+		"email": {
+			"confirmationRequired": "Por favor, revisa tu correo electrónico\n{{email}}\npara confirmar tu cambio.\nEl correo electrónico expira en 15 minutos."
 		}
 	},
 	"singlePage": {

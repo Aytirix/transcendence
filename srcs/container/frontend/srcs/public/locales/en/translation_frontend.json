@@ -439,6 +439,9 @@
 			"updateError": "Error updating profile",
 			"passwordMismatch": "Passwords do not match",
 			"networkError": "Network or server error"
+		},
+		"email": {
+			"confirmationRequired": "Please check your email\n{{email}}\nto confirm your change.\nThe email expires in 15 minutes."
 		}
 	},
 	"singlePage": {

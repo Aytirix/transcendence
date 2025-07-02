@@ -63,7 +63,7 @@ class ToastNotification {
 	}
 
 	static confirm(
-		message: string, 
+		message: string,
 		options = {}
 	): Promise<boolean> {
 		return new Promise((resolve) => {
@@ -113,6 +113,61 @@ class ToastNotification {
 			);
 		});
 	}
+
+	static alert(
+		message: string,
+		toastId: string,
+		options = {}
+	): Promise<void> {
+		return new Promise((resolve) => {
+			const content = (
+				<div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+					{ToastNotification.formatMessage(message)}
+					<div style={{ display: 'flex', justifyContent: 'center' }}>
+						<button
+							onClick={() => {
+								resolve();
+								toast.dismiss(toastId);
+							}}
+							style={{
+								padding: '8px 20px',
+								backgroundColor: '#2196F3',
+								color: 'white',
+								border: 'none',
+								borderRadius: '4px',
+								cursor: 'pointer',
+								fontSize: '14px',
+								fontWeight: '500'
+							}}
+						>
+							OK
+						</button>
+					</div>
+				</div>
+			);
+
+			// Vérifier si une notification avec cet ID existe déjà
+			if (toast.isActive(toastId)) {
+				// Mettre à jour le contenu de la notification existante
+				toast.update(toastId, {
+					render: content,
+					autoClose: false,
+					closeOnClick: false,
+					...options
+				});
+			} else {
+				// Créer une nouvelle notification avec l'ID spécifié
+				toast(content, {
+					toastId: toastId,
+					autoClose: false,
+					closeOnClick: false,
+					...options
+				});
+			}
+		});
+	}
+
+
 }
 
 // Exporter à la fois la classe et le composant ToastContainer
@@ -156,3 +211,13 @@ export default ToastNotification;
 // ToastNotification.confirm("Are you sure you want to proceed?")
 //   .then((result) => {
 //     if (result) {
+
+// Alert dialog example (just OK button)
+// ToastNotification.alert("This is an important message!")
+//   .then(() => {
+//     console.log("User clicked OK");
+
+// Alert dialog with custom ID (updates existing notification with same ID)
+// ToastNotification.alertWithId("Updated message!", "my-custom-id")
+//   .then(() => {
+//     console.log("User clicked OK on updated notification");
