@@ -53,7 +53,7 @@
 			}
 		}
 	},
-	"project_credits": "Crediti del Progetto",
+	"project_credits": "Crediti",
 	"project_transcendence": "Progetto Transcendence",
 	"home": {
 		"welcome_to_transcendence": "Benvenuto su Transcendence",
@@ -61,7 +61,6 @@
 		"epic_games": "Giochi Epici",
 		"hours_of_fun": "Ore di Divertimento",
 		"school_spirit": "Spirito 42",
-		
 		"choose_your_adventure": "Scegli la tua avventura",
 		"classic_pong_description": "Il classico gioco Pong con un tocco moderno e multiplayer",
 		"classic_pacman_description": "L'iconico Pac-Man con funzionalità migliorate",
@@ -72,15 +71,13 @@
 		"high_scores": "Punteggi migliori",
 		"nostalgic": "Nostalgico",
 		"play_now": "Gioca ora",
-		
 		"made_with": "Fatto con",
 		"at_42_school": "alla scuola 42",
 		"developed_by": "Sviluppato da"
 	},
-	
 	"credits": {
 		"contributions_title": "Contributi",
-		"role" : {
+		"role": {
 			"lead": "Sviluppatore principale",
 			"pongFullstack": "Sviluppatore Fullstack Pong",
 			"generalFrontend": "Sviluppatore Frontend generale",
@@ -117,10 +114,9 @@
 			"pongAI": "Sviluppo AI per Pong"
 		}
 	},
-
 	"pacman": {
 		"title": "Pacman",
-		"menu" : {
+		"menu": {
 			"home": "Home",
 			"lobby": {
 				"button": "Lobby",
@@ -136,7 +132,7 @@
 					"waitingForPlayers": "In attesa di giocatori"
 				}
 			},
-			"liveGames" : {
+			"liveGames": {
 				"button": "In diretta",
 				"title": "Partite in corso",
 				"noGamesFound": "Nessuna partita in corso",
@@ -178,7 +174,7 @@
 				"valid": "Valido",
 				"invalid": "Non valido",
 				"noMapsFound": "Nessuna mappa trovata",
-				"suppress" : "Elimina",
+				"suppress": "Elimina",
 				"edit": "Modifica",
 				"mapEditor": {
 					"title": "Crea una mappa Pacman",
@@ -228,26 +224,8 @@
 		"pacman": "Pac-Man",
 		"profile": "Profilo",
 		"chat": "Chat",
-		"logout": "Disconnetti"
-	},
-	"profile": {
-		"title": "Profilo",
-		"edit": "Modifica profilo",
-		"save": "Salva",
-		"cancel": "Annulla",
-		"avatar": "Avatar",
-		"changeAvatar": "Cambia avatar",
-		"uploadAvatar": "Carica un avatar",
-		"username": "Nome utente",
-		"email": "Email",
-		"language": "Lingua",
-		"twoFA": "Autenticazione a due fattori",
-		"enable2FA": "Attiva 2FA",
-		"disable2FA": "Disattiva 2FA",
-		"statistics": "Statistiche",
-		"matchHistory": "Cronologia partite",
 		"friends": "Amici",
-		"achievements": "Successi"
+		"logout": "Disconnetti"
 	},
 	"chat": {
 		"title": "Chat",
@@ -395,6 +373,53 @@
 		"types": {
 			"minor": "Minori",
 			"major": "Maggiori"
+		}
+	},
+	"profile": {
+		"title": "Il mio profilo",
+		"legend": "Il mio profilo",
+		"avatar": {
+			"selected": "Avatar selezionato",
+			"choose": "Scegli il tuo avatar",
+			"custom": "Personalizzato",
+			"uploading": "Caricamento in corso...",
+			"errors": {
+				"invalidFormat": "Solo JPEG, PNG o WEBP accettati.",
+				"fileTooLarge": "File troppo grande (max 3MB)"
+			}
+		},
+		"form": {
+			"username": {
+				"placeholder": "Nome utente"
+			},
+			"email": {
+				"placeholder": "E-mail"
+			},
+			"password": {
+				"placeholder": "Nuova password"
+			},
+			"confirmPassword": {
+				"placeholder": "Conferma password"
+			},
+			"language": {
+				"placeholder": "Lingua...",
+				"options": {
+					"fr": "Français",
+					"en": "English",
+					"es": "Español",
+					"it": "Italiano"
+				}
+			}
+		},
+		"actions": {
+			"update": "Aggiorna",
+			"updating": "Aggiornamento..."
+		},
+		"notifications": {
+			"updateSuccess": "Profilo aggiornato con successo",
+			"updateError": "Errore durante l'aggiornamento del profilo",
+			"passwordMismatch": "Le password non corrispondono",
+			"networkError": "Errore di rete o server"
 		}
 	}
 }

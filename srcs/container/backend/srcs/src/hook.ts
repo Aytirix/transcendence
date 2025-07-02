@@ -11,13 +11,17 @@ export function createi18nObject(session: any, headers: any): typeof i18n {
 	}
 	lang = lang.split(',')[0].split('-')[0];
 	lang = lang.toLowerCase().trim();
-	if (lang !== 'fr' && lang !== 'en' && lang !== 'it') {
+	if (lang !== 'fr' && lang !== 'en' && lang !== 'it' && lang !== 'es') {
 		lang = 'fr';
 	}
 	return i18n.cloneInstance({ lng: lang, fallbackLng: 'fr' });
 }
 
 export async function registerHook(app: FastifyInstance) {
+
+	app.addHook('preHandler', async (request, reply) => {
+		request.i18n = createi18nObject(request.session, request.headers);
+	});
 
 	app.setErrorHandler(async (error, request, reply) => {
 		// Si l'erreur est une erreur de validation, on renvoie un message d'erreur
@@ -40,10 +44,6 @@ export async function registerHook(app: FastifyInstance) {
 				message: error.message
 			});
 		}
-	});
-
-	app.addHook('onRequest', async (request, reply) => {
-		request.i18n = createi18nObject(request.session, request.headers);
 	});
 
 	// Si une session n'a aucune information, on la détruit pour ne pas la stocker dans la base de données

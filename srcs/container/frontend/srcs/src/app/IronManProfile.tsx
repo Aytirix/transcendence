@@ -1,6 +1,7 @@
 import React, { useState, ChangeEvent, useEffect } from 'react';
 import ApiService from '../api/ApiService';
 import { useAuth } from '../contexts/AuthContext';
+import { useLanguage } from '../contexts/LanguageContext';
 import ProfileInputs from './components/UserProfile/ProfileInputs';
 import notification from '../app/components/Notifications';
 
@@ -22,6 +23,7 @@ export interface ProfileForm {
 
 const UserProfile: React.FC = () => {
 	const { user, setUser } = useAuth();
+	const { t, setLanguage } = useLanguage();
 	const [form, setForm] = useState<ProfileForm>({
 		email: user?.email || '',
 		password: '',
@@ -58,11 +60,11 @@ const UserProfile: React.FC = () => {
 		if (!file) return;
 
 		if (!["image/jpeg", "image/png", "image/webp"].includes(file.type)) {
-			notification.error("Seuls JPEG, PNG ou WEBP acceptés.");
+			notification.error(t('profile.avatar.errors.invalidFormat'));
 			return;
 		}
 		if (file.size > 3 * 1024 * 1024) {
-			notification.error("Fichier trop volumineux (3Mo max)");
+			notification.error(t('profile.avatar.errors.fileTooLarge'));
 			return;
 		}
 		const reader = new FileReader();
@@ -108,6 +110,10 @@ const UserProfile: React.FC = () => {
 			const res = await ApiService.put('/update-user', tab as JSON);
 			if (res.ok) {
 				setUser((prevUser) => prevUser ? { ...prevUser, ...res.user } : null);
+
+				if (tab.lang && tab.lang !== user?.lang) {
+					setLanguage(tab.lang, false);
+				}
 			}
 		} catch {
 		} finally {
@@ -132,20 +138,20 @@ const UserProfile: React.FC = () => {
 
 			<form className="z-10 w-full max-w-lg" onSubmit={handleSubmit}>
 				<fieldset className="bg-gray-900 bg-opacity-90 border border-gray-700 rounded-2xl shadow-2xl p-6 flex flex-col gap-4">
-					<legend className="text-2xl font-bold text-center text-white tracking-widest gradient-text mb-2">Mon profil</legend>
+					<legend className="text-2xl font-bold text-center text-white tracking-widest gradient-text mb-2">{t('profile.legend')}</legend>
 
 					{/* AVATAR SELECTIONNE */}
 					<div className="w-full flex flex-col items-center mb-4">
 						<img
 							src={ApiService.getFile(displayAvatar)}
-							alt="Avatar sélectionné"
+							alt={t('profile.avatar.selected')}
 							className="w-24 h-24 rounded-full object-cover shadow-lg ring-2 ring-yellow-400 ring-opacity-50 border-2 border-gray-600"
 						/>
 					</div>
 
 					{/* CHOIX DES AVATARS */}
 					<div className="flex flex-col items-center mb-4">
-						<h3 className="font-bold mb-3 text-center text-white">Choisir votre avatar</h3>
+						<h3 className="font-bold mb-3 text-center text-white">{t('profile.avatar.choose')}</h3>
 						<div className="flex gap-3 items-center justify-center flex-wrap">
 							{defaultAvatars.map((av, idx) => (
 								<img
@@ -160,7 +166,7 @@ const UserProfile: React.FC = () => {
 								/>
 							))}
 							<label className="bg-gradient-to-r from-yellow-400 via-red-500 to-pink-500 hover:from-pink-500 hover:to-yellow-400 text-black font-bold py-1 px-3 rounded-lg cursor-pointer transition-all duration-300 hover:scale-105 shadow-lg text-sm">
-								Custom
+								{t('profile.avatar.custom')}
 								<input
 									type="file"
 									accept="image/jpeg,image/png,image/webp"
@@ -198,7 +204,7 @@ const UserProfile: React.FC = () => {
 							type="submit"
 							disabled={loading}
 						>
-							{loading ? "Mise à jour..." : "Mettre à jour"}
+							{loading ? t('profile.actions.updating') : t('profile.actions.update')}
 						</button>
 					</div>
 				</fieldset>
