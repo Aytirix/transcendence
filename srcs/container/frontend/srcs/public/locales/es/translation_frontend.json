@@ -342,7 +342,8 @@
 			"size": "Tamaño",
 			"entrerid": "Introduce el ID",
 			"entrernom": "Introduce el nombre",
-			"joueurs": "Jugadores"
+			"joueurs": "Jugadores",
+			"parametres": "Ajustes"
 		},
 		"samekeyboard": {
 			"go": "¡Vamos!",

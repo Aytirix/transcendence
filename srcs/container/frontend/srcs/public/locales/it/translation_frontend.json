@@ -342,7 +342,8 @@
 			"size": "Dimensione",
 			"entrerid": "Inserisci ID",
 			"entrernom": "Inserisci nome",
-			"joueurs": "Giocatori"
+			"joueurs": "Giocatori",
+			"parametres": "Impostazioni"
 		},
 		"samekeyboard": {
 			"go": "Si parte!",
