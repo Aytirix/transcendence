@@ -8,7 +8,7 @@ import {
 	DragEndEvent,
 	DragStartEvent
 } from '@dnd-kit/core';
-import './assets/styles/ModuleManager.scss';
+import './assets/ModuleManager.scss';
 import { useLanguage } from '../../contexts/LanguageContext';
 
 interface ModuleItem {

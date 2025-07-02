@@ -82,11 +82,11 @@ const LanguageToggle: React.FC<LanguageToggleProps> = ({ showLabel = true }) => 
 					{isMobile && typeof window !== 'undefined' && ReactDOM.createPortal(
 						<>
 							<div
-								className="fixed inset-0 bg-black bg-opacity-40 z-50"
+								className="fixed inset-0 bg-black bg-opacity-40 z-101"
 								onClick={() => setIsOpen(false)}
 							></div>
 							<div
-								className="fixed inset-0 flex flex-col items-center justify-center bg-base-200 z-50"
+								className="fixed inset-0 flex flex-col items-center justify-center bg-base-200 z-101"
 							>
 								<button
 									className="absolute top-4 right-4 text-3xl text-gray-600 hover:text-gray-900 focus:outline-none"
@@ -113,7 +113,7 @@ const LanguageToggle: React.FC<LanguageToggleProps> = ({ showLabel = true }) => 
 					)}
 					{/* Menu desktop classique */}
 					{!isMobile && (
-						<div className="absolute top-full left-0 mt-1 bg-base-200 rounded-box shadow-lg border border-base-300 z-50 min-w-full">
+						<div className="absolute top-full left-0 mt-1 bg-base-200 rounded-box shadow-lg border border-base-300 z-101 min-w-full">
 							{LANGUAGES.map((lang) => (
 								<button
 									key={lang.code}
