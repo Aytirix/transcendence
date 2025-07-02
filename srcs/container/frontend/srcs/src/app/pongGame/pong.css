@@ -211,6 +211,23 @@
   z-index: 2;
 }
 
+.parametre {
+	position: absolute;
+	display: flex;
+	top: 90%;
+	left: 70px; /* distance depuis le bord gauche */
+	z-index: 2;
+	align-items: center;
+	border: none;
+	border-radius: 10px;
+	z-index: 2;
+	background: transparent;
+	color: rgb(241, 247, 247);
+	font-weight: bold;
+	font-size: 20px;
+	animation: textGlowMenu 1.7s linear infinite;
+}
+
 .button-accueil {
 	position: absolute;
 	display: flex;
