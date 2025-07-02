@@ -2,6 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import { Zoom, toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css'; // Import des styles nécessaires
+import '../assets/styles/toast-custom.css'; // Import des styles personnalisés
 
 export function ToastPortalContainer() {
 	return ReactDOM.createPortal(
@@ -21,20 +22,100 @@ export function ToastPortalContainer() {
 }
 
 class ToastNotification {
+	// Génère un ID unique basé sur le texte du message
+	private static generateToastId(message: string, type: string): string {
+		// Nettoie le message pour créer un ID stable
+		const cleanMessage = message.replace(/[^a-zA-Z0-9]/g, '').toLowerCase();
+		return `${type}-${cleanMessage.substring(0, 50)}`;
+	}
+
 	static success(message: string, options = {}) {
-		toast.success(ToastNotification.formatMessage(message), { ...options });
+		const toastId = ToastNotification.generateToastId(message, 'success');
+		
+		// Vérifie si une notification avec ce contenu existe déjà
+		if (toast.isActive(toastId)) {
+			// Met à jour la notification existante et remet le timer à zéro
+			toast.update(toastId, {
+				render: ToastNotification.formatMessage(message),
+				type: 'success',
+				className: 'toast-simple',
+				...options
+			});
+			return toastId;
+		}
+
+		toast.success(ToastNotification.formatMessage(message), {
+			toastId,
+			className: 'toast-simple',
+			...options
+		});
+		return toastId;
 	}
 
 	static info(message: string, options = {}) {
-		toast.info(ToastNotification.formatMessage(message), { ...options });
+		const toastId = ToastNotification.generateToastId(message, 'info');
+		
+		if (toast.isActive(toastId)) {
+			// Met à jour la notification existante et remet le timer à zéro
+			toast.update(toastId, {
+				render: ToastNotification.formatMessage(message),
+				type: 'info',
+				className: 'toast-simple',
+				...options
+			});
+			return toastId;
+		}
+
+		toast.info(ToastNotification.formatMessage(message), {
+			toastId,
+			className: 'toast-simple',
+			...options
+		});
+		return toastId;
 	}
 
 	static warn(message: string, options = {}) {
-		toast.warn(ToastNotification.formatMessage(message), { ...options });
+		const toastId = ToastNotification.generateToastId(message, 'warn');
+		
+		if (toast.isActive(toastId)) {
+			// Met à jour la notification existante et remet le timer à zéro
+			toast.update(toastId, {
+				render: ToastNotification.formatMessage(message),
+				type: 'warning',
+				className: 'toast-simple',
+				...options
+			});
+			return toastId;
+		}
+
+		toast.warn(ToastNotification.formatMessage(message), {
+			toastId,
+			className: 'toast-simple',
+			...options
+		});
+		return toastId;
 	}
 
 	static error(message: string, options = {}) {
-		toast.error(ToastNotification.formatMessage(message), { ...options });
+		const toastId = ToastNotification.generateToastId(message, 'error');
+		
+		if (toast.isActive(toastId)) {
+			// Met à jour la notification existante et remet le timer à zéro
+			toast.update(toastId, {
+				render: ToastNotification.formatMessage(message),
+				type: 'error',
+				className: 'toast-simple',
+				...options
+			});
+			return toastId;
+		}
+
+		toast.error(ToastNotification.formatMessage(message), {
+			toastId,
+			className: 'toast-simple',
+			...options
+		});
+		return toastId;
 	}
 
 	static promise(promise: Promise<unknown> | (() => Promise<unknown>), successMessage: string, errorMessage: string, options = {}) {
@@ -108,6 +189,7 @@ class ToastNotification {
 				{
 					autoClose: false,
 					closeOnClick: false,
+					className: 'toast-with-buttons',
 					...options
 				}
 			);
@@ -121,7 +203,7 @@ class ToastNotification {
 	): Promise<void> {
 		return new Promise((resolve) => {
 			const content = (
-					
+
 				<div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
 					{ToastNotification.formatMessage(message)}
 					<div style={{ display: 'flex', justifyContent: 'center' }}>
@@ -156,6 +238,7 @@ class ToastNotification {
 					render: content,
 					autoClose: false,
 					closeOnClick: false,
+					className: 'toast-with-buttons',
 					...options
 				});
 			} else {
@@ -164,6 +247,7 @@ class ToastNotification {
 					toastId: toastId,
 					autoClose: false,
 					closeOnClick: false,
+					className: 'toast-with-buttons',
 					...options
 				});
 			}
@@ -179,15 +263,24 @@ export default ToastNotification;
 
 // Examples of usage
 
-// Basic notifications
-// ToastNotification.success("Operation successful!");
-// ToastNotification.info("Here's some information for you.");
-// ToastNotification.warn("Warning: This action may have consequences.");
-// ToastNotification.error("An error occurred!");
+// Basic notifications (retournent maintenant un ID)
+// const successId = ToastNotification.success("Operation successful!");
+// const infoId = ToastNotification.info("Here's some information for you.");
+// const warnId = ToastNotification.warn("Warning: This action may have consequences.");
+// const errorId = ToastNotification.error("An error occurred!");
+
+// Notifications avec ID automatique - mise à jour intelligente
+// ToastNotification.success("Same message"); // Première notification
+// ToastNotification.success("Same message"); // Met à jour l'existante et remet le timer à zéro
+// ToastNotification.success("Different message"); // Nouvelle notification
 
 // With custom options
-// ToastNotification.success("Custom autoclose!", { autoClose: 5000 });
+// const customId = ToastNotification.success("Custom autoclose!", { autoClose: 5000 });
 // ToastNotification.info("Custom position!", { position: 'top-center' });
+
+// Fermer une notification spécifique avec son ID
+// const notifId = ToastNotification.error("Error message");
+// setTimeout(() => ToastNotification.dismiss(notifId), 3000);
 
 // Promise example
 // const asyncOperation = async () => {

@@ -1,0 +1,50 @@
+/* Styles personnalisés pour les notifications toast */
+
+/* Empêcher le redimensionnement automatique des notifications */
+.Toastify__toast-container {
+	width: auto !important;
+	max-width: none !important;
+}
+
+.Toastify__toast {
+	width: auto !important;
+	min-width: 200px !important;
+	max-width: 300px !important;
+	margin-bottom: 8px !important;
+	box-sizing: border-box !important;
+}
+
+/* Assurer que le contenu s'adapte à sa propre largeur */
+.Toastify__toast-body {
+	width: 100% !important;
+	padding: 12px !important;
+	margin: 0 !important;
+	flex: 1 !important;
+	align-self: stretch !important;
+}
+
+/* Styles spécifiques pour les notifications simples */
+.toast-simple {
+	width: fit-content !important;
+	min-width: 200px !important;
+	max-width: 300px !important;
+}
+
+/* Styles spécifiques pour les notifications avec boutons */
+.toast-with-buttons {
+	width: fit-content !important;
+	min-width: 200px !important;
+	max-width: 300px !important;
+}
+
+/* Empêcher les marges indésirables */
+.Toastify__toast-container--bottom-right {
+	right: 12px !important;
+	bottom: 12px !important;
+}
+
+/* Réinitialiser le comportement de largeur par défaut */
+.Toastify__toast-container .Toastify__toast {
+	width: auto !important;
+	flex: none !important;
+}
