@@ -11,7 +11,11 @@ const LANGUAGES = [
 
 const MOBILE_BREAKPOINT = 810;
 
-const LanguageToggle: React.FC = () => {
+interface LanguageToggleProps {
+	showLabel?: boolean;
+}
+
+const LanguageToggle: React.FC<LanguageToggleProps> = ({ showLabel = true }) => {
 	const { setLanguage, currentLanguage } = useLanguage();
 	const [isOpen, setIsOpen] = useState(false);
 	const [isMobile, setIsMobile] = useState(
@@ -58,10 +62,10 @@ const LanguageToggle: React.FC = () => {
 			<button
 				type="button"
 				onClick={() => setIsOpen(!isOpen)}
-				className="btn btn-ghost btn-sm gap-2 normal-case"
+				className="btn btn-ghost btn-sm gap-1 normal-case"
 			>
 				<span>{currentLang.flag}</span>
-				<span className={isMobile ? 'hidden' : ''}>{currentLang.label}</span>
+				<span className={isMobile ? 'hidden' : (showLabel ? '' : 'hidden')}>{currentLang.label}</span>
 				<svg
 					className={`w-4 h-4 transition-transform ${isOpen ? 'rotate-180' : ''}`}
 					fill="none"

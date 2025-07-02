@@ -444,7 +444,7 @@
 	"friendPage": {
 		"title": "Liste des amis",
 		"searchPlaceholder": "Rechercher un utilisateur...",
-		"noFriendsFound": "Aucun ami trouvé pour \"{search}\"",
+		"noFriendsFound": "Aucun ami trouvé pour \"{{search}}\"",
 		"noFriendsYet": "Aucun ami pour le moment",
 		"status": {
 			"pending": "En attente",

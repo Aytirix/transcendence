@@ -162,7 +162,7 @@ export function handleCreateRoom(ws: WebSocket, player: player, json: any): void
 }
 
 export function handleJoinRoom(ws: WebSocket, player: player, json: any): void {
-	if (!json.room_id) return sendResponse(ws, 'error', 'error', [ws.i18n.t('pacman.id_required')]);	
+	if (!json.room_id) return sendResponse(ws, 'error', 'error', [ws.i18n.t('pacman.id_required')]);
 	if (player.room) return sendResponse(ws, 'error', 'error', [ws.i18n.t('pacman.already_in_room')]);
 	const room = StateManager.RoomManager.getRoomById(json.room_id);
 	if (!room) return sendResponse(ws, 'error', 'error', [ws.i18n.t('pacman.not_found')]);

@@ -17,6 +17,7 @@ async function initWebSocket(server: FastifyInstance) {
 	wss = new WebSocketServer({ noServer: true, perMessageDeflate: false, clientTracking: true });
 
 	wss.on('connection', (ws: WebSocket, session: Session, request: IncomingMessage) => {
+		console.log(`WebSocket connecté [${request.url}] [${session.user.id}] ${session.user.username}`);
 		const path = request.url;
 		ws.i18n = createi18nObject(session, request.headers);
 
@@ -36,12 +37,14 @@ async function initWebSocket(server: FastifyInstance) {
 		}
 
 		ws.on('close', () => {
+			console.log(`WebSocket déconnecté [${path}] [${session.user.id}] ${session.user.username}`);
 			const userKey = `${path}_${session.user.id}`;
 			if (userConnected.has(userKey)) userConnected.delete(userKey);
 			else console.warn(`User not found in connected users list: ${session.user.id}`);
 		});
 
 		ws.on('error', (error: Error) => {
+			console.error(`WebSocket erreur [${path}] [${session.user.id}] ${session.user.username}:`, error);
 			const userKey = `${path}_${session.user.id}`;
 			if (userConnected.has(userKey)) userConnected.delete(userKey);
 			else console.warn(`User not found in connected users list: ${session.user.id}`);

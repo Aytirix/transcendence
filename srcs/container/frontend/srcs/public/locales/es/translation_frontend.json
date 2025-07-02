@@ -443,7 +443,7 @@
 	"friendPage": {
 		"title": "Lista de amigos",
 		"searchPlaceholder": "Buscar un usuario...",
-		"noFriendsFound": "No se encontraron amigos para \"{search}\"",
+		"noFriendsFound": "No se encontraron amigos para \"{{search}}\"",
 		"noFriendsYet": "Aún no tienes amigos",
 		"status": {
 			"pending": "Pendiente",

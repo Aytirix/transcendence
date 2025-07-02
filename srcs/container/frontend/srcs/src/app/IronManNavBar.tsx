@@ -5,6 +5,7 @@ import { useLanguage } from '../contexts/LanguageContext';
 import { useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import MinSizeGuard from './components/MinSizeGuard';
+import LanguageToggle from './components/LanguageToggle';
 
 const IronManNavBar: React.FC = () => {
 	const { t } = useLanguage();
@@ -13,8 +14,7 @@ const IronManNavBar: React.FC = () => {
 	const logoMenuRef = useRef<HTMLDivElement>(null);
 	const location = useLocation();
 	const user = useAuth();
-	
-	
+
 	// Fermer le logo-menu au clic en dehors
 	React.useEffect(() => {
 		function handleClickOutside(e: MouseEvent) {
@@ -45,10 +45,10 @@ const IronManNavBar: React.FC = () => {
 						</div>
 					</div>
 					<div className="navbar-center">
-						<MinSizeGuard minWidth={0} minHeight={0} hideWhenBlocked={true}>
+						<MinSizeGuard minWidth={1200} minHeight={870} hideWhenBlocked={true}>
 							<Link to="/Pacman" className="btn btn-ghost sm:text-lg md:text-xl lg:text-2xl">{t('nav.pacman')}</Link>
 						</MinSizeGuard>
-						<MinSizeGuard minWidth={0} minHeight={0} hideWhenBlocked={true}>
+						<MinSizeGuard minWidth={1200} minHeight={870} hideWhenBlocked={true}>
 							<Link to="/pong" className="btn btn-ghost sm:text-lg md:text-xl lg:text-2xl">{t('nav.pong')}</Link>
 						</MinSizeGuard>
 						<Link to="/Chat" className="btn btn-ghost sm:text-lg md:text-xl lg:text-2xl">{t('nav.chat')}</Link>
@@ -59,6 +59,11 @@ const IronManNavBar: React.FC = () => {
 						</MinSizeGuard>
 					</div>
 					<div className="navbar-end mr-2">
+						<MinSizeGuard minWidth={500} minHeight={0} hideWhenBlocked={true}>
+							<div className="mr-1">
+								<LanguageToggle showLabel={false} />
+							</div>
+						</MinSizeGuard>
 						<div className="dropdown dropdown-end">
 							<div tabIndex={0} role="button" className="btn btn-ghost btn-circle avatar">
 								<div className="w-10 rounded-full">
