@@ -46,8 +46,6 @@ async function chatWebSocket(ws: WebSocket, user: User): Promise<void> {
 			return true;
 		}
 
-		console.log('Action received:', action, 'from user:', user.username, ',ID:', user.id, 'with data:', text);
-
 		switch (action) {
 			case 'ping':
 				const pong: res_pong = {
