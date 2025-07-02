@@ -443,7 +443,7 @@
 	"friendPage": {
 		"title": "Lista amici",
 		"searchPlaceholder": "Cerca un utente...",
-		"noFriendsFound": "Nessun amico trovato per \"{search}\"",
+		"noFriendsFound": "Nessun amico trovato per \"{{search}}\"",
 		"noFriendsYet": "Nessun amico al momento",
 		"status": {
 			"pending": "In attesa",

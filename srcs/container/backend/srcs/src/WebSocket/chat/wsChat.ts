@@ -123,13 +123,11 @@ async function chatWebSocket(ws: WebSocket, user: User): Promise<void> {
 	});
 
 	ws.on('close', () => {
-		console.log('Déconnexion de l\'utilisateur:', user?.id);
 		controllersChat.user_disconnected(ws, user, state);
 	});
 
 	ws.on('error', (error: Error) => {
 		controllersChat.removeOnlineUser(state, user);
-		console.error('Erreur WebSocket:', error);
 		if (ws.readyState === WebSocket.OPEN) {
 			ws.close(1008, JSON.stringify({ action: 'error', result: 'error', notification: [ws.i18n.t('errors.wsError')] }));
 		}

@@ -412,7 +412,6 @@ export const ChatWebSocketProvider: React.FC<ChatWebSocketProviderProps> = ({ ch
 		// Fonction de recherche réutilisable
 		const performSearch = () => {
 			if (socket?.readyState !== WebSocket.OPEN) return;
-			console.log("🔍 Searching for:", inputSearch);
 			socket.send(JSON.stringify({
 				action: "search_user",
 				name: inputSearch,

@@ -24,19 +24,17 @@ export function useSafeWebSocket({ endpoint, onMessage, onStatusChange, reconnec
 
 	const setupWebSocket = () => {
 		if (!endpoint) return;
-		
+
 		if (socketRef.current?.readyState === WebSocket.OPEN || socketRef.current?.readyState === WebSocket.CONNECTING || reconnectAttemptsRef.current >= maxReconnectAttempts) {
 			return;
 		}
 
 		const wsUrl = `${url}${endpoint}`;
-		console.log('Attempting WebSocket connection to:', wsUrl);
 		const socket = new WebSocket(wsUrl);
 		socketRef.current = socket;
 		onStatusChange?.('Connecting...');
 
 		socket.onopen = () => {
-			console.log('WebSocket connected successfully to:', wsUrl);
 			// reconnectAttemptsRef.current = 0;
 			onStatusChange?.('Connected');
 			heartbeatRef.current = setInterval(() => {
@@ -82,7 +80,7 @@ export function useSafeWebSocket({ endpoint, onMessage, onStatusChange, reconnec
 			});
 			handleCloseOrError('Closed');
 		};
-		
+
 		socket.onerror = (error) => {
 			console.error('WebSocket error:', error, 'URL:', wsUrl);
 			handleCloseOrError('Error');

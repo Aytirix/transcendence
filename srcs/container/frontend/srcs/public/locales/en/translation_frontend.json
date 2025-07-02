@@ -448,7 +448,7 @@
 	"friendPage": {
 		"title": "Friends List",
 		"searchPlaceholder": "Search for a user...",
-		"noFriendsFound": "No friends found for \"{search}\"",
+		"noFriendsFound": "No friends found for \"{{search}}\"",
 		"noFriendsYet": "No friends yet",
 		"status": {
 			"pending": "Pending",

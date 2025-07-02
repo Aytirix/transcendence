@@ -112,7 +112,6 @@ export const filterBlockedUserMessages = (messages: Map<number, Message>, user: 
 }
 
 export const init_connexion = async (ws: WebSocket, user: User, state: State) => {
-	console.log('User connected:', user.id);
 	addOnlineUser(state, ws, user);
 	await modelsChat.getAllGroupsFromUser(user, state);
 
@@ -127,7 +126,6 @@ export const init_connexion = async (ws: WebSocket, user: User, state: State) =>
 			let isFriend = false;
 			group.messages = filterBlockedUserMessages(group.messages, user, state);
 			for (const member of group.members) {
-				console.log('Checking member:', member.id, 'against user:', user.id);
 				if (member.id !== user.id) {
 					const relation = controllerFriends.getRelationFriend(user.id, member.id, state);
 					if (relation && relation.status === 'friend') isFriend = true;
@@ -155,7 +153,6 @@ export const init_connexion = async (ws: WebSocket, user: User, state: State) =>
 };
 
 export const user_disconnected = async (ws: WebSocket, user: User, state: State) => {
-	console.log('User disconnected:', user.id);
 	broadcastAllGroupUsers(user, state, null, JSON.stringify({ action: 'friend_disconnected', user_id: user.id } as res_disconnect));
 	removeOnlineUser(state, user);
 };
