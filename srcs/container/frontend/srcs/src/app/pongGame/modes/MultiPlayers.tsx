@@ -6,6 +6,7 @@ import { initBabylon } from '../initBabylon';
 import { Parse} from '../types/data';
 import { handleKeyDown, handleKeyUp } from '../types/handleKey';
 import ApiService from '../../../api/ApiService';
+import { useLanguage } from '../../../contexts/LanguageContext';
 
 const MultiPlayers: React.FC = () => {
 			const navigate = useNavigate();
@@ -37,11 +38,14 @@ const MultiPlayers: React.FC = () => {
 			const [isWinner, setisWinner] = useState(false);
 			const [waitingPlayers, setWaitingPlayers] = useState(false);
 			const [isPause, setIsPause] = useState(false);
-			const messagePause = useRef("Press [ ESP ] for PLAY")
 			const [player1Avatar, setPlayer1Avatar] = useState<string | undefined>(undefined)
 			const [player2Avatar, setPlayer2Avatar] = useState<string | undefined>(undefined)
 		
 			const reconnection = localStorage.getItem("reconnection");
+
+			const {t} = useLanguage();
+			const messagePause = useRef(t("pong.multi.pause"))
+			
 		
 			const keyPressed = useRef({
 				p1_up: false,
@@ -124,8 +128,12 @@ const MultiPlayers: React.FC = () => {
 					}
 					if (data.type === "Pause") {
 						setIsPause(data.value);
-						if (data.message)
-							messagePause.current = data.message;
+						if (data.message) {
+							if (data.message === "Press [ ESP ] for PLAY")
+								messagePause.current = t("pong.multi.pause");
+							else if (data.message === "Adversaire en pause. Reprise imminente.")
+								messagePause.current = t("pong.multi.pausead");
+						}
 					}
 					if (data.type === "assign") {
 						assignPlayer.current = data.value;
@@ -328,7 +336,7 @@ const MultiPlayers: React.FC = () => {
 					{/* Loading plein écran */}
 					{!isReady3d && (
 						<div>
-							<h1 className="loading1">Loading ...</h1>
+							<h1 className="loading1">{t("pong.multi.loading")}</h1>
 						</div>
 					)}
 					{/* jeu */}
@@ -346,13 +354,13 @@ const MultiPlayers: React.FC = () => {
 							{!deleteGo.current && isCinematic && !startReco && waitingPlayers &&(
 								count > 0 
 									? <h1 className="Start-go">{count}</h1>
-									: <h1 className="Start-go">Go</h1>
+									: <h1 className="Start-go">{t("pong.multi.go")}</h1>
 							)}
 
 							{/* waiting Players */}
 							{isCinematic && !startReco && !waitingPlayers && (
 								<>
-									<h1 className='Start-go' > attente du second joueur </h1>
+									<h1 className='Start-go' > {t("pong.multi.attenteplayer")} </h1>
 								</>
 							)}
 							{/* Dashboard des scores et exit */}
@@ -376,13 +384,13 @@ const MultiPlayers: React.FC = () => {
 												<img src={player2Avatar} alt="Avatar"/>
 											</div>
 											)}
-									<button onClick={returnMenu} className="Return-button">Exit Game</button>
+									<button onClick={returnMenu} className="Return-button">{t("pong.multi.exitgame")}</button>
 								</>
 							)}
 							{isWinner && (
 								<>
-									<h1 className='Winner'>Winner is {nameWinner.current}</h1>
-									<button onClick={returnMenuWinner} className="Return-Menu">Return Menu</button>
+									<h1 className='Winner'>{t("pong.multi.winner")} {nameWinner.current}</h1>
+									<button onClick={returnMenuWinner} className="Return-Menu">{t("pong.multi.returnmenu")}</button>
 								</>
 							)}
 		

@@ -6,6 +6,7 @@ import { initBabylon } from '../initBabylon';
 import { Parse} from '../types/data';
 import { handleKeyDown, handleKeyUp } from '../types/handleKey';
 import ApiService from '../../../api/ApiService';
+import { useLanguage } from '../../../contexts/LanguageContext';
 
 const Solo: React.FC = () => {
 		const navigate = useNavigate();
@@ -22,7 +23,6 @@ const Solo: React.FC = () => {
 		const engine = useRef<Engine | null>(null);
 		const socketRef = useRef<WebSocket | null>(null);
 		const deleteGo = useRef(false);
-		const messagePause = useRef("Press [ ESP ] for PLAY")
 		
 		const [isReady3d, setIsReady3d] = useState(false);
 		const [isCinematic, setIscinematic] = useState(false);
@@ -38,6 +38,9 @@ const Solo: React.FC = () => {
 		
 	
 		const reconnection = localStorage.getItem("reconnection");
+		const {t} = useLanguage();
+		const messagePause = useRef(t("pong.solo.pause"))
+		
 	
 		const keyPressed = useRef({
 			p1_up: false,
@@ -120,8 +123,10 @@ const Solo: React.FC = () => {
 				}
 				if (data.type === "Pause") {
 					setIsPause(data.value);
-					if (data.message)
-						messagePause.current = data.message;
+					if (data.message) {
+						if (data.message === "Press [ ESP ] for PLAY")
+							messagePause.current = t("pong.samekeyboard.pause");
+					}
 				}
 				if (data.type === "FINISHED") {
 					localStorage.removeItem("reconnection");
@@ -290,7 +295,7 @@ const Solo: React.FC = () => {
 				{/* Loading plein écran */}
 				{!isReady3d && (
 					<div>
-						<h1 className="loading1">Loading ...</h1>
+						<h1 className="loading1">{t("pong.solo.loading")}</h1>
 					</div>
 				)}
 				{/* jeu */}
@@ -308,7 +313,7 @@ const Solo: React.FC = () => {
 						{!deleteGo.current && isCinematic && !startReco && (
 							count > 0 
 								? <h1 className="Start-go">{count}</h1>
-								: <h1 className="Start-go">Go</h1>
+								: <h1 className="Start-go">{t("pong.solo.go")}</h1>
 						)}
 	
 						{/* Dashboard des scores et exit */}
@@ -332,13 +337,13 @@ const Solo: React.FC = () => {
 												<img src="/images/IronmanProfil.png" alt="Avatar"/>
 											</div>
 											)}
-								<button onClick={returnMenu} className="Return-button">Exit Game</button>
+								<button onClick={returnMenu} className="Return-button">{t("pong.solo.exitgame")}</button>
 							</>
 						)}
 						{isWinner && (
 							<>
-								<h1 className='Winner'>Winner is {nameWinner}</h1>
-								<button onClick={returnMenuWinner} className="Return-Menu">Return Menu</button>
+								<h1 className='Winner'>{t("pong.solo.winner")} {nameWinner}</h1>
+								<button onClick={returnMenuWinner} className="Return-Menu">{t("pong.solo.returnmenu")}</button>
 							</>
 						)}
 	

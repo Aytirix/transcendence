@@ -1,6 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { useEffect, useRef, useState } from "react";
 import { Tournament } from "./types/data";
+import { useLanguage } from "../../contexts/LanguageContext";
 
 const GameMenu: React.FC = () => {
 	const navigate = useNavigate();
@@ -17,6 +18,8 @@ const GameMenu: React.FC = () => {
 	const SameKeyboard = () => navigate('/pong/menu/SameKeyboard');
 	const Solo = () => navigate('/pong/menu/Solo');
 	const MultiPlayers = () => navigate('/pong/menu/MultiPlayers');
+
+	const {t} = useLanguage();
 
 	const Validation = () => {
 		showCreate 
@@ -120,14 +123,14 @@ const GameMenu: React.FC = () => {
 				<source src="/images/menuPagevids.mp4" type="video/mp4" />
 			</video>
 			<div className="button-accueil">
-				<button className="style-button-accueil" onClick={() => navigate('../')}>EXIT</button>
+				<button className="style-button-accueil" onClick={() => navigate('../')}>{t("pong.gamemenu.exit")}</button>
 				<img src="/images/exit.png" className="img-exit"/>
 			</div>
 			<div className="page-menu-custom">
-				<button className="Menu-button" onClick={SameKeyboard}>SameKeyboard</button>
-				<button className="Menu-button" onClick={Solo}>Solo</button>
-				<button className="Menu-button" onClick={MultiPlayers}>Multi Players</button>
-				<button className="Menu-button" onClick={Tournament}>Tournament</button>
+				<button className="Menu-button" onClick={SameKeyboard}>{t("pong.gamemenu.samekeyboard")}</button>
+				<button className="Menu-button" onClick={Solo}>{t("pong.gamemenu.solo")}</button>
+				<button className="Menu-button" onClick={MultiPlayers}>{t("pong.gamemenu.multi")}</button>
+				<button className="Menu-button" onClick={Tournament}>{t("pong.gamemenu.tournament")}</button>
 			</div>
 			{showTournament && (
 				<>
@@ -136,8 +139,8 @@ const GameMenu: React.FC = () => {
 							<thead>
 								<tr>
 									<th className="th-menu">id</th>
-									<th className="th-menu">Name</th>
-									<th className="th-menu">Place</th>
+									<th className="th-menu">{t("pong.gamemenu.name")}</th>
+									<th className="th-menu">{t("pong.gamemenu.place")}</th>
 								</tr>
 							</thead>
 							<tbody>
@@ -153,12 +156,12 @@ const GameMenu: React.FC = () => {
 					</div>
 
 					<div>
-						<button className="button-tournament-create" onClick={Create}>Create</button>
-						<button className="button-tournament-join" onClick={Join}>Join</button>
+						<button className="button-tournament-create" onClick={Create}>{t("pong.gamemenu.create")}</button>
+						<button className="button-tournament-join" onClick={Join}>{t("pong.gamemenu.join")}</button>
 					</div>
 
 					{validationButton && (
-						<button className="button-validation" onClick={Validation}>Valider</button>
+						<button className="button-validation" onClick={Validation}>{t("pong.gamemenu.valider")}</button>
 					)}
 				</>
 			)}
@@ -168,8 +171,8 @@ const GameMenu: React.FC = () => {
 					<table className="table-menu">
 						<thead>
 							<tr>
-								<th className="th-menu">Name</th>
-								<th className="th-menu">size</th>
+								<th className="th-menu">{t("pong.gamemenu.name")}</th>
+								<th className="th-menu">{t("pong.gamemenu.size")}</th>
 							</tr>
 						</thead>
 						<tbody>
@@ -180,7 +183,7 @@ const GameMenu: React.FC = () => {
 										type="text"
 										name="Tournament"
 										onChange={(e) => setNameTournament(e.target.value)}
-										placeholder="Entrez le nom"
+										placeholder={t("pong.gamemenu.entrernom")}
 										maxLength={20}
 									/>
 								</td>
@@ -190,10 +193,10 @@ const GameMenu: React.FC = () => {
 										value={size}
 										onChange={(e) => setSize(e.target.value)}
 									>
-										<option value="4">4 joueurs</option>
-										<option value="8">8 joueurs</option>
-										<option value="16">16 joueurs</option>
-										<option value="32">32 joueurs</option>
+										<option value="4">4 {t("pong.gamemenu.joueurs")}</option>
+										<option value="8">8 {t("pong.gamemenu.joueurs")}</option>
+										<option value="16">16 {t("pong.gamemenu.joueurs")}</option>
+										<option value="32">32 {t("pong.gamemenu.joueurs")}</option>
 									</select>
 								</td>
 							</tr>
@@ -206,7 +209,7 @@ const GameMenu: React.FC = () => {
 					<table className="table-menu">
 						<thead>
 							<th className="th-menu">
-								Join Tournament
+								{t("pong.gamemenu.jointournament")}
 							</th>
 						</thead>
 						<tbody>
@@ -215,7 +218,7 @@ const GameMenu: React.FC = () => {
 									<input
 										className="input-join"
 										type="text"
-										placeholder="Entrer id"
+										placeholder={t("pong.gamemenu.entrerid")}
 										maxLength={5}
 										onChange={(e) => setIdJoin(e.target.value)}
 									/>
