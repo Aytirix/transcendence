@@ -380,5 +380,10 @@
 			"passwordMismatch": "Las contraseñas no coinciden",
 			"networkError": "Error de red o servidor"
 		}
+	},
+	"singlePage": {
+		"title": "Ups!",
+		"message": "Esta aplicación ya está abierta en otra pestaña o ventana.",
+		"instruction": "Por favor, cierre las otras instancias para continuar."
 	}
 }

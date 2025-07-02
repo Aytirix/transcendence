@@ -392,5 +392,10 @@
 			"passwordMismatch": "Les mots de passe ne correspondent pas",
 			"networkError": "Erreur réseau ou serveur"
 		}
+	},
+	"singlePage": {
+		"title": "Oups !",
+		"message": "Cette application est déjà ouverte dans un autre onglet ou une autre fenêtre.",
+		"instruction": "Veuillez fermer les autres instances pour continuer."
 	}
 }

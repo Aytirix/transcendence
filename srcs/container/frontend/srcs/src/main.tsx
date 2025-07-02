@@ -31,14 +31,14 @@ function AppContent() {
 
 	return (
 		<NavigationBridge onNavigateReady={setNavigateFunction} onLocationReady={setLocationFunction}>
-			<SingletonGuard>
-				<LanguageProvider>
+			<LanguageProvider>
+				<SingletonGuard>
 					<AuthProvider>
 						<IronManNavBar />
 						<AppRouter />
 					</AuthProvider>
-				</LanguageProvider>
-			</SingletonGuard>
+				</SingletonGuard>
+			</LanguageProvider>
 		</NavigationBridge>
 	);
 }
