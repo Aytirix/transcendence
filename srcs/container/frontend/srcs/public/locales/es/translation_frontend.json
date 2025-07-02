@@ -369,7 +369,20 @@
 			"pausead": "El oponente está en pausa. Reanudación en breve.",
 			"loading": "Cargando...",
 			"attenteplayer": "Esperando al segundo jugador"
+		},
+		"parametre": {
+			"cmd": "Controles generales",
+			"chgvue": "Cambiar vista",
+			"pause": "Pausa / Reanudar",
+			"esp": "ESPACIO",
+			"samekeyboard": "Jugar a dos (mismo teclado)",
+			"joueur1": "Jugador 1: izquierda / derecha",
+			"joueur2": "Jugador 2: izquierda / derecha",
+			"solo": "Solo contra IA",
+			"raquette": "Movimiento de la raqueta",
+			"multi": "Multijugador"
 		}
+
 	},
 
 	"modules": {

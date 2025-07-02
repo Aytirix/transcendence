@@ -369,6 +369,18 @@
 			"pausead": "Avversario in pausa. Ripresa imminente.",
 			"loading": "Caricamento...",
 			"attenteplayer": "In attesa del secondo giocatore"
+		},
+		"parametre": {
+			"cmd": "Comandi generali",
+			"chgvue": "Cambia visuale",
+			"pause": "Pausa / Riprendi",
+			"esp": "SPAZIO",
+			"samekeyboard": "Gioca in due (stessa tastiera)",
+			"joueur1": "Giocatore 1: sinistra / destra",
+			"joueur2": "Giocatore 2: sinistra / destra",
+			"solo": "Singolo contro IA",
+			"raquette": "Movimento della racchetta",
+			"multi": "Multigiocatore"
 		}
 	},
 
