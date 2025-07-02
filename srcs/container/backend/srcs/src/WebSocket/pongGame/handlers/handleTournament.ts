@@ -316,7 +316,7 @@ function dispatchMatch(tournament: Tournament) {
 }
 
 export function isOnFinishMatch(tournament: Tournament, player1: playerStat, player2: playerStat) {
-	if (player1.resultMatchTournament === "Win") {
+	if (player1 && player1.resultMatchTournament === "Win") {
 		tournament.waitingWinner.push(player1);
 		player2.inGame = false
 		player2.inRoom = false
@@ -327,7 +327,7 @@ export function isOnFinishMatch(tournament: Tournament, player1: playerStat, pla
 		//player in game pour winner tjr a true et le perdant a false 
 		//in room a true 
 	}
-	else if (player2.resultMatchTournament === "Win") {
+	else if (player2 && player2.resultMatchTournament === "Win") {
 		tournament.waitingWinner.push(player2);
 		player1.inGame = false
 		player1.inRoom = false
