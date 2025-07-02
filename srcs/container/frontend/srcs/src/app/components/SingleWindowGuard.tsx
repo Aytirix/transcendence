@@ -1,5 +1,6 @@
 import React, { useEffect, useState, ReactNode } from 'react';
 import { useLocation } from 'react-router-dom';
+import { useLanguage } from '../../contexts/LanguageContext';
 
 const CHANNEL_NAME = 'Trascendence';
 const APP_WINDOW_NAME = 'TrascendenceApp';
@@ -16,6 +17,7 @@ const SingletonGuard: React.FC<SingletonGuardProps> = ({ children }) => {
 	const [channel] = useState(() => new BroadcastChannel(CHANNEL_NAME));
 	const location = useLocation();
 	const ignored = IGNORE_PATH.includes(location.pathname);
+	const { t } = useLanguage();
 
 	useEffect(() => {
 		window.name = APP_WINDOW_NAME;
@@ -92,31 +94,18 @@ const SingletonGuard: React.FC<SingletonGuardProps> = ({ children }) => {
 
 						{/* Titre avec effet gradient */}
 						<h1 className="text-4xl font-bold text-center text-transparent bg-clip-text bg-gradient-to-r from-red-400 via-pink-400 to-red-500 tracking-widest mb-2">
-							Oups !
+							{t('singlePage.title')}
 						</h1>
 
 						{/* Message principal */}
 						<div className="text-center">
 							<p className="text-gray-300 text-lg leading-relaxed mb-4">
-								Cette application est déjà ouverte dans un autre onglet ou une autre fenêtre.
+								{t('singlePage.message')}
 							</p>
 							<p className="text-gray-400 text-sm">
-								Veuillez fermer les autres instances pour continuer.
+								{t('singlePage.instruction')}
 							</p>
 						</div>
-
-						{/* Bouton d'action avec style cohérent */}
-						<button
-							onClick={() => {
-								// Essayer de focus sur l'autre fenêtre
-								const channel = new BroadcastChannel('Trascendence');
-								channel.postMessage('FOCUS');
-								channel.close();
-							}}
-							className="bg-gradient-to-r from-yellow-400 via-red-500 to-pink-500 hover:from-pink-500 hover:to-yellow-400 text-black font-bold py-3 px-6 rounded-lg transition-all duration-300 hover:scale-105 shadow-lg"
-						>
-							Basculer vers l'autre fenêtre
-						</button>
 
 						{/* Indicateur décoratif */}
 						<div className="flex gap-2 mt-2">
@@ -132,5 +121,4 @@ const SingletonGuard: React.FC<SingletonGuardProps> = ({ children }) => {
 
 	return <>{children}</>;
 };
-
 export default SingletonGuard;

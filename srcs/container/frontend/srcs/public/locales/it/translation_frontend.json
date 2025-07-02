@@ -421,5 +421,10 @@
 			"passwordMismatch": "Le password non corrispondono",
 			"networkError": "Errore di rete o server"
 		}
+	},
+	"singlePage": {
+		"title": "Ops!",
+		"message": "Questa applicazione è già aperta in un'altra scheda o finestra.",
+		"instruction": "Si prega di chiudere le altre istanze per continuare."
 	}
 }

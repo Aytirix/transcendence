@@ -385,6 +385,10 @@
 			"passwordMismatch": "Passwords do not match",
 			"networkError": "Network or server error"
 		}
+	},
+	"singlePage": {
+		"title": "Oops!",
+		"message": "This application is already open in another tab or window.",
+		"instruction": "Please close other instances to continue."
 	}
-	
 }
