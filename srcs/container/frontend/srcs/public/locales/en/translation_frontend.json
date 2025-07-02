@@ -82,7 +82,7 @@
 	"credits": {
 		"contributions_title": "Contributions",
 		"role" : {
-			"lead": "Lead Developer",
+			"lead": "Project Lead",
 			"pongFullstack": "Pong Fullstack Developer",
 			"generalFrontend": "General Frontend Developer",
 			"pacManFrontend": "Pac-Man Frontend Developer"
@@ -102,7 +102,7 @@
 			"pongBackendLogic": "Pong backend logic",
 			"realTimeMultiplayerSystem": "Real-time multiplayer system",
 			"uiUxDesign": "UI/UX design",
-			"gameMatchmaking": "Game matchmaking system",
+			"gameMatchmaking": "Online matchmaking system",
 			"pongStatisticsScoring": "Pong statistics and scoring",
 			"loginRegisterInterfaces": "Login/register interfaces",
 			"userProfileManagement": "User profile management",
