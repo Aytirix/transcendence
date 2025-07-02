@@ -5,7 +5,6 @@ import { useLanguage } from '../contexts/LanguageContext';
 import { useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import MinSizeGuard from './components/MinSizeGuard';
-import LanguageToggle from './components/LanguageToggle';
 
 const IronManNavBar: React.FC = () => {
 	const { t } = useLanguage();
