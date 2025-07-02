@@ -390,5 +390,25 @@
 		"title": "Oops!",
 		"message": "This application is already open in another tab or window.",
 		"instruction": "Please close other instances to continue."
+	},
+	"friendPage": {
+		"title": "Friends List",
+		"searchPlaceholder": "Search for a user...",
+		"noFriendsFound": "No friends found for \"{search}\"",
+		"noFriendsYet": "No friends yet",
+		"status": {
+			"pending": "Pending",
+			"blocked": "Blocked",
+			"friend": "Friend"
+		},
+		"tooltips": {
+			"block": "Block user",
+			"unblock": "Unblock user",
+			"accept": "Accept friend request",
+			"refuse": "Decline friend request",
+			"cancel": "Cancel friend request",
+			"remove": "Remove friend",
+			"add": "Add as friend"
+		}
 	}
 }

@@ -397,5 +397,25 @@
 		"title": "Oups !",
 		"message": "Cette application est déjà ouverte dans un autre onglet ou une autre fenêtre.",
 		"instruction": "Veuillez fermer les autres instances pour continuer."
+	},
+	"friendPage": {
+		"title": "Liste des amis",
+		"searchPlaceholder": "Rechercher un utilisateur...",
+		"noFriendsFound": "Aucun ami trouvé pour \"{search}\"",
+		"noFriendsYet": "Aucun ami pour le moment",
+		"status": {
+			"pending": "En attente",
+			"blocked": "Bloqué",
+			"friend": "Ami"
+		},
+		"tooltips": {
+			"block": "Bloquer l'utilisateur",
+			"unblock": "Débloquer l'utilisateur",
+			"accept": "Accepter la demande d'ami",
+			"refuse": "Refuser la demande d'ami",
+			"cancel": "Annuler la demande d'ami",
+			"remove": "Supprimer l'ami",
+			"add": "Ajouter en ami"
+		}
 	}
 }

@@ -3,6 +3,7 @@
 import React from "react";
 import { useChatWebSocket } from "./ChatWebSocketContext";
 import ApiService from "../../api/ApiService";
+import { useTranslation } from 'react-i18next';
 
 const FriendPage: React.FC = () => {
 	const {
@@ -18,6 +19,7 @@ const FriendPage: React.FC = () => {
 		handleBlockedFriend,
 		handleUnBlockedFriend,
 	} = useChatWebSocket();
+	const { t } = useTranslation();
 
 	// Filtrer les amis selon le terme de recherche
 
@@ -36,40 +38,36 @@ const FriendPage: React.FC = () => {
 		return (
 			<div className="flex gap-2">
 				<button
-					title="Bloquer l'utilisateur"
+					title={t('friendPage.tooltips.block')}
 					className="!bg-[#ffffff00] hover:scale-110 !border-none !p-1"
 					onClick={() => handleBlockedFriend(friend.id)}
 				>
-					<img src="/images/block.png" alt="Bloquer" className="w-7 h-7" />
+					<img src="/images/block.png" alt={t('friendPage.tooltips.block')} className="w-7 h-7" />
 				</button>
 				{friend.relation.target !== friend.id ? (
 					<>
 						<button
-							title="Accepter la demande d'ami"
+							title={t('friendPage.tooltips.accept')}
 							className="!bg-[#ffffff00] hover:scale-110 !border-none !p-1"
 							onClick={() => handleAcceptFriend(friend.id)}
 						>
-							<svg className="w-7 h-7" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-								<path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-							</svg>
+							<img src="/images/accept.png" alt={t('friendPage.tooltips.accept')} className="w-7 h-7" />
 						</button>
 						<button
-							title="Refuser la demande d'ami"
+							title={t('friendPage.tooltips.refuse')}
 							className="!bg-[#ffffff00] hover:scale-110 !border-none !p-1"
 							onClick={() => handleRefuseFriend(friend.id)}
 						>
-							<svg className="w-7 h-7" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-								<path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-							</svg>
+							<img src="/images/croix.png" alt={t('friendPage.tooltips.refuse')} className="w-7 h-7" />
 						</button>
 					</>
 				) : (
 					<button
 						className="!bg-[#ffffff00] hover:scale-110 !border-none !p-1"
 						onClick={() => handleCancelFriend(friend.id)}
-						title="Annuler la demande d'ami"
+						title={t('friendPage.tooltips.cancel')}
 					>
-						<img src="/images/croix.png" alt="Annuler" className="w-7 h-7" />
+						<img src="/images/croix.png" alt={t('friendPage.tooltips.cancel')} className="w-7 h-7" />
 					</button>
 				)}
 			</div>
@@ -80,11 +78,11 @@ const FriendPage: React.FC = () => {
 		return (
 			<div className="flex gap-2">
 				<button
-					title="Débloquer l'utilisateur"
+					title={t('friendPage.tooltips.unblock')}
 					className="!bg-[#ffffff00] hover:scale-110 !border-none !p-1"
 					onClick={() => handleUnBlockedFriend(friend.id)}
 				>
-					<img src="/images/unblock.png" alt="Débloquer" className="w-7 h-7" />
+					<img src="/images/unblock.png" alt={t('friendPage.tooltips.unblock')} className="w-7 h-7" />
 				</button>
 			</div>
 		);
@@ -94,27 +92,25 @@ const FriendPage: React.FC = () => {
 		return (
 			<div className="flex gap-2">
 				<button
-					title="Bloquer l'ami"
+					title={t('friendPage.tooltips.block')}
 					className="!bg-[#ffffff00] hover:scale-110 !border-none !p-1"
 					onClick={() => handleBlockedFriend(friend.id)}
 				>
-					<img src="/images/block.png" alt="Bloquer" className="w-7 h-7" />
+					<img src="/images/block.png" alt={t('friendPage.tooltips.block')} className="w-7 h-7" />
 				</button>
 				<button
-					title="Supprimer l'ami"
+					title={t('friendPage.tooltips.remove')}
 					className="!bg-[#ffffff00] hover:scale-110 !border-none !p-1"
 					onClick={() => handleRemoveFriend(friend.id)}
 				>
-					<svg className="w-7 h-7" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-						<path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-					</svg>
+					<img src="/images/croix.png" alt={t('friendPage.tooltips.remove')} className="w-7 h-7" />
 				</button>
 				<button
-					title="Inviter à jouer à Pong"
+					title="Pong test Invite"
 					className="!bg-[#ffffff00] hover:scale-110 !border-none !p-1"
 					onClick={() => testInvitePong(friend.id)}
 				>
-					<img src="/images/intro/floating-pong.png" alt="Pong" className="w-7 h-7" />
+					<img src="/images/intro/floating-pong.png" alt="Pong test Invite" className="w-7 h-7" />
 				</button>
 			</div>
 		);
@@ -124,18 +120,18 @@ const FriendPage: React.FC = () => {
 		return (
 			<div className="flex gap-2">
 				<button
-					title="Bloquer l'utilisateur"
+					title={t('friendPage.tooltips.block')}
 					className="!bg-[#ffffff00] hover:scale-110 !border-none !p-1"
 					onClick={() => handleBlockedFriend(friend.id)}
 				>
-					<img src="/images/block.png" alt="Bloquer" className="w-7 h-7" />
+					<img src="/images/block.png" alt={t('friendPage.tooltips.block')} className="w-7 h-7" />
 				</button>
 				<button
-					title="Ajouter en ami"
+					title={t('friendPage.tooltips.add')}
 					className="!bg-[#ffffff00] hover:scale-110 !border-none !p-1"
 					onClick={() => handleAddFriend(friend.id)}
 				>
-					<img src="/images/addFriend.png" alt="Ajouter" className="w-7 h-7" />
+					<img src="/images/addFriend.png" alt={t('friendPage.tooltips.add')} className="w-7 h-7" />
 				</button>
 			</div>
 		);
@@ -152,12 +148,12 @@ const FriendPage: React.FC = () => {
 
 			<div className="z-10 w-full max-w-4xl h-full max-h-[calc(100vh-9rem)] mt-16">
 				<fieldset className="bg-gray-900 bg-opacity-90 border border-gray-700 rounded-2xl shadow-2xl p-6 flex flex-col gap-4 h-full">
-					<legend className="text-2xl font-bold text-center text-white tracking-widest gradient-text">Liste des amis</legend>
+					<legend className="text-2xl font-bold text-center text-white tracking-widest gradient-text">{t('friendPage.title')}</legend>
 					{/* Input de recherche */}
 					<div className="mb-2 flex justify-center">
 						<input
 							type="text"
-							placeholder="Rechercher un utilisateur..."
+							placeholder={t('friendPage.searchPlaceholder')}
 							value={inputSearch}
 							maxLength={10}
 							onChange={(e) => setInputSearch(e.target.value)}
@@ -167,11 +163,11 @@ const FriendPage: React.FC = () => {
 
 					{filteredFriends.length === 0 && inputSearch ? (
 						<div className="text-center text-gray-400 py-8 flex-1 flex items-center justify-center">
-							Aucun ami trouvé pour "{inputSearch}"
+							{t('friendPage.noFriendsFound', { search: inputSearch })}
 						</div>
 					) : filteredFriends.length === 0 && friends.length === 0 ? (
 						<div className="text-center text-gray-400 py-8 flex-1 flex items-center justify-center">
-							Aucun ami pour le moment
+							{t('friendPage.noFriendsYet')}
 						</div>
 					) : (
 						<div className="flex-1 overflow-y-auto">
@@ -207,11 +203,11 @@ const FriendPage: React.FC = () => {
 																	: "text-gray-400"
 															}`}>
 															{friend.relation.status === "pending"
-																? "En attente"
+																? t('friendPage.status.pending')
 																: friend.relation.status === "blocked"
-																	? "Bloqué"
+																	? t('friendPage.status.blocked')
 																	: friend.relation.status === "friend"
-																		? "Ami"
+																		? t('friendPage.status.friend')
 																		: ""
 															}
 														</div>

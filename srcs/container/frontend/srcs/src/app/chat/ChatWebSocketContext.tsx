@@ -156,7 +156,7 @@ export const ChatWebSocketProvider: React.FC<ChatWebSocketProviderProps> = ({ ch
 					console.log("FRIENDS init:", data.friends);
 					const groupFriends: Friend[] = Object.values(data.friends || {});
 					if (groupFriends.length > 0) {
-						setFriends(groupFriends);
+						setFriends(sortFriends(groupFriends));
 					}
 					console.log("FRIENDS2 init:", groupFriends);
 					break;
@@ -184,7 +184,7 @@ export const ChatWebSocketProvider: React.FC<ChatWebSocketProviderProps> = ({ ch
 				// --- Actions amis ---
 				case "search_user":
 					if (data.result === "ok" && Array.isArray(data.users)) {
-						setSearchResults(data.users);
+						setSearchResults(sortFriends(data.users));
 					} else {
 						setSearchResults([]);
 					}
@@ -210,11 +210,11 @@ export const ChatWebSocketProvider: React.FC<ChatWebSocketProviderProps> = ({ ch
 								},
 								online: false
 							};
-							setFriends(prev => [...prev, newFriend]);
+							setFriends(prev => sortFriends([...prev, newFriend]));
 						} else {
-							setFriends(prev => prev.map(friend =>
+							setFriends(prev => sortFriends(prev.map(friend =>
 								friend.id === data.user.id ? updateUserStatus(friend) : friend
-							));
+							)));
 						}
 
 						const updateSearchResults = (user: Friend) => ({
@@ -224,9 +224,9 @@ export const ChatWebSocketProvider: React.FC<ChatWebSocketProviderProps> = ({ ch
 
 						setSearchResults(prev =>
 							prev
-								? prev.map(user =>
+								? sortFriends(prev.map(user =>
 									user.id === data.user.id ? updateSearchResults(user) : user
-								)
+								))
 								: []
 						);
 					}
@@ -234,18 +234,18 @@ export const ChatWebSocketProvider: React.FC<ChatWebSocketProviderProps> = ({ ch
 
 				case "accept_friend":
 					if (data.result === "ok") {
-						setFriends(prev => prev.map(friend =>
+						setFriends(prev => sortFriends(prev.map(friend =>
 							friend.id === data.user_id
 								? { ...friend, relation: { ...friend.relation, status: "friend" }, online: data.isConnected }
 								: friend
-						));
+						)));
 						setSearchResults(prev =>
 							prev
-								? prev.map(user =>
+								? sortFriends(prev.map(user =>
 									user.id === data.user_id
 										? { ...user, relation: { ...user.relation, status: "friend" } }
 										: user
-								)
+								))
 								: []
 						);
 					}
@@ -257,11 +257,11 @@ export const ChatWebSocketProvider: React.FC<ChatWebSocketProviderProps> = ({ ch
 						setFriends(prev => prev.filter(friend => friend.id !== data.user_id));
 						setSearchResults(prev =>
 							prev
-								? prev.map(user =>
+								? sortFriends(prev.map(user =>
 									user.id === data.user_id
 										? { ...user, relation: { ...user.relation, status: '' } }
 										: user
-								)
+								))
 								: []
 						);
 					}
@@ -273,11 +273,11 @@ export const ChatWebSocketProvider: React.FC<ChatWebSocketProviderProps> = ({ ch
 					}
 					setSearchResults(prev =>
 						prev
-							? prev.map(user =>
+							? sortFriends(prev.map(user =>
 								user.id === data.user_id
 									? { ...user, relation: { ...user.relation, status: '' } }
 									: user
-							)
+							))
 							: []
 					);
 					break;
@@ -285,18 +285,18 @@ export const ChatWebSocketProvider: React.FC<ChatWebSocketProviderProps> = ({ ch
 				case "block_user":
 					if (data.result === "ok") {
 						setGroups(prev => prev.filter(group => group.id !== data.group_id));
-						setFriends(prev => prev.map(friend =>
+						setFriends(prev => sortFriends(prev.map(friend =>
 							friend.id === data.user_id
-								? { ...friend, relation: { ...friend.relation, status: "blocked" } }
+								? { ...friend, relation: { ...friend.relation, status: "blocked", online: false } }
 								: friend
-						));
+						)));
 						setSearchResults(prev =>
 							prev
-								? prev.map(user =>
+								? sortFriends(prev.map(user =>
 									user.id === data.user_id
-										? { ...user, relation: { ...user.relation, status: "blocked" } }
+										? { ...user, relation: { ...user.relation, status: "blocked", online: false } }
 										: user
-								)
+								))
 								: []
 						);
 
@@ -309,18 +309,18 @@ export const ChatWebSocketProvider: React.FC<ChatWebSocketProviderProps> = ({ ch
 
 				case "unblock_user":
 					if (data.result === "ok") {
-						setFriends(prev => prev.map(friend =>
+						setFriends(prev => sortFriends(prev.map(friend =>
 							friend.id === data.user_id
 								? { ...friend, relation: { ...friend.relation, status: "" } }
 								: friend
-						));
+						)));
 						setSearchResults(prev =>
 							prev
-								? prev.map(user =>
+								? sortFriends(prev.map(user =>
 									user.id === data.user_id
 										? { ...user, relation: { ...user.relation, status: "" } }
 										: user
-								)
+								))
 								: []
 						);
 					}
@@ -328,16 +328,16 @@ export const ChatWebSocketProvider: React.FC<ChatWebSocketProviderProps> = ({ ch
 
 				case "friend_connected":
 					if (data.user_id) {
-						setFriends(prev => prev.map(f =>
+						setFriends(prev => sortFriends(prev.map(f =>
 							f.id === data.user_id ? { ...f, online: true } : f
-						));
+						)));
 						setSearchResults(prev =>
 							prev
-								? prev.map(user =>
+								? sortFriends(prev.map(user =>
 									user.id === data.user_id
 										? { ...user, online: true }
 										: user
-								)
+								))
 								: []
 						);
 					}
@@ -345,16 +345,16 @@ export const ChatWebSocketProvider: React.FC<ChatWebSocketProviderProps> = ({ ch
 
 				case "friend_disconnected":
 					if (data.user_id) {
-						setFriends(prev => prev.map(f =>
+						setFriends(prev => sortFriends(prev.map(f =>
 							f.id === data.user_id ? { ...f, online: false } : f
-						));
+						)));
 						setSearchResults(prev =>
 							prev
-								? prev.map(user =>
+								? sortFriends(prev.map(user =>
 									user.id === data.user_id
 										? { ...user, online: false }
 										: user
-								)
+								))
 								: []
 						);
 					}
@@ -559,6 +559,25 @@ export const ChatWebSocketProvider: React.FC<ChatWebSocketProviderProps> = ({ ch
 		if (!friend) return "none";
 		return friend.relation.status;
 	}, []); // Utilise friendsRef donc pas de dépendance
+
+	// --- Fonction de tri des amis (identique au backend) ---
+	const sortFriends = useCallback((friends: Friend[]): Friend[] => {
+		return [...friends].sort((a, b) => {
+			// 1. Statut en ligne (priorité maximale)
+			if (a.online && !b.online) return -1;
+			if (!a.online && b.online) return 1;
+
+			// 2. Statut "pending"
+			if (a.relation.status === 'pending' && b.relation.status !== 'pending') return -1;
+			if (a.relation.status !== 'pending' && b.relation.status === 'pending') return 1;
+
+			// 3. Statut "blocked" (priorité minimale)
+			if (a.relation.status === 'blocked' && b.relation.status !== 'blocked') return 1;
+			if (a.relation.status !== 'blocked' && b.relation.status === 'blocked') return -1;
+
+			return 0;
+		});
+	}, []);
 
 	const contextValue: ChatWebSocketContextType = useMemo(() => ({
 		wsStatus,

@@ -1,5 +1,5 @@
 import { Group, User, Friends } from '@types';
-import { State, req_accept_friend, res_accept_friend, res_add_friend, req_add_friend, req_remove_friend, res_remove_friend, req_refuse_friend, res_refuse_friend, reponse, req_block_user, res_block_user, req_search_user, res_search_user } from '@typesChat';
+import { State, req_accept_friend, res_accept_friend, res_add_friend, req_add_friend, req_remove_friend, res_remove_friend, req_refuse_friend, res_refuse_friend, reponse, req_block_user, res_block_user, req_search_user, res_search_user, res_disconnect } from '@typesChat';
 import { WebSocket } from 'ws';
 import modelsChat from '@models/modelChat';
 import modelsFriends from '@models/modelFriends';
@@ -24,13 +24,25 @@ export async function getFriends(userId: number, state: State): Promise<User[]> 
 
 	// add is connected
 	for (const friend of friendsIds) {
-		if (state.onlineSockets.has(friend.id)) { friend.online = true; }
+		if (friend.relation.status === 'friend' && state.onlineSockets.has(friend.id)) { friend.online = true; }
 		else { friend.online = false; }
 		if (friend.relation.status === 'blocked' && friend.relation.target === userId) {
 			friendsIds.splice(friendsIds.indexOf(friend), 1);
 			continue;
 		}
 	}
+
+	friendsIds.sort((a, b) => {
+		if (a.online && !b.online) return -1;
+		if (!a.online && b.online) return 1;
+		if (a.relation.status === 'pending' && b.relation.status !== 'pending') return -1;
+		if (a.relation.status !== 'pending' && b.relation.status === 'pending') return 1;
+		if (a.relation.status === 'blocked' && b.relation.status !== 'blocked') return 1;
+		if (a.relation.status !== 'blocked' && b.relation.status === 'blocked') return -1;
+
+		return 0;
+	});
+
 	return friendsIds;
 }
 
@@ -116,10 +128,21 @@ export const searchUser = async (ws: WebSocket, user: User, state: State, text: 
 			if (relation && relation.status === 'blocked') return false;
 		}
 		else {
-			console.log(`status: ${relation?.status}, target: ${relation?.target}, user.id: ${user.id}, userSearch.id: ${userSearch.id}`);
 			if (relation && relation.status === 'blocked' && relation.target === user.id) return false;
 		}
 		return true;
+	});
+
+	// trier et mettre dans cette ordre amis en ligne, amis hors ligne, en attente, no relation, blocked
+	users.sort((a, b) => {
+		if (a.online && !b.online) return -1;
+		if (!a.online && b.online) return 1;
+		if (a.relation.status === 'pending' && b.relation.status !== 'pending') return -1;
+		if (a.relation.status !== 'pending' && b.relation.status === 'pending') return 1;
+		if (a.relation.status === 'blocked' && b.relation.status !== 'blocked') return 1;
+		if (a.relation.status !== 'blocked' && b.relation.status === 'blocked') return -1;
+
+		return 0;
 	});
 
 	ws.send(JSON.stringify({
@@ -371,9 +394,11 @@ export const blockFriend = async (ws: WebSocket, user: User, state: State, text:
 	if (await modelsFriends.updateFriendRelation(user, friend, 'blocked', false, state) == false) return ws.send(JSON.stringify({ action: 'error', result: 'error', notification: ws.i18n.t('RelationFriends.errorBlockingUser') } as reponse));
 
 	const relation = getRelationFriend(user.id, friend.id, state);
+	ws.send(JSON.stringify({ action: 'friend_disconnected', user_id: friend.id } as res_disconnect));
 	ws.send(JSON.stringify({
 		action: 'block_user',
 		result: 'ok',
+		targetId: friend.id,
 		user_id: friend.id,
 		group_id: relation.group_id,
 		notification: ws.i18n.t('RelationFriends.youBlockedUserNotification', { username: friend.username }),
