@@ -2,9 +2,8 @@
 
 import React, { createContext, useContext, useCallback, useState, useEffect, useRef, useMemo } from 'react';
 import useSafeWebSocket, { WebSocketStatus } from '../../api/useSafeWebSocket';
-import { Group, Message, Friend, Member } from './types/chat';
+import { Group, Message, Friend } from './types/chat';
 import notification from '../components/Notifications'
-import { useAuth } from '../../contexts/AuthContext';
 
 interface ChatWebSocketContextType {
 	// WebSocket status
