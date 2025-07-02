@@ -289,6 +289,7 @@
 
 	&:hover {
 		transform: scale(1.05);
+		border: none;
 	}
 }
 
@@ -308,6 +309,8 @@
 	&:hover {
 		transform: scale(1.05);
 		box-shadow: 0 10px 25px rgba(255, 107, 107, 0.4);
+		border: none;
+		outline: none;
 	}
 }
 
@@ -346,6 +349,66 @@
 	&:hover {
 		color: #ff6b6b;
 		transform: translateY(-1px);
+	}
+}
+
+// Scroll Down Button
+.scroll-down-button {
+	position: fixed;
+	top: 90vh;
+	left: 50%;
+	transform: translateX(-50%);
+	width: 50px;
+	height: 50px;
+	background: linear-gradient(45deg, #4ecdc4, #45b7d1);
+	border: none;
+	outline: none;
+	border-radius: 50%;
+	color: white;
+	font-size: 1.2rem;
+	cursor: pointer;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	z-index: 1000;
+	box-shadow: 0 4px 20px rgba(78, 205, 196, 0.3);
+	backdrop-filter: blur(10px);
+	transition: all 0.3s ease;
+	animation: scrollPulse 2s infinite;
+
+	&:hover {
+		transform: translateX(-50%) scale(1.1);
+		box-shadow: 0 6px 30px rgba(78, 205, 196, 0.5);
+		border: none;
+		outline: none;
+	}
+
+	&:active {
+		transform: translateX(-50%) scale(0.95);
+		border: none;
+		outline: none;
+	}
+
+	&:focus {
+		border: none;
+		outline: none;
+	}
+
+	.arrow-down {
+		transition: transform 0.3s ease;
+	}
+
+	&:hover .arrow-down {
+		transform: translateY(2px);
+	}
+}
+
+@keyframes scrollPulse {
+	0%, 100% {
+		opacity: 0.8;
+	}
+	50% {
+		opacity: 1;
 	}
 }
 

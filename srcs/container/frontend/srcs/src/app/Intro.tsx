@@ -34,6 +34,13 @@ function Intro() {
 		navigate(`/${game}`);
 	};
 
+	const scrollToBottom = () => {
+		window.scrollTo({
+			top: document.body.scrollHeight,
+			behavior: 'smooth'
+		});
+	};
+
 	return (
 		<div className="intro-container">
 			{/* Hero Section */}
@@ -90,6 +97,12 @@ function Intro() {
 						<span className="gradient-text">{t('name_project')}</span>
 					</h1>
 				</div>
+				<button
+					className="scroll-down-button"
+					onClick={scrollToBottom}
+				>
+					<span className="arrow-down">↓</span>
+				</button>
 			</section>
 
 			{/* Games Section */}
@@ -134,6 +147,7 @@ function Intro() {
 						</button>
 					</div>
 				</div>
+
 			</section>
 
 			{/* Footer */}
@@ -142,7 +156,11 @@ function Intro() {
 					<p>
 						{t('home.made_with')} ❤️ {t('home.at_42_school')} |
 						<span className="current-time">
-							{currentTime.toLocaleTimeString()}
+							{currentTime.toLocaleTimeString('fr-FR', {
+								hour: '2-digit',
+								minute: '2-digit',
+								second: '2-digit',
+							})}
 						</span>
 					</p>
 				</div>
