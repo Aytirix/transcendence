@@ -241,6 +241,7 @@ async function insertStatistic(userId: number, type: string, score: number, deat
 		INSERT INTO pacman_stat (user_id, type, score, death_count, win) 
 		VALUES (?, ?, ?, ?, ?)
 	`;
+	type = type.toLowerCase();
 	const result: any = await executeReq(query, [userId, type, score, deathCount, win ? 1 : 0]);
 	if (!result || result.affectedRows === 0) {
 		return false;
