@@ -15,7 +15,7 @@ export interface request {
 export interface reponse {
 	action: string;
 	result: 'ok' | 'error';
-	notification?: [string];
+	notification?: [string] | { key: string; params?: Record<string, any> }[];
 }
 
 // Reponse : Intialisation de la connexion
