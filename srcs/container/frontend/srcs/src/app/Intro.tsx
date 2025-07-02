@@ -132,7 +132,7 @@ function Intro() {
 
 					<div
 						className="game-card pacman-card"
-						onClick={() => navigateToGame('pacman')}
+						onClick={() => navigateToGame('Pacman')}
 					>
 						<div className="game-icon">👻</div>
 						<h3 className="game-title">PAC-MAN</h3>
