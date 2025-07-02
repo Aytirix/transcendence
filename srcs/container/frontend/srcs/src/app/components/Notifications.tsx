@@ -121,6 +121,7 @@ class ToastNotification {
 	): Promise<void> {
 		return new Promise((resolve) => {
 			const content = (
+					
 				<div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
 					{ToastNotification.formatMessage(message)}
 					<div style={{ display: 'flex', justifyContent: 'center' }}>
@@ -137,7 +138,9 @@ class ToastNotification {
 								borderRadius: '4px',
 								cursor: 'pointer',
 								fontSize: '14px',
-								fontWeight: '500'
+								fontWeight: '500',
+								display: 'flex',
+								justifyContent: 'center',
 							}}
 						>
 							OK

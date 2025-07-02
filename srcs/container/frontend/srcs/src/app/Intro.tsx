@@ -121,7 +121,7 @@ function Intro() {
 						<h3 className="game-title">IRON PONG</h3>
 						<p className="game-description">{t('home.classic_pong_description')}</p>
 						<div className="game-features">
-							<span className="feature">• {t('home.pong.multiplayer')}</span>
+							<span className="feature">• {t('home.multiplayer')}</span>
 							<span className="feature">• {t('home.real_time')}</span>
 							<span className="feature">• {t('home.competitive')}</span>
 						</div>
