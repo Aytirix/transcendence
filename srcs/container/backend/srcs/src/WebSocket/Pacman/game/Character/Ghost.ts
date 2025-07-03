@@ -19,7 +19,7 @@ export default class Ghost extends Character {
 
 	// Durée minimale entre recalcul de direction
 	private lastDirectionCalc: number = 0;
-	private static DIRECTION_INTERVAL: number = 50;
+	private static DIRECTION_INTERVAL: number = 50; // Réduit pour plus de réactivité
 
 	public isFrightened: boolean = false;
 	public isReturningToSpawn: boolean = false;
@@ -100,9 +100,10 @@ export default class Ghost extends Character {
 			return this.updateFrightenedBehaviour(pacman);
 		}
 
-		// 4) Limiter la fréquence de recalcul (performances)
+		// 4) Limiter la fréquence de recalcul (performances) - mais permettre plus de réactivité si bloqué
 		const now = Date.now();
-		if (now - this.lastDirectionCalc < Ghost.DIRECTION_INTERVAL) {
+		const isStuck = this.direction.x === 0 && this.direction.y === 0;
+		if (!isStuck && now - this.lastDirectionCalc < Ghost.DIRECTION_INTERVAL) {
 			return;
 		}
 		this.lastDirectionCalc = now;
@@ -129,41 +130,15 @@ export default class Ghost extends Character {
 		// 6) Utiliser BFS pour calculer la direction menant au chemin le plus court
 		let nextDir = this.computeNextDirectionBFS(currentGrid, targetGrid);
         if (!nextDir) {
-            // Si aucune direction trouvée, choisir une direction aléatoire non bloquée
-            const dirs: vector2[] = [
-                { x: 0, y: -1 },
-                { x: -1, y: 0 },
-                { x: 0, y: 1 },
-                { x: 1, y: 0 },
-            ];
-            const possibles = dirs.filter(dir => {
-                const nx = currentGrid.x + dir.x;
-                const ny = currentGrid.y + dir.y;
-                return this.map.isWalkable(this.nameChar, { x: nx, y: ny });
-            });
-            if (possibles.length > 0) {
-                nextDir = possibles[Math.floor(Math.random() * possibles.length)];
-            } else {
-                nextDir = { x: 0, y: 0 };
-            }
+            // Si aucune direction trouvée, choisir une direction aléatoire non bloquée (pas de demi-tour sauf si bloqué)
+            nextDir = this.findAlternativeDirection(currentGrid);
         }
         this.nextDirection = nextDir;
+        
         // Sécurité anti-blocage : si le fantôme est bloqué, on force une direction possible
         if (this.direction.x === 0 && this.direction.y === 0 && this.nextDirection.x === 0 && this.nextDirection.y === 0) {
-            const dirs: vector2[] = [
-                { x: 0, y: -1 },
-                { x: -1, y: 0 },
-                { x: 0, y: 1 },
-                { x: 1, y: 0 },
-            ];
-            const possibles = dirs.filter(dir => {
-                const nx = currentGrid.x + dir.x;
-                const ny = currentGrid.y + dir.y;
-                return this.map.isWalkable(this.nameChar, { x: nx, y: ny });
-            });
-            if (possibles.length > 0) {
-                this.nextDirection = possibles[Math.floor(Math.random() * possibles.length)];
-            }
+            console.warn(`Fantôme ${this.nameChar} complètement bloqué, tentative de déblocage`);
+            this.forceUnblock();
         }
 	}
 
@@ -187,23 +162,8 @@ export default class Ghost extends Character {
         // Calculer la prochaine direction avec BFS
         let nextDir = this.computeNextDirectionBFS(currentGrid, targetGrid);
         if (!nextDir) {
-            // Si aucune direction trouvée, choisir une direction aléatoire non bloquée
-            const dirs: vector2[] = [
-                { x: 0, y: -1 },
-                { x: -1, y: 0 },
-                { x: 0, y: 1 },
-                { x: 1, y: 0 },
-            ];
-            const possibles = dirs.filter(dir => {
-                const nx = currentGrid.x + dir.x;
-                const ny = currentGrid.y + dir.y;
-                return this.map.isWalkable(this.nameChar, { x: nx, y: ny });
-            });
-            if (possibles.length > 0) {
-                nextDir = possibles[Math.floor(Math.random() * possibles.length)];
-            } else {
-                nextDir = { x: 0, y: 0 };
-            }
+            // Si aucune direction trouvée, utiliser la méthode alternative
+            nextDir = this.findAlternativeDirection(currentGrid);
         }
         this.nextDirection = nextDir;
     }
@@ -289,19 +249,7 @@ export default class Ghost extends Character {
 			Array(width).fill(null)
 		);
 
-		// Définir la direction opposée (demi-tour) à éviter
-		const oppositeDir = {
-			x: -this.direction.x,
-			y: -this.direction.y
-		};
-
-		// Vérifier si la direction actuelle est bloquée
-		const forwardX = startGrid.x + this.direction.x;
-		const forwardY = startGrid.y + this.direction.y;
-		const isForwardBlocked = forwardX < 0 || forwardX >= width || forwardY < 0 || forwardY >= height ||
-			!this.map.isWalkable(this.nameChar, { x: forwardX, y: forwardY });
-
-		// Déterminer toutes les directions possibles à partir de la position actuelle
+		// Déterminer toutes les directions possibles
 		const dirs: vector2[] = [
 			{ x: 0, y: -1 },
 			{ x: -1, y: 0 },
@@ -309,18 +257,31 @@ export default class Ghost extends Character {
 			{ x: 1, y: 0 },
 		];
 
-		// Filtrer les directions possibles sans compter le demi-tour (sauf si direction actuelle bloquée)
-		const validInitialDirs = dirs.filter(dir => {
-			// Si c'est un demi-tour et que la direction actuelle n'est pas bloquée, l'exclure
-			if (dir.x === oppositeDir.x && dir.y === oppositeDir.y && !isForwardBlocked) {
-				return false;
-			}
+		// Définir la direction opposée (demi-tour) à éviter
+		const oppositeDir = {
+			x: -this.direction.x,
+			y: -this.direction.y
+		};
 
+		// Vérifier si la direction actuelle est bloquée par un mur
+		const forwardX = startGrid.x + this.direction.x;
+		const forwardY = startGrid.y + this.direction.y;
+		const isForwardBlocked = forwardX < 0 || forwardX >= width || forwardY < 0 || forwardY >= height ||
+			!this.map.isWalkable(this.nameChar, { x: forwardX, y: forwardY });
+
+		// Filtrer les directions possibles selon la règle : demi-tour uniquement si direction actuelle bloquée
+		const validInitialDirs = dirs.filter(dir => {
 			const nx = startGrid.x + dir.x;
 			const ny = startGrid.y + dir.y;
 
+			// Vérifier si c'est dans les limites et walkable
 			if (nx < 0 || nx >= width || ny < 0 || ny >= height) return false;
 			if (!this.map.isWalkable(this.nameChar, { x: nx, y: ny })) return false;
+
+			// Si c'est un demi-tour, ne l'autoriser que si la direction actuelle est bloquée
+			if (dir.x === oppositeDir.x && dir.y === oppositeDir.y) {
+				return isForwardBlocked;
+			}
 
 			return true;
 		});
@@ -344,11 +305,12 @@ export default class Ghost extends Character {
 				let nx = curr.x + d.x;
 				let ny = curr.y + d.y;
 
-				// Si nous sommes à la position initiale, ne pas considérer le demi-tour
-				// sauf si la direction actuelle est bloquée
-				if (curr.x === startGrid.x && curr.y === startGrid.y &&
-					d.x === oppositeDir.x && d.y === oppositeDir.y && !isForwardBlocked) {
-					continue;
+				// Si nous sommes à la position initiale, appliquer la même logique de filtrage
+				if (curr.x === startGrid.x && curr.y === startGrid.y) {
+					// Ne pas autoriser le demi-tour sauf si la direction actuelle est bloquée
+					if (d.x === oppositeDir.x && d.y === oppositeDir.y && !isForwardBlocked) {
+						continue;
+					}
 				}
 
 				if (nx < 0 || nx >= width || ny < 0 || ny >= height) continue;
@@ -392,5 +354,98 @@ export default class Ghost extends Character {
 	public respawn(): void {
 		this.isFrightened = false;
 		this.isReturningToSpawn = true;
+	}
+
+	/**
+	 * Force le déblocage du fantôme si toutes les conditions normales échouent
+	 */
+	private forceUnblock(): void {
+		const currentGrid = this.pixelToGrid(this.position);
+		const dirs: vector2[] = [
+			{ x: 0, y: -1 }, // Haut
+			{ x: 1, y: 0 },  // Droite  
+			{ x: 0, y: 1 },  // Bas
+			{ x: -1, y: 0 }  // Gauche
+		];
+		
+		// Essayer toutes les directions possibles, y compris le demi-tour
+		for (const dir of dirs) {
+			const testPos = {
+				x: currentGrid.x + dir.x,
+				y: currentGrid.y + dir.y
+			};
+			if (this.map.isWalkable(this.nameChar, testPos)) {
+				this.direction = { ...dir };
+				this.nextDirection = { ...dir };
+				console.log(`Fantôme ${this.nameChar} débloqué vers direction [${dir.x}, ${dir.y}]`);
+				return;
+			}
+		}
+		
+		// Si vraiment aucune direction n'est possible, réinitialiser à la position de spawn
+		console.warn(`Fantôme ${this.nameChar} complètement bloqué, retour au spawn`);
+		this.respawn();
+	}
+
+	/**
+	 * Trouve une direction alternative en évitant le demi-tour sauf si c'est la seule option
+	 */
+	private findAlternativeDirection(currentGrid: vector2): vector2 {
+		const dirs: vector2[] = [
+			{ x: 0, y: -1 }, // Haut
+			{ x: 1, y: 0 },  // Droite  
+			{ x: 0, y: 1 },  // Bas
+			{ x: -1, y: 0 }  // Gauche
+		];
+
+		// Direction opposée (demi-tour)
+		const oppositeDir = {
+			x: -this.direction.x,
+			y: -this.direction.y
+		};
+
+		// Vérifier si la direction actuelle est bloquée par un mur
+		const forwardGrid = {
+			x: currentGrid.x + this.direction.x,
+			y: currentGrid.y + this.direction.y
+		};
+		const isForwardBlocked = !this.map.isWalkable(this.nameChar, forwardGrid);
+
+		// Filtrer les directions possibles
+		const validDirs = dirs.filter(dir => {
+			const nx = currentGrid.x + dir.x;
+			const ny = currentGrid.y + dir.y;
+			
+			// Vérifier si c'est dans les limites et walkable
+			if (!this.map.isWalkable(this.nameChar, { x: nx, y: ny })) {
+				return false;
+			}
+
+			// Si c'est un demi-tour, ne l'autoriser que si la direction actuelle est bloquée
+			if (dir.x === oppositeDir.x && dir.y === oppositeDir.y) {
+				return isForwardBlocked;
+			}
+
+			return true;
+		});
+
+		// Retourner une direction aléatoire parmi les valides
+		if (validDirs.length > 0) {
+			return validDirs[Math.floor(Math.random() * validDirs.length)];
+		}
+
+		// Si aucune direction n'est possible, retourner une direction nulle
+		return { x: 0, y: 0 };
+	}
+
+	/**
+	 * Inverse la direction actuelle du fantôme (utilisé lors du mode frightened)
+	 */
+	public reverseDirection(): void {
+		this.direction = {
+			x: -this.direction.x,
+			y: -this.direction.y
+		};
+		this.nextDirection = { ...this.direction };
 	}
 }

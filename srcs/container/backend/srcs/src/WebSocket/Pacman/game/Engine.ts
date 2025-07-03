@@ -465,7 +465,7 @@ export default class Engine {
 		// Centre exact de la tuile courante
 		const exactCenterX = currentGridPos.x * TILE_SIZE + TILE_SIZE / 2;
 		const exactCenterY = currentGridPos.y * TILE_SIZE + TILE_SIZE / 2;
-		const AlignementTolerance = 2;
+		const AlignementTolerance = 3; // Augmenté pour permettre plus de flexibilité
 		const isAligned = Math.abs(pl.position.x - exactCenterX) <= AlignementTolerance &&
 			Math.abs(pl.position.y - exactCenterY) <= AlignementTolerance;
 		const directionOpposite = (pl.direction.x !== 0 && pl.nextDirection.x !== 0) || (pl.direction.y !== 0 && pl.nextDirection.y !== 0);
@@ -489,6 +489,28 @@ export default class Engine {
 			};
 			if (this.map.isWalkable(pl.nameChar, nextDirectionGridPos)) {
 				pl.direction = { ...pl.nextDirection };
+			}
+		}
+
+		// Sécurité supplémentaire : si le fantôme est complètement bloqué, forcer une direction valide
+		if (pl instanceof Ghost && pl.direction.x === 0 && pl.direction.y === 0) {
+			const directions = [
+				{ x: 0, y: -1 }, // Haut
+				{ x: 1, y: 0 },  // Droite  
+				{ x: 0, y: 1 },  // Bas
+				{ x: -1, y: 0 }  // Gauche
+			];
+			
+			for (const dir of directions) {
+				const testPos = {
+					x: currentGridPos.x + dir.x,
+					y: currentGridPos.y + dir.y
+				};
+				if (this.map.isWalkable(pl.nameChar, testPos)) {
+					pl.direction = { ...dir };
+					pl.nextDirection = { ...dir };
+					break;
+				}
 			}
 		}
 
