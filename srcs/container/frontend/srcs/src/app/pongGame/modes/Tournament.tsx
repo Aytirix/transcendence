@@ -134,19 +134,19 @@ const TournamentPage: React.FC = () => {
 								<button onClick={quit} className='button-accueil'>{t("pong.tournament.quitter")}</button>
 							</div>
 							{!startTournament ?
-								<div className="popup">
-									<table className="table-menu">
+								<div className="popup-tournament">
+									<table className="table-menu-tournament">
 										<thead>
 											<tr>
-												<th className="th-menu">{t("pong.tournament.nameJoueurs")}</th>
+												<th className="th-menu ">{t("pong.tournament.nameJoueurs")}</th>
 												<th className="th-menu">{t("pong.tournament.place")}</th>
 											</tr>
 										</thead>
 										<tbody>
 											{listName.map((name, i) => (
 												<tr key={i}>
-													<td className="td-tournament-size">{name}</td>
-													<td className="td-tournament-size">{i + 1}/{sizeTournament}</td>
+													<td className="td-tournament-size td-joueur">{name}</td>
+													<td className="td-tournament-size td-place">{i + 1}/{sizeTournament}</td>
 												</tr>
 											))}
 										</tbody>

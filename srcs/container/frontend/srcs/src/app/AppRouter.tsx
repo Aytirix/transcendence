@@ -48,37 +48,37 @@ class AppRouter extends Component {
 					} />
 					{/* Route pour le jeu Pong */}
 					<Route path="/pong" element={
-						<MinSizeGuard minWidth={1500} minHeight={870} message="Écran trop petit">
+						<MinSizeGuard minWidth={0} minHeight={0} message="Écran trop petit">
 							<GameMenu />
 						</MinSizeGuard>
 					} />
 					<Route path="/pong/menu/SameKeyboard" element={
-						<MinSizeGuard minWidth={1500} minHeight={870} message="Écran trop petit">
+						<MinSizeGuard minWidth={0} minHeight={0} message="Écran trop petit">
 							<SameKeyboard />
 						</MinSizeGuard>
 					} />
 					<Route path="/pong/menu/Solo" element={
-						<MinSizeGuard minWidth={1500} minHeight={870} message="Écran trop petit">
+						<MinSizeGuard minWidth={0} minHeight={0} message="Écran trop petit">
 							<Solo />
 						</MinSizeGuard>
 					} />
 					<Route path="/pong/menu/MultiPlayers" element={
-						<MinSizeGuard minWidth={1500} minHeight={870} message="Écran trop petit">
+						<MinSizeGuard minWidth={0} minHeight={0} message="Écran trop petit">
 							<MultiPlayers />
 						</MinSizeGuard>
 					} />
 					<Route path="/pong/menu/MultiPlayersInvite" element={
-						<MinSizeGuard minWidth={1500} minHeight={870} message="Écran trop petit">
+						<MinSizeGuard minWidth={0} minHeight={0} message="Écran trop petit">
 							<MultiPlayersInvite />
 						</MinSizeGuard>
 					} />
 					<Route path="/pong/menu/Tournament" element={
-						<MinSizeGuard minWidth={1500} minHeight={870} message="Écran trop petit">
+						<MinSizeGuard minWidth={0} minHeight={0} message="Écran trop petit">
 							<TournamentPage />
 						</MinSizeGuard>
 					} />
 					<Route path="/pong/menu/GameTournament" element={
-						<MinSizeGuard minWidth={1500} minHeight={870} message="Écran trop petit">
+						<MinSizeGuard minWidth={0} minHeight={0} message="Écran trop petit">
 							<GameTournament />
 						</MinSizeGuard>
 					} />
