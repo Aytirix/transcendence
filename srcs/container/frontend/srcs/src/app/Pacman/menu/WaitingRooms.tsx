@@ -87,9 +87,7 @@ const WaitingRooms: React.FC<WaitingRoomsProps> = ({ state }) => {
 			console.error('Map not found:', mapValue);
 			return;
 		}
-		const payload = /* isCustomOrPublic */
-			/* ? */ { map_id: Number(existingMap.mapId), user_id: existingMap.userId || 0 }
-			/* : */ /* { map: mapValue }; */
+		const payload = { map_id: Number(existingMap.mapId), user_id: existingMap.userId || 0 };
 
 		state.ws?.send(JSON.stringify({ action: 'setRoomMap', ...payload }));
 		setSelectedMap(mapValue);

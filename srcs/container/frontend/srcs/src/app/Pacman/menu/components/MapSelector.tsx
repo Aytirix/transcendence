@@ -47,8 +47,7 @@ const MapSelector: React.FC<MapSelectorProps> = ({
 				>
 					{filteredMaps.map(map => (
 						<option key={map.value} value={map.value}>
-							{map.isCustom ? '🗺️ ' : ''}
-							{map.isValid ? '' : '❌ '}
+							{map.isCustom ? '🗺️ ' : map.label === 'Classique' ? '' : '🛩️ '}
 							{map.label}
 						</option>
 					))}

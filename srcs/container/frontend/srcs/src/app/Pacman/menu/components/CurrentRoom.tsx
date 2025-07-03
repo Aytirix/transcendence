@@ -37,9 +37,7 @@ const CurrentRoom: React.FC<CurrentRoomProps> = ({
 	
 }) => {
 	const { t } = useLanguage();
-	const currentMapValue = currentRoom.map_id
-		? String(currentRoom.map_id)
-		: currentRoom.map || selectedMap;
+	const currentMapValue = selectedMap;
 
 	return (
 		<div className="current-room">
