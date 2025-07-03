@@ -37,12 +37,10 @@ const PacmanGame: React.FC<PacmanGameProps> = ({ state }) => {
 	const { getWallType } = useWallTypes();
 
 	// Configuration des contrôles clavier
-	if (state.game.isSpectator == false) {
-		useKeyboardControls({
-			ws: state.ws,
-			onFirstInteraction: handleFirstInteraction
-		});
-	}
+	useKeyboardControls({
+		ws: state.ws,
+		onFirstInteraction: handleFirstInteraction
+	});
 
 	return (
 		<div className="PacmanGame" onClick={handleFirstInteraction}>
