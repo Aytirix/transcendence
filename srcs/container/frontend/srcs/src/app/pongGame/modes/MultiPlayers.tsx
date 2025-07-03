@@ -12,7 +12,7 @@ const MultiPlayers: React.FC = () => {
 			const navigate = useNavigate();
 			const returnMenu = () => socketRef.current?.send(JSON.stringify({type: "EXIT", value: assignPlayer}));			
 			const returnMenuWinner = () => { 
-				navigate('/pong/menu')
+				navigate(-1)
 				engine.current?.dispose();
 			};
 			
@@ -115,7 +115,7 @@ const MultiPlayers: React.FC = () => {
 						engine.current?.dispose();
 						localStorage.removeItem("reconnection");
 						localStorage.removeItem("data");
-						navigate('/pong/menu');
+						navigate(-1);
 						return;
 					}
 					if (data.type === "Remove") {

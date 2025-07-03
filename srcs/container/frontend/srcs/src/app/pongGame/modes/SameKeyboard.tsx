@@ -10,7 +10,7 @@ import { useLanguage } from '../../../contexts/LanguageContext';
 const SameKeyboard: React.FC = () => {
 	const navigate = useNavigate();
 	const returnMenu = () => socketRef.current?.send(JSON.stringify({type: "EXIT"}));			
-	const returnMenuWinner = () => { navigate('/pong/menu')};
+	const returnMenuWinner = () => { navigate(-1)};
 	
 	const canvasRef = useRef<HTMLCanvasElement | null>(null);
 	const paddle1 = useRef<Mesh | null>(null);
@@ -105,7 +105,7 @@ const SameKeyboard: React.FC = () => {
 				engine.current?.dispose();
 				localStorage.removeItem("reconnection");
 				localStorage.removeItem("data");
-				navigate('/pong/menu');
+				navigate(-1);
 				return;
 			}
 			if (data.type === "Remove") {
