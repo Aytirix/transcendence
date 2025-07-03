@@ -6,6 +6,7 @@ import { join } from "path";
 import { handleCollisionWithPlayer1, handleCollisionWithPlayer2, handleScorePlayer1, handleScorePlayer2 } from "../handlers/handleSolo";
 import { Tournament } from "../types/playerStat";
 import { isOnFinishMatch } from "../handlers/handleTournament";
+import modelPong from '@models/modelPong';
 
 export class Game {
 	constructor (
@@ -234,19 +235,31 @@ export class Game {
 	checkScore(player1: Paddle, player2: Paddle) : boolean {
 		if (player1.getScore() == 3) {
 			if (player1.getPlayerInfos().mode === "Tournament") {
+				modelPong.insertStatistic(player1.getPlayerInfos().id, 0, 1)
+				modelPong.insertStatistic(player2.getPlayerInfos().id, 0, 0)
 				player1.getPlayerInfos().resultMatchTournament = "Win";
 				player2.getPlayerInfos().resultMatchTournament = "Loose";
 				player2.getPlayerInfos().socket.send(JSON.stringify({type: "FINISHED", value: player1.getPlayerInfos().resultMatchTournament}))
+			}
+			else if (player1.getPlayerInfos().mode === "Multi" || player1.getPlayerInfos().mode === "MultiInvite") {
+				modelPong.insertStatistic(player1.getPlayerInfos().id, 0, 1)
+				modelPong.insertStatistic(player2.getPlayerInfos().id, 0, 0)
 			}
 			console.log("Winner is player 1")
 			return (true);
 		}
 		else if (player2.getScore() == 3){
 			if (player1.getPlayerInfos().mode === "Tournament") {
+				modelPong.insertStatistic(player2.getPlayerInfos().id, 0, 1)
+				modelPong.insertStatistic(player1.getPlayerInfos().id, 0, 0)
 				player2.getPlayerInfos().resultMatchTournament = "Win";
 				player1.getPlayerInfos().resultMatchTournament = "Loose";
 				player1.getPlayerInfos().socket.send(JSON.stringify({type: "FINISHED", value: player2.getPlayerInfos().resultMatchTournament}))
 			}
+			else if (player1.getPlayerInfos().mode === "Multi" || player1.getPlayerInfos().mode === "MultiInvite") {
+				modelPong.insertStatistic(player2.getPlayerInfos().id, 0, 1)
+				modelPong.insertStatistic(player1.getPlayerInfos().id, 0, 0)
+			}	
 			console.log("Winner is player 2")
 			return (true);
 		}
