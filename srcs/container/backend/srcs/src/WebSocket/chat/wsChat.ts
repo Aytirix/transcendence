@@ -5,7 +5,10 @@ import modelsFriends from '@models/modelFriends';
 import controllersChat from '@controllers/controllerChat';
 import controllerFriends from '@controllers/controllerFriends';
 import controllerPong from '@controllers/controllerPong';
+import modelPong from '@models/modelPong';
 import { mapToObject } from '@tools';
+import modelFriends from '@models/modelFriends';
+import modelUser from '@models/modelUser';
 
 let state: State = {
 	user: new Map<number, User>(),
@@ -28,8 +31,31 @@ export const getSocketByUserId = (userId: number): WebSocket | null => {
 	return null;
 }
 
+export const checkInvitePong = async (ws: WebSocket, user: User): Promise<void> => {
+	const result = await modelPong.checkUserIsInvited(user.id);
+	if (result) {
+		if (user.id === result.friendId) {
+			const friend = await modelUser.getUserById(result.userId);
+			ws.send(JSON.stringify({
+				action: 'MultiInviteConfirm',
+				token: result.token,
+				createdAt: result.createdAt,
+				txt: ws.i18n.t('pong.invitePlayer.inviteReceived', { username: friend.username }),
+			}));
+		} else if (user.id === result.userId) {
+			const friend = await modelUser.getUserById(result.friendId);
+			ws.send(JSON.stringify({
+				action: 'MultiInvitePending',
+				token: result.token,
+				txt: ws.i18n.t('pong.invitePlayer.inviteSent', { username: friend.username }),
+			}));
+		}
+	}
+}
+
 async function chatWebSocket(ws: WebSocket, user: User): Promise<void> {
 	controllersChat.init_connexion(ws, user, state);
+	checkInvitePong(ws, user);
 	ws.on('message', (message: Buffer) => {
 		let text: request | null = null;
 		try {

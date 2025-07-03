@@ -260,7 +260,11 @@
 			"notOnline": "Le joueur {{username}} n'est pas en ligne.",
 			"cancelled": "Invitation annulée par {{username}}.",
 			"refused": "Invitation refusée par {{username}}.",
-			"invalidData": "Données invalides pour l'invitation."
+			"invalidData": "Données invalides pour l'invitation.",
+			"alreadyInvited": "Votre ami {{username}} a déjà été invité par un autre joueur.",
+			"inviteSent": "Invitation envoyée à {{username}} pour jouer à Pong",
+			"inviteReceived": "{{username}} vous a invité à jouer à Pong",
+			"tooFrequent": "Vous avez déjà envoyé une invitation à {{username}} récemment. Veuillez attendre {{seconds}} secondes avant de réessayer."
 		}
 	}
 }

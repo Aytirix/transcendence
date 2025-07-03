@@ -3,7 +3,8 @@ import { playerStat } from "../types/playerStat";
 import { webMsg } from "../types/webMsg";
 import { createGame } from "../game/initGame";
 import { Game } from "../game/Game";
-import modelUser from "../../../models/modelFriends";
+import modelFriends from "@models/modelFriends";
+import modelPong from "@models/modelPong";
 import tools from "@tools";
 
 export async function handleMultiInvite(playerInfos: playerStat, msg: webMsg) {
@@ -26,7 +27,13 @@ export async function handleMultiInvite(playerInfos: playerStat, msg: webMsg) {
 		return;
 	}
 
-	if (Date.now() - new Date(decryptedData.datetime).getTime() > 40000) {
+	if (Date.now() - new Date(decryptedData.datetime).getTime() > 5 * 60 * 1000) {
+		playerInfos.socket.send(JSON.stringify({ type: "redirect", url: -1 }));
+		return;
+	}
+
+	const isDbValid = await modelPong.getTokenInvite(decryptedData.userId, decryptedData.friendId);
+	if (!isDbValid) {
 		playerInfos.socket.send(JSON.stringify({ type: "redirect", url: -1 }));
 		return;
 	}
@@ -36,7 +43,7 @@ export async function handleMultiInvite(playerInfos: playerStat, msg: webMsg) {
 		return;
 	}
 
-	if (!(await modelUser.checkIsFriend(decryptedData.userId, decryptedData.friendId))) {
+	if (!(await modelFriends.checkIsFriend(decryptedData.userId, decryptedData.friendId))) {
 		playerInfos.socket.send(JSON.stringify({ type: "redirect", url: -1 }));
 		return;
 	}
@@ -68,6 +75,7 @@ export async function handleMultiInvite(playerInfos: playerStat, msg: webMsg) {
 					const multiGame: Game = createGame(playerInfos, player2Infos);
 					playerInfos.game = multiGame;
 					player2Infos.game = multiGame;
+					modelPong.deleteTokenInvite(playerInfos.id, playerInfos.friendId);
 					multiGame.start();
 					return;
 				}

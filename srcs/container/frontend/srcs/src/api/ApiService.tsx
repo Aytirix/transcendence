@@ -6,9 +6,11 @@ class ApiService {
 	static navigate: ((url: string) => void) | null = null;
 
 	static async request(path: string, method: string, body: any = null, notif: boolean = true): Promise<any> {
+		const lang = localStorage.getItem('i18nextLng') || 'fr';
 		const headers = new Headers({
 			'Content-Type': 'application/json',
-			'Accept': 'application/json'
+			'Accept': 'application/json',
+			'accept-language': lang
 		});
 
 		const config: RequestInit = {
