@@ -82,6 +82,17 @@ CREATE TABLE IF NOT EXISTS pacman_stat (
   FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
+-- Table pong_stat
+-- is_tournament: 0 = multiplayer, 1 = tournament
+-- status: 0 = loose, 1 = win, 2 = abandon
+CREATE TABLE IF NOT EXISTS pong_stat (
+  id          INTEGER PRIMARY KEY AUTOINCREMENT,
+  user_id     INTEGER NOT NULL,
+  is_tournament INTEGER NOT NULL DEFAULT 0,
+  status         INTEGER NOT NULL,
+  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE ON UPDATE CASCADE
+);
+
 -- Table verification_codes
 CREATE TABLE IF NOT EXISTS verification_codes (
   id           INTEGER PRIMARY KEY AUTOINCREMENT,

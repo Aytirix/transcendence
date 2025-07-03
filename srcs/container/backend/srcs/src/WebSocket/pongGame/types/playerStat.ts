@@ -1,6 +1,13 @@
 import { Game } from "../game/Game";
 import { WebSocket } from "ws";
 
+export interface userStatsPong {
+	victoire: 0,
+	defaite: 0,
+	abandon: 0,
+	tournamentVictory: 0,
+}
+
 export interface playerStat {
 	game?: Game;
 	avatar?: string;

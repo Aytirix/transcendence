@@ -4,10 +4,16 @@ import tools from '@tools';
 import { randomBytes } from 'crypto';
 import { checkInvitePlayer } from '../WebSocket/pongGame/handlers/handleMultiInvite';
 import modelUser from '@models/modelUser';
+import modelPong from '@models/modelPong';
 import { getSocketByUserId } from '../WebSocket/chat/wsChat';
 import { reponse, State } from '@typesChat';
 import { WebSocketServer, WebSocket } from 'ws';
 import { User } from '@types';
+
+export const getStatForPlayer = async (request: FastifyRequest, reply: FastifyReply) => {
+	const playerStats = await modelPong.getStatisticsForUser(request.session.user.id);
+	return reply.send(playerStats);
+};
 
 export const invitePlayer = async (request: FastifyRequest, reply: FastifyReply) => {
 	const { friendId } = request.body as { friendId: number };
@@ -198,6 +204,7 @@ export const cancelInvite = async (ws: WebSocket, user: User, state: State, text
 };
 
 export default {
+	getStatForPlayer,
 	invitePlayer,
 	confirmInvite,
 	refuseInvite,

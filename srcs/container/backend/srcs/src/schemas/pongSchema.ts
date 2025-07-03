@@ -44,6 +44,29 @@ export const invitePlayer = {
 	},
 };
 
+export const getStatistics = {
+	description: "Récupérer les statistiques d'un joueur.",
+	tags: ['pong'],
+	response: {
+		200: {
+			description: 'Statistiques récupérées avec succès',
+			type: 'object',
+			properties: {
+				victoire: { type: 'number' },
+				defaite: { type: 'number' },
+				abandon: { type: 'number' },
+				tournamentVictory: { type: 'number' },
+			},
+			additionalProperties: false,
+		},
+		401: {
+			description: 'Erreur d\'authentification',
+			...messageResponse,
+		}
+	},
+};
+
 export default {
 	invitePlayer,
+	getStatistics,
 };

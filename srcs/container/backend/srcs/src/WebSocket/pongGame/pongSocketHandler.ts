@@ -15,10 +15,12 @@ import { handleFinish } from './handlers/handleFinish';
 import { handleSolo } from './handlers/handleSolo';
 import { handleTournament } from './handlers/handleTournament';
 import { handlePause } from './handlers/handlePause';
+import modelPong from '@models/modelPong';
 
 export let pingMonitoring: boolean = false;
 
 export function pongWebSocket(socket: WebSocket, user: User) {
+	modelPong.getStatisticsForUser(user.id)
 	if (handleReconnection(socket, user)){}
 	else {
 		const playerInfos: playerStat = {

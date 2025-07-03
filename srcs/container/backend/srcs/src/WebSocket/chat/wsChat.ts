@@ -1,13 +1,11 @@
 import { Friends, Group, User } from '@types';
 import { State, request, req_loadMoreMessage, req_newMessage, res_pong, req_accept_friend, req_add_friend, req_remove_friend, req_refuse_friend, req_block_user, req_createGroup, req_addUserGroup, req_leaveGroup, req_deleteGroup, req_search_user, reponse } from '@typesChat';
-import { IncomingMessage } from 'http';
-import { WebSocketServer, WebSocket } from 'ws';
+import { WebSocket } from 'ws';
 import modelsFriends from '@models/modelFriends';
 import controllersChat from '@controllers/controllerChat';
 import controllerFriends from '@controllers/controllerFriends';
 import controllerPong from '@controllers/controllerPong';
 import { mapToObject } from '@tools';
-import { writeFile } from 'fs';
 
 let state: State = {
 	user: new Map<number, User>(),

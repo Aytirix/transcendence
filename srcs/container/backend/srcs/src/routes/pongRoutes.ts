@@ -10,4 +10,10 @@ export default async (fastify: FastifyInstance) => {
 		schema: pongSchema.invitePlayer,
 		handler: controllerPong.invitePlayer,
 	});
+
+	fastify.get('/pong/getStatistics', {
+		preHandler: Middleware.isAuthenticated,
+		schema: pongSchema.getStatistics,
+		handler: controllerPong.getStatForPlayer,
+	});
 };
