@@ -233,8 +233,7 @@
 		"groupDeletedByUser": "{{username}} has deleted the group {{groupName}}"
 	},
 	"email": {
-		"verificationCode": 
-		{
+		"verificationCode": {
 			"subjectForgetPassword": "Transcendence - Reset your password",
 			"subjectCreateAccount": "Transcendence - Confirm your account creation",
 			"subjectUpdateEmail": "Transcendence - Confirm your new email address",
@@ -244,6 +243,25 @@
 			"forgetPassword": "The password reset request has been sent to your email address.",
 			"ForgetPasswordOk": "Your password has been successfully reset.",
 			"expiryTime": "minutes"
+		}
+	},
+	"pong": {
+		"invitePlayer": {
+			"friendId": "Friend ID to invite",
+			"required": "Friend ID is required.",
+			"invalid": "Friend ID must be a valid number.",
+			"success": "Invitation sent to {{username}}.",
+			"notFriend": "Cannot invite a player who is not in your friends list.",
+			"alreadyInGame": "Player {{username}} is already in game.",
+			"notFound": "No player found with ID {{friendId}}.",
+			"notOnline": "Player {{username}} is not online.",
+			"cancelled": "Invitation cancelled by {{username}}.",
+			"refused": "Invitation refused by {{username}}.",
+			"invalidData": "Invalid data for invitation.",
+			"alreadyInvited": "Player {{username}} has already been invited by another player.",
+			"inviteSent": "Invitation sent to {{username}} to play Pong",
+			"inviteReceived": "{{username}} has invited you to play Pong",
+			"tooFrequent": "You have already sent an invitation to {{username}} recently. Please wait {{seconds}} seconds before trying again."
 		}
 	}
 }

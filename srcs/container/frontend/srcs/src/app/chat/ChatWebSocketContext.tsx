@@ -365,14 +365,8 @@ export const ChatWebSocketProvider: React.FC<ChatWebSocketProviderProps> = ({ ch
 				case "MultiInviteConfirm":
 					// Utiliser la socket qui nous a envoyé ce message - si on reçoit le message, c'est qu'elle fonctionne !
 					const responseSocket = messageSocket || socket || socketRef.current;
-					console.log("MultiInviteConfirm received, available sockets:", {
-						messageSocket: messageSocket ? "available" : "null",
-						contextSocket: socket ? "available" : "null",
-						refSocket: socketRef.current ? "available" : "null",
-						selectedSocket: responseSocket ? "available" : "null"
-					});
 
-					notification.confirm(`${data.username} vous invite à jouer à Pong`)
+					notification.confirm(data.txt)
 						.then((result) => {
 							if (!responseSocket) return console.error("No valid WebSocket available to confirm invite");
 							if (result) {
@@ -383,6 +377,16 @@ export const ChatWebSocketProvider: React.FC<ChatWebSocketProviderProps> = ({ ch
 							}
 						});
 					break;
+				case "MultiInvitePending": {
+					const responseSocket = messageSocket || socket || socketRef.current;
+
+					notification.cancel(data.txt).then(() => {
+						if (!responseSocket) return console.error("No valid WebSocket available to confirm invite");
+						handleCancelInvite(data.token, responseSocket);
+					});
+
+					break;
+				}
 				case "MultiInviteRedirect":
 					if (navigateRef.current) {
 						if (window.location.pathname !== data.url) {
