@@ -247,5 +247,20 @@
 			"ForgetPasswordOk": "La reimpostazione della tua password è stata completata con successo.",
 			"expiryTime": "minuti"
 		}
+	},
+	"pong": {
+		"invitePlayer": {
+			"friendId": "ID dell'amico da invitare",
+			"required": "L'ID dell'amico è richiesto.",
+			"invalid": "L'ID dell'amico deve essere un numero valido.",
+			"success": "Invito inviato a {{username}}.",
+			"notFriend": "Non puoi invitare un giocatore che non è nella tua lista di amici.",
+			"alreadyInGame": "Il giocatore {{username}} è già in gioco.",
+			"notFound": "Nessun giocatore trovato con l'ID {{friendId}}.",
+			"notOnline": "Il giocatore {{username}} non è online.",
+			"cancelled": "Invito annullato da {{username}}.",
+			"refused": "Invito rifiutato da {{username}}.",
+			"invalidData": "Dati non validi per l'invito."
+		}
 	}
 }

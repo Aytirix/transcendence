@@ -480,6 +480,9 @@
 			"cancel": "Cancel friend request",
 			"remove": "Remove friend",
 			"add": "Add as friend"
+		},
+		"notifications": {
+			"PonginviteSent": "Invitation sent to {{username}} to play Pong"
 		}
 	}
 }

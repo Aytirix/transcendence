@@ -25,8 +25,7 @@ export const invitePlayer = {
 			description: 'Invitation réussie',
 			type: 'object',
 			properties: {
-				message: { type: 'string' },
-				redirect: { type: 'string', nullable: true, description: 'Redirection vers une page spécifique' },
+				token: { type: 'string' },
 			},
 			additionalProperties: false,
 		},
