@@ -42,7 +42,10 @@ export interface Tournament {
 	max: number;
 	current: number;
 	isFull: boolean;
-	listPlayers: string[];
+	listPlayers: {
+		name: string,
+		avatar: string,
+	}[];
 }
 
 export interface MatchDisplayData {
