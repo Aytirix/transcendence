@@ -512,44 +512,45 @@ position: relative;
   box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
 }
 
+
 .popup-player1 {
-  position: fixed;
-  width: 400px;
-  height: 400px;
-  right: 50px;
-  top: 30%;
-  overflow-y: auto;              /* ✅ scroll si dépasse */
-  overflow-x: hidden; 
-  padding: 20px;
-  background-color: #fbf9f900;
-  color: white;
-  border-radius: 20px;     /* 👈 Coins arrondis */
-  border: 1px solid rgba(238, 3, 3, 0.542);
-  box-shadow: 0 0 40px rgba(238, 3, 3, 0.5);
-  display: flex;
-  justify-content: center;
-  /* align-items: center;     centre verticalement */
-  text-align: center;
+	position: fixed;
+	width: 400px;
+	height: 400px;
+	right: 50px;
+	top: 30%;
+	overflow-y: auto;              /* ✅ scroll si dépasse */
+	overflow-x: hidden; 
+	padding: 20px;
+	background-color: #fbf9f900;
+	color: white;
+	border-radius: 20px;     /* 👈 Coins arrondis */
+	border: 1px solid rgba(238, 3, 3, 0.542);
+	box-shadow: 0 0 40px rgba(238, 3, 3, 0.5);
+	display: flex;
+	justify-content: center;
+	/* align-items: center;     centre verticalement */
+	text-align: center;
 }
 
 .popup-player2 {
-  position: fixed;
-  width: 400px;
-  height: 400px;
-  left: 50px;
-  top: 30%;
-  overflow-y: auto;              /* ✅ scroll si dépasse */
-  overflow-x: hidden; 
-  padding: 20px;
-  background-color: #fbf9f900;
-  color: white;
-  border: 1px solid rgba(238, 3, 3, 0.542);
-  border-radius: 20px;     /* 👈 Coins arrondis */
-  box-shadow: 0 0 40px rgba(238, 3, 3, 0.5);
-  display: flex;
-  justify-content: center; /* centre horizontalement */
-  /* align-items: center;     centre verticalement */
-  text-align: center;
+	position: fixed;
+	width: 400px;
+	height: 400px;
+	left: 50px;
+	top: 30%;
+	overflow-y: auto;              /* ✅ scroll si dépasse */
+	overflow-x: hidden; 
+	padding: 20px;
+	background-color: #fbf9f900;
+	color: white;
+	border: 1px solid rgba(238, 3, 3, 0.542);
+	border-radius: 20px;     /* 👈 Coins arrondis */
+	box-shadow: 0 0 40px rgba(238, 3, 3, 0.5);
+	display: flex;
+	justify-content: center; /* centre horizontalement */
+	/* align-items: center;     centre verticalement */
+	text-align: center;
 }
 
 .Player1 {
@@ -573,42 +574,42 @@ position: relative;
 }
 
 .popup_create {
-  text-align: left;
-  position: fixed;
-  border: 10px;
-  width: 400px;
-  height: 120px;
-  right: 50px;
-  top: 180px;
-  overflow-y: auto;              /* ✅ scroll si dépasse */
-  overflow-x: hidden; 
-  padding: 10px;
-  background-color: #fbf9f95e;
-  color: white;
-  border-radius: 20px;     /* 👈 Coins arrondis */
-  box-shadow: 0 0 15px rgba(0,0,0,0.5);
+	text-align: left;
+	position: fixed;
+	border: 10px;
+	width: 400px;
+	height: 120px;
+	right: 50px;
+	top: 180px;
+	overflow-y: auto;              /* ✅ scroll si dépasse */
+	overflow-x: hidden; 
+	padding: 10px;
+	background-color: #fbf9f95e;
+	color: white;
+	border-radius: 20px;     /* 👈 Coins arrondis */
+	box-shadow: 0 0 15px rgba(0,0,0,0.5);
 }
 
 .popup_join {
-  text-align: center;
-  position: fixed;
-  border: 10px;
-  width: 400px;
-  height: 120px;
-  right: 50px;
-  top: 180px;
-  overflow-y: auto;              /* ✅ scroll si dépasse */
-  overflow-x: hidden; 
-  padding: 10px;
-  background-color: #fbf9f95e;
-  color: white;
-  border-radius: 20px;     /* 👈 Coins arrondis */
-  box-shadow: 0 0 15px rgba(0,0,0,0.5);
+	text-align: center;
+	position: fixed;
+	border: 10px;
+	width: 400px;
+	height: 120px;
+	right: 50px;
+	top: 180px;
+	overflow-y: auto;              /* ✅ scroll si dépasse */
+	overflow-x: hidden; 
+	padding: 10px;
+	background-color: #fbf9f95e;
+	color: white;
+	border-radius: 20px;     /* 👈 Coins arrondis */
+	box-shadow: 0 0 15px rgba(0,0,0,0.5);
 }
 
 .button-tournament-create {
-  	position: fixed;
-  	right: 270px;
+	position: fixed;
+	right: 270px;
 	top: 695px;
 	border: none;
 	border-radius: 10px;
@@ -627,7 +628,7 @@ position: relative;
 
 .button-validation {
 	position: fixed;
-  	right: 440px;
+	right: 440px;
 	top: 235px;
 	border: none;
 	border-radius: 10px;
@@ -640,8 +641,8 @@ position: relative;
 }
 
 .button-tournament-join {
-  	position: fixed;
-  	right: 50px;
+	position: fixed;
+	right: 50px;
 	top: 695px;
 	border: none;
 	border-radius: 10px;
@@ -659,27 +660,50 @@ position: relative;
 }
 
 th, td {
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  padding: 8px;
-  text-align: center;
+	border: 1px solid rgba(255, 255, 255, 0.2);
+	padding: 8px;
+	text-align: center;
 }
 
 .td-menu {
-  max-width: 20px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;   
+	max-width: 20px;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;   
 }
 
-.td-tournament-size{
-	max-width: 20px;
+.popup-tournament {
+  position: absolute;
+  width: 900px;
+  height: 700px;
+  top: 20%;
+  bottom: 20%;
+  overflow-y: auto;              /* ✅ scroll si dépasse */
+  overflow-x: hidden; 
+  padding: 20px;
+  background-color: #fbf9f900;
+  color: white;
+  border-radius: 25px;     /* 👈 Coins arrondis */
+  box-shadow: 0 0 25px rgba(239, 239, 4, 0.695);
+}
+.td-tournament-size {
 	overflow: hidden;
 	text-overflow: ellipsis;
 	white-space: nowrap;
 	color: rgb(95, 237, 7);
 	font-weight: bold;
 	animation: textValidMenu 1.7s linear infinite;
+	width: 575px;
+	height: 130px;
+	padding: 20px;
+	background-color: #fbf9f932;
+	border-radius: 20px;
+	box-shadow: 0 0 15px rgba(183, 3, 3, 0.5);
+
+	/* 🔴 SUPPRIMER CETTE LIGNE */
+	/* position: absolute; */
 }
+
 
 .th-menu {
   background-color: rgba(255, 255, 255, 0.1);
@@ -690,10 +714,27 @@ th, td {
 
 .table-menu {
   width: 100%;
+  table-layout: fixed; /* Important pour forcer les largeurs */
   border-collapse: collapse;
   color: white;
   margin-top: 10px;
 }
+
+.table-menu-tournament {
+  width: 100%;
+  border-collapse: collapse;
+  color: white;
+  margin-top: 10px;
+}
+
+.th-joueur, .td-joueur {
+  width: 75%;
+}
+
+.th-place, .td-place {
+  width: 25%;
+}
+
 
 .input-create {
 	width: 180px;
