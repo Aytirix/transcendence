@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 
-const CONTAINER_SIZE_WIDTH = 709;
-const CONTAINER_SIZE_HEIGHT = 761;
+const CONTAINER_SIZE_WIDTH = 659;
+const CONTAINER_SIZE_HEIGHT = 711;
 
 interface UseGameLayoutProps {
 	grid: string[];

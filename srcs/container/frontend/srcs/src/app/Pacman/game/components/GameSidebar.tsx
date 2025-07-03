@@ -70,7 +70,7 @@ const GameSidebar: React.FC<GameSidebarProps> = ({ players, state }) => {
 
 	// Affichage des vies avec icônes
 	const renderLives = () => {
-		const maxLives = 4;
+		const maxLives = 3;
 		const currentLives = state.game?.pacmanLife || 0;
 		
 		return (

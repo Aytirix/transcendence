@@ -243,38 +243,7 @@ export default function WebSocketPacman() {
 			websocket?.close();
 		};
 	}, [websocket]);
-
-	// Gérer automatiquement la requête searchMap quand l'utilisateur rejoint une room
-	/* useEffect(() => {
-		if (!state.ws || state.ws.readyState !== WebSocket.OPEN) {
-			return;
-		}
-
-		// Vérifier si l'utilisateur est dans une CurrentRoom
-		const currentRoom = state.rooms?.waiting?.find(r =>
-			r.players?.some(p => p.id === state.player?.id)
-		);
-
-		// Si l'utilisateur est dans une room, envoyer searchMap et configurer un rafraîchissement
-		if (currentRoom) {
-			console.log('Utilisateur dans une room, envoi de searchMap');
-			
-			// Envoyer immédiatement
-			state.ws.send(JSON.stringify({ action: 'searchMap', text: '' }));
-
-			// Configurer un rafraîchissement toutes les 10 secondes pour les mises à jour temps réel
-			const interval = setInterval(() => {
-				if (state.ws && state.ws.readyState === WebSocket.OPEN) {
-					state.ws.send(JSON.stringify({ action: 'searchMap', text: '' }));
-				}
-			}, 5000);
-
-			return () => {
-				clearInterval(interval);
-			};
-		}
-	}, [state.ws, state.rooms?.waiting, state.player?.id]); */
-
+	
 	return (
 		<div id="PacmanStars">
 			<div className="star-background">
