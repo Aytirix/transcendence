@@ -38,7 +38,7 @@ export function useMapOptions(state: state) {
 			.filter(map => map.user_id !== state.player?.id && map.is_public && map.is_valid)
 			.map(map => ({
 				value: map.id ? String(map.id) : map.name,
-				label: `${map.name} (${map.id || 'Public'})`,
+				label: `${map.name}  `,
 				isCustom: false,
 				isValid: true,
 				userId: map.user_id,
