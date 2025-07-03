@@ -683,10 +683,13 @@ th, td {
   padding: 20px;
   background-color: #fbf9f900;
   color: white;
-  border-radius: 25px;     /* 👈 Coins arrondis */
+  border-radius: 25px;
   box-shadow: 0 0 25px rgba(239, 239, 4, 0.695);
 }
 .td-tournament-size {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
 	overflow: hidden;
 	text-overflow: ellipsis;
 	white-space: nowrap;
@@ -699,9 +702,28 @@ th, td {
 	background-color: #fbf9f932;
 	border-radius: 20px;
 	box-shadow: 0 0 15px rgba(183, 3, 3, 0.5);
-
+	margin-bottom: 10px;
 	/* 🔴 SUPPRIMER CETTE LIGNE */
 	/* position: absolute; */
+}
+
+.popup-img-tournament {
+	color: rgb(95, 237, 7);
+	top: 0%;
+	font-weight: bold;
+	animation: textValidMenu 1.7s linear infinite;
+	width: 100px;
+	height: 100px;
+	background-color: #fbf9f932;
+	border-radius: 20px;
+	box-shadow: 0 0 15px rgba(183, 3, 3, 0.5);
+}
+
+.popup-img-tournament img {
+  width: 100px;
+  height: 100px;
+  object-fit: cover;
+  border-radius: 20px;
 }
 
 
@@ -728,11 +750,7 @@ th, td {
 }
 
 .th-joueur, .td-joueur {
-  width: 75%;
-}
-
-.th-place, .td-place {
-  width: 25%;
+  width: 100%;
 }
 
 

@@ -6,7 +6,7 @@ import { useLanguage } from '../../../contexts/LanguageContext';
 
 const TournamentPage: React.FC = () => {
 	const [listTournament, setListTournament] = useState<Tournament[]>([])
-	const [listName, setListName] = useState<string []>([]);
+	const [listNameAvatar, setListNameAvatar] = useState<{ name: string, avatar: string }[]>([]);
 	const [sizeTournament, setSizeTournament] = useState<number | null>(null);
 	const [startTournament, setStartTournament] = useState(false);
 	const playerName = useRef<string | null>(null);
@@ -20,23 +20,23 @@ const TournamentPage: React.FC = () => {
 	const [nameWinner, setNameWinner] = useState<string | null>(null)
 	const [autoQualified, setAutoQualified] = useState(false);
 	const switchDisplay = useRef(false);
-	const {t} = useLanguage();
-	
+	const { t } = useLanguage();
+
 	const [idTournament, setIdTournament] = useState<number>(0);
 	const socketRef = useRef<WebSocket | null>(null);
 
 	const navigate = useNavigate();
 
 	const quit = () => {
-		socketRef.current?.send(JSON.stringify({type: "Tournament", action: "Quit"}))
+		socketRef.current?.send(JSON.stringify({ type: "Tournament", action: "Quit" }))
 		navigate('/pong/menu');
 	}
 	useEffect(() => {
 		const socket = new WebSocket(`wss://${window.location.host}/api/pong`);
 		socketRef.current = socket;
 		socket.onopen = () => {
-			socket.send(JSON.stringify({type: "Tournament", action: "infoTournament"}))
-			socket.send(JSON.stringify({type: "Tournament", action: "readyToNext"}))
+			socket.send(JSON.stringify({ type: "Tournament", action: "infoTournament" }))
+			socket.send(JSON.stringify({ type: "Tournament", action: "readyToNext" }))
 		}
 		socket.onmessage = (message: MessageEvent) => {
 			const data = JSON.parse(message.data);
@@ -45,16 +45,16 @@ const TournamentPage: React.FC = () => {
 			else if (data.action === "infoTournament") {
 				setIdTournament(data.id);
 				console.log("name action", data.name)
-				playerName.current =data.name;
+				playerName.current = data.name;
 				socketRef.current?.send(JSON.stringify({ type: "Tournament", action: "Display" }));
 			}
 			else if (data.action === "WinNextManche") {
-					setAutoQualified(true);
-					switchDisplay.current = true;
-					setTimeout(() => {
-						setAutoQualified(false);
-					}, 3000);
-					console.log("win next manche")
+				setAutoQualified(true);
+				switchDisplay.current = true;
+				setTimeout(() => {
+					setAutoQualified(false);
+				}, 3000);
+				console.log("win next manche")
 			}
 			else if (data.action === "Display") {
 				if (!switchDisplay.current) {
@@ -79,8 +79,8 @@ const TournamentPage: React.FC = () => {
 	}, []);
 
 	useEffect(() => {
-	console.log("player1:", player1);
-	console.log("player2:", player2);
+		console.log("player1:", player1);
+		console.log("player2:", player2);
 	}, [player1, player2]);
 
 	useEffect(() => {
@@ -98,7 +98,9 @@ const TournamentPage: React.FC = () => {
 		if (idTournament === null) return;
 		for (const tournament of listTournament) {
 			if (tournament.id === idTournament) {
-				setListName(tournament.listPlayers);
+				setListNameAvatar(tournament.listPlayers);
+				console.log("ListNameAvatar : ", listNameAvatar);
+				console.log("tournament ListNameAvatar : ", tournament.listPlayers);
 				setSizeTournament(tournament.max)
 			}
 		}
@@ -106,71 +108,76 @@ const TournamentPage: React.FC = () => {
 
 	function displayDuel(tab: MatchDisplayData[]) {
 		for (const tournament of tab) {
-			if (tournament.player1 == playerName.current 
+			if (tournament.player1 == playerName.current
 				|| tournament.player2 == playerName.current) {
 				setPlayer1(tournament.player1)
 				setPlayer2(tournament.player2)
 				setNbRounds(tournament.totalRound)
 				setPlayer1Avatar(ApiService.getFile(tournament.player1Avatar))
 				setPlayer2Avatar(ApiService.getFile(tournament.player2Avatar))
-				break ;
+				break;
 			}
 		}
 	}
 
-	return(
+	return (
 		<div className='page-custom'>
-			{!isWinnerTournament 
-					? 
-						( <>
-							<div>
-								{!startTournament ?
-									<h1 className='Title'>{t("pong.tournament.title")}</h1>
-									: <>
-										<h1 className='Title'>{t("pong.tournament.manches")} {rounds} / {nbRounds}</h1>
-										<h1 className='VS'>VS</h1>
-									</>
-								}
-								<button onClick={quit} className='button-accueil'>{t("pong.tournament.quitter")}</button>
-							</div>
-							{!startTournament ?
-								<div className="popup-tournament">
-									<table className="table-menu-tournament">
-										<thead>
-											<tr>
-												<th className="th-menu ">{t("pong.tournament.nameJoueurs")}</th>
-												<th className="th-menu">{t("pong.tournament.place")}</th>
-											</tr>
-										</thead>
-										<tbody>
-											{listName.map((name, i) => (
-												<tr key={i}>
-													<td className="td-tournament-size td-joueur">{name}</td>
-													<td className="td-tournament-size td-place">{i + 1}/{sizeTournament}</td>
-												</tr>
-											))}
-										</tbody>
-									</table>
+			{!isWinnerTournament
+				?
+				(<>
+					<div>
+						{!startTournament ?
+							<h1 className='Title'>{t("pong.tournament.title")}</h1>
+							: <>
+								<h1 className='Title'>{t("pong.tournament.manches")} {rounds} / {nbRounds}</h1>
+								<h1 className='VS'>VS</h1>
+							</>
+						}
+						<button onClick={quit} className='button-accueil'>{t("pong.tournament.quitter")}</button>
+					</div>
+					{!startTournament ?
+						<div className="popup-tournament">
+							{listNameAvatar.map((name, i) => (
+								<div key={i}>
+									<div className="td-tournament-size td-joueur mr-3">
+										<div className='popup-img-tournament'>
+											<img src={ApiService.getFile(name.avatar)} alt="" />
+										</div>
+										<div className='text-3xl	'>
+											{name.name}
+										</div>
+										<div className="flex flex-col items-start">
+											<div>Victoire : </div>
+											<div>Defaite : </div>
+											<div>Tournois Gagnés :</div>
+											<div>Abandons :</div>
+										</div>
+										<div className='mr-10 text-2xl'>
+											{i + 1}/{sizeTournament}
+										</div>
+									</div>
 								</div>
-								:	<>
-										{autoQualified && (
-											<h2 className='Info'>{t("pong.tournament.nextQualifierRounds")}</h2>
-										)}
-										<div className='popup-player1'>
-											<img src={player1Avatar} alt='Avatar'/>
-											<h1 className='Player1'>{player1}</h1>
-										</div>
-										<div className='popup-player2'>
-											<img src={player2Avatar} alt='Avatar'/>
-											<h1 className='Player2'>{player2}</h1>
-										</div>
-									</>
-							}
-						</>)
-					:	<>
-							<h1 className='Title'>{nameWinner}</h1>
+							))}
+						</div>
+						: <>
+							{autoQualified && (
+								<h2 className='Info'>{t("pong.tournament.nextQualifierRounds")}</h2>
+							)}
+							<div className='popup-player1'>
+								<img src={player1Avatar} alt='Avatar' />
+								<h1 className='Player1'>{player1}</h1>
+							</div>
+							<div className='popup-player2'>
+								<img src={player2Avatar} alt='Avatar' />
+								<h1 className='Player2'>{player2}</h1>
+							</div>
 						</>
-				}
+					}
+				</>)
+				: <>
+					<h1 className='Title'>{nameWinner}</h1>
+				</>
+			}
 		</div>
 	);
 };
