@@ -1,7 +1,7 @@
 import { map, vector2, TileType, CharacterType } from "@Pacman/TypesPacman";
 import Pacman from "../Character/Pacman";
 import { TILE_SIZE } from "../Engine";
-
+import { WebSocket } from 'ws'
 
 export default class PacmanMap {
 	private grid: TileType[][];
@@ -652,7 +652,7 @@ export default class PacmanMap {
 		for (let y = 0; y < height; y++) {
 			for (let x = 0; x < width; x++) {
 				const tile = grid[y][x];
-				if (tile === TileType.GhostPortalBlock || 
+				if (tile === TileType.GhostPortalBlock ||
 					tile === TileType.SpawnBlinky ||
 					tile === TileType.SpawnInky ||
 					tile === TileType.SpawnPinky ||
@@ -772,17 +772,17 @@ export default class PacmanMap {
  * Vérifie si la carte est valide selon les règles du jeu
  * @returns un objet contenant un booléen indiquant si la carte est valide et un tableau d'erreurs
  */
-	public static validateMap(grid: TileType[][]): { is_valid: boolean, errors: string[] } {
+	public static validateMap(grid: TileType[][], ws: WebSocket): { is_valid: boolean, errors: string[] } {
 		const errors: string[] = [];
 
 		// Vérification des dimensions (31 lignes de 29 caractères)
 		if (grid.length !== 31) {
-			errors.push(`La carte doit avoir 31 lignes, actuellement: ${grid.length}`);
+			errors.push(ws.i18n.t('pacman.validation.mapDimensions', { count: grid.length }));
 		}
 
 		for (let y = 0; y < grid.length; y++) {
 			if (grid[y].length !== 29) {
-				errors.push(`La ligne ${y} a ${grid[y].length} caractères au lieu de 29`);
+				errors.push(ws.i18n.t('pacman.validation.lineDimensions', { line: y, count: grid[y].length }));
 			}
 		}
 
@@ -805,7 +805,7 @@ export default class PacmanMap {
 
 				// Vérification des caractères autorisés
 				if (!validChars.has(tile)) {
-					errors.push(`Caractère non autorisé '${tile}' à la position (x:${x},y:${y})`);
+					errors.push(ws.i18n.t('pacman.validation.invalidCharacter', { tile, x, y }));
 					error_limit--;
 				}
 
@@ -824,17 +824,17 @@ export default class PacmanMap {
 
 		// Vérification du nombre minimal de pastilles
 		if (pelletCount < 25) {
-			errors.push(`Il doit y avoir au moins 25 pastilles, actuellement: ${pelletCount}`);
+			errors.push(ws.i18n.t('pacman.validation.minPellets', { count: pelletCount }));
 		}
 
 		let duplicatedSpawns = false;
 		// Vérification des spawns (un seul par entité)
 		for (const [char, count] of Object.entries(spawnCounts)) {
 			if (count === 0) {
-				errors.push(`Aucun spawn trouvé pour ${char}`);
+				errors.push(ws.i18n.t('pacman.validation.noSpawnFound', { char }));
 			} else if (count > 1) {
 				duplicatedSpawns = true;
-				errors.push(`Il doit y avoir exactement 1 spawn pour ${char}, actuellement: ${count}`);
+				errors.push(ws.i18n.t('pacman.validation.duplicateSpawn', { char, count }));
 			}
 		}
 
@@ -889,7 +889,7 @@ export default class PacmanMap {
 						}
 
 						if (!isProtected) {
-							errors.push(`Le spawn du fantôme ${tile} à (${x},${y}) doit être dans une zone accessible seulement aux fantômes`);
+							errors.push(ws.i18n.t('pacman.validation.ghostSpawnNotProtected', { tile, x, y }));
 							break;
 						}
 					}
@@ -898,10 +898,10 @@ export default class PacmanMap {
 
 			// Vérification globale : s'il y a des spawns de fantômes, il doit y avoir au moins un portail fantôme
 			if (!hasGhostPortal) {
-				const hasAnyGhostSpawn = Object.values(spawnCounts).some(count => count > 0 && 
+				const hasAnyGhostSpawn = Object.values(spawnCounts).some(count => count > 0 &&
 					['B', 'I', 'C', 'Y'].includes(Object.keys(spawnCounts)[Object.values(spawnCounts).indexOf(count)]));
 				if (hasAnyGhostSpawn) {
-					errors.push(`La zone des fantômes doit avoir une sortie avec des portails fantômes '-'`);
+					errors.push(ws.i18n.t('pacman.validation.ghostZoneNoExit'));
 				}
 			}
 		}
@@ -913,7 +913,7 @@ export default class PacmanMap {
 				const tile = grid[y][x];
 				if (tile === TileType.Pellet || tile === TileType.Bonus) {
 					if (!pacmanReachableZones[y] || !pacmanReachableZones[y][x]) {
-						errors.push(`La pastille/super-pastille à (${x},${y}) n'est pas accessible à Pacman`);
+						errors.push(ws.i18n.t('pacman.validation.pelletNotAccessible', { x, y }));
 					}
 				}
 			}
@@ -922,7 +922,7 @@ export default class PacmanMap {
 		try {
 			const testmap = new PacmanMap(grid);
 		} catch (e) {
-			errors.push(`${e instanceof Error ? e.message : 'Erreur inconnue lors de la création de la carte'}`);
+			errors.push(ws.i18n.t('pacman.validation.unknownCreationError'));
 		}
 
 		return {

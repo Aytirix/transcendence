@@ -15,11 +15,11 @@ export function sendResponse(ws: WebSocket, action: string, result: string, noti
 export const getAllMapForUser = async (ws: WebSocket, user_id: number) => {
 	const maps = await pacmanModel.getAllMapsForUser(user_id);
 	const validMaps = maps.map(map => {
-		const is_valid = PacmanMap.validateMap(map.map).is_valid;
+		const result = PacmanMap.validateMap(map.map, ws);
 		return {
 			...map,
-			is_valid: is_valid,
-			errors: is_valid ? [] : PacmanMap.validateMap(map.map).errors,
+			is_valid: result.is_valid,
+			errors: result.is_valid ? [] : result.errors,
 		};
 	});
 	sendResponse(ws, 'getAllMapsForUser', 'success', [], { maps: tools.arrayToObject(validMaps) });
@@ -50,7 +50,7 @@ export const insertOrUpdateMap = async (ws: WebSocket, user_id: number, request:
 		}
 	}
 
-	const { is_valid, errors } = PacmanMap.validateMap(map);
+	const { is_valid, errors } = PacmanMap.validateMap(map, ws);
 	const infoMap = {
 		id: id || null,
 		user_id: user_id,
@@ -210,7 +210,7 @@ export function handleLaunchRoom(ws: WebSocket, player: player): void {
 	if (player.room.state == 'active') return sendResponse(ws, 'error', 'error', [ws.i18n.t('pacman.already_active')]);
 	if (player.room.owner_id !== player.id) return sendResponse(ws, 'error', 'error', [ws.i18n.t('pacman.not_owner')]);
 	if (player.room.players.length > 5) return sendResponse(ws, 'error', 'error', [ws.i18n.t('pacman.too_many_players')]);
-	if (player.room.settings.map.id > 0 && PacmanMap.validateMap(player.room.settings.map.map).is_valid === false) {
+	if (player.room.settings.map.id > 0 && PacmanMap.validateMap(player.room.settings.map.map, ws).is_valid === false) {
 		return sendResponse(ws, 'error', 'error', [ws.i18n.t('pacman.error.map_invalid')]);
 	}
 	createTestRoom(player, player.room);
@@ -253,7 +253,7 @@ export async function setRoomMap(ws: WebSocket, player: player, json: any): Prom
 
 		if (!map.is_valid) return sendResponse(ws, 'error', 'error', [ws.i18n.t('pacman.map_invalid')]);
 		player.room.settings.map = map;
-		if (PacmanMap.validateMap(player.room.settings.map.map).is_valid === false) {
+		if (PacmanMap.validateMap(player.room.settings.map.map, ws).is_valid === false) {
 			return sendResponse(ws, 'error', 'error', [ws.i18n.t('pacman.map_invalid')]);
 		}
 	}

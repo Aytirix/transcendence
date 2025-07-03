@@ -22,7 +22,7 @@ export default class Engine {
 	private intervalId: NodeJS.Timeout | null = null;
 	public sockets: Map<number, WebSocket> = new Map();
 	private isPaused: boolean = false;
-	private PauseMessage: string = "";
+	private PauseMessage: { key: string; options?: any } | string = "";
 	private Finished: boolean = false;
 	public trainingAI: boolean = false;
 	private trainingLastPause = Date.now() - 10000; // Pour éviter de bloquer l'IA au démarrage
@@ -99,7 +99,7 @@ export default class Engine {
 
 				// Vérifier que spawns existe
 				if (!spawns || spawns.length === 0) {
-					console.error(`No spawn positions found for Pacman`);
+					console.error('ERREUR: Aucune position de spawn trouvée pour Pacman');
 					return;
 				}
 
@@ -111,7 +111,7 @@ export default class Engine {
 
 				// Vérifier que availableCharacters n'est pas vide
 				if (availableCharacters.length === 0) {
-					console.error('No available characters left, falling back to default');
+					console.error('ERREUR: Aucun personnage disponible pour les fantômes');
 					// Fallback vers un personnage par défaut
 					characterType = CharacterType.Blinky;
 				} else {
@@ -123,7 +123,7 @@ export default class Engine {
 
 				// Vérifier que spawns existe
 				if (!spawns || spawns.length === 0) {
-					console.error(`No spawn positions found for character: ${characterType}`);
+					console.error(`ERREUR: Aucune position de spawn trouvée pour le personnage ${characterType}`);
 					return;
 				}
 
@@ -133,7 +133,7 @@ export default class Engine {
 
 			// CORRECTION 6 : Double vérification avant gridToPixel
 			if (!spawns[spawnIndex]) {
-				console.error(`Spawn position is undefined for character ${characterType} at index ${spawnIndex}`);
+				console.error(`ERREUR: Position de spawn indéfinie pour ${characterType} à l'index ${spawnIndex}`);
 				return;
 			}
 
@@ -169,7 +169,7 @@ export default class Engine {
 
 			if (this.players.get(playerId)?.nameChar === CharacterType.Pacman) {
 				this.pacmanLeaved = true;
-				this.stop("Pacman left, resetting all players to spawn positions");
+				this.stop({ key: 'pacman.engine.pacmanLeftResetPositions' });
 				// Supprimer d'abord le joueur qui quitte
 				this.players.delete(playerId);
 				this.sockets.delete(playerId);
@@ -192,7 +192,7 @@ export default class Engine {
 
 				this.resetAllPlayerPositions();
 				if (this.players.size === 0 || Array.from(this.players.keys()).every(id => id < 0)) {
-					this.stop('No players left, stopping the game');
+					this.stop({ key: 'pacman.engine.noPlayersLeft' });
 					this.Finished = true;
 					return;
 				}
@@ -207,7 +207,7 @@ export default class Engine {
 				this.players.set(botPlayer.id, botGhost);
 			}
 			if (this.players.size === 0 || Array.from(this.players.keys()).every(id => id < 0)) {
-				this.stop('No players left, stopping the game');
+				this.stop({ key: 'pacman.engine.noPlayersLeft' });
 				this.Finished = true;
 				return;
 			}
@@ -316,15 +316,15 @@ export default class Engine {
 
 		try {
 			let countdown = 3;
-			this.pause(`Starting in ${countdown}`);
+			this.pause({ key: 'pacman.engine.startingIn', options: { countdown } });
 			countdown--;
 			this.broadcastState();
 			const countdownInterval = setInterval(() => {
 				if (countdown >= 1) {
-					this.PauseMessage = `Starting in ${countdown}`;
+					this.PauseMessage = { key: 'pacman.engine.startingIn', options: { countdown } };
 					this.broadcastState();
 				} else if (countdown == 0) {
-					this.PauseMessage = "GOOOOOO !";
+					this.PauseMessage = { key: 'pacman.engine.go' };
 					this.broadcastState();
 				} else {
 					clearInterval(countdownInterval);
@@ -340,8 +340,8 @@ export default class Engine {
 				countdown--;
 			}, 1000);
 		} catch (error) {
-			console.error("Error starting game loop:", error);
-			this.stop("Error starting game loop");
+			console.error('Erreur lors du démarrage de la boucle de jeu:', error);
+			this.stop({ key: 'pacman.engine.errorStartingGameLoop' });
 			this.Finished = true;
 			this.broadcastState();
 		}
@@ -350,9 +350,9 @@ export default class Engine {
 	/**
 	 * Arrête la boucle de jeu
 	 */
-	public stop(message: string = "Game stopped"): void {
+	public stop(message: { key: string; options?: any } | string = ""): void {
 		this.isPaused = true;
-		this.PauseMessage = message;
+		this.PauseMessage = message || { key: 'pacman.engine.gameStopped' };
 		this.broadcastState();
 		if (this.intervalId) {
 			clearInterval(this.intervalId);
@@ -364,7 +364,7 @@ export default class Engine {
 	 * Met le jeu en pause sans arrêter complètement la boucle
 	 * @returns true si le jeu a été mis en pause, false s'il était déjà en pause
 	 */
-	public pause(msg: string): boolean {
+	public pause(msg: { key: string; options?: any } | string): boolean {
 		this.isPaused = true;
 		this.PauseMessage = msg;
 		return true;
@@ -419,7 +419,7 @@ export default class Engine {
 			}
 			this.broadcastState();
 		} catch (error) {
-			console.error("Error in game loop:", error);
+			console.error('Erreur dans la boucle de jeu:', error);
 			this.stop('');
 			this.Finished = true;
 			this.broadcastState();
@@ -672,7 +672,7 @@ export default class Engine {
 			this.win = 'pacman';
 			const pacmanId = Array.from(this.players.values()).find(p => p instanceof Pacman)?.player.id;
 			this.reward += 50000;
-			this.pause("Game finished!\nPacman wins!");
+			this.pause({ key: 'pacman.engine.gameFinishedPacmanWins' });
 			this.addStatistics();
 			this.broadcastState();
 
@@ -721,7 +721,7 @@ export default class Engine {
 		if (pacman.life >= 1) {
 			const pacmanId = Array.from(this.players.values()).find(p => p instanceof Pacman)?.player.id;
 			this.reward += -200;
-			this.pause(`Pacman is dead!\nLives remaining ${pacman.life}`);
+			this.pause({ key: 'pacman.engine.pacmanDead', options: { lives: pacman.life } });
 			this.broadcastState();
 			// wait one second before hiding ghost
 			setTimeout(() => {
@@ -737,7 +737,7 @@ export default class Engine {
 				if (this.resetAllPlayerPositions()) {
 					this.start();
 				} else {
-					this.PauseMessage = "Error: Unable to reset player positions.";
+					this.PauseMessage = { key: 'pacman.engine.errorResetPositions' };
 					this.Finished = true;
 					this.broadcastState();
 				}
@@ -745,7 +745,7 @@ export default class Engine {
 		} else {
 			const pacmanId = Array.from(this.players.values()).find(p => p instanceof Pacman)?.player.id;
 			this.reward += -500;
-			this.pause("Game finished! Ghosts win!");
+			this.pause({ key: 'pacman.engine.gameFinishedGhostsWin' });
 			this.addStatistics();
 			this.win = 'ghosts';
 			this.broadcastState();
@@ -803,6 +803,19 @@ export default class Engine {
 	}
 
 	/**
+	 * Traduit un message selon la langue de la WebSocket donnée
+	 */
+	private translateMessage(message: { key: string; options?: any } | string, ws: WebSocket): string {
+		if (typeof message === 'string') {
+			return message;
+		}
+		if (ws && ws.i18n) {
+			return ws.i18n.t(message.key, message.options || {});
+		}
+		return message.key;
+	}
+
+	/**
 	 * Envoie l'état du jeu à tous les clients
 	 */
 	private broadcastState(): void {
@@ -843,8 +856,36 @@ export default class Engine {
 			}
 		};
 		if (!this.trainingAI) {
-			this.sockets.forEach(ws => {
+			this.sockets.forEach((ws, playerId) => {
 				if (ws && ws.readyState === WebSocket.OPEN) {
+					const translatedPauseMessage = this.translateMessage(this.PauseMessage, ws);
+					const state = {
+						action: 'updateGame',
+						data: {
+							players: Array.from(this.players.values()).map(p => ({
+								id: p.player.id,
+								username: p.player.username,
+								character: p.nameChar,
+								position: p.position,
+								positionGrid: this.pixelToGrid(p.position),
+								score: p.score,
+								direction: p.directionToString(),
+								isFrightened: p instanceof Ghost ? p.isFrightened : false,
+								returnToSpawn: p instanceof Ghost ? p.isReturningToSpawn : false
+							})),
+							numberOfPlayers: this.players.size,
+							pacmanLife: Array.from(this.players.values()).find(p => p instanceof Pacman)?.life,
+							grid: this.map.toString(),
+							tileSize: TILE_SIZE,
+							isSpectator: false,
+							win: this.win,
+							paused: { paused: this.isPaused, message: translatedPauseMessage },
+							frightenedState: {
+								active: this.isFrightened,
+								remainingTime: this.isFrightened ? Math.max(0, this.frightenedEndTime - Date.now()) : 0
+							}
+						}
+					};
 					ws.send(JSON.stringify(state));
 				}
 			});
@@ -852,8 +893,35 @@ export default class Engine {
 		this.Spectators.forEach((ws, player) => {
 			player.isSpectator = true;
 			if (ws && ws.readyState === WebSocket.OPEN) {
-				state.data.isSpectator = true;
-				ws.send(JSON.stringify(state));
+				const translatedPauseMessage = this.translateMessage(this.PauseMessage, ws);
+				const spectatorState = {
+					action: 'updateGame',
+					data: {
+						players: Array.from(this.players.values()).map(p => ({
+							id: p.player.id,
+							username: p.player.username,
+							character: p.nameChar,
+							position: p.position,
+							positionGrid: this.pixelToGrid(p.position),
+							score: p.score,
+							direction: p.directionToString(),
+							isFrightened: p instanceof Ghost ? p.isFrightened : false,
+							returnToSpawn: p instanceof Ghost ? p.isReturningToSpawn : false
+						})),
+						numberOfPlayers: this.players.size,
+						pacmanLife: Array.from(this.players.values()).find(p => p instanceof Pacman)?.life,
+						grid: this.map.toString(),
+						tileSize: TILE_SIZE,
+						isSpectator: true,
+						win: this.win,
+						paused: { paused: this.isPaused, message: translatedPauseMessage },
+						frightenedState: {
+							active: this.isFrightened,
+							remainingTime: this.isFrightened ? Math.max(0, this.frightenedEndTime - Date.now()) : 0
+						}
+					}
+				};
+				ws.send(JSON.stringify(spectatorState));
 			} else {
 				if (Date.now() - player.updateAt > 5000) {
 					this.Spectators.delete(player);
@@ -930,8 +998,9 @@ export default class Engine {
 		const pacmanPlayers = Array.from(this.players.values()).filter(p => p.nameChar === CharacterType.Pacman);
 
 		if (pacmanPlayers.length > 1) {
-			console.error(`ERREUR: ${pacmanPlayers.length} Pacman détectés! IDs: ${pacmanPlayers.map(p => p.player.id).join(', ')}`);
-			console.error(`Détails des Pacman en doublon:`, pacmanPlayers.map(p => ({
+			const ids = pacmanPlayers.map(p => p.player.id).join(', ');
+			console.error(`ERREUR: ${pacmanPlayers.length} Pacman détectés! IDs: ${ids}`);
+			console.error('Détails des Pacman en double:', pacmanPlayers.map(p => ({
 				id: p.player.id,
 				username: p.player.username,
 				position: p.position,
@@ -941,7 +1010,7 @@ export default class Engine {
 			// Garder seulement le premier Pacman et convertir les autres en fantômes
 			for (let i = 1; i < pacmanPlayers.length; i++) {
 				const extraPacman = pacmanPlayers[i];
-				console.log(`Converting extra Pacman (ID: ${extraPacman.player.id}) to Ghost`);
+				console.log(`Conversion du Pacman supplémentaire avec l'ID ${extraPacman.player.id} en fantôme`);
 
 				// Créer un nouveau fantôme pour remplacer le Pacman en trop
 				const newGhost = new Ghost(extraPacman.player, extraPacman.position, CharacterType.Blinky, this.map);
