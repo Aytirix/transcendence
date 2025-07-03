@@ -100,14 +100,14 @@ export class Game {
 				this.player2.move(this.player2.getAi().getAction());
 		}
 		if (this.checkScore(this.player1, this.player2)) {
-		if ((this.player1.getPlayerInfos().mode === "Multi" && this.player2.getPlayerInfos().mode === "Multi") ||
-			(this.player1.getPlayerInfos().mode === "MultiInvite" && this.player2.getPlayerInfos().mode === "MultiInvite")) {
-				this.player1.getPlayerInfos().socket.send(JSON.stringify({type: "EXIT"}));
-				this.player2.getPlayerInfos().socket.send(JSON.stringify({type: "EXIT"}));
-				handleFinish(this.player1.getPlayerInfos())
-				handleFinish(this.player2.getPlayerInfos())
-				this.resetDisplay("Multi");
-			}
+			if ((this.player1.getPlayerInfos().mode === "Multi" && this.player2.getPlayerInfos().mode === "Multi") ||
+				(this.player1.getPlayerInfos().mode === "MultiInvite" && this.player2.getPlayerInfos().mode === "MultiInvite")) {
+					this.player1.getPlayerInfos().socket.send(JSON.stringify({type: "FINISHED"}));
+					this.player2.getPlayerInfos().socket.send(JSON.stringify({type: "FINISHED"}));
+					handleFinish(this.player1.getPlayerInfos())
+					handleFinish(this.player2.getPlayerInfos())
+					this.resetDisplay("Multi");
+				}
 			else if (this.player1.getPlayerInfos().mode === "Tournament"
 			&& this.player2.getPlayerInfos().mode === "Tournament") {
 
