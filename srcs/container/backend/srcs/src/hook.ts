@@ -14,13 +14,15 @@ export function createi18nObject(session: any, headers: any): typeof i18n {
 	if (lang !== 'fr' && lang !== 'en' && lang !== 'it' && lang !== 'es') {
 		lang = 'fr';
 	}
-	return i18n.cloneInstance({ lng: lang, fallbackLng: 'fr' });
+	return i18n.cloneInstance({ lng: lang, fallbackLng: 'fr', initImmediate: false });
 }
 
 export async function registerHook(app: FastifyInstance) {
 
 	app.addHook('preHandler', async (request, reply) => {
-		request.i18n = createi18nObject(request.session, request.headers);
+		const lang = request.session?.user?.lang || request.headers['accept-language'] || 'fr';
+		request.i18n = i18n.cloneInstance({ lng: lang, fallbackLng: 'fr', initImmediate: false });
+		console.log(`preHandler lang '${request.i18n.language}' - '${lang}'`);
 	});
 
 	app.setErrorHandler(async (error, request, reply) => {
