@@ -5,6 +5,7 @@ import { WebSocketServer, WebSocket } from 'ws';
 import modelsFriends from '@models/modelFriends';
 import controllersChat from '@controllers/controllerChat';
 import controllerFriends from '@controllers/controllerFriends';
+import controllerPong from '@controllers/controllerPong';
 import { mapToObject } from '@tools';
 import { writeFile } from 'fs';
 
@@ -97,6 +98,15 @@ async function chatWebSocket(ws: WebSocket, user: User): Promise<void> {
 				break;
 			case 'unblock_user':
 				controllerFriends.unBlockFriend(ws, user, state, (text as req_block_user));
+				break;
+			case 'MultiInviteConfirm':
+				controllerPong.confirmInvite(ws, user, state, (text as reponse));
+				break;
+			case 'MultiInviteRefuse':
+				controllerPong.refuseInvite(ws, user, state, (text as reponse));
+				break;
+			case 'MultiInviteCancel':
+				controllerPong.cancelInvite(ws, user, state, (text as reponse));
 				break;
 			default:
 				ws.send(JSON.stringify({ action: 'error', result: 'error', notification: [ws.i18n.t('pacman.rooms.actionNotFound')] })); // to close

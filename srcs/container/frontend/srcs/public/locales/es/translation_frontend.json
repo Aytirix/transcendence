@@ -475,6 +475,9 @@
 			"cancel": "Cancelar solicitud de amistad",
 			"remove": "Eliminar amigo",
 			"add": "Agregar como amigo"
+		},
+		"notifications": {
+			"PonginviteSent": "Invitación enviada a {{username}} para jugar a Pong"
 		}
 	}
 }

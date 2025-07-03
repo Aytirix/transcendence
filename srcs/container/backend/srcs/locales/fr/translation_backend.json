@@ -257,7 +257,10 @@
 			"notFriend": "Vous ne pouvez pas inviter un joueur qui n'est pas dans votre liste d'amis.",
 			"alreadyInGame": "Le joueur {{username}} est déjà en jeu.",
 			"notFound": "Aucun joueur trouvé avec l'ID {{friendId}}.",
-			"notOnline": "Le joueur {{username}} n'est pas en ligne."
+			"notOnline": "Le joueur {{username}} n'est pas en ligne.",
+			"cancelled": "Invitation annulée par {{username}}.",
+			"refused": "Invitation refusée par {{username}}.",
+			"invalidData": "Données invalides pour l'invitation."
 		}
 	}
 }

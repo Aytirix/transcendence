@@ -1,11 +1,12 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
+import { createRoot } from 'react-dom/client';
+import { createPortal } from 'react-dom';
 import { Zoom, toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css'; // Import des styles nécessaires
 import '../assets/styles/toast-custom.css'; // Import des styles personnalisés
 
 export function ToastPortalContainer() {
-	return ReactDOM.createPortal(
+	return createPortal(
 		<ToastContainer
 			position="bottom-right"
 			autoClose={1500}
@@ -22,6 +23,9 @@ export function ToastPortalContainer() {
 }
 
 class ToastNotification {
+	// Tracker pour les modals ouverts
+	private static openModals: Set<() => void> = new Set();
+
 	// Génère un ID unique basé sur le texte du message
 	private static generateToastId(message: string, type: string): string {
 		// Nettoie le message pour créer un ID stable
@@ -31,7 +35,7 @@ class ToastNotification {
 
 	static success(message: string, options = {}) {
 		const toastId = ToastNotification.generateToastId(message, 'success');
-		
+
 		// Vérifie si une notification avec ce contenu existe déjà
 		if (toast.isActive(toastId)) {
 			// Met à jour la notification existante et remet le timer à zéro
@@ -54,7 +58,7 @@ class ToastNotification {
 
 	static info(message: string, options = {}) {
 		const toastId = ToastNotification.generateToastId(message, 'info');
-		
+
 		if (toast.isActive(toastId)) {
 			// Met à jour la notification existante et remet le timer à zéro
 			toast.update(toastId, {
@@ -76,7 +80,7 @@ class ToastNotification {
 
 	static warn(message: string, options = {}) {
 		const toastId = ToastNotification.generateToastId(message, 'warn');
-		
+
 		if (toast.isActive(toastId)) {
 			// Met à jour la notification existante et remet le timer à zéro
 			toast.update(toastId, {
@@ -98,7 +102,7 @@ class ToastNotification {
 
 	static error(message: string, options = {}) {
 		const toastId = ToastNotification.generateToastId(message, 'error');
-		
+
 		if (toast.isActive(toastId)) {
 			// Met à jour la notification existante et remet le timer à zéro
 			toast.update(toastId, {
@@ -145,55 +149,268 @@ class ToastNotification {
 
 	static confirm(
 		message: string,
-		options = {}
+		_options = {}
 	): Promise<boolean> {
 		return new Promise((resolve) => {
-			const toastId = toast(
-				<div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-					{ToastNotification.formatMessage(message)}
-					<div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end' }}>
+			const handleAccept = () => {
+				closeModal();
+				resolve(true);
+			};
+
+			const handleRefuse = () => {
+				closeModal();
+				resolve(false);
+			};
+
+			// Créer le contenu du modal
+			const content = (
+				<div style={{
+					backgroundColor: 'white',
+					padding: '40px',
+					borderRadius: '12px',
+					boxShadow: '0 20px 60px rgba(0, 0, 0, 0.3)',
+					maxWidth: '500px',
+					width: '90%',
+					margin: '20px',
+					textAlign: 'center'
+				}}>
+					<div style={{
+						fontSize: '18px',
+						marginBottom: '30px',
+						color: '#333',
+						lineHeight: '1.5'
+					}}>
+						{ToastNotification.formatMessage(message)}
+					</div>
+					<div style={{
+						display: 'flex',
+						gap: '15px',
+						justifyContent: 'center',
+						flexWrap: 'wrap'
+					}}>
 						<button
-							onClick={() => {
-								resolve(true);
-								toast.dismiss(toastId);
-							}}
+							onClick={handleAccept}
 							style={{
-								padding: '5px 15px',
+								padding: '12px 30px',
 								backgroundColor: '#4CAF50',
 								color: 'white',
 								border: 'none',
-								borderRadius: '4px',
-								cursor: 'pointer'
+								borderRadius: '8px',
+								cursor: 'pointer',
+								fontSize: '16px',
+								fontWeight: '600',
+								minWidth: '120px',
+								transition: 'all 0.2s ease',
+								boxShadow: '0 2px 8px rgba(76, 175, 80, 0.3)'
+							}}
+							onMouseEnter={(e) => {
+								(e.currentTarget as HTMLButtonElement).style.backgroundColor = '#45a049';
+								(e.currentTarget as HTMLButtonElement).style.transform = 'translateY(-1px)';
+							}}
+							onMouseLeave={(e) => {
+								(e.currentTarget as HTMLButtonElement).style.backgroundColor = '#4CAF50';
+								(e.currentTarget as HTMLButtonElement).style.transform = 'translateY(0)';
 							}}
 						>
 							Accepter
 						</button>
 						<button
-							onClick={() => {
-								resolve(false);
-								toast.dismiss(toastId);
-							}}
+							onClick={handleRefuse}
 							style={{
-								padding: '5px 15px',
+								padding: '12px 30px',
 								backgroundColor: '#f44336',
 								color: 'white',
 								border: 'none',
-								borderRadius: '4px',
-								cursor: 'pointer'
+								borderRadius: '8px',
+								cursor: 'pointer',
+								fontSize: '16px',
+								fontWeight: '600',
+								minWidth: '120px',
+								transition: 'all 0.2s ease',
+								boxShadow: '0 2px 8px rgba(244, 67, 54, 0.3)'
+							}}
+							onMouseEnter={(e) => {
+								(e.currentTarget as HTMLButtonElement).style.backgroundColor = '#da190b';
+								(e.currentTarget as HTMLButtonElement).style.transform = 'translateY(-1px)';
+							}}
+							onMouseLeave={(e) => {
+								(e.currentTarget as HTMLButtonElement).style.backgroundColor = '#f44336';
+								(e.currentTarget as HTMLButtonElement).style.transform = 'translateY(0)';
 							}}
 						>
 							Refuser
 						</button>
 					</div>
-				</div>,
-				{
-					autoClose: false,
-					closeOnClick: false,
-					className: 'toast-with-buttons',
-					...options
-				}
+				</div>
 			);
+
+			// Utiliser la fonction générale pour créer le modal
+			const { closeModal } = ToastNotification.createFullScreenModal(content);
 		});
+	}
+
+	static dismissAll() {
+		// Fermer tous les toasts
+		toast.dismiss();
+		
+		// Fermer tous les modals ouverts
+		ToastNotification.openModals.forEach(closeModalFn => {
+			try {
+				closeModalFn();
+			} catch (error) {
+				console.error('Error closing modal:', error);
+			}
+		});
+		
+		// Vider la liste des modals
+		ToastNotification.openModals.clear();
+	}
+
+	static cancel(
+		message: string,
+		_options = {}
+	): Promise<boolean> {
+		return new Promise((resolve) => {
+			const handleAccept = () => {
+				closeModal();
+				resolve(true);
+			};
+
+			// Créer le contenu du modal
+			const content = (
+				<div style={{
+					backgroundColor: 'white',
+					padding: '40px',
+					borderRadius: '12px',
+					boxShadow: '0 20px 60px rgba(0, 0, 0, 0.3)',
+					maxWidth: '500px',
+					width: '90%',
+					margin: '20px',
+					textAlign: 'center'
+				}}>
+					<div style={{
+						fontSize: '18px',
+						marginBottom: '30px',
+						color: '#333',
+						lineHeight: '1.5'
+					}}>
+						{ToastNotification.formatMessage(message)}
+					</div>
+					<div style={{
+						display: 'flex',
+						gap: '15px',
+						justifyContent: 'center',
+						flexWrap: 'wrap'
+					}}>
+						<button
+							onClick={handleAccept}
+							style={{
+								padding: '12px 30px',
+								backgroundColor: '#4CAF50',
+								color: 'white',
+								border: 'none',
+								borderRadius: '8px',
+								cursor: 'pointer',
+								fontSize: '16px',
+								fontWeight: '600',
+								minWidth: '120px',
+								transition: 'all 0.2s ease',
+								boxShadow: '0 2px 8px rgba(76, 175, 80, 0.3)'
+							}}
+							onMouseEnter={(e) => {
+								(e.currentTarget as HTMLButtonElement).style.backgroundColor = '#45a049';
+								(e.currentTarget as HTMLButtonElement).style.transform = 'translateY(-1px)';
+							}}
+							onMouseLeave={(e) => {
+								(e.currentTarget as HTMLButtonElement).style.backgroundColor = '#4CAF50';
+								(e.currentTarget as HTMLButtonElement).style.transform = 'translateY(0)';
+							}}
+						>
+							Annuler
+						</button>
+					</div>
+				</div>
+			);
+
+			// Utiliser la fonction générale pour créer le modal
+			const { closeModal } = ToastNotification.createFullScreenModal(content);
+		});
+	}
+
+	// Fonction générale pour créer un modal plein écran
+	private static createFullScreenModal(content: React.ReactElement): {
+		modalDiv: HTMLDivElement;
+		root: ReturnType<typeof createRoot>;
+		closeModal: () => void;
+	} {
+		// Créer le modal en plein écran
+		const modalDiv = document.createElement('div');
+		modalDiv.style.cssText = `
+			position: fixed;
+			top: 0;
+			left: 0;
+			width: 100vw;
+			height: 100vh;
+			background-color: rgba(0, 0, 0, 0.7);
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			z-index: 9999;
+			backdrop-filter: blur(5px);
+		`;
+
+		// Créer une root React pour le modal
+		const root = createRoot(modalDiv);
+
+		const closeModal = () => {
+			root.unmount();
+			document.body.removeChild(modalDiv);
+			document.body.style.overflow = ''; // Restaurer le scroll
+		};
+
+		// Bloquer le scroll de la page
+		document.body.style.overflow = 'hidden';
+
+		// Rendu du contenu dans le modal
+		root.render(content);
+
+		// Ajouter le modal au body
+		document.body.appendChild(modalDiv);
+
+		// Empêcher la fermeture en cliquant en dehors du modal
+		modalDiv.addEventListener('click', (e) => {
+			if (e.target === modalDiv) {
+				// Ne rien faire - l'utilisateur doit obligatoirement choisir
+				e.preventDefault();
+				e.stopPropagation();
+			}
+		});
+
+		// Empêcher la fermeture avec Echap
+		const handleKeyDown = (e: KeyboardEvent) => {
+			if (e.key === 'Escape') {
+				e.preventDefault();
+				e.stopPropagation();
+			}
+		};
+		document.addEventListener('keydown', handleKeyDown);
+
+		// Créer une version du closeModal qui nettoie les event listeners
+		const originalCloseModal = closeModal;
+		const enhancedCloseModal = () => {
+			document.removeEventListener('keydown', handleKeyDown);
+			ToastNotification.openModals.delete(enhancedCloseModal); // Retirer de la liste
+			originalCloseModal();
+		};
+
+		// Ajouter le modal à la liste des modals ouverts
+		ToastNotification.openModals.add(enhancedCloseModal);
+
+		return {
+			modalDiv,
+			root,
+			closeModal: enhancedCloseModal
+		};
 	}
 
 	static alert(

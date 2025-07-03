@@ -36,6 +36,7 @@ interface ChatWebSocketContextType {
 	handleBlockedFriend: (userId: number) => void;
 	handleUnBlockedFriend: (userId: number) => void;
 	getFriendshipStatus: (userId: number) => string;
+	handleCancelInvite: (token: string, ws?: WebSocket) => void;
 
 	// Navigation
 	setNavigateFunction: (navigate: (url: string) => void) => void;
@@ -70,6 +71,7 @@ export const ChatWebSocketProvider: React.FC<ChatWebSocketProviderProps> = ({ ch
 	// Refs pour éviter les re-renders constants
 	const friendsRef = useRef<Friend[]>(friends);
 	const currentUserIdRef = useRef<number | null>(currentUserId);
+	const socketRef = useRef<WebSocket | null>(null);
 
 	// Mettre à jour les refs quand les states changent
 	useEffect(() => {
@@ -103,8 +105,9 @@ export const ChatWebSocketProvider: React.FC<ChatWebSocketProviderProps> = ({ ch
 	const searchInterval = useRef<NodeJS.Timeout | null>(null);
 
 	// --- Gestion des messages WebSocket ---
-	const handleWebSocketMessage = useCallback((data: any) => {
+	const handleWebSocketMessage = useCallback((data: any, messageSocket?: WebSocket) => {
 		try {
+			socketRef.current = messageSocket || socket || socketRef.current;
 			switch (data.action) {
 				case "new_message":
 					if (data.group_id && data.result === "ok" && data.message) {
@@ -359,14 +362,39 @@ export const ChatWebSocketProvider: React.FC<ChatWebSocketProviderProps> = ({ ch
 						);
 					}
 					break;
-				case "MultiInvite":
+				case "MultiInviteConfirm":
+					// Utiliser la socket qui nous a envoyé ce message - si on reçoit le message, c'est qu'elle fonctionne !
+					const responseSocket = messageSocket || socket || socketRef.current;
+					console.log("MultiInviteConfirm received, available sockets:", {
+						messageSocket: messageSocket ? "available" : "null",
+						contextSocket: socket ? "available" : "null",
+						refSocket: socketRef.current ? "available" : "null",
+						selectedSocket: responseSocket ? "available" : "null"
+					});
+
 					notification.confirm(`${data.username} vous invite à jouer à Pong`)
 						.then((result) => {
-							if (result && navigateRef.current) {
-								navigateRef.current(data.url);
+							if (!responseSocket) return console.error("No valid WebSocket available to confirm invite");
+							if (result) {
+								handleConfirmInvite(data.token, responseSocket);
+								navigateRef.current?.(data.url);
 							} else {
+								handleRefuseInvite(data.token, responseSocket);
 							}
 						});
+					break;
+				case "MultiInviteRedirect":
+					if (navigateRef.current) {
+						if (window.location.pathname !== data.url) {
+							notification.dismissAll();
+							navigateRef.current(data.url);
+						}
+					}
+					break;
+				case "MultiInviteRefuse":
+				case "MultiInviteCancel":
+					notification.dismissAll();
+					notification.info(data.txt);
 					break;
 				default:
 					console.log("Unhandled WebSocket action:", data.action);
@@ -385,10 +413,28 @@ export const ChatWebSocketProvider: React.FC<ChatWebSocketProviderProps> = ({ ch
 		pingInterval: 30000,
 	});
 
+	// Mettre à jour la ref de la socket
+	useEffect(() => {
+		socketRef.current = socket;
+		console.log("WebSocket reference updated:", socket ? "available" : "null");
+	}, [socket]);
+
+	// Debug: Log socket state changes
+	useEffect(() => {
+		console.log("Socket state changed:", {
+			socket: socket ? "available" : "null",
+			readyState: socket?.readyState,
+			wsStatus,
+			shouldConnectWebSocket,
+			currentPathname
+		});
+	}, [socket, wsStatus, shouldConnectWebSocket, currentPathname]);
+
 	useEffect(() => {
 		if (!shouldConnectWebSocket && socket) {
 			console.log("Closing WebSocket connection as it's not needed");
 			socket.close();
+			socketRef.current = null; // Mettre à jour la ref quand on ferme la socket
 			setGroups([]);
 			setFriends([]);
 			setGroupMessages({});
@@ -553,6 +599,35 @@ export const ChatWebSocketProvider: React.FC<ChatWebSocketProviderProps> = ({ ch
 		}));
 	}, [socket]);
 
+
+	const handleConfirmInvite = useCallback((token: string, ws?: WebSocket) => {
+		const targetSocket = ws || socketRef.current;
+		if (targetSocket?.readyState !== WebSocket.OPEN) return;
+
+		targetSocket.send(JSON.stringify({
+			action: "MultiInviteConfirm",
+			token: token,
+		}));
+	}, []);
+
+	const handleRefuseInvite = useCallback((token: string, ws: WebSocket) => {
+
+		ws.send(JSON.stringify({
+			action: "MultiInviteRefuse",
+			token: token,
+		}));
+	}, [socket]);
+
+	const handleCancelInvite = useCallback((token: string, ws?: WebSocket) => {
+		const targetSocket = ws || socketRef.current;
+		if (targetSocket?.readyState !== WebSocket.OPEN) return;
+
+		targetSocket.send(JSON.stringify({
+			action: "MultiInviteCancel",
+			token: token,
+		}));
+	}, []);
+
 	const getFriendshipStatus = useCallback((userId: number) => {
 		const friend = friendsRef.current.find(f => f.id === userId);
 		if (!friend) return "none";
@@ -601,7 +676,8 @@ export const ChatWebSocketProvider: React.FC<ChatWebSocketProviderProps> = ({ ch
 		handleUnBlockedFriend,
 		getFriendshipStatus,
 		setNavigateFunction,
-		setLocationFunction
+		setLocationFunction,
+		handleCancelInvite
 	}), [
 		wsStatus,
 		socket,
@@ -625,7 +701,8 @@ export const ChatWebSocketProvider: React.FC<ChatWebSocketProviderProps> = ({ ch
 		handleUnBlockedFriend,
 		getFriendshipStatus,
 		setNavigateFunction,
-		setLocationFunction
+		setLocationFunction,
+		handleCancelInvite
 	]);
 
 	return (

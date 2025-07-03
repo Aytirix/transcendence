@@ -4,6 +4,7 @@ import React from "react";
 import { useChatWebSocket } from "./ChatWebSocketContext";
 import ApiService from "../../api/ApiService";
 import { useTranslation } from 'react-i18next';
+import notification from "../components/Notifications";
 
 const FriendPage: React.FC = () => {
 	const {
@@ -18,6 +19,7 @@ const FriendPage: React.FC = () => {
 		handleRemoveFriend,
 		handleBlockedFriend,
 		handleUnBlockedFriend,
+		handleCancelInvite,
 	} = useChatWebSocket();
 	const { t } = useTranslation();
 
@@ -25,12 +27,13 @@ const FriendPage: React.FC = () => {
 
 	const filteredFriends = inputSearch.length > 0 ? (searchResults ?? []) : friends;
 
-	// const filteredFriends = friends.filter(friend =>
-	// 	friend.username.toLowerCase().includes(inputSearch.toLowerCase())
-	// );
-
-	async function testInvitePong(friendId: number) {
-		const response = await ApiService.post(`/pong/invitePlayer`, { friendId });
+	async function testInvitePong(friend: any) {
+		const response = await ApiService.post(`/pong/invitePlayer`, { friendId: friend.id });
+		if (response.ok) {
+			notification.cancel('waiting-invite', `${t('friendPage.notifications.PonginviteSent', { username: friend.username })}`).then(() => {
+				handleCancelInvite(response.token);
+			});
+		}
 		return response;
 	}
 
@@ -108,7 +111,7 @@ const FriendPage: React.FC = () => {
 				<button
 					title="Pong test Invite"
 					className="!bg-[#ffffff00] hover:scale-110 !border-none !p-1"
-					onClick={() => testInvitePong(friend.id)}
+					onClick={() => testInvitePong(friend)}
 				>
 					<img src="/images/intro/floating-pong.png" alt="Pong test Invite" className="w-7 h-7" />
 				</button>

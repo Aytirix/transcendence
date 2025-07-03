@@ -8,7 +8,7 @@ export type WebSocketStatus = 'Connecting...' | 'Connected' | 'Closed' | 'Error'
 
 export interface SafeWebSocketProps {
 	endpoint: string | null;
-	onMessage: (data: any) => void;
+	onMessage: (data: any, socket: WebSocket) => void;
 	onStatusChange?: (status: WebSocketStatus) => void;
 	reconnectDelay?: number;  // en ms, ex: 3000ms = 3 secondes
 	maxReconnectAttempts?: number; // Nombre maximum de tentatives de reconnexion
@@ -65,7 +65,7 @@ export function useSafeWebSocket({ endpoint, onMessage, onStatusChange, reconnec
 						}
 					}
 				}
-				onMessage(data);
+				onMessage(data, socket);
 			} catch {
 				console.error('WS parse error :', evt.data);
 			}
