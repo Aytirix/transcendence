@@ -50,7 +50,6 @@ export const invitePlayer = async (request: FastifyRequest, reply: FastifyReply)
 	const now = Date.now();
 	if (lastInviteTime && (now - lastInviteTime) < INVITE_COOLDOWN) {
 		const remainingTime = Math.ceil((INVITE_COOLDOWN - (now - lastInviteTime)) / 1000);
-		console.log(`lang ${request.i18n.lang} - ${request.session.user.lang}`);
 		return reply.status(429).send({
 			message: request.i18n.t('pong.invitePlayer.tooFrequent', {
 				username: friend.username,

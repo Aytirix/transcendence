@@ -2,13 +2,13 @@ import { FastifyRequest, FastifyReply } from 'fastify';
 import userModel from '@models/modelUser';
 import controller2FA from '@controllers/controller2FA';
 import tools from '@tools';
-import i18n from '@i18n';
-import { IdentityPoolClient, OAuth2Client } from 'google-auth-library';
+import { OAuth2Client } from 'google-auth-library';
 import path from 'path';
 import fs from "fs";
 import { promisify } from "util";
 import { pipeline } from "stream";
-import { User } from '@types';
+import { WebSocket } from 'ws';
+import { setLangSocketsForUser } from '../WebSocket/wsInit';
 
 require('dotenv').config();
 
@@ -158,6 +158,8 @@ export const UpdateUser = async (request: FastifyRequest, reply: FastifyReply) =
 		lang: lang || user.lang,
 		avatar: avatar || user.avatar,
 	};
+
+	setLangSocketsForUser(user.id, lang);
 
 	return reply.send({
 		message: request.i18n.t('user.updateSuccess'),

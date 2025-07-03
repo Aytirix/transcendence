@@ -6,26 +6,29 @@ import modelsFriends from '@models/modelFriends';
 import modelsUser from '@models/modelUser';
 import controllerChat from './controllerChat';
 import { mapToObject } from '@tools';
+import i18n from '../i18n';
 
 export const sendToFriend = (friend: User, state: State, data: any) => {
 	const ws = state.onlineSockets.get(friend.id);
+	const i18nCopy = i18n.cloneInstance({ lng: friend.lang, fallbackLng: 'fr' });
+	i18nCopy.changeLanguage(friend.lang);
 
 	if (data.notification && Array.isArray(data.notification)) {
 		data.notification = data.notification.map((item: any) => {
 			if (typeof item === 'string') {
-				return ws.i18n.t(item);
+				return i18nCopy.t(item);
 			} else if (item.key && item.params) {
-				const translated = ws.i18n.t(item.key, item.params);
+				const translated = i18nCopy.t(item.key, item.params);
 				return translated;
 			} else if (item.key) {
-				return ws.i18n.t(item.key);
+				return i18nCopy.t(item.key);
 			}
 			return item;
 		});
 	} else if (data.notification && typeof data.notification === 'string') {
-		data.notification = ws.i18n.t(data.notification);
+		data.notification = i18nCopy.t(data.notification);
 	} else if (data.notification && data.notification.key) {
-		data.notification = ws.i18n.t(data.notification.key, data.notification.params);
+		data.notification = i18nCopy.t(data.notification.key, data.notification.params);
 	}
 	if (friend && friend.id && ws && ws.readyState === ws.OPEN) {
 		ws.send(JSON.stringify(data));
