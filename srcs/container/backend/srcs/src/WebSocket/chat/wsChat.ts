@@ -9,6 +9,7 @@ import modelPong from '@models/modelPong';
 import { mapToObject } from '@tools';
 import modelFriends from '@models/modelFriends';
 import modelUser from '@models/modelUser';
+import i18n from '../../i18n';
 
 let state: State = {
 	user: new Map<number, User>(),
@@ -33,9 +34,12 @@ export const getSocketByUserId = (userId: number): WebSocket | null => {
 
 export const checkInvitePong = async (ws: WebSocket, user: User): Promise<void> => {
 	const result = await modelPong.checkUserIsInvited(user.id);
+	// const i18nCopy = i18n.cloneInstance({ lng: friend.lang, fallbackLng: 'fr' });
+	// i18nCopy.changeLanguage(friend.lang);
 	if (result) {
 		if (user.id === result.friendId) {
 			const friend = await modelUser.getUserById(result.userId);
+			console.log('lang ', ws.i18n.lang, ' - ', ws.i18n.t('pong.invitePlayer.inviteReceived', { username: friend.username }));	
 			ws.send(JSON.stringify({
 				action: 'MultiInviteConfirm',
 				token: result.token,

@@ -22,7 +22,6 @@ export async function registerHook(app: FastifyInstance) {
 	app.addHook('preHandler', async (request, reply) => {
 		const lang = request.session?.user?.lang || request.headers['accept-language'] || 'fr';
 		request.i18n = i18n.cloneInstance({ lng: lang, fallbackLng: 'fr', initImmediate: false });
-		console.log(`preHandler lang '${request.i18n.language}' - '${lang}'`);
 	});
 
 	app.setErrorHandler(async (error, request, reply) => {

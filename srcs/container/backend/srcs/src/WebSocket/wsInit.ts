@@ -20,6 +20,7 @@ async function initWebSocket(server: FastifyInstance) {
 		console.log(`WebSocket connecté [${request.url}] [${session.user.id}] ${session.user.username}`);
 		const path = request.url;
 		ws.i18n = createi18nObject(session, request.headers);
+		ws.i18n.changeLanguage(session.user.lang || 'fr');
 
 		switch (path) {
 			case '/chat':
@@ -96,4 +97,12 @@ async function initWebSocket(server: FastifyInstance) {
 	});
 }
 
-export { initWebSocket };
+const setLangSocketsForUser = (userId: number, lang: string): void => {
+	userConnected.forEach((ws, key) => {
+		if (key.startsWith(`/chat_${userId}`) || key.startsWith(`/pong_${userId}`) || key.startsWith(`/Pacman_${userId}`)) {
+			ws.i18n.changeLanguage(lang);
+		}
+	});
+};
+
+export { initWebSocket, setLangSocketsForUser };

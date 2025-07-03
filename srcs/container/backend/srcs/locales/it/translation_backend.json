@@ -262,8 +262,8 @@
 			"refused": "Invito rifiutato da {{username}}.",
 			"invalidData": "Dati non validi per l'invito.",
 			"alreadyInvited": "Hai già invitato {{username}} a giocare.",
-			"sent": "Invito inviato a {{username}} per giocare a Pong",
-			"received": "{{username}} ti ha invitato a giocare a Pong",
+			"inviteSent": "Invito inviato a {{username}} per giocare a Pong",
+			"inviteReceived": "{{username}} ti ha invitato a giocare a Pong",
 			"tooFrequent": "Hai già inviato un invito a {{username}} di recente. Si prega di attendere {{seconds}} secondi prima di riprovare."
 		}
 	}
