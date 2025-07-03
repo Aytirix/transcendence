@@ -85,7 +85,7 @@ export const useMapEditor = ({
 					user_id: state?.player?.id || 0,
 					name: mapName,
 					map: grid.map(row => row.split('')),
-					is_public: false,
+					is_public: state?.maps?.some(map => map.name === mapName && map.is_public) || false,
 					is_valid: false,
 					errors: [],
 				});
@@ -105,7 +105,7 @@ export const useMapEditor = ({
 			user_id: state?.player?.id || 0,
 			name: mapName,
 			map: grid.map(row => row.split('')),
-			is_public: false,
+			is_public: state?.maps?.some(map => map.name === mapName && map.is_public) || false,
 			is_valid: true,
 			errors: [],
 		};
