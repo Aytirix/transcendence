@@ -138,7 +138,13 @@
 			"noPacmanSpawn": "No Pacman spawn found!",
 			"noGhostPortalBlock": "No GhostPortalBlock found in the map!",
 			"noGhostOnlyCells": "No cells found that are reachable only by ghosts!",
-			"ghostCellsNotConnected": "Cells accessible only by ghosts do not form a single connected region."
+			"ghostCellsNotConnected": "Cells accessible only by ghosts do not form a single connected region.",
+			"teleportSurroundedByWalls": "Teleporter at ({{x}},{{y}}) completely surrounded by walls",
+			"teleportNoAlignment": "Teleporter at ({{x}},{{y}}): no other teleporter found on the same {{direction}}",
+			"teleportNoOppositeDirection": "Teleporter at ({{x}},{{y}}): no teleporter found with compatible opposite direction",
+			"teleportOddNumber": "Teleporter at ({{x}},{{y}}): unassigned teleporter (odd number of teleporters on the same line/column)",
+			"row": "row",
+			"column": "column"
 		},
 		"engine": {
 			"noSpawnPositionsPacman": "No spawn positions found for Pacman",

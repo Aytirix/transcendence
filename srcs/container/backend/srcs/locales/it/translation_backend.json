@@ -138,7 +138,13 @@
 			"noPacmanSpawn": "Nessun spawn di Pacman trovato!",
 			"noGhostPortalBlock": "Nessun GhostPortalBlock trovato nella mappa!",
 			"noGhostOnlyCells": "Nessuna cella trovata che sia raggiungibile solo dai fantasmi!",
-			"ghostCellsNotConnected": "Le celle accessibili solo dai fantasmi non formano una singola regione connessa."
+			"ghostCellsNotConnected": "Le celle accessibili solo dai fantasmi non formano una singola regione connessa.",
+			"teleportSurroundedByWalls": "Teletrasporto a ({{x}},{{y}}) completamente circondato da muri",
+			"teleportNoAlignment": "Teletrasporto a ({{x}},{{y}}): nessun altro teletrasporto trovato sulla stessa {{direction}}",
+			"teleportNoOppositeDirection": "Teletrasporto a ({{x}},{{y}}): nessun teletrasporto trovato con direzione opposta compatibile",
+			"teleportOddNumber": "Teletrasporto a ({{x}},{{y}}): teletrasporto non assegnato (numero dispari di teletrasporti sulla stessa riga/colonna)",
+			"row": "riga",
+			"column": "colonna"
 		},
 		"engine": {
 			"noSpawnPositionsPacman": "Nessuna posizione di spawn trovata per Pacman",
