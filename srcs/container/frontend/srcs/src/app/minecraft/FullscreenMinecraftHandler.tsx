@@ -396,20 +396,20 @@ function decompressMinecraftData(base64: string): Promise<any> {
 export async function getMinecraftInfo() {
 	ApiService.get('/getMinecraftUser').then(async (data) => {
 		if (data.ok) {
-			if (data && data.compressed) {
-				let decompressed;
+			if (data) {
+				let decompressed: any = {};
 				try {
-					decompressed = await decompressMinecraftData(data.compressed);
+					if (data.compressed) decompressed = await decompressMinecraftData(data.compressed);
 				} catch (e) {
-					console.error('Erreur décompression Minecraft:', e);
+					console.error('Erreur de décompression Minecraft:', e);
 					return;
 				}
-				localStorage.setItem('_eaglercraftX.g', decompressed._eaglercraftX_g);
-				localStorage.setItem('_eaglercraftX.p', decompressed._eaglercraftX_p);
-				localStorage.setItem('_eaglercraftX.r', decompressed._eaglercraftX_r);
-				localStorage.setItem('lastMinecraftAccess', decompressed.lastMinecraftAccess.toString());
-				localStorage.setItem('saveResourcePacks', decompressed.saveResourcePacks ? 'true' : 'false');
-				localStorage.setItem('saveWorlds', decompressed.saveWorlds ? 'true' : 'false');
+				if (decompressed._eaglercraftX_g) localStorage.setItem('_eaglercraftX.g', decompressed._eaglercraftX_g);
+				if (decompressed._eaglercraftX_p) localStorage.setItem('_eaglercraftX.p', decompressed._eaglercraftX_p);
+				if (decompressed._eaglercraftX_r) localStorage.setItem('_eaglercraftX.r', decompressed._eaglercraftX_r);
+				if (decompressed.lastMinecraftAccess) localStorage.setItem('lastMinecraftAccess', decompressed.lastMinecraftAccess.toString());
+				if (decompressed.saveResourcePacks) localStorage.setItem('saveResourcePacks', decompressed.saveResourcePacks.toString());
+				if (decompressed.saveWorlds) localStorage.setItem('saveWorlds', decompressed.saveWorlds.toString());
 				try {
 					const restoredResourcePacks = restoreDataFromAPI(decompressed.resourcePacks || []);
 					const restoredWorlds = restoreDataFromAPI(decompressed.worlds || []);
@@ -573,7 +573,7 @@ export default function FullscreenMinecraftHandler({ children }: FullscreenMinec
 		return val === null ? true : val === 'true';
 	});
 	const [storageInfo, setStorageInfo] = useState<{ resourcePacksMB: number, worldsMB: number, totalMB: number } | null>(null);
-	
+
 	// Référence pour l'iframe
 	const iframeRef = useRef<HTMLIFrameElement>(null);
 	const settingsMenuRef = useRef<HTMLDivElement>(null);
@@ -606,7 +606,7 @@ export default function FullscreenMinecraftHandler({ children }: FullscreenMinec
 				const target = event.target as Element;
 				const isInsideMenu = settingsMenuRef.current.contains(target);
 				const isInsideButton = settingsButtonRef.current.contains(target);
-				
+
 				if (!isInsideMenu && !isInsideButton) {
 					handleCloseSettings();
 				}
@@ -655,7 +655,7 @@ export default function FullscreenMinecraftHandler({ children }: FullscreenMinec
 	useEffect(() => {
 		localStorage.setItem('saveResourcePacks', saveResourcePacks.toString());
 	}, [saveResourcePacks]);
-	
+
 	useEffect(() => {
 		localStorage.setItem('saveWorlds', saveWorlds.toString());
 	}, [saveWorlds]);
@@ -667,7 +667,7 @@ export default function FullscreenMinecraftHandler({ children }: FullscreenMinec
 
 	// Engrenage avec gestion du focus
 	const settingsButton = (
-		<div 
+		<div
 			ref={settingsButtonRef}
 			style={{
 				position: 'fixed',
@@ -705,7 +705,7 @@ export default function FullscreenMinecraftHandler({ children }: FullscreenMinec
 	);
 
 	const settingsMenu = showSettings && (
-		<div 
+		<div
 			ref={settingsMenuRef}
 			style={{
 				position: 'fixed',
@@ -758,18 +758,18 @@ export default function FullscreenMinecraftHandler({ children }: FullscreenMinec
 					</div>
 				</div>
 			)}
-			<button 
-				onClick={handleCloseSettings} 
+			<button
+				onClick={handleCloseSettings}
 				onMouseDown={(e) => e.stopPropagation()}
-				style={{ 
-					marginTop: 10, 
-					background: '#22c55e', 
-					color: '#fff', 
-					border: 'none', 
-					borderRadius: 6, 
-					padding: '6px 16px', 
-					fontWeight: 'bold', 
-					cursor: 'pointer' 
+				style={{
+					marginTop: 10,
+					background: '#22c55e',
+					color: '#fff',
+					border: 'none',
+					borderRadius: 6,
+					padding: '6px 16px',
+					fontWeight: 'bold',
+					cursor: 'pointer'
 				}}
 			>
 				{t('minecraft.closeSettings')}
@@ -780,7 +780,7 @@ export default function FullscreenMinecraftHandler({ children }: FullscreenMinec
 	// Modifier les children pour ajouter la ref à l'iframe
 	const childrenWithRef = React.Children.map(children, child => {
 		if (React.isValidElement(child) && child.type === 'iframe') {
-			return React.cloneElement(child as React.ReactElement<any>, { 
+			return React.cloneElement(child as React.ReactElement<any>, {
 				ref: iframeRef,
 				onLoad: () => {
 					// S'assurer que l'iframe a le focus au chargement
