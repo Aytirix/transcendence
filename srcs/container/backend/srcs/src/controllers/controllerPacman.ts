@@ -20,6 +20,8 @@ export const getAllMapForUser = async (ws: WebSocket, user_id: number) => {
 			...map,
 			is_valid: result.is_valid,
 			errors: result.is_valid ? [] : result.errors,
+			teleportMap: result.teleportMap,
+			unassignedTeleports: result.unassignedTeleports
 		};
 	});
 	sendResponse(ws, 'getAllMapsForUser', 'success', [], { maps: tools.arrayToObject(validMaps) });
@@ -50,7 +52,7 @@ export const insertOrUpdateMap = async (ws: WebSocket, user_id: number, request:
 		}
 	}
 
-	const { is_valid, errors } = PacmanMap.validateMap(map, ws);
+	const { is_valid, errors, teleportMap, unassignedTeleports } = PacmanMap.validateMap(map, ws);
 	const infoMap = {
 		id: id || null,
 		user_id: user_id,
@@ -60,6 +62,8 @@ export const insertOrUpdateMap = async (ws: WebSocket, user_id: number, request:
 		is_valid: is_valid,
 		errors: errors,
 		isCreated: false,
+		teleportMap: tools.arrayToObject(teleportMap),
+		unassignedTeleports: tools.arrayToObject(unassignedTeleports)
 	}
 
 	if (id && !(await pacmanModel.updateMap(infoMap))) {

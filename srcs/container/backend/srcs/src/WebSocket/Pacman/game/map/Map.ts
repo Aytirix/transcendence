@@ -11,16 +11,21 @@ export default class PacmanMap {
 	 * Map des téléporteurs : position source -> position destination
 	 */
 	private teleportMap: Map<string, vector2> = new Map();
+	public teleportMapUnique: [vector2, vector2][] = [];
+	public unassignedTeleports: vector2[] = [];
 
 	public respawnGhostPos: vector2 = { x: 0, y: 0 };
 
-	public constructor(map: TileType[][]) {
+	public constructor(map: TileType[][], check: boolean = true) {
 		this.grid = map;
 		this.width = 0;
 		for (let row of this.grid) this.width = Math.max(this.width, row.length);
 		this.height = this.grid.length;
-		this.buildTeleportMap();
-		this.findGhostRespawnPosition();
+		const result = this.buildTeleportMap();
+		this.teleportMap = result.teleportMap;
+		this.teleportMapUnique = result.teleportMapUnique;
+		this.unassignedTeleports = result.unassignedTeleports;
+		if (check) this.findGhostRespawnPosition();
 	}
 
 	/**
@@ -310,11 +315,12 @@ export default class PacmanMap {
 	/**
 	 * Construit automatiquement la map des téléporteurs (pairs horizontaux ou verticaux)
 	 */
-	private buildTeleportMap(): void {
+	private buildTeleportMap(): { teleportMap: Map<string, vector2>, teleportMapUnique: [vector2, vector2][], unassignedTeleports: vector2[] } {
 		const h = this.grid.length;
 		const w = this.grid[0].length;
 		const teleports: Array<{ pos: vector2, direction: vector2 }> = [];
 		const assignedDestinations = new Set<string>();
+		const teleportMap = new Map<string, vector2>();
 
 		// Collecte toutes les tuiles Teleport et détermine leur direction
 		for (let y = 0; y < h; y++) {
@@ -404,23 +410,49 @@ export default class PacmanMap {
 			// Associer le téléporteur source avec le téléporteur destination le plus éloigné
 			if (farthestPair) {
 				// Connexion aller (source -> destination)
-				this.teleportMap.set(srcKey, farthestPair);
+				teleportMap.set(srcKey, farthestPair);
 
 				// Connexion retour (destination -> source)
 				const destKey = `${farthestPair.x},${farthestPair.y}`;
-				this.teleportMap.set(destKey, src.pos);
+				teleportMap.set(destKey, src.pos);
 
-				// Marquer les deux téléporteurs comme assignés
 				assignedDestinations.add(srcKey);
 				assignedDestinations.add(destKey);
 			}
 		});
+
+		// Collecter les téléporteurs non assignés pour les retourner
+		const unassignedTeleports: vector2[] = [];
 		teleports.forEach(teleport => {
 			const teleportKey = `${teleport.pos.x},${teleport.pos.y}`;
-			if (!this.teleportMap.has(teleportKey)) {
-				this.setTile(teleport.pos, TileType.Wall);
+			if (!teleportMap.has(teleportKey)) {
+				unassignedTeleports.push(teleport.pos);
 			}
 		});
+
+		// dans single mode, on laisse dans teleportmap, on enleve les doublons
+		const teleportMapUnique: [vector2, vector2][] = [];
+		const processedPairs = new Set<string>();
+		
+		teleportMap.forEach((dest, key) => {
+			const src = { x: Number(key.split(',')[0]), y: Number(key.split(',')[1]) };
+			const pairKey1 = `${src.x},${src.y}->${dest.x},${dest.y}`;
+			const pairKey2 = `${dest.x},${dest.y}->${src.x},${src.y}`;
+			
+			if (!processedPairs.has(pairKey1) && !processedPairs.has(pairKey2)) {
+				teleportMapUnique.push([src, dest]);
+				processedPairs.add(pairKey1);
+				processedPairs.add(pairKey2);
+			}
+		});
+
+
+		// Retourner la map des téléporteurs et les téléporteurs non assignés
+		return {
+			teleportMap,
+			teleportMapUnique,
+			unassignedTeleports
+		}
 	}
 
 	/**
@@ -772,7 +804,7 @@ export default class PacmanMap {
  * Vérifie si la carte est valide selon les règles du jeu
  * @returns un objet contenant un booléen indiquant si la carte est valide et un tableau d'erreurs
  */
-	public static validateMap(grid: TileType[][], ws: WebSocket): { is_valid: boolean, errors: string[] } {
+	public static validateMap(grid: TileType[][], ws: WebSocket): { is_valid: boolean, errors: string[], teleportMap: [vector2, vector2][], unassignedTeleports: vector2[] } {
 		const errors: string[] = [];
 
 		// Vérification des dimensions (31 lignes de 29 caractères)
@@ -919,15 +951,13 @@ export default class PacmanMap {
 			}
 		}
 
-		try {
-			const testmap = new PacmanMap(grid);
-		} catch (e) {
-			errors.push(ws.i18n.t('pacman.validation.unknownCreationError'));
-		}
+		const testmap = new PacmanMap(grid, false);
 
 		return {
 			is_valid: errors.length === 0,
-			errors: errors
+			errors: errors,
+			teleportMap: testmap.teleportMapUnique,
+			unassignedTeleports: testmap.unassignedTeleports
 		}
 	}
 }
