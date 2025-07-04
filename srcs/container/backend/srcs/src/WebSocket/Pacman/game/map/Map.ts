@@ -13,18 +13,20 @@ export default class PacmanMap {
 	private teleportMap: Map<string, vector2> = new Map();
 	public teleportMapUnique: [vector2, vector2][] = [];
 	public unassignedTeleports: vector2[] = [];
+	public teleportErrors: Array<{ pos: vector2, reason: string }> = [];
 
 	public respawnGhostPos: vector2 = { x: 0, y: 0 };
 
-	public constructor(map: TileType[][], check: boolean = true) {
+	public constructor(map: TileType[][], check: boolean = true, ws?: WebSocket) {
 		this.grid = map;
 		this.width = 0;
 		for (let row of this.grid) this.width = Math.max(this.width, row.length);
 		this.height = this.grid.length;
-		const result = this.buildTeleportMap();
+		const result = this.buildTeleportMap(ws?.i18n);
 		this.teleportMap = result.teleportMap;
 		this.teleportMapUnique = result.teleportMapUnique;
 		this.unassignedTeleports = result.unassignedTeleports;
+		this.teleportErrors = result.teleportErrors;
 		if (check) this.findGhostRespawnPosition();
 	}
 
@@ -315,12 +317,13 @@ export default class PacmanMap {
 	/**
 	 * Construit automatiquement la map des téléporteurs (pairs horizontaux ou verticaux)
 	 */
-	private buildTeleportMap(): { teleportMap: Map<string, vector2>, teleportMapUnique: [vector2, vector2][], unassignedTeleports: vector2[] } {
+	private buildTeleportMap(i18n?: any): { teleportMap: Map<string, vector2>, teleportMapUnique: [vector2, vector2][], unassignedTeleports: vector2[], teleportErrors: Array<{ pos: vector2, reason: string }> } {
 		const h = this.grid.length;
 		const w = this.grid[0].length;
 		const teleports: Array<{ pos: vector2, direction: vector2 }> = [];
 		const assignedDestinations = new Set<string>();
 		const teleportMap = new Map<string, vector2>();
+		const teleportErrors: Array<{ pos: vector2, reason: string }> = [];
 
 		// Collecte toutes les tuiles Teleport et détermine leur direction
 		for (let y = 0; y < h; y++) {
@@ -346,6 +349,14 @@ export default class PacmanMap {
 							pos: { x, y },
 							direction: openDirection
 						});
+					} else {
+						// Téléporteur sans direction ouverte
+						if (i18n) {
+							teleportErrors.push({
+								pos: { x, y },
+								reason: i18n.t('pacman.validation.teleportSurroundedByWalls', { x, y })
+							});
+						}
 					}
 				}
 			}
@@ -421,11 +432,66 @@ export default class PacmanMap {
 			}
 		});
 
-		// Collecter les téléporteurs non assignés pour les retourner
+		// Collecter les téléporteurs non assignés avec leurs raisons
 		const unassignedTeleports: vector2[] = [];
 		teleports.forEach(teleport => {
 			const teleportKey = `${teleport.pos.x},${teleport.pos.y}`;
 			if (!teleportMap.has(teleportKey)) {
+				const isHorizontal = teleport.direction.x !== 0;
+
+				// Chercher des téléporteurs compatibles pour déterminer la raison
+				const compatibleTeleports = teleports.filter(dest => {
+					if (dest.pos.x === teleport.pos.x && dest.pos.y === teleport.pos.y) return false;
+
+					if (isHorizontal) {
+						return dest.pos.y === teleport.pos.y;
+					} else {
+						return dest.pos.x === teleport.pos.x;
+					}
+				});
+
+				if (compatibleTeleports.length === 0) {
+					if (i18n) {
+						teleportErrors.push({
+							pos: teleport.pos,
+							reason: i18n.t('pacman.validation.teleportNoAlignment', {
+								x: teleport.pos.x,
+								y: teleport.pos.y,
+								direction: `${i18n.t('pacman.validation.row')} | ${i18n.t('pacman.validation.column')}`
+							})
+						});
+					}
+				} else {
+					const compatibleWithDirection = compatibleTeleports.filter(dest => {
+						if (isHorizontal) {
+							return Math.sign(dest.direction.x) === -Math.sign(teleport.direction.x);
+						} else {
+							return Math.sign(dest.direction.y) === -Math.sign(teleport.direction.y);
+						}
+					});
+
+					if (compatibleWithDirection.length === 0) {
+						if (i18n) {
+							teleportErrors.push({
+								pos: teleport.pos,
+								reason: i18n.t('pacman.validation.teleportNoOppositeDirection', {
+									x: teleport.pos.x,
+									y: teleport.pos.y
+								})
+							});
+						}
+					} else {
+						if (i18n) {
+							teleportErrors.push({
+								pos: teleport.pos,
+								reason: i18n.t('pacman.validation.teleportOddNumber', {
+									x: teleport.pos.x,
+									y: teleport.pos.y
+								})
+							});
+						}
+					}
+				}
 				unassignedTeleports.push(teleport.pos);
 			}
 		});
@@ -433,12 +499,12 @@ export default class PacmanMap {
 		// dans single mode, on laisse dans teleportmap, on enleve les doublons
 		const teleportMapUnique: [vector2, vector2][] = [];
 		const processedPairs = new Set<string>();
-		
+
 		teleportMap.forEach((dest, key) => {
 			const src = { x: Number(key.split(',')[0]), y: Number(key.split(',')[1]) };
 			const pairKey1 = `${src.x},${src.y}->${dest.x},${dest.y}`;
 			const pairKey2 = `${dest.x},${dest.y}->${src.x},${src.y}`;
-			
+
 			if (!processedPairs.has(pairKey1) && !processedPairs.has(pairKey2)) {
 				teleportMapUnique.push([src, dest]);
 				processedPairs.add(pairKey1);
@@ -451,7 +517,8 @@ export default class PacmanMap {
 		return {
 			teleportMap,
 			teleportMapUnique,
-			unassignedTeleports
+			unassignedTeleports,
+			teleportErrors
 		}
 	}
 
@@ -951,7 +1018,12 @@ export default class PacmanMap {
 			}
 		}
 
-		const testmap = new PacmanMap(grid, false);
+		const testmap = new PacmanMap(grid, false, ws);
+
+		// Ajouter les erreurs de téléporteurs
+		for (const teleportError of testmap.teleportErrors) {
+			errors.push(teleportError.reason);
+		}
 
 		return {
 			is_valid: errors.length === 0,
