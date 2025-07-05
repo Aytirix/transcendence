@@ -2,8 +2,12 @@ import { useNavigate } from "react-router-dom";
 import { useEffect, useRef, useState } from "react";
 import { Tournament } from "./types/data";
 import { useLanguage } from "../../contexts/LanguageContext";
+import { userStatsPong } from "./types/data";
+import ApiService from "../../api/ApiService";
+
 
 const GameMenu: React.FC = () => {
+	const [statistique, setStatistique] = useState<userStatsPong | undefined>(undefined);	
 	const navigate = useNavigate();
 	const socketRef = useRef<WebSocket | null>(null);
 	const [listTournament, setListTournament] = useState<Tournament[]>([]);
@@ -15,6 +19,7 @@ const GameMenu: React.FC = () => {
 	const [showCreate, setShowCreate] = useState(false);
 	const [showJoin, setShowJoin] = useState(false);
 	const [showParametre, setShowparametre] = useState(false);
+	const [showStatistique, setShowStatistique] = useState(false);
 
 	const SameKeyboard = () => navigate('/pong/menu/SameKeyboard');
 	const Solo = () => navigate('/pong/menu/Solo');
@@ -39,6 +44,10 @@ const GameMenu: React.FC = () => {
 		setShowCreate(false);
 		navigate('/pong/menu/Tournament');
 	};
+
+	const Statistiques = () => {
+		setShowStatistique(true);
+	}
 
 	const Parametre = () => {
 		if (!showParametre) {
@@ -85,6 +94,17 @@ const GameMenu: React.FC = () => {
 		else
 			setShowJoin(true);
 	}
+
+	useEffect(() => {
+		const fetchStat = async () => {
+			const result : userStatsPong = await ApiService.get("/pong/getStatistics")
+			if (result.ok) {
+				setStatistique(result);
+			}
+		}
+		fetchStat();
+		console.log("stats", statistique);
+	}, [])
 	
 	useEffect(() => {
 		const socket = new WebSocket(`wss://${window.location.host}/api/pong`);
@@ -149,6 +169,7 @@ const GameMenu: React.FC = () => {
 				<button className="Menu-button" onClick={Solo}>{t("pong.gamemenu.solo")}</button>
 				<button className="Menu-button" onClick={MultiPlayers}>{t("pong.gamemenu.multi")}</button>
 				<button className="Menu-button" onClick={Tournament}>{t("pong.gamemenu.tournament")}</button>
+				<button className="Menu-button" onClick={Statistiques}>{t("pong.gamemenu.statistiques")}</button>
 			</div>
 			<div className="parametre">
 				<button className="style-button-accueil" onClick={Parametre}> {t("pong.gamemenu.parametres")}</button>
@@ -229,6 +250,42 @@ const GameMenu: React.FC = () => {
 					</table>
 				</div>
 			)}
+			{showStatistique && statistique && (
+				<div className="popup">
+					<h2 className="text-2xl font-bold text-center mb-4 th-menu">Statistiques</h2>
+					<table className="w-full text-lg table-fixed">
+						<tbody>
+							<tr className="border-b border-gray-300">
+								<td className="w-1/2 font-semibold">Victoires</td>
+								<td className="text-right text-green-500">{statistique.victoire} ({statistique.victoirePour100.toFixed(1)}%)</td>
+							</tr>
+							<tr className="border-b border-gray-300">
+								<td className="font-semibold">Défaites</td>
+								<td className="text-right text-red-500">{statistique.defaite} ({statistique.defaitePour100.toFixed(1)}%)</td>
+							</tr>
+							<tr className="border-b border-gray-300">
+								<td className="font-semibold">Abandons</td>
+								<td className="text-right text-yellow-500">{statistique.abandon} ({statistique.abandonPour100.toFixed(1)}%)</td>
+							</tr>
+
+							<tr className="border-t border-gray-400 mt-2">
+								<td className="pt-2 font-semibold">Tournois gagnés</td>
+								<td className="text-right pt-2">{statistique.tournamentVictory}</td>
+							</tr>
+							<tr>
+								<td className="font-semibold">Parties jouées</td>
+								<td className="text-right">{statistique.nbParti}</td>
+							</tr>
+							<tr>
+								<td className="font-semibold">5 derniers matchs</td>
+								<td className="text-right">{statistique.fiveLastMatch}</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+			)}
+
+
 
 
 			{showCreate && (

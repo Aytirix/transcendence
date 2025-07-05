@@ -11,15 +11,61 @@ async function getStatisticsForUser(userId: number): Promise<userStatsPong> {
 	const query = `SELECT id, is_tournament, status FROM pong_stat WHERE user_id = ?`;
 	const statUser: any = await executeReq(query, [userId]);
 
+	console.log("id", userId)
 	let statUserData: any = {
 		victoire: 0,
 		defaite: 0,
 		abandon: 0,
 		tournamentVictory: 0,
+		nbParti: 0,
+		victoirePour100: 0,
+		defaitePour100: 0,
+		abandonPour100: 0,
+		fiveLastMatch: "V-V-V-V-V",
 	};
-
-	return statUserData;
+	for (const data of statUser) {
+		if (data.is_tournament === 1) {
+			statUserData.tournamentVictory += 1;
+		}
+		if (data.status === 1)
+			statUserData.victoire += 1;
+		else if (data.status === 0)
+			statUserData.defaite += 1;
+		else if (data.status === 2)
+			statUserData.abandon += 1;
+		statUserData.nbParti += 1;
+	}
+	if (statUserData.nbParti > 0) {
+		statUserData.victoirePour100 = statUserData.victoire * 100 / statUserData.nbParti;
+		statUserData.defaitePour100 = statUserData.defaite * 100 / statUserData.nbParti;
+		statUserData.abandonPour100 = statUserData.abandon * 100 / statUserData.nbParti;
+	}
+	statUserData.fiveLastMatch =  getFiveLastMatch(statUser);
+	return statUserData 
 }
+
+function getFiveLastMatch(statuser: any[]): string {
+	const lastFive = statuser.slice(-5);
+	let result = "";
+
+	for (let i = 0; i < 5; i++) {
+		if (i < lastFive.length) {
+			const status = lastFive[i].status;
+			if (status === 0)
+				result += "D";
+			else if (status === 1)
+				result += "V";
+			else if (status === 2)
+				result += "A";
+		} 
+		else
+			result += "/";
+		if (i < 4)
+			result += "-";
+	}
+	return result;
+}
+
 
 async function insertStatistic(userId: number, isTournament: number, status: number): Promise<boolean> {
 	const query = `
@@ -27,6 +73,17 @@ async function insertStatistic(userId: number, isTournament: number, status: num
 		VALUES (?, ?, ?)
 	`;
 	const result: any = await executeReq(query, [userId, isTournament, status]);
+	if (!result || result.affectedRows === 0) {
+		return false;
+	}
+	return true;
+}
+
+async function deleteStatistic(userId: number): Promise<boolean> {
+	const query = `
+		DELETE FROM pong_stat WHERE user_id = ? AND is_tournament = 0 AND status = 1 LIMIT 1
+	`;
+	const result: any = await executeReq(query, [userId]);
 	if (!result || result.affectedRows === 0) {
 		return false;
 	}
@@ -130,6 +187,7 @@ async function checkUserIsInvited(friendId: number, userId?: number): Promise<{ 
 }
 
 export default {
+	deleteStatistic,
 	getStatisticsForUser,
 	insertStatistic,
 	insertTokenInvite,

@@ -3,7 +3,7 @@ import { createGame } from "../game/initGame";
 import { listTournament, sockets } from "../state/serverState";
 import { playerStat, Tournament } from "../types/playerStat";
 import { webMsg } from "../types/webMsg";
-
+import modelPong from '@models/modelPong';
 
 let idTournament: number = 0;
 
@@ -321,7 +321,7 @@ function dispatchMatch(tournament: Tournament) {
 	createMatchPairs(tournament);
 }
 
-export function isOnFinishMatch(tournament: Tournament, player1: playerStat, player2: playerStat) {
+export async function isOnFinishMatch(tournament: Tournament, player1: playerStat, player2: playerStat) {
 	if (player1 && player1.resultMatchTournament === "Win") {
 		tournament.waitingWinner.push(player1);
 		player2.inGame = false
@@ -348,6 +348,9 @@ export function isOnFinishMatch(tournament: Tournament, player1: playerStat, pla
 		if (tournament.waitingWinner.length === 1) {
 			tournament.winner = true;
 			console.log("envoi du vainqueur", tournament.waitingWinner[0].name)
+			tournament.waitingWinner[0].id
+			await modelPong.insertStatistic(tournament.waitingWinner[0].id, 1, 1)
+			await modelPong.deleteStatistic(tournament.waitingWinner[0].id)
 			setTimeout(() => {
 				messageTournament(tournament, "WinnerTournament", `${tournament.waitingWinner[0].name} remporte le tournois`);
 				listTournament.delete(tournament.idTournament);
