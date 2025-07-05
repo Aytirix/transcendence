@@ -36,6 +36,19 @@ export interface Parse {
 	}
 }
 
+export interface userStatsPong {
+	victoire: number,
+	defaite: number,
+	abandon: number,
+	tournamentVictory: number,
+	nbParti: number,
+	victoirePour100: number,
+	defaitePour100: number,
+	abandonPour100: number,
+	fiveLastMatch: string,
+	ok: boolean,
+}
+
 export interface Tournament {
 	id: number;
 	name: string;

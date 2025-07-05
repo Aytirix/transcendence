@@ -2,10 +2,15 @@ import { Game } from "../game/Game";
 import { WebSocket } from "ws";
 
 export interface userStatsPong {
-	victoire: 0,
-	defaite: 0,
-	abandon: 0,
-	tournamentVictory: 0,
+	victoire: number,
+	defaite: number,
+	abandon: number,
+	tournamentVictory: number,
+	nbParti: number,
+	victoirePour100: number,
+	defaitePour100: number,
+	abandonPour100: number,
+	fiveLastMatch: string,
 }
 
 export interface playerStat {

@@ -103,19 +103,14 @@ export class Game {
 		if (this.checkScore(this.player1, this.player2)) {
 			if ((this.player1.getPlayerInfos().mode === "Multi" && this.player2.getPlayerInfos().mode === "Multi") ||
 				(this.player1.getPlayerInfos().mode === "MultiInvite" && this.player2.getPlayerInfos().mode === "MultiInvite")) {
-					this.player1.getPlayerInfos().socket.send(JSON.stringify({type: "FINISHED"}));
-					this.player2.getPlayerInfos().socket.send(JSON.stringify({type: "FINISHED"}));
 					handleFinish(this.player1.getPlayerInfos())
 					handleFinish(this.player2.getPlayerInfos())
 					this.resetDisplay("Multi");
 				}
 			else if (this.player1.getPlayerInfos().mode === "Tournament"
 			&& this.player2.getPlayerInfos().mode === "Tournament") {
-
 				this.resetDisplay("Tournament");
 				isOnFinishMatch(this.tournament, this.player1.getPlayerInfos(), this.player2.getPlayerInfos());
-				//determiner le finish du tournois en fonction des manche
-				//gerer l actualisation la deco et surtout le exit du tournois 
 			}
 			else if (this.player1.getPlayerInfos().mode === "SameKeyboard") {
 				this.player1.getPlayerInfos().socket.send(JSON.stringify({type: "FINISHED"})); //EXIT
@@ -133,6 +128,10 @@ export class Game {
 		if ((this.player1.getPlayerInfos().mode === "Multi" && this.player2.getPlayerInfos().mode === "Multi") ||
 			(this.player1.getPlayerInfos().mode === "MultiInvite" && this.player2.getPlayerInfos().mode === "MultiInvite")) {
 				// console.log("test exit pause ")
+				if (this.player1.getPlayerInfos().resultMatch === "Loose")
+					modelPong.insertStatistic(this.player1.getPlayerInfos().id, 0, 2)
+				else
+					modelPong.insertStatistic(this.player2.getPlayerInfos().id, 0, 2)
 				this.player1.getPlayerInfos().socket.send(JSON.stringify({type: "FINISHED", value: this.player1.getPlayerInfos().resultMatch}));
 				this.player2.getPlayerInfos().socket.send(JSON.stringify({type: "FINISHED", value: this.player2.getPlayerInfos().resultMatch}));
 				handleFinish(this.player1.getPlayerInfos());
@@ -141,6 +140,10 @@ export class Game {
 			}
 			else if (this.player1.getPlayerInfos().mode === "Tournament"
 			&& this.player2.getPlayerInfos().mode === "Tournament") {
+				if (this.player1.getPlayerInfos().resultMatch === "Loose")
+					modelPong.insertStatistic(this.player1.getPlayerInfos().id, 0, 2)
+				else
+					modelPong.insertStatistic(this.player2.getPlayerInfos().id, 0, 2)
 				this.resetDisplay("Tournament");
 				isOnFinishMatch(this.tournament, this.player1.getPlayerInfos(), this.player2.getPlayerInfos());
 			}
@@ -181,7 +184,7 @@ export class Game {
 			// if (this.ball.pos_x - + this.ball.radius < this.player2.pos_x)
 				this.ball.pos_x = this.player2.pos_x + this.ball.radius;
 			// console.log(this.ball.pos_x);
-			if (this.ball.speed <= 12.5)
+			if (this.ball.speed <= 12)
 				this.ball.speed += 0.5;
 			this.player2.zoneEffect(this.ball);
 			if (this.player1.getPlayerInfos().mode === "Solo") 
@@ -204,7 +207,7 @@ export class Game {
 	serviceBall(direction: number, ball: Ball, player1: Paddle, player2: Paddle) : void {
 		ball.pos_x = this.width / 2;
 		ball.pos_y = this.height / 2;
-		ball.speed = 7 //ici enlever
+		ball.speed = 9 //ici enlever
 		player1.pos_x = 780;
 		player1.pos_y = 250;
 		player2.pos_x = 20;
@@ -242,6 +245,8 @@ export class Game {
 				player2.getPlayerInfos().socket.send(JSON.stringify({type: "FINISHED", value: player1.getPlayerInfos().resultMatchTournament}))
 			}
 			else if (player1.getPlayerInfos().mode === "Multi" || player1.getPlayerInfos().mode === "MultiInvite") {
+				this.player1.getPlayerInfos().socket.send(JSON.stringify({type: "FINISHED", value: "win"}));
+				this.player2.getPlayerInfos().socket.send(JSON.stringify({type: "FINISHED"}));
 				modelPong.insertStatistic(player1.getPlayerInfos().id, 0, 1)
 				modelPong.insertStatistic(player2.getPlayerInfos().id, 0, 0)
 			}
@@ -257,6 +262,8 @@ export class Game {
 				player1.getPlayerInfos().socket.send(JSON.stringify({type: "FINISHED", value: player2.getPlayerInfos().resultMatchTournament}))
 			}
 			else if (player1.getPlayerInfos().mode === "Multi" || player1.getPlayerInfos().mode === "MultiInvite") {
+				this.player2.getPlayerInfos().socket.send(JSON.stringify({type: "FINISHED", value: "win"}));
+				this.player1.getPlayerInfos().socket.send(JSON.stringify({type: "FINISHED"}));
 				modelPong.insertStatistic(player2.getPlayerInfos().id, 0, 1)
 				modelPong.insertStatistic(player1.getPlayerInfos().id, 0, 0)
 			}	

@@ -128,9 +128,9 @@ const SameKeyboard: React.FC = () => {
 				localStorage.removeItem("data");
 				setisWinner(true);
 				if (parsedData?.player1.score === 21)
-					setNameWinner("player1")
+					setNameWinner("Thanos")
 				else					
-					setNameWinner("player2")
+					setNameWinner("Ironman")
 				camera!.current!.position.x = 338.131;
 				camera!.current!.position.y = 136.188;
 				camera!.current!.position.z = -481.417;

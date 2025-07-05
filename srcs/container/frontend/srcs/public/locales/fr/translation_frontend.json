@@ -331,10 +331,11 @@
 			"nextaQualifierRounds": "Vous êtes qualifié d’office pour la prochaine manche !"
 		},
 		"gamemenu": {
-			"samekeyboard": "jouer à deux (même clavier)",
-			"solo": "seul",
+			"samekeyboard": "Jouer à deux (même clavier)",
+			"solo": "Seul",
 			"multi": "Contre un joueur en ligne",
 			"tournament": "Tournois en ligne",
+			"statistiques": "Statistiques",
 			"exit": "Quitter",
 			"create": "Creer",
 			"join": "Rejoindre",
