@@ -117,6 +117,7 @@
 			"pongAI": "Sviluppo AI per Pong"
 		}
 	},
+	
 	"pacman": {
 		"title": "Pacman",
 		"menu": {

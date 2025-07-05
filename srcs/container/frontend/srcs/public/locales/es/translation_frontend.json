@@ -1,7 +1,7 @@
 {
 	"hello": "Hola",
-	"loading": "Cargando...",
 	"logout": "Cerrar sesión",
+	"loading": "Cargando...",
 	"username": "Nombre de usuario",
 	"password": "Contraseña",
 	"login": {
@@ -117,6 +117,7 @@
 			"pongAI": "Desarrollo de IA para Pong"
 		}
 	},
+	
 	"pacman": {
 		"title": "Pacman",
 		"menu": {
