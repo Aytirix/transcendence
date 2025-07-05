@@ -1,6 +1,7 @@
 {
 	"hello": "Bonjour",
 	"logout": "Déconnexion",
+	"loading": "Chargement...",
 	"username": "Nom d'utilisateur",
 	"password": "Mot de passe",
 	"login": {
@@ -77,6 +78,7 @@
 		"at_42_school": "à l'école 42",
 		"developed_by": "Développé par"
 	},
+	
 	"credits": {
 		"contributions_title": "Contributions",
 		"role": {
