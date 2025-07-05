@@ -143,6 +143,18 @@ export default function WebSocketPacman() {
 				setState((prevState: state) => {
 					console.log('old maps:', prevState.maps);
 					console.log('old maps :', data.data.map);
+					
+					// Mettre à jour les données de téléporteurs s'il y en a
+					if (data.data.map.teleportMap && data.data.map.unassignedTeleports) {
+						// Convertir la structure du backend vers la structure attendue par le frontend
+						const teleportMapArray = Object.values(data.data.map.teleportMap) as Array<Array<{x: number, y: number}>>;
+						const unassignedTeleportsArray = Object.values(data.data.map.unassignedTeleports) as Array<{x: number, y: number}>;
+						setEditorTeleportData({
+							teleportMap: teleportMapArray,
+							unassignedTeleports: unassignedTeleportsArray
+						});
+					}
+					
 					if (data.data.isCreated) {
 						const newMapIndex = prevState.maps.findIndex(map => data.data.map.id === map.id);
 						if (newMapIndex !== -1) {
@@ -197,6 +209,19 @@ export default function WebSocketPacman() {
 		if (!isAutoSave && mapData.is_valid) {
 			setShowMapEditor(false);
 		}
+	};
+
+	// Gestion des téléporteurs pour l'éditeur de carte
+	const [editorTeleportData, setEditorTeleportData] = useState<{
+		teleportMap: Array<Array<{x: number, y: number}>>,
+		unassignedTeleports: Array<{x: number, y: number}>
+	}>({
+		teleportMap: [],
+		unassignedTeleports: []
+	});
+
+	const handleTeleportDataUpdate = (teleportMap: Array<Array<{x: number, y: number}>>, unassignedTeleports: Array<{x: number, y: number}>) => {
+		setEditorTeleportData({ teleportMap, unassignedTeleports });
 	};
 
 	const resetState = (status: WebSocketStatus) => {
@@ -267,6 +292,8 @@ export default function WebSocketPacman() {
 						}}
 						initialMap={initialMapData || undefined}
 						editingMap={editingMapData || undefined}
+						onTeleportDataUpdate={handleTeleportDataUpdate}
+						initialTeleportData={editorTeleportData}
 					/>
 				) : state.game.grid && state.game.grid.length > 0 ? (
 					<PacmanGame state={state} />

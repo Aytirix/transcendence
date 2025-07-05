@@ -62,7 +62,7 @@
 		"epic_games": "Epic Games",
 		"hours_of_fun": "Hours of Fun",
 		"school_spirit": "42 Spirit",
-		
+
 		"choose_your_adventure": "Choose your adventure",
 		"classic_pong_description": "The classic Pong game with a modern and multiplayer twist",
 		"classic_pacman_description": "The iconic Pac-Man with enhanced features",
@@ -81,7 +81,7 @@
 	
 	"credits": {
 		"contributions_title": "Contributions",
-		"role" : {
+		"role": {
 			"lead": "Project Lead",
 			"pongFullstack": "Pong Fullstack Developer",
 			"generalFrontend": "General Frontend Developer",
@@ -121,7 +121,7 @@
 
 	"pacman": {
 		"title": "Pacman",
-		"menu" : {
+		"menu": {
 			"home": "Home",
 			"lobby": {
 				"button": "Lobby",
@@ -156,6 +156,8 @@
 			"statistics": {
 				"button": "Statistics",
 				"title": "Player statistics",
+				"pacman": "Pacman",
+				"ghosts": "Ghosts",
 				"gamesPlayed": "Games played",
 				"gamesWon": "Games won",
 				"gamesLost": "Games lost",
@@ -193,6 +195,7 @@
 					"mapPreview": "Map preview",
 					"console": "Console",
 					"errors": "❌ Errors in map",
+					"noErrors": "✅ No errors in map",
 					"tiles": {
 						"title": "Tiles",
 						"wall": "Wall",
@@ -229,8 +232,9 @@
 		"pacman": "Pac-Man",
 		"profile": "Profile",
 		"chat": "Chat",
+		"logout": "Logout",
 		"friends": "Friends",
-		"logout": "Logout"
+		"modules": "Modules"
 	},
 	"chat": {
 		"title": "Chat",
@@ -321,7 +325,6 @@
 		"soloWorldsSize": "Solo worlds size",
 		"resourcePacksSize": "Resource packs size",
 		"totalSize": "Total size",
-		"totalSaved": "Total saved",
 		"closeSettings": "Close"
 	},
 	"pong": {

@@ -17,30 +17,6 @@ export const getSpawnColor = (char: string): string => {
   }
 };
 
-export const pairsTunnel = (
-  rowIndex: number,
-  colIndex: number,
-  grid: string[]
-): [number, number][] => {
-  const cols = grid[0]?.length || 0;
-  const rows = grid.length;
-
-  // Chercher un autre tunnel sur la même ligne
-  for (let j = 0; j < cols; j++) {
-    if (j !== colIndex && grid[rowIndex][j] === 'T') {
-      return [[rowIndex, j]]; // Priorité à la ligne
-    }
-  }
-  // Sinon, chercher un autre tunnel sur la même colonne
-  for (let i = 0; i < rows; i++) {
-    if (i !== rowIndex && grid[i][colIndex] === 'T') {
-      return [[i, colIndex]];
-    }
-  }
-  // Aucun pair trouvé
-  return [];
-};
-
 export const getCellClass = (char: string): string => {
   switch (char) {
     case '#': return 'wall';
@@ -66,6 +42,8 @@ interface EditorProps {
   getCellClass: (char: string) => string;
   handleCellClick: (rowIndex: number, colIndex: number) => void;
   handleCellEnter: (rowIndex: number, colIndex: number) => void;
+  teleportMap?: Array<Array<{x: number, y: number}>>;
+  unassignedTeleports?: Array<{x: number, y: number}>;
 }
 
 const Editor: React.FC<EditorProps> = ({
@@ -75,40 +53,83 @@ const Editor: React.FC<EditorProps> = ({
   getSpawnColor,
   getCellClass,
   handleCellClick,
-  handleCellEnter
+  handleCellEnter,
+  teleportMap = [],
+  unassignedTeleports = []
 }) => {
+  // Fonction pour déterminer le statut d'un tunnel
+  const getTunnelStatus = (rowIndex: number, colIndex: number) => {
+    const isTunnel = (char: string) => ['T'].includes(char);
+    
+    if (!isTunnel(grid[rowIndex][colIndex])) {
+      return { status: 'none', color: '', pairId: null };
+    }
+
+    // Vérifier si c'est un tunnel non assigné
+    const isUnassigned = unassignedTeleports.some(t => t.x === colIndex && t.y === rowIndex);
+    if (isUnassigned) {
+      return { status: 'unpaired', color: '#888888', pairId: null };
+    }
+
+    // Trouver l'ID de la paire dans teleportMap
+    let pairId = null;
+    teleportMap.forEach((pair, index) => {
+      if (pair.length === 2) {
+        const [pos1, pos2] = pair;
+        if ((pos1.x === colIndex && pos1.y === rowIndex) ||
+            (pos2.x === colIndex && pos2.y === rowIndex)) {
+          pairId = index;
+        }
+      }
+    });
+
+    if (pairId !== null) {
+      // Couleurs simples pour les paires
+      const colors = ['#00ff00', '#ff9900', '#ff0099', '#0099ff', '#ffff00', '#9900ff'];
+      const color = colors[pairId % colors.length];
+      return { status: 'paired', color, pairId };
+    }
+
+    return { status: 'unknown', color: '#888888', pairId: null };
+  };
+
   return (
     <div className="map-editor">
       <div className="grid-container">
         {grid.map((row, rowIndex) => (
           <div key={`row-${rowIndex}`} className="grid-row">
-            {row.split('').map((cell, colIndex) => (
-              <div
-                key={`cell-${rowIndex}-${colIndex}`}
-                className={`grid-cell ${getCellClass(cell)}`}
-                style={{
-                  width: DEFAULT_TILE_SIZE,
-                  height: DEFAULT_TILE_SIZE,
-                  ...(isSpawnPoint(cell) ? { backgroundColor: getSpawnColor(cell) } : {})
-                }}
-                onClick={() => handleCellClick(rowIndex, colIndex)}
-                onMouseEnter={() => handleCellEnter(rowIndex, colIndex)}
-              >
-                {cell === '.' && <div className="dot" />}
-                {cell === 'o' && <div className="big-dot" />}
-                {cell === '-' && <div className="door-line" />}
-                {cell === 'T' && (
-				<div className={`tunnel-content ${
-					pairsTunnel(rowIndex, colIndex, grid).length === 1
-					? 'tunnel-paired'
-					: 'tunnel-unpaired'
-				}`}>
-					T
-				</div>
-                )}
-                {isSpawnPoint(cell) && <span className="spawn-label">{cell}</span>}
-              </div>
-            ))}
+            {row.split('').map((cell, colIndex) => {
+              const tunnelStatus = getTunnelStatus(rowIndex, colIndex);
+              return (
+                <div
+                  key={`cell-${rowIndex}-${colIndex}`}
+                  className={`grid-cell ${getCellClass(cell)}`}
+                  style={{
+                    width: DEFAULT_TILE_SIZE,
+                    height: DEFAULT_TILE_SIZE,
+                    ...(isSpawnPoint(cell) ? { backgroundColor: getSpawnColor(cell) } : {}),
+                    ...(tunnelStatus.status !== 'none' ? { borderColor: tunnelStatus.color } : {})
+                  }}
+                  onClick={() => handleCellClick(rowIndex, colIndex)}
+                  onMouseEnter={() => handleCellEnter(rowIndex, colIndex)}
+                >
+                  {cell === '.' && <div className="dot" />}
+                  {cell === 'o' && <div className="big-dot" />}
+                  {cell === '-' && <div className="door-line" />}
+                  {cell === 'T' && (
+                    <div 
+                      className={`tunnel-content tunnel-${tunnelStatus.status}`}
+                      style={{ 
+                        color: tunnelStatus.color,
+                        borderColor: tunnelStatus.color,
+                        backgroundColor: tunnelStatus.status === 'paired' ? `${tunnelStatus.color}20` : 'transparent',
+                      }}
+                    >T</div>
+                  )}
+                  {isSpawnPoint(cell) && <span className="spawn-label">{cell}</span>}
+                </div>
+              );
+            })}
           </div>
         ))}
       </div>

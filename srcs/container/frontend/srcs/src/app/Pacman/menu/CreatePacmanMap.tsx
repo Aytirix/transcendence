@@ -19,15 +19,20 @@ interface CreatePacmanMapProps {
 	onCancel: () => void;
 	initialMap?: string[];
 	editingMap?: Partial<PacmanMap>;
+	onTeleportDataUpdate?: (teleportMap: Array<Array<{x: number, y: number}>>, unassignedTeleports: Array<{x: number, y: number}>) => void;
+	initialTeleportData?: {
+		teleportMap: Array<Array<{x: number, y: number}>>,
+		unassignedTeleports: Array<{x: number, y: number}>
+	};
 }
 
 
-const CreatePacmanMap: React.FC<CreatePacmanMapProps> = ({ state, onSave, onCancel, initialMap, editingMap }) => {
+const CreatePacmanMap: React.FC<CreatePacmanMapProps> = ({ state, onSave, onCancel, initialMap, editingMap, onTeleportDataUpdate, initialTeleportData }) => {
 	const DEFAULT_TILE_SIZE = 17;
 	const { t } = useLanguage();
 
 	// Utilisation des hooks modulaires
-	const mapEditor = useMapEditor({ state, initialMap, editingMap, onSave });
+	const mapEditor = useMapEditor({ state, initialMap, editingMap, onSave, onTeleportDataUpdate, initialTeleportData });
 	const mapDrawing = useMapDrawing({
 		grid: mapEditor.grid,
 		setGrid: mapEditor.setGrid,
@@ -93,6 +98,8 @@ const CreatePacmanMap: React.FC<CreatePacmanMapProps> = ({ state, onSave, onCanc
 							mapEditor.setGridModified(true);
 						}}
 						handleCellEnter={mapDrawing.handleCellEnter}
+						teleportMap={mapEditor.teleportMap}
+						unassignedTeleports={mapEditor.unassignedTeleports}
 					/>
 				</div>
 
