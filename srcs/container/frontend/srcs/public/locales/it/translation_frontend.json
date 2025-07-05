@@ -62,6 +62,7 @@
 		"epic_games": "Giochi Epici",
 		"hours_of_fun": "Ore di Divertimento",
 		"school_spirit": "Spirito 42",
+
 		"choose_your_adventure": "Scegli la tua avventura",
 		"classic_pong_description": "Il classico gioco Pong con un tocco moderno e multiplayer",
 		"classic_pacman_description": "L'iconico Pac-Man con funzionalità migliorate",
@@ -72,6 +73,7 @@
 		"high_scores": "Punteggi migliori",
 		"nostalgic": "Nostalgico",
 		"play_now": "Gioca ora",
+
 		"made_with": "Fatto con",
 		"at_42_school": "alla scuola 42",
 		"developed_by": "Sviluppato da"
@@ -152,6 +154,8 @@
 			"statistics": {
 				"button": "Statistiche",
 				"title": "Statistiche giocatore",
+				"pacman": "Pacman",
+				"ghosts": "Fantasmi",
 				"gamesPlayed": "Partite giocate",
 				"gamesWon": "Partite vinte",
 				"gamesLost": "Partite perse",
@@ -189,6 +193,7 @@
 					"mapPreview": "Anteprima mappa",
 					"console": "Console",
 					"errors": "❌ Errori nella mappa",
+					"noErrors": "✅ Nessun errore nella mappa",
 					"tiles": {
 						"title": "Tessere",
 						"wall": "Muro",
@@ -225,8 +230,9 @@
 		"pacman": "Pac-Man",
 		"profile": "Profilo",
 		"chat": "Chat",
+		"logout": "Disconnetti",
 		"friends": "Amici",
-		"logout": "Disconnetti"
+		"modules": "Módulos"
 	},
 	"chat": {
 		"title": "Chat",

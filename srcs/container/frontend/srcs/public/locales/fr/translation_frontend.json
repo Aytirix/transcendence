@@ -61,6 +61,7 @@
 		"epic_games": "Jeux Épiques",
 		"hours_of_fun": "Heures de Plaisir",
 		"school_spirit": "Esprit 42",
+
 		"choose_your_adventure": "Choisissez votre aventure",
 		"classic_pong_description": "Le classique jeu de Pong avec une touche moderne et multijoueur",
 		"classic_pacman_description": "L'iconique Pac-Man avec des fonctionnalités améliorées",
@@ -71,6 +72,7 @@
 		"high_scores": "Meilleurs scores",
 		"nostalgic": "Nostalgique",
 		"play_now": "Jouer maintenant",
+		
 		"made_with": "Fait avec",
 		"at_42_school": "à l'école 42",
 		"developed_by": "Développé par"
@@ -114,6 +116,7 @@
 			"pongAI": "Développement de l'IA pour le jeu Pong"
 		}
 	},
+	
 	"pacman": {
 		"title": "Pacman",
 		"menu": {
@@ -190,6 +193,7 @@
 					"mapPreview": "Aperçu de la carte",
 					"console": "Console",
 					"errors": "❌ Erreurs dans la carte",
+					"noErrors": "✅ Pas d'erreurs dans la carte",
 					"tiles": {
 						"title": "Tuiles",
 						"wall": "Mur",
@@ -387,6 +391,7 @@
 			"multi": "multijoueur"
 		}
 	},
+
 	"modules": {
 		"stats": {
 			"minor": "Mineur",

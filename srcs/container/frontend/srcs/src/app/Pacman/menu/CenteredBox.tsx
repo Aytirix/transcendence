@@ -36,8 +36,8 @@ export const CenteredBox: React.FC<CenteredBoxProps> = ({ state, onCreateMap, on
 				<button
 					className="home-icon-btn"
 					onClick={async () => {navigate('/');}}
-					aria-label="Retour à l'accueil"
-					title="Retour à l'accueil"
+					aria-label={t("pacman.menu.home")}
+					title={t("pacman.menu.home")}
 				>
 					<img src="/avatars/ironman.svg" alt="Iron Man home icon" />
 					<span className="home-label">{t("pacman.menu.home")}</span>

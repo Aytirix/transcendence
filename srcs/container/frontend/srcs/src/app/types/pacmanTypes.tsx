@@ -41,7 +41,6 @@ export interface state {
 		players: player[];
 		grid: string[];
 		pacmanLife: number;
-
 		tileSize: number;
 		paused: {
 			paused: boolean;

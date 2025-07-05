@@ -62,6 +62,7 @@
 		"epic_games": "Juegos Épicos",
 		"hours_of_fun": "Horas de Diversión",
 		"school_spirit": "Espíritu 42",
+
 		"choose_your_adventure": "Elige tu aventura",
 		"classic_pong_description": "El clásico juego de Pong con un toque moderno y multijugador",
 		"classic_pacman_description": "El icónico Pac-Man con funcionalidades mejoradas",
@@ -72,6 +73,7 @@
 		"high_scores": "Mejores puntuaciones",
 		"nostalgic": "Nostálgico",
 		"play_now": "Jugar ahora",
+
 		"made_with": "Hecho con",
 		"at_42_school": "en la escuela 42",
 		"developed_by": "Desarrollado por"
@@ -152,6 +154,8 @@
 			"statistics": {
 				"button": "Estadísticas",
 				"title": "Estadísticas del jugador",
+				"pacman": "Pacman",
+				"ghosts": "Fantasmas",
 				"gamesPlayed": "Partidas jugadas",
 				"gamesWon": "Partidas ganadas",
 				"gamesLost": "Partidas perdidas",
@@ -189,6 +193,7 @@
 					"mapPreview": "Vista previa del mapa",
 					"console": "Consola",
 					"errors": "❌ Errores en el mapa",
+					"noErrors": "✅ No hay errores en el mapa",
 					"tiles": {
 						"title": "Fichas",
 						"wall": "Pared",
@@ -225,8 +230,9 @@
 		"pacman": "Pac-Man",
 		"profile": "Perfil",
 		"chat": "Chat",
+		"logout": "Cerrar sesión",
 		"friends": "Amigos",
-		"logout": "Cerrar sesión"
+		"modules": "Módulos"
 	},
 	"chat": {
 		"title": "Chat",
@@ -384,8 +390,8 @@
 			"raquette": "Movimiento de la raqueta",
 			"multi": "Multijugador"
 		}
-
 	},
+
 	"modules": {
 		"stats": {
 			"minor": "Menor",

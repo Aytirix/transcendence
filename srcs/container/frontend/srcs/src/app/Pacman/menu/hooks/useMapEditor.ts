@@ -6,13 +6,20 @@ interface UseMapEditorProps {
 	initialMap?: string[];
 	editingMap?: Partial<PacmanMap>;
 	onSave?: (mapData: PacmanMap, isAutoSave: boolean) => void;
+	onTeleportDataUpdate?: (teleportMap: Array<Array<{x: number, y: number}>>, unassignedTeleports: Array<{x: number, y: number}>) => void;
+	initialTeleportData?: {
+		teleportMap: Array<Array<{x: number, y: number}>>,
+		unassignedTeleports: Array<{x: number, y: number}>
+	};
 }
 
 export const useMapEditor = ({ 
 	state, 
 	initialMap, 
 	editingMap, 
-	onSave 
+	onSave,
+	onTeleportDataUpdate,
+	initialTeleportData
 }: UseMapEditorProps) => {
 	const DEFAULT_ROWS = 31;
 	const DEFAULT_COLS = 29;
@@ -25,6 +32,14 @@ export const useMapEditor = ({
 	const [id, setId] = useState<number | undefined>(editingMap?.id);
 	const [nameModified, setNameModified] = useState<boolean>(false);
 	const [gridModified, setGridModified] = useState<boolean>(false);
+	
+	// États pour les téléporteurs
+	const [teleportMap, setTeleportMap] = useState<Array<Array<{x: number, y: number}>>>(
+		initialTeleportData?.teleportMap || []
+	);
+	const [unassignedTeleports, setUnassignedTeleports] = useState<Array<{x: number, y: number}>>(
+		initialTeleportData?.unassignedTeleports || []
+	);
 
 	// États pour l'interaction
 	const [isDrawing, setIsDrawing] = useState<boolean>(false);
@@ -58,6 +73,14 @@ export const useMapEditor = ({
 			}
 		}
 	}, [initialMap, editingMap]);
+
+	// Synchronisation des données de téléporteurs
+	useEffect(() => {
+		if (initialTeleportData) {
+			setTeleportMap(initialTeleportData.teleportMap);
+			setUnassignedTeleports(initialTeleportData.unassignedTeleports);
+		}
+	}, [initialTeleportData]);
 
 	// Fonction pour préparer les données de la carte
 	const prepareMapData = (): PacmanMap => {
@@ -110,6 +133,15 @@ export const useMapEditor = ({
 			errors: [],
 		};
 	};
+	
+	// Fonction pour mettre à jour les données des téléporteurs
+	const updateTeleportData = (newTeleportMap: Array<Array<{x: number, y: number}>>, newUnassignedTeleports: Array<{x: number, y: number}>) => {
+		setTeleportMap(newTeleportMap);
+		setUnassignedTeleports(newUnassignedTeleports);
+		if (onTeleportDataUpdate) {
+			onTeleportDataUpdate(newTeleportMap, newUnassignedTeleports);
+		}
+	};
 
 	// Auto-sauvegarde
 	useEffect(() => {
@@ -143,8 +175,13 @@ export const useMapEditor = ({
 		setTempMapName,
 		rows,
 		cols,
+		teleportMap,
+		setTeleportMap,
+		unassignedTeleports,
+		setUnassignedTeleports,
 
 		// Fonctions
 		prepareMapData,
+		updateTeleportData,
 	};
 };
