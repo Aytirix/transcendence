@@ -377,7 +377,7 @@ export function isOnFinishMatch(tournament: Tournament, player1: playerStat, pla
 			console.log("envoi du vainqueur", tournament.waitingWinner[0].name)
 			tournament.waitingWinner[0].id
 			modelPong.insertStatistic(tournament.waitingWinner[0].id, 1, 1, tournament.waitingWinner[0].mode, tournament.waitingWinner[0].id)
-			modelPong.deleteStatistic(tournament.waitingWinner[0].id)
+			// modelPong.deleteStatistic(tournament.waitingWinner[0].id)
 			setTimeout(() => {
 				console.log("ENVOI DU WINNER ", tournament.waitingWinner[0].name)
 				tournament.waitingWinner[0].socket.send(JSON.stringify({action: "WinnerTournament", value: `${tournament.waitingWinner[0].name} remporte le tournois` }))
