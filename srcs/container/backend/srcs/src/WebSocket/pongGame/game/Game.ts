@@ -244,7 +244,7 @@ export class Game {
 				modelPong.insertStatistic(player2.getPlayerInfos().id, 0, 0, this.player2.getPlayerInfos().mode, this.player1.getPlayerInfos().id)
 				player1.getPlayerInfos().resultMatchTournament = "Win";
 				player2.getPlayerInfos().resultMatchTournament = "Loose";
-				player2.getPlayerInfos().socket.send(JSON.stringify({type: "FINISHED", value: player1.getPlayerInfos().resultMatchTournament}))
+				player2.getPlayerInfos().socket.send(JSON.stringify({type: "FINISHED", value: player1.getPlayerInfos().name}))
 			}
 			else if (player1.getPlayerInfos().mode === "Multi" || player1.getPlayerInfos().mode === "MultiInvite") {
 				this.player1.getPlayerInfos().socket.send(JSON.stringify({type: "FINISHED", value: "win"}));
@@ -263,7 +263,7 @@ export class Game {
 				modelPong.insertStatistic(player1.getPlayerInfos().id, 0, 0, this.player1.getPlayerInfos().mode, this.player2.getPlayerInfos().id)
 				player2.getPlayerInfos().resultMatchTournament = "Win";
 				player1.getPlayerInfos().resultMatchTournament = "Loose";
-				player1.getPlayerInfos().socket.send(JSON.stringify({type: "FINISHED", value: player2.getPlayerInfos().resultMatchTournament}))
+				player1.getPlayerInfos().socket.send(JSON.stringify({type: "FINISHED", value: player2.getPlayerInfos().name}))
 			}
 			else if (player1.getPlayerInfos().mode === "Multi" || player1.getPlayerInfos().mode === "MultiInvite") {
 				this.player2.getPlayerInfos().socket.send(JSON.stringify({type: "FINISHED", value: "win"}));

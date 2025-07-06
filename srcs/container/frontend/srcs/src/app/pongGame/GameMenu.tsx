@@ -405,10 +405,10 @@ const GameMenu: React.FC = () => {
 										value={size}
 										onChange={(e) => setSize(e.target.value)}
 									>
-										<option value="4">4 {t("pong.gamemenu.joueurs")}</option>
-										<option value="8">8 {t("pong.gamemenu.joueurs")}</option>
-										<option value="16">16 {t("pong.gamemenu.joueurs")}</option>
-										<option value="32">32 {t("pong.gamemenu.joueurs")}</option>
+										<option value="4" style={{ color: "black" }}>4 {t("pong.gamemenu.joueurs")}</option>
+										{/* <option value="8">8 {t("pong.gamemenu.joueurs")}</option> */}
+										{/* <option value="16">16 {t("pong.gamemenu.joueurs")}</option> */}
+										{/* <option value="32">32 {t("pong.gamemenu.joueurs")}</option> */}
 									</select>
 								</td>
 							</tr>

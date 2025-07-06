@@ -81,7 +81,6 @@ export function generalUserStats(statuser: any[], statUserData: userStatsPong) {
 }
 
 export function getFiveLastMatch(statuser: any[], statUserData: userStatsPong) {
-	console.log("ordre", statuser)
 	const lastFive = statuser.slice(0, 5);
 	for (const data of lastFive) {
 		let match: MatchSummary = {
@@ -99,7 +98,6 @@ export function getFiveLastMatch(statuser: any[], statUserData: userStatsPong) {
 			match.status = "Abandon";
 		statUserData.lastFive.push(match);
 	}
-	console.log("last five:", statUserData.lastFive);
 }
 
 
