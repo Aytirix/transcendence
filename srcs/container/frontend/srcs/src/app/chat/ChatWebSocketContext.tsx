@@ -116,7 +116,7 @@ export const ChatWebSocketProvider: React.FC<ChatWebSocketProviderProps> = ({ ch
 							[data.group_id]: [...(prev[data.group_id] || []), data.message]
 						}));
 					}
-					console.log("FRIENDS", data.friends);
+					// console.log("FRIENDS", data.friends);
 					if (data.friends) {
 						setFriends(prev => [...prev, data.friends]);
 					}
@@ -127,14 +127,14 @@ export const ChatWebSocketProvider: React.FC<ChatWebSocketProviderProps> = ({ ch
 						const arr = Object.values(data.messages) as Message[];
 						arr.sort((a, b) => a.id - b.id);
 
-						// Map sender_id to username
-						for (const key in arr) {
-							const sender_id = arr[key].sender_id;
-							const username = friendsRef.current.find(f => f.id === sender_id)?.username;
-							console.log("Message mapping:", username, sender_id, arr[key].message);
-							console.log("Available friends:", friendsRef.current);
-							arr[key].sender_id = username || "moi";
-						}
+						// // Map sender_id to username
+						// for (const key in arr) {
+						// 	const sender_id = arr[key].sender_id;
+						// 	const username = friendsRef.current.find(f => f.id === sender_id)?.username;
+						// 	console.log("Message mapping:", username, sender_id, arr[key].message);
+						// 	console.log("Available friends:", friendsRef.current);
+						// 	arr[key].sender_id = username || "moi";
+						// }
 
 						setGroupMessages(prev => ({
 							...prev,

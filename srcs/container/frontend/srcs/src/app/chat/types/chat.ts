@@ -15,7 +15,7 @@ export type Group = {
   members: Member[];
   owners_id: number[];
   onlines_id: number[];
-  private: number;
+  private: boolean;
 };
 
 export type Message = {
