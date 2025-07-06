@@ -176,7 +176,7 @@ const GameTournament: React.FC = () => {
 					if (data.type === "FINISHED") {
 						localStorage.removeItem("reconnection");
 						localStorage.removeItem("data");
-						if (data.value)
+						if (data.value)			
 							nameWinner.current = data.value;
 						console.log("le joueur a perdu finished")
 						setisWinner(true);

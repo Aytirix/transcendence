@@ -179,6 +179,73 @@
   animation: textGlow 1.7s linear infinite;
 }
 
+.WinnerPage {
+  height: 100vh;
+  background-image: url("/images/WinnerPage.jpg");
+  background-size: cover;
+  background-position: center center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  flex-direction: column;
+  width: 100vw;
+  top: 0;
+  left: 0;
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.img-certificat {
+	position: absolute;
+	top: 40%;
+	transform: translate(-50%, -50%);
+	right: 23%;
+	font-weight: bold;
+	width: 300px;
+	height: 300px;
+}
+.img-logo {
+	position: absolute;
+	top: 50%;
+	left: 5%;
+	font-weight: bold;
+	width: 150px;
+	height: 150px;
+}
+
+.avatar-Winner {
+	color: rgb(95, 237, 7);
+	top: 0%;
+	font-weight: bold;
+	animation: textValidMenu 1.7s linear infinite;
+	width: 140px;
+	height: 140px;
+	background-color: #fbf9f932;
+	border-radius: 20px;
+	box-shadow: 0 0 15px rgba(183, 3, 3, 0.5);
+}
+
+.popup-WinnerPage {
+	position: fixed;	
+	width: 500px;
+	height: 300px;
+	left: 50%;
+	top: 30%;
+	transform: translate(-50%, -50%);
+	overflow-y: auto;              /* ✅ scroll si dépasse */
+	overflow-x: hidden; 
+	padding: 20px;
+	background-color: #fbf9f93a;
+	color: white;
+	border-radius: 20px;     /* 👈 Coins arrondis */
+	box-shadow: 0 0 30px rgba(238, 4, 4, 0.788);
+}
+	
+
 .page-custom {
   height: 100vh;
   background-image: url("/images/TournamentPage.jpg");
