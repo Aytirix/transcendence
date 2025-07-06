@@ -85,7 +85,8 @@ export function generalUserStats(statuser: any[], statUserData: userStatsPong) {
 }
 
 export function getFiveLastMatch(statuser: any[], statUserData: userStatsPong) {
-	const lastFive = statuser.slice(0, 5);
+	const filteredMatches = statuser.filter(match => match.is_tournament === 0);
+	const lastFive = filteredMatches.slice(0, 5);
 	for (const data of lastFive) {
 		let match: MatchSummary = {
 			status: "Défaite", // valeur par défaut

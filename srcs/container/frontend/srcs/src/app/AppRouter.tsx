@@ -13,6 +13,7 @@ import MultiPlayers from './pongGame/modes/MultiPlayers';
 import MultiPlayersInvite from './pongGame/modes/MultiPlayersInvite';
 import TournamentPage from './pongGame/modes/Tournament';
 import GameTournament from './pongGame/modes/GameTournament';
+import WinnerPage from './pongGame/modes/WinnerPage';
 
 import IronManProfile from './IronManProfile';
 import IronManLogin from './IronManLogin';
@@ -82,7 +83,11 @@ class AppRouter extends Component {
 							<GameTournament />
 						</MinSizeGuard>
 					} />
-
+					<Route path="/pong/menu/WinnerPage" element={
+						<MinSizeGuard minWidth={0} minHeight={0} message="Écran trop petit">
+							<WinnerPage />
+						</MinSizeGuard>
+					} />
 					{/* Route pour le jeu Pacman */}
 					<Route path="/Pacman" element={
 						<MinSizeGuard minWidth={1200} minHeight={870} message="Écran trop petit">
