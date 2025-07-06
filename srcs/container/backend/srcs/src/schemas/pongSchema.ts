@@ -52,17 +52,76 @@ export const getStatistics = {
 			description: 'Statistiques récupérées avec succès',
 			type: 'object',
 			properties: {
+			total: {
+				type: 'object',
+				properties: {
 				victoire: { type: 'number' },
 				defaite: { type: 'number' },
 				abandon: { type: 'number' },
-				tournamentVictory: { type: 'number' },
-				nbParti: {type: 'number'},
-				victoirePour100: {type: 'number'},
-				defaitePour100: {type: 'number'},
-				abandonPour100: {type: 'number'},
-				fiveLastMatch: {type: 'string'},
+				nbParti: { type: 'number' },
+				victoirePour100: { type: 'number' },
+				defaitePour100: { type: 'number' },
+				abandonPour100: { type: 'number' },
+				}
 			},
-			additionalProperties: false,
+			tournamentVictory: { type: 'number' },
+			Multi: {
+				type: 'object',
+				properties: {
+				victoire: { type: 'number' },
+				defaite: { type: 'number' },
+				abandon: { type: 'number' },
+				nbParti: { type: 'number' },
+				victoirePour100: { type: 'number' },
+				defaitePour100: { type: 'number' },
+				abandonPour100: { type: 'number' },
+				}
+			},
+			Tournament: {
+				type: 'object',
+				properties: {
+				victoire: { type: 'number' },
+				defaite: { type: 'number' },
+				abandon: { type: 'number' },
+				nbParti: { type: 'number' },
+				victoirePour100: { type: 'number' },
+				defaitePour100: { type: 'number' },
+				abandonPour100: { type: 'number' },
+				}
+			},
+			Solo: {
+				type: 'object',
+				properties: {
+				victoire: { type: 'number' },
+				defaite: { type: 'number' },
+				abandon: { type: 'number' },
+				nbParti: { type: 'number' },
+				victoirePour100: { type: 'number' },
+				defaitePour100: { type: 'number' },
+				abandonPour100: { type: 'number' },
+				}
+			},
+			SameKeyboard: {
+				type: 'object',
+				properties: {
+				nbParti: { type: 'number' }
+				}
+			},
+			lastFive: {
+				type: 'array',
+				items: {
+				type: 'object',
+				properties: {
+					mode: { type: 'string' },
+					date: { type: 'string' },
+					opponentName: { type: 'string' },
+					status: { type: 'string' } // "Victoire", "Défaite", "Abandon"
+				},
+				required: ['mode', 'date', 'opponentName', 'status']
+			}
+		}
+	},
+		additionalProperties: false,
 		},
 		401: {
 			description: 'Erreur d\'authentification',

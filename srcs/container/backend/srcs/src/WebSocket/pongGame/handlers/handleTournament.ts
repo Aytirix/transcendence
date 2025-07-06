@@ -1,7 +1,8 @@
+import controllerPong from "@controllers/controllerPong";
 import { Game } from "../game/Game";
 import { createGame } from "../game/initGame";
 import { listTournament, sockets } from "../state/serverState";
-import { playerStat, Tournament } from "../types/playerStat";
+import { playerStat, Tournament, userStatsPong } from "../types/playerStat";
 import { webMsg } from "../types/webMsg";
 import modelPong from '@models/modelPong';
 
@@ -138,7 +139,7 @@ function joinTournament(playerInfos: playerStat, msg: webMsg) {
 	updateTournament();
 }
 
-function updateTournament() {
+async function updateTournament() {
 
 		let jsonTournament: {
 			type: string,
@@ -152,6 +153,7 @@ function updateTournament() {
 				"listPlayers": {
 					"name": string,
 					"avatar": string,
+					"statistique": userStatsPong,
 				}[]
 			}[];
 		} = {
@@ -159,18 +161,40 @@ function updateTournament() {
 			action: "LIST_RESPONSE",
 			value: []
 		};
-		//mise a jour du fichier json pour envoi a tout les players
+
+		// mise a jour du fichier json pour envoi a tout les players
 		for (const [id, tournament] of listTournament) {
+			let listPlayerTemp: Array<any> = [];
+			for (const player of tournament.listPlayer) {
+				const result = await modelPong.getStatisticsForUser(player.id)
+				let statUserData: userStatsPong = {
+				total: {
+					victoire: 0,
+					defaite: 0,
+					abandon: 0,
+					nbParti: 0,
+					victoirePour100: 0,
+					defaitePour100: 0,
+					abandonPour100: 0 
+				},
+				tournamentVictory: 0,
+			}
+			controllerPong.generalUserStats(result ,statUserData)
+			controllerPong.getStatsTournamentWinner(statUserData, result)
+
+			listPlayerTemp.push({
+				name: player.name,
+				avatar: player.avatar,
+				statistique: statUserData
+			})
+		}
 			jsonTournament.value.push({
 				id: id,
 				name: tournament.name,
 				max: tournament.size,
 				current: tournament.listPlayer.size,
 				isFull: tournament.isFull,
-				listPlayers: Array.from(tournament.listPlayer).map(player => ({
-					name: player.name,
-					avatar: player.avatar
-				}))
+				listPlayers: listPlayerTemp
 			});
 		}
 	const jsonString: string = JSON.stringify(jsonTournament);
@@ -349,7 +373,7 @@ export async function isOnFinishMatch(tournament: Tournament, player1: playerSta
 			tournament.winner = true;
 			console.log("envoi du vainqueur", tournament.waitingWinner[0].name)
 			tournament.waitingWinner[0].id
-			await modelPong.insertStatistic(tournament.waitingWinner[0].id, 1, 1)
+			await modelPong.insertStatistic(tournament.waitingWinner[0].id, 1, 1, tournament.waitingWinner[0].mode, tournament.waitingWinner[0].id)
 			await modelPong.deleteStatistic(tournament.waitingWinner[0].id)
 			setTimeout(() => {
 				messageTournament(tournament, "WinnerTournament", `${tournament.waitingWinner[0].name} remporte le tournois`);
@@ -377,28 +401,52 @@ function checkReady(tournament: Tournament) : boolean {
 	return (true);
 }
 
-function actualiseDisplay(playerinfos: playerStat) {
-	let jsonTournament: {
-		type: string,
-		action: string,
-		value: {
-			"id": number,
-			"name": string,
-			"max": number,
-			"current": number,
-			"isFull": boolean,
-			"listPlayers": {
+async function actualiseDisplay(playerinfos: playerStat) {
+		let jsonTournament: {
+			type: string,
+			action: string,
+			value: {
+				"id": number,
+				"name": string,
+				"max": number,
+				"current": number,
+				"isFull": boolean,
+				"listPlayers": {
 					"name": string,
 					"avatar": string,
+					"statistique": userStatsPong,
 				}[]
 			}[];
-	} = {
-		type: "Tournament",
-		action: "LIST_RESPONSE",
-		value: []
-	};
+		} = {
+			type: "Tournament",
+			action: "LIST_RESPONSE",
+			value: []
+		};
 	//mise a jour du fichier json pour envoi a tout les players
 	for (const [id, tournament] of listTournament) {
+		let listPlayerTemp: Array<any> = [];
+			for (const player of tournament.listPlayer) {
+				const result = await modelPong.getStatisticsForUser(player.id)
+				let statUserData: userStatsPong = {
+				total: {
+					victoire: 0,
+					defaite: 0,
+					abandon: 0,
+					nbParti: 0,
+					victoirePour100: 0,
+					defaitePour100: 0,
+					abandonPour100: 0
+				},
+				tournamentVictory: 0,
+			}
+			controllerPong.generalUserStats(result ,statUserData)
+			listPlayerTemp.push({
+				name: player.name,
+				avatar: player.avatar,
+				statistique: statUserData
+			})
+		}
+		
 		if (tournament.waitingWinner.length === 0) {
 			jsonTournament.value.push({
 				id: id,
@@ -406,10 +454,7 @@ function actualiseDisplay(playerinfos: playerStat) {
 				max: tournament.size,
 				current: tournament.listPlayer.size,
 				isFull: tournament.isFull,
-				listPlayers: Array.from(tournament.listPlayer).map(player => ({
-					name: player.name,
-					avatar: player.avatar
-				}))
+				listPlayers: listPlayerTemp
 			});
 		} else {
 			jsonTournament.value.push({
@@ -418,10 +463,7 @@ function actualiseDisplay(playerinfos: playerStat) {
 				max: tournament.size,
 				current: tournament.waitingWinner.length,
 				isFull: tournament.isFull,
-				listPlayers: Array.from(tournament.waitingWinner).map(player => ({
-					name: player.name,
-					avatar: player.avatar
-				}))
+				listPlayers: listPlayerTemp
 			});
 		}
 	}

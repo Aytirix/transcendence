@@ -1,17 +1,39 @@
 import { Game } from "../game/Game";
 import { WebSocket } from "ws";
 
-export interface userStatsPong {
-	victoire: number,
-	defaite: number,
-	abandon: number,
-	tournamentVictory: number,
-	nbParti: number,
-	victoirePour100: number,
-	defaitePour100: number,
-	abandonPour100: number,
-	fiveLastMatch: string,
+	export interface StatMode {
+	victoire: number;
+	defaite: number;
+	abandon: number;
+	nbParti: number;
+	victoirePour100: number;
+	defaitePour100: number;
+	abandonPour100: number;
 }
+
+export interface SameKeyboardStat {
+	nbParti: number;
+}
+
+export interface MatchSummary {
+	mode: string;
+	date: string;
+	opponentName: string;
+	status: 'Victoire' | 'Défaite' | 'Abandon';
+}
+
+export interface userStatsPong {
+	total: StatMode;
+	tournamentVictory?: number;
+	Multi?: StatMode;
+	Tournament?: StatMode;
+	Solo?: StatMode;
+	SameKeyboard?: SameKeyboardStat;
+	lastFive?: MatchSummary[];
+}
+
+
+
 
 export interface playerStat {
 	game?: Game;

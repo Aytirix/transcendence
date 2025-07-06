@@ -36,18 +36,52 @@ export interface Parse {
 	}
 }
 
+export interface MatchSummary {
+	mode: string;
+	date: string;
+	opponentName: string;
+	status: 'Victoire' | 'Défaite' | 'Abandon';
+}
+
+export interface StatMode {
+		victoire: number;
+		defaite: number;
+		abandon: number;
+		nbParti: number;
+		victoirePour100: number;
+		defaitePour100: number;
+		abandonPour100: number;
+}
+
+export interface StatModeTournament {
+	total: {
+		victoire: number;
+		defaite: number;
+		abandon: number;
+		nbParti: number;
+		victoirePour100: number;
+		defaitePour100: number;
+		abandonPour100: number;
+	}
+	tournamentVictory: number;
+}
+
+
 export interface userStatsPong {
-	victoire: number,
-	defaite: number,
-	abandon: number,
-	tournamentVictory: number,
-	nbParti: number,
-	victoirePour100: number,
-	defaitePour100: number,
-	abandonPour100: number,
-	fiveLastMatch: string,
+	total: StatMode;
+	tournamentVictory: number;
+	Multi: StatMode;
+	Tournament: StatMode;
+	Solo: StatMode;
+	SameKeyboard: SameKeyboardStat;
+	lastFive: MatchSummary[];
 	ok: boolean,
 }
+
+export interface SameKeyboardStat {
+	nbParti: number;
+}
+
 
 export interface Tournament {
 	id: number;
@@ -58,6 +92,7 @@ export interface Tournament {
 	listPlayers: {
 		name: string,
 		avatar: string,
+		statistique: StatModeTournament,
 	}[];
 }
 
