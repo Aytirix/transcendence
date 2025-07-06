@@ -20,6 +20,7 @@ import { getStatForPlayer } from '@controllers/controllerPong';
 
 export let pingMonitoring: boolean = false;
 
+
 export function pongWebSocket(socket: WebSocket, user: User) {
 	if (handleReconnection(socket, user)){}
 	else {

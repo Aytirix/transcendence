@@ -3,6 +3,7 @@ import { playerStat } from "../types/playerStat";
 import { webMsg } from "../types/webMsg";
 import { createGame } from "../game/initGame";
 import { Game } from "../game/Game";
+import modelPong from "@models/modelPong";
 
 export function handleMulti(playerInfos: playerStat, msg: webMsg) {
 	console.log("multi")

@@ -1,14 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from "react-router-dom";
-import { MatchDisplayData, Tournament } from '../types/data';
+import { MatchDisplayData, StatModeTournament, Tournament } from '../types/data';
 import ApiService from '../../../api/ApiService';
 import { useLanguage } from '../../../contexts/LanguageContext';
-import { userStatsPong } from '../types/data';
 
 const TournamentPage: React.FC = () => {
-	const [statistique, setStatistique] = useState<userStatsPong | undefined>(undefined);
 	const [listTournament, setListTournament] = useState<Tournament[]>([])
-	const [listNameAvatar, setListNameAvatar] = useState<{ name: string, avatar: string}[]>([]);
+	const [listNameAvatar, setListNameAvatar] = useState<{ name: string, avatar: string, statistique: StatModeTournament}[]>([]);
 	const [sizeTournament, setSizeTournament] = useState<number | null>(null);
 	const [startTournament, setStartTournament] = useState(false);
 	const playerName = useRef<string | null>(null);
@@ -81,17 +79,6 @@ const TournamentPage: React.FC = () => {
 	}, []);
 
 	useEffect(() => {
-		const fetchStat = async () => {
-			const result : userStatsPong = await ApiService.get("/pong/getStatistics")
-			if (result.ok) {
-				setStatistique(result);
-			}
-		}
-		fetchStat();
-		console.log("stats", statistique);
-	}, [])
-
-	useEffect(() => {
 		console.log("player1:", player1);
 		console.log("player2:", player2);
 	}, [player1, player2]);
@@ -160,10 +147,10 @@ const TournamentPage: React.FC = () => {
 											{name.name}
 										</div>
 										<div className="flex flex-col items-start text-xl">
-											<div>Victoire : {statistique?.victoire}</div>
-											<div>Defaite : {statistique?.defaite}</div>
-											<div>Tournois Gagnés : {statistique?.tournamentVictory}</div>
-											<div>Abandons : {statistique?.abandon}</div>
+											<div>Victoire : {name.statistique.total.victoire}</div>
+											<div>Defaite : {name.statistique.total.defaite}</div>
+											<div>Tournois Gagnés : {name.statistique.tournamentVictory}</div>
+											<div>Abandons : {name.statistique.total.abandon}</div>
 										</div>
 										<div className='mr-10 text-2xl'>
 											{i + 1}/{sizeTournament}

@@ -113,7 +113,8 @@ export class Game {
 				isOnFinishMatch(this.tournament, this.player1.getPlayerInfos(), this.player2.getPlayerInfos());
 			}
 			else if (this.player1.getPlayerInfos().mode === "SameKeyboard") {
-				this.player1.getPlayerInfos().socket.send(JSON.stringify({type: "FINISHED"})); //EXIT
+				this.player1.getPlayerInfos().socket.send(JSON.stringify({type: "FINISHED"}));
+				modelPong.insertStatistic(this.player1.getPlayerInfos().id, 0, 1, this.player1.getPlayerInfos().mode, 0)
 				handleFinish(this.player1.getPlayerInfos());
 				this.resetDisplay("SameKeyboard");
 			}
@@ -129,9 +130,9 @@ export class Game {
 			(this.player1.getPlayerInfos().mode === "MultiInvite" && this.player2.getPlayerInfos().mode === "MultiInvite")) {
 				// console.log("test exit pause ")
 				if (this.player1.getPlayerInfos().resultMatch === "Loose")
-					modelPong.insertStatistic(this.player1.getPlayerInfos().id, 0, 2)
+					modelPong.insertStatistic(this.player1.getPlayerInfos().id, 0, 2, this.player1.getPlayerInfos().mode, this.player2.getPlayerInfos().id)
 				else
-					modelPong.insertStatistic(this.player2.getPlayerInfos().id, 0, 2)
+					modelPong.insertStatistic(this.player2.getPlayerInfos().id, 0, 2, this.player2.getPlayerInfos().mode, this.player1.getPlayerInfos().id)
 				this.player1.getPlayerInfos().socket.send(JSON.stringify({type: "FINISHED", value: this.player1.getPlayerInfos().resultMatch}));
 				this.player2.getPlayerInfos().socket.send(JSON.stringify({type: "FINISHED", value: this.player2.getPlayerInfos().resultMatch}));
 				handleFinish(this.player1.getPlayerInfos());
@@ -141,9 +142,9 @@ export class Game {
 			else if (this.player1.getPlayerInfos().mode === "Tournament"
 			&& this.player2.getPlayerInfos().mode === "Tournament") {
 				if (this.player1.getPlayerInfos().resultMatch === "Loose")
-					modelPong.insertStatistic(this.player1.getPlayerInfos().id, 0, 2)
+					modelPong.insertStatistic(this.player1.getPlayerInfos().id, 0, 2, this.player1.getPlayerInfos().mode, this.player2.getPlayerInfos().id)
 				else
-					modelPong.insertStatistic(this.player2.getPlayerInfos().id, 0, 2)
+					modelPong.insertStatistic(this.player2.getPlayerInfos().id, 0, 2, this.player2.getPlayerInfos().mode, this.player1.getPlayerInfos().id)
 				this.resetDisplay("Tournament");
 				isOnFinishMatch(this.tournament, this.player1.getPlayerInfos(), this.player2.getPlayerInfos());
 			}
@@ -153,6 +154,7 @@ export class Game {
 				this.resetDisplay("SameKeyboard");
 			}
 			else if (this.player1.getPlayerInfos().mode === "Solo") {
+				modelPong.insertStatistic(this.player1.getPlayerInfos().id, 0, 2, this.player1.getPlayerInfos().mode, 0)
 				this.player1.getPlayerInfos().socket.send(JSON.stringify({type: "EXIT"}));
 				handleFinish(this.player1.getPlayerInfos());
 				this.resetDisplay("Solo");
@@ -238,8 +240,8 @@ export class Game {
 	checkScore(player1: Paddle, player2: Paddle) : boolean {
 		if (player1.getScore() == 3) {
 			if (player1.getPlayerInfos().mode === "Tournament") {
-				modelPong.insertStatistic(player1.getPlayerInfos().id, 0, 1)
-				modelPong.insertStatistic(player2.getPlayerInfos().id, 0, 0)
+				modelPong.insertStatistic(player1.getPlayerInfos().id, 0, 1, this.player1.getPlayerInfos().mode, this.player2.getPlayerInfos().id)
+				modelPong.insertStatistic(player2.getPlayerInfos().id, 0, 0, this.player2.getPlayerInfos().mode, this.player1.getPlayerInfos().id)
 				player1.getPlayerInfos().resultMatchTournament = "Win";
 				player2.getPlayerInfos().resultMatchTournament = "Loose";
 				player2.getPlayerInfos().socket.send(JSON.stringify({type: "FINISHED", value: player1.getPlayerInfos().resultMatchTournament}))
@@ -247,16 +249,18 @@ export class Game {
 			else if (player1.getPlayerInfos().mode === "Multi" || player1.getPlayerInfos().mode === "MultiInvite") {
 				this.player1.getPlayerInfos().socket.send(JSON.stringify({type: "FINISHED", value: "win"}));
 				this.player2.getPlayerInfos().socket.send(JSON.stringify({type: "FINISHED"}));
-				modelPong.insertStatistic(player1.getPlayerInfos().id, 0, 1)
-				modelPong.insertStatistic(player2.getPlayerInfos().id, 0, 0)
+				modelPong.insertStatistic(player1.getPlayerInfos().id, 0, 1, this.player1.getPlayerInfos().mode, this.player2.getPlayerInfos().id)
+				modelPong.insertStatistic(player2.getPlayerInfos().id, 0, 0, this.player2.getPlayerInfos().mode, this.player1.getPlayerInfos().id)
 			}
+			else if (player1.getPlayerInfos().mode === "Solo")
+				modelPong.insertStatistic(player1.getPlayerInfos().id, 0, 1, this.player1.getPlayerInfos().mode, 0)
 			console.log("Winner is player 1")
 			return (true);
 		}
 		else if (player2.getScore() == 3){
 			if (player1.getPlayerInfos().mode === "Tournament") {
-				modelPong.insertStatistic(player2.getPlayerInfos().id, 0, 1)
-				modelPong.insertStatistic(player1.getPlayerInfos().id, 0, 0)
+				modelPong.insertStatistic(player2.getPlayerInfos().id, 0, 1, this.player2.getPlayerInfos().mode, this.player1.getPlayerInfos().id)
+				modelPong.insertStatistic(player1.getPlayerInfos().id, 0, 0, this.player1.getPlayerInfos().mode, this.player2.getPlayerInfos().id)
 				player2.getPlayerInfos().resultMatchTournament = "Win";
 				player1.getPlayerInfos().resultMatchTournament = "Loose";
 				player1.getPlayerInfos().socket.send(JSON.stringify({type: "FINISHED", value: player2.getPlayerInfos().resultMatchTournament}))
@@ -264,9 +268,11 @@ export class Game {
 			else if (player1.getPlayerInfos().mode === "Multi" || player1.getPlayerInfos().mode === "MultiInvite") {
 				this.player2.getPlayerInfos().socket.send(JSON.stringify({type: "FINISHED", value: "win"}));
 				this.player1.getPlayerInfos().socket.send(JSON.stringify({type: "FINISHED"}));
-				modelPong.insertStatistic(player2.getPlayerInfos().id, 0, 1)
-				modelPong.insertStatistic(player1.getPlayerInfos().id, 0, 0)
-			}	
+				modelPong.insertStatistic(player2.getPlayerInfos().id, 0, 1, this.player2.getPlayerInfos().mode, this.player1.getPlayerInfos().id)
+				modelPong.insertStatistic(player1.getPlayerInfos().id, 0, 0, this.player1.getPlayerInfos().mode, this.player2.getPlayerInfos().id)
+			}
+			else if (player1.getPlayerInfos().mode === "Solo")
+				modelPong.insertStatistic(player1.getPlayerInfos().id, 0, 0, this.player1.getPlayerInfos().mode, 0)
 			console.log("Winner is player 2")
 			return (true);
 		}

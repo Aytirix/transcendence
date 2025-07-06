@@ -2,77 +2,43 @@ import { User, Friends, Group } from '@types';
 import executeReq from '@models/database';
 import { userStatsPong } from '../WebSocket/pongGame/types/playerStat';
 import { WebSocketServer, WebSocket } from 'ws';
+import { MatchSummary } from '../WebSocket/pongGame/types/playerStat';
 
 setInterval(async () => {
 	await checkTokenInvite();
 }, 60000);
 
-async function getStatisticsForUser(userId: number): Promise<userStatsPong> {
-	const query = `SELECT id, is_tournament, status FROM pong_stat WHERE user_id = ?`;
-	const statUser: any = await executeReq(query, [userId]);
+async function getStatisticsForUser(userId: number): Promise<any[]> {
+		const query = `
+			SELECT 
+				pong_stat.id,
+				pong_stat.is_tournament,
+				pong_stat.status,
+				pong_stat.match_date,
+				pong_stat.game_mode,
+				pong_stat.opponent_id,
+				users.username AS opponent_name
+			FROM pong_stat
+			LEFT JOIN users ON pong_stat.opponent_id = users.id
+			WHERE pong_stat.user_id = ?
+			ORDER BY pong_stat.match_date DESC
+		`;
+		const statUser: any = await executeReq(query, [userId]);
+		
+		console.log("statUser", statUser)
 
-	console.log("id", userId)
-	let statUserData: any = {
-		victoire: 0,
-		defaite: 0,
-		abandon: 0,
-		tournamentVictory: 0,
-		nbParti: 0,
-		victoirePour100: 0,
-		defaitePour100: 0,
-		abandonPour100: 0,
-		fiveLastMatch: "V-V-V-V-V",
-	};
-	for (const data of statUser) {
-		if (data.is_tournament === 1) {
-			statUserData.tournamentVictory += 1;
-		}
-		if (data.status === 1)
-			statUserData.victoire += 1;
-		else if (data.status === 0)
-			statUserData.defaite += 1;
-		else if (data.status === 2)
-			statUserData.abandon += 1;
-		statUserData.nbParti += 1;
-	}
-	if (statUserData.nbParti > 0) {
-		statUserData.victoirePour100 = statUserData.victoire * 100 / statUserData.nbParti;
-		statUserData.defaitePour100 = statUserData.defaite * 100 / statUserData.nbParti;
-		statUserData.abandonPour100 = statUserData.abandon * 100 / statUserData.nbParti;
-	}
-	statUserData.fiveLastMatch =  getFiveLastMatch(statUser);
-	return statUserData 
-}
 
-function getFiveLastMatch(statuser: any[]): string {
-	const lastFive = statuser.slice(-5);
-	let result = "";
-
-	for (let i = 0; i < 5; i++) {
-		if (i < lastFive.length) {
-			const status = lastFive[i].status;
-			if (status === 0)
-				result += "D";
-			else if (status === 1)
-				result += "V";
-			else if (status === 2)
-				result += "A";
-		} 
-		else
-			result += "/";
-		if (i < 4)
-			result += "-";
-	}
-	return result;
+	return statUser;
 }
 
 
-async function insertStatistic(userId: number, isTournament: number, status: number): Promise<boolean> {
+
+async function insertStatistic(userId: number, isTournament: number, status: number, gameMode: string, opponentId: number): Promise<boolean> {
 	const query = `
-		INSERT INTO pong_stat (user_id, is_tournament, status) 
-		VALUES (?, ?, ?)
+		INSERT INTO pong_stat (user_id, is_tournament, status, match_date, game_mode, opponent_id) 
+		VALUES (?, ?, ?, CURRENT_TIMESTAMP, ?, ?)
 	`;
-	const result: any = await executeReq(query, [userId, isTournament, status]);
+	const result: any = await executeReq(query, [userId, isTournament, status, gameMode, opponentId]);
 	if (!result || result.affectedRows === 0) {
 		return false;
 	}

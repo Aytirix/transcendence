@@ -81,10 +81,16 @@ CREATE TABLE IF NOT EXISTS pacman_stat (
 CREATE TABLE IF NOT EXISTS pong_stat (
 	id INTEGER PRIMARY KEY AUTOINCREMENT,
 	user_id INTEGER NOT NULL,
-	is_tournament INTEGER NOT NULL DEFAULT 0,
-	status INTEGER NOT NULL,
-	FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE ON UPDATE CASCADE
+	is_tournament INTEGER NOT NULL DEFAULT 0,       -- 0 = multijoueur, 1 = tournoi
+	status INTEGER NOT NULL,                        -- 0 = défaite, 1 = victoire, 2 = abandon
+	match_date DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP, -- date et heure du match
+	game_mode TEXT NOT NULL,                        -- 'solo', 'same_keyboard', 'online', 'tournament'
+	opponent_id INTEGER NOT NULL,                   -- id de l'adversaire
+
+	FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE ON UPDATE CASCADE,
+	FOREIGN KEY (opponent_id) REFERENCES users(id) ON DELETE CASCADE ON UPDATE CASCADE
 );
+
 -- Table verification_codes
 CREATE TABLE IF NOT EXISTS verification_codes (
 	id INTEGER PRIMARY KEY AUTOINCREMENT,
