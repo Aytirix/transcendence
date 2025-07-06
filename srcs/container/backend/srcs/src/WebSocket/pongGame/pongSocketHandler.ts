@@ -131,3 +131,4 @@ export function pongWebSocket(socket: WebSocket, user: User) {
 //faire le front du winner du tournois
 //gerer si un joueur est deco avant le debut de la partie de detecter et afficher un mess
 //avatar par default si marche pas le custum
+//gerer le redimenssionement de la photo dans la room 
