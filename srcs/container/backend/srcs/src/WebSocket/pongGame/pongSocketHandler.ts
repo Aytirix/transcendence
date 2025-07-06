@@ -123,7 +123,7 @@ export function pongWebSocket(socket: WebSocket, user: User) {
 	});
 }
 
-//aide memoire ne pas oublier de mettre le bon nom du winner du tournois 
+//aide memoire ne pas oublier de mettre le bon nom du winner du tournois dans la db 
 //gerer si le tournois est full dans game menu et ne pas pouvoir rentrer
 //mettre a jour la room au fur a mesure que les joueurs gagne les manche
 //regler probleme de ball et extremite raquette
