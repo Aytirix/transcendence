@@ -232,7 +232,9 @@ function createMatchPairs(tournament: Tournament) {
 		if (!player1.switchManche) {
 			const game: Game = createGame(player1, player2);
 			player1.game = game;
+			player1.resultMatchTournament = "Current";
 			player2.game = game;
+			player2.resultMatchTournament = "Current";
 			game.setTournament(tournament);
 		}
 		else if (player1.switchManche)
@@ -282,10 +284,10 @@ function displayTournament(tournament: Tournament) {
 			totalMatch: tournament.currentMatch.length,
 			player1: player1.name,
 			player1Avatar: player1.avatar,
-			p1ResultMatchTournament: player1.resultMatchTournament,
+			p1ResultMatchTournament: player1.resultMatchTournament = "Current", //ajout
 			player2: player2.name,
 			player2Avatar: player2.avatar,
-			p2ResultMatchTournament: player2.resultMatchTournament
+			p2ResultMatchTournament: player2.resultMatchTournament = "Current" //ajout
 		});
 	}
 	const jsonDisplayTournament = {
@@ -307,7 +309,7 @@ function dispatchMatch(tournament: Tournament) {
 	if (length % 2 !== 0) {
 		if (length === 1) {
 			tournament.winner = true;
-			console.log("envoi du vainqueur", tournament.waitingWinner[0].name)
+			console.log("envoi du vainqueur dans dispatch", tournament.waitingWinner[0].name)
 			setTimeout(() => {
 				messageTournament(tournament, "WinnerTournament", `${tournament.waitingWinner[0].name} remporte le tournois`);
 				listTournament.delete(tournament.idTournament);
@@ -330,7 +332,7 @@ function dispatchMatch(tournament: Tournament) {
 		tournament.waitingWinner[i + 1].readyToNext = false;
 	}
 	tournament.currentManche++;
-	tournament.waitingWinner.length = 0;
+	tournament.waitingWinner.length = 0;	
 	if (stockWinner) {
 		tournament.waitingWinner.push(stockWinner);
 		stockWinner.switchManche = true;
@@ -340,19 +342,20 @@ function dispatchMatch(tournament: Tournament) {
 		});
 	}
 	//voir comment gerer ca current
+	console.log(tournament.currentMatch)
 	messageTournament(tournament, "Start", "nouvelle Manche");
 	displayTournament(tournament);
 	createMatchPairs(tournament);
 }
 
 export function isOnFinishMatch(tournament: Tournament, player1: playerStat, player2: playerStat) {
-	console.log("player1", player1.resultMatchTournament)
-	console.log("player2", player2.resultMatchTournament)
+	console.log("🎯 Traitement du match terminé entre", player1.name, "et", player2.name);
+	console.log("Résultats :", player1.name, player1.resultMatchTournament, "|", player2.name, player2.resultMatchTournament);
 	if (player1 && player1.resultMatchTournament === "Win") {
 		tournament.waitingWinner.push(player1);
-		console.log("player1 Win")
 		player2.inGame = false
 		player2.inRoom = false
+		tournament.listPlayer.delete(player2);
 
 		player1.socket.send(JSON.stringify({type: "Win"}))
 		player1.inRoom = true;
@@ -361,10 +364,11 @@ export function isOnFinishMatch(tournament: Tournament, player1: playerStat, pla
 		//in room a true 
 	}
 	else if (player2 && player2.resultMatchTournament === "Win") {
-		console.log("player2 Win")
+
 		tournament.waitingWinner.push(player2);
 		player1.inGame = false
 		player1.inRoom = false
+		tournament.listPlayer.delete(player1);
 
 		player2.socket.send(JSON.stringify({type: "Win"}))
 		player2.inRoom = true;
@@ -377,11 +381,9 @@ export function isOnFinishMatch(tournament: Tournament, player1: playerStat, pla
 			console.log("envoi du vainqueur", tournament.waitingWinner[0].name)
 			tournament.waitingWinner[0].id
 			modelPong.insertStatistic(tournament.waitingWinner[0].id, 1, 1, tournament.waitingWinner[0].mode, tournament.waitingWinner[0].id)
-			// modelPong.deleteStatistic(tournament.waitingWinner[0].id)
 			setTimeout(() => {
 				console.log("ENVOI DU WINNER ", tournament.waitingWinner[0].name)
 				tournament.waitingWinner[0].socket.send(JSON.stringify({action: "WinnerTournament", value: `${tournament.waitingWinner[0].name} remporte le tournois` }))
-				// messageTournament(tournament, "WinnerTournament", `${tournament.waitingWinner[0].name} remporte le tournois`);
 				listTournament.delete(tournament.idTournament);
 			}, 500)
 			return ;
