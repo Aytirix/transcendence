@@ -133,3 +133,4 @@ export function pongWebSocket(socket: WebSocket, user: User) {
 //avatar par default si marche pas le custum
 //gerer le redimenssionement de la photo dans la room 
 //bien controler la vitesse de la balle pour quelle se deplace sur le terrain en plus de 1 sec au plus rapide et verrifier le service ball 
+//mettre a jour les language pour ce qui reste notemment les stats
