@@ -3,7 +3,7 @@
 import React, { useEffect, useState, useCallback } from "react";
 import { useChatWebSocket } from "./ChatWebSocketContext";
 import { Group, Message } from "./types/chat";
-import ChatContentArea from "./components/ChatContentArea";
+// import ChatContentArea from "./components/ChatContentArea";
 import notification from "../components/Notifications";
 import ApiService from "../../api/ApiService";
 import { useTranslation } from 'react-i18next';
@@ -13,12 +13,11 @@ const GroupsMessagesPage: React.FC = () => {
         groups,
         friends,
         groupMessages,
-        wsStatus,
-        feedback,
         sendMessage,
         loadMessages,
         createGroup,
         deleteGroup,
+        currentUserId,
     } = useChatWebSocket();
     const { t } = useTranslation();
 
@@ -51,7 +50,7 @@ const GroupsMessagesPage: React.FC = () => {
     // Envoyer un message
     const handleSendMessage = useCallback(() => {
         if (!input.trim() || !selectedGroup) return;
-        
+
         sendMessage(selectedGroup.id, input);
         setInput("");
     }, [input, selectedGroup, sendMessage]);
@@ -59,15 +58,7 @@ const GroupsMessagesPage: React.FC = () => {
     // Gérer création de groupe
     const handleCreateGroup = useCallback(() => {
         createGroup(newGroupName, selectedFriendsForGroup);
-        
-        // Réinitialiser le formulaire si la création réussit
-        // (le contexte gère déjà le feedback)
-        if (!feedback?.includes("Erreur")) {
-            setShowCreateGroup(false);
-            setNewGroupName("");
-            setSelectedFriendsForGroup([]);
-        }
-    }, [newGroupName, selectedFriendsForGroup, createGroup, feedback]);
+    }, [newGroupName, selectedFriendsForGroup, createGroup]);
 
     const toggleFriendSelection = useCallback((friendId: number) => {
         setSelectedFriendsForGroup(prev =>
@@ -77,91 +68,145 @@ const GroupsMessagesPage: React.FC = () => {
         );
     }, []);
 
-    // Mettre à jour le groupe sélectionné quand un nouveau groupe est créé
-    useEffect(() => {
-        if (feedback?.includes("succès") && groups.length > 0) {
-            const newestGroup = groups[groups.length - 1];
-            setSelectedGroup(newestGroup);
-        }
-    }, [feedback, groups]);
-
+  function NoMessage() {
     return (
-        <div className="flex h-screen">
-    <aside className="w-64 bg-gray-100 border-r flex flex-col mt-16">
-      <div className="p-4 font-bold text-xl">Groupes</div>
+      <div className="flex-1 overflow-auto p-4 space-y-2 bg-gray-50">
+      <div className="text-center text-gray-500 mt-8">Aucun message dans cette conversation.</div></div>
+    )
+  }
 
-      {/* Section de création de groupe */}
-      <div className="px-4 pb-2">
-        <button
-          className="w-full p-2 bg-green-500 text-white rounded hover:bg-green-600 text-sm"
-          onClick={() => setShowCreateGroup(!showCreateGroup)}
-        >
-          {showCreateGroup ? "Annuler la création" : "Créer un groupe"}
-        </button>
 
-        {showCreateGroup && (
-          <div className="mt-2 space-y-2">
-            <input
-              type="text"
-              className="w-full p-2 border rounded text-sm"
-              placeholder="Nom du groupe"
-              value={newGroupName}
-              onChange={(e) => setNewGroupName(e.target.value)}
-            />
-
-            <div className="text-xs font-semibold">Sélectionner des amis :</div>
-            <div className="max-h-32 overflow-y-auto space-y-1 border p-1 rounded"> {/* Added border and padding */}
-              {friends.length === 0 ? (
-                <div className="text-xs text-gray-500">Aucun ami disponible pour la création de groupe.</div>
-              ) : (
-                (friends ?? []).map(f => (
-                  <label key={f.id} className="flex items-center space-x-2 text-xs cursor-pointer">
-                    <input
-                      type="checkbox"
-                      checked={selectedFriendsForGroup.includes(f.id)}
-                      onChange={() => toggleFriendSelection(f.id)}
-                      className="form-checkbox" // Added class for styling
-                    />
-                    <span>{f.username}</span>
-                  </label>
-                ))
-              )}
-            </div>
-
-            <button
-              className="w-full p-1 bg-blue-500 text-white rounded hover:bg-blue-600 text-sm disabled:opacity-50 disabled:cursor-not-allowed"
-              onClick={handleCreateGroup}
-              disabled={!newGroupName.trim() || selectedFriendsForGroup.length === 0}
-            >
-              Créer
-            </button>
-          </div>
-        )}
-      </div>
-
-      <div className="flex-1 overflow-y-auto"> {/* Changed to overflow-y-auto */}
-        {groups.map((g) => (
-          
-          <button
-            key={g.id}
-            className={`w-full text-left p-4 hover:bg-blue-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 transition-colors duration-150 ${selectedGroup?.id === g.id ? "bg-blue-200 font-bold" : ""}`} // Improved focus and transition
-            onClick={() => {
-              setSelectedGroup(g);
-            }}
+  function Messages() {
+    return (
+      <div className="flex-1 overflow-auto p-4 space-y-2 bg-gray-50">
+        {selectedMessages.map((m, idx) => (
+          <div
+            key={m.id ?? idx}
+            className={`max-w-xl ${m.sender_id === currentUserId || m.sender_id === "moi"
+              ? "ml-auto bg-blue-200"
+              : "mr-auto bg-white"
+              } p-2 rounded shadow`}
           >
-            {g.name || g.members.map(m => m.username).join(', ')} {/* Group name or member list for private chats */}
-          </button>
+            <div>{m.sender_id === currentUserId || m.sender_id === "moi" ? "moi" : m.sender_id}: {m.message}</div> {/* Peut-être afficher le nom de l'expéditeur si disponible */}
+            <div className="text-xs text-gray-500 text-right">
+              {m.sent_at ? new Date(m.sent_at).toLocaleTimeString() : ""}
+            </div>
+          </div>
         ))}
       </div>
-    </aside>
-            <ChatContentArea
-                selectedGroup={selectedGroup}
-                selectedMessages={selectedMessages}
-                feedback={feedback}
-                sendMessage={handleSendMessage}
-                input={input}
-                setInput={setInput}
-            />
+    );
+  }
+
+    function renderContent () {
+    if(selectedMessages.length === 0){
+      return (
+        <NoMessage />
+      )
+    }
+    else{
+     return (
+        <Messages />
+      )
+    }
+  };
+
+    return (
+        <div className="flex">
+            <aside className="w-64 bg-gray-100 border-r flex flex-col mt-16">
+                <div className="p-4 font-bold text-xl">Groupes</div>
+
+                {/* Section de création de groupe */}
+                <div className="px-4 pb-2">
+                    <button
+                        className="w-full p-2 bg-green-500 text-white rounded hover:bg-green-600 text-sm"
+                        onClick={() => setShowCreateGroup(!showCreateGroup)}
+                    >
+                        {showCreateGroup ? "Annuler la création" : "Créer un groupe"}
+                    </button>
+
+                    {showCreateGroup && (
+                        <div className="mt-2 space-y-2">
+                            <input
+                                type="text"
+                                className="w-full p-2 border rounded text-sm"
+                                placeholder="Nom du groupe"
+                                value={newGroupName}
+                                onChange={(e) => setNewGroupName(e.target.value)}
+                            />
+
+                            <div className="text-xs font-semibold">Sélectionner des amis :</div>
+                            <div className="max-h-32 overflow-y-auto space-y-1 border p-1 rounded"> {/* Added border and padding */}
+                                {friends.length === 0 ? (
+                                    <div className="text-xs text-gray-500">Aucun ami disponible pour la création de groupe.</div>
+                                ) : (
+                                    (friends ?? []).map(f => (
+                                        <label key={f.id} className="flex items-center space-x-2 text-xs cursor-pointer">
+                                            <input
+                                                type="checkbox"
+                                                checked={selectedFriendsForGroup.includes(f.id)}
+                                                onChange={() => toggleFriendSelection(f.id)}
+                                                className="form-checkbox" // Added class for styling
+                                            />
+                                            <span>{f.username}</span>
+                                        </label>
+                                    ))
+                                )}
+                            </div>
+
+                            <button
+                                className="w-full p-1 bg-blue-500 text-white rounded hover:bg-blue-600 text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                                onClick={handleCreateGroup}
+                                disabled={!newGroupName.trim() || selectedFriendsForGroup.length === 0}
+                            >
+                                Créer
+                            </button>
+                        </div>
+                    )}
+                </div>
+
+                <div className="flex-1 overflow-y-auto"> {/* Changed to overflow-y-auto */}
+                    {groups.map((g) => (
+
+                        <button
+                            key={g.id}
+                            className={`w-full text-left p-4 hover:bg-blue-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 transition-colors duration-150 ${selectedGroup?.id === g.id ? "bg-blue-200 font-bold" : ""}`} // Improved focus and transition
+                            onClick={() => {
+                                setSelectedGroup(g);
+                            }}
+                        >
+                            {g.name || g.members.map(m => m.username).join(', ')} {/* Group name or member list for private chats */}
+                        </button>
+                    ))}
+                </div>
+            </aside>
+    <main className="flex-1 flex flex-col mt-16">
+      <header className="p-4 border-b font-semibold text-lg text-gray-500">
+        {
+          selectedGroup
+            ? `Discussion de groupe : ${selectedGroup.name || selectedGroup.members.map(m => m.username).join(', ')}`
+            : "Sélectionnez un groupe..."
+        }
+      </header>
+      {renderContent()}
+      {selectedGroup && (
+        <footer className="p-4 border-t flex space-x-2">
+          <input
+            type="text"
+            className="flex-1 border rounded p-2 text-gray-500"
+            placeholder="Tape un message…"
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            onKeyDown={e => e.key === "Enter" && handleSendMessage()}
+          />
+          <button
+            className="bg-blue-500 text-gray-500 px-4 py-2 rounded disabled:opacity-50 disabled:cursor-not-allowed"
+            onClick={handleSendMessage}
+          >
+            Envoyer
+          </button>
+        </footer>
+      )}
+    </main>
         </div>
     );
 };
