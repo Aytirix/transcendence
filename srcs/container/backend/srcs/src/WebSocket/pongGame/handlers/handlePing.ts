@@ -37,7 +37,6 @@ export function startingPing(sockets: Map<WebSocket, playerStat>) {
 								const tournament = listTournament.get(playerInfos.idTournament);
 								isOnFinishMatch(tournament , playerInfos.game.getPlayer1().getPlayerInfos(), playerInfos);
 							}
-							console.log("deco")
 						}
 						else {
 							playerInfos.game.getPlayer2().getPlayerInfos().resultMatchTournament = "Win"
@@ -46,7 +45,6 @@ export function startingPing(sockets: Map<WebSocket, playerStat>) {
 								const tournament = listTournament.get(playerInfos.idTournament);
 								isOnFinishMatch(tournament , playerInfos, playerInfos.game.getPlayer2().getPlayerInfos()); 
 							}
-							console.log("deco")
 						}
 					}
 				}
@@ -75,18 +73,16 @@ export function startingPing(sockets: Map<WebSocket, playerStat>) {
 			else if (playerInfos.mode === "Tournament" && playerInfos.timePause) {
 				const isInactivePause = (Date.now() - playerInfos.timePause) > 30000
 				if (isInactivePause) {
-						playerInfos.resultMatch = "Loose"
+						// playerInfos.resultMatch = "Loose"
 					if (playerInfos.name !== playerInfos.game.getPlayer1().getPlayerInfos().name) {
 						playerInfos.game.getPlayer1().getPlayerInfos().resultMatchTournament = "Win"
 						playerInfos.game.getPlayer2().getPlayerInfos().resultMatch = "Loose" // ici
-						playerInfos.game.getPlayer2().getPlayerInfos().socket.send(JSON.stringify({type: "FINISHED", value: "win"}));
-						console.log("deco1")
+						playerInfos.game.getPlayer2().getPlayerInfos().socket.send(JSON.stringify({type: "FINISHED", value: playerInfos.game.getPlayer1().getPlayerInfos().name}));
 					}
 					else {
 						playerInfos.game.getPlayer2().getPlayerInfos().resultMatchTournament = "Win"
 						playerInfos.game.getPlayer1().getPlayerInfos().resultMatch = "Loose" // ici
-						playerInfos.game.getPlayer1().getPlayerInfos().socket.send(JSON.stringify({type: "FINISHED", value: "win"}));
-						console.log("deco1")
+						playerInfos.game.getPlayer1().getPlayerInfos().socket.send(JSON.stringify({type: "FINISHED", value: playerInfos.game.getPlayer2().getPlayerInfos().name}));
 
 					}
 					if (playerInfos.game)

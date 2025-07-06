@@ -345,9 +345,12 @@ function dispatchMatch(tournament: Tournament) {
 	createMatchPairs(tournament);
 }
 
-export async function isOnFinishMatch(tournament: Tournament, player1: playerStat, player2: playerStat) {
+export function isOnFinishMatch(tournament: Tournament, player1: playerStat, player2: playerStat) {
+	console.log("player1", player1.resultMatchTournament)
+	console.log("player2", player2.resultMatchTournament)
 	if (player1 && player1.resultMatchTournament === "Win") {
 		tournament.waitingWinner.push(player1);
+		console.log("player1 Win")
 		player2.inGame = false
 		player2.inRoom = false
 
@@ -358,25 +361,27 @@ export async function isOnFinishMatch(tournament: Tournament, player1: playerSta
 		//in room a true 
 	}
 	else if (player2 && player2.resultMatchTournament === "Win") {
+		console.log("player2 Win")
 		tournament.waitingWinner.push(player2);
 		player1.inGame = false
 		player1.inRoom = false
 
 		player2.socket.send(JSON.stringify({type: "Win"}))
 		player2.inRoom = true;
+
 	}
-	console.log(`longueur waiting winner ${tournament.waitingWinner.length} longueur current ${tournament.currentMatch.length}`)
 	if (tournament.waitingWinner.length === tournament.currentMatch.length) {
-		// displayTournament(tournament);
 		tournament.currentMatch.length = 0;
 		if (tournament.waitingWinner.length === 1) {
 			tournament.winner = true;
 			console.log("envoi du vainqueur", tournament.waitingWinner[0].name)
 			tournament.waitingWinner[0].id
-			await modelPong.insertStatistic(tournament.waitingWinner[0].id, 1, 1, tournament.waitingWinner[0].mode, tournament.waitingWinner[0].id)
-			await modelPong.deleteStatistic(tournament.waitingWinner[0].id)
+			modelPong.insertStatistic(tournament.waitingWinner[0].id, 1, 1, tournament.waitingWinner[0].mode, tournament.waitingWinner[0].id)
+			modelPong.deleteStatistic(tournament.waitingWinner[0].id)
 			setTimeout(() => {
-				messageTournament(tournament, "WinnerTournament", `${tournament.waitingWinner[0].name} remporte le tournois`);
+				console.log("ENVOI DU WINNER ", tournament.waitingWinner[0].name)
+				tournament.waitingWinner[0].socket.send(JSON.stringify({action: "WinnerTournament", value: `${tournament.waitingWinner[0].name} remporte le tournois` }))
+				// messageTournament(tournament, "WinnerTournament", `${tournament.waitingWinner[0].name} remporte le tournois`);
 				listTournament.delete(tournament.idTournament);
 			}, 500)
 			return ;
@@ -389,15 +394,11 @@ export async function isOnFinishMatch(tournament: Tournament, player1: playerSta
 }
 
 function checkReady(tournament: Tournament) : boolean {
-	console.log("check")
 	for (const player of tournament.waitingWinner) {
 		if (!player.readyToNext){
-		console.log("check false")
 			return (false)
 		}
-		
 	}
-	console.log("check true")
 	return (true);
 }
 

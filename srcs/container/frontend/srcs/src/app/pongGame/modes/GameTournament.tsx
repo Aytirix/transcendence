@@ -176,19 +176,9 @@ const GameTournament: React.FC = () => {
 					if (data.type === "FINISHED") {
 						localStorage.removeItem("reconnection");
 						localStorage.removeItem("data");
-						if (data.value === "win") {
-							if (assignPlayer.current === "p1")
-								nameWinner.current = namePlayer1!.current
-							else
-								nameWinner.current = namePlayer2!.current
-						}
-						else {
-							if (assignPlayer.current === "p1")
-								nameWinner.current = namePlayer2!.current
-							else
-								nameWinner.current = namePlayer1!.current
-						}
-
+						if (data.value)
+							nameWinner.current = data.value;
+						console.log("le joueur a perdu finished")
 						setisWinner(true);
 						camera!.current!.position.x = 338.131
 						camera!.current!.position.y = 136.188;

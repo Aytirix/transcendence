@@ -25,7 +25,6 @@ async function getStatisticsForUser(userId: number): Promise<any[]> {
 		`;
 		const statUser: any = await executeReq(query, [userId]);
 		
-		console.log("statUser", statUser)
 
 
 	return statUser;
