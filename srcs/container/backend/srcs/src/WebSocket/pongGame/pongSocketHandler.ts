@@ -123,13 +123,12 @@ export function pongWebSocket(socket: WebSocket, user: User) {
 	});
 }
 
-//aide memoire ne pas oublier de mettre le bon nom du winner du tournois dans la db 
+//aide memoire ne pas oublier de mettre le bon nom du winner du tournois dans la db sur isonfinish
 //gerer si le tournois est full dans game menu et ne pas pouvoir rentrer
 //mettre a jour la room au fur a mesure que les joueurs gagne les manche
 //regler probleme de ball et extremite raquette
-//mettre au propre le code
 //faire le front du winner du tournois
-//gerer si un joueur est deco avant le debut de la partie de detecter et afficher un mess
+//gerer si un joueur est deco avant le debut de la partie de detecter et afficher un mess car sinon ca reste sur c est parti en attendant qu il arrive
 //avatar par default si marche pas le custum
 //gerer le redimenssionement de la photo dans la room 
 //bien controler la vitesse de la balle pour quelle se deplace sur le terrain en plus de 1 sec au plus rapide et verrifier le service ball 

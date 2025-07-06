@@ -33,13 +33,15 @@ function getStatsMode(match: "Solo" | "Tournament" | "Multi" | "MultiInvite", st
 		if (data.game_mode === "MultiInvite") //Pour regrouper dans multi
 			data.game_mode = "Multi";
 		if (data.game_mode === match) {
-			if (data.status === 1)
-				statUserData[match].victoire += 1;
-			else if (data.status === 0)
-				statUserData[match].defaite += 1;
-			else if (data.status === 2)
-				statUserData[match].abandon += 1;
-			statUserData[match].nbParti += 1;
+			if (data.is_tournament === 0) {
+				if (data.status === 1)
+					statUserData[match].victoire += 1;
+				else if (data.status === 0)
+					statUserData[match].defaite += 1;
+				else if (data.status === 2)
+					statUserData[match].abandon += 1;
+				statUserData[match].nbParti += 1;
+			}
 		}
 	}
 	if (statUserData[match].nbParti > 0) {
@@ -65,13 +67,15 @@ export function getStatsTournamentWinner(statUserData: userStatsPong, statuser: 
 
 export function generalUserStats(statuser: any[], statUserData: userStatsPong) {
 	for (const data of statuser) {
-		if (data.status === 1)
-			statUserData.total.victoire += 1;
-		else if (data.status === 0)
-			statUserData.total.defaite += 1;
-		else if (data.status === 2)
-			statUserData.total.abandon += 1;
-		statUserData.total.nbParti += 1;
+		if (data.is_tournament === 0) {
+			if (data.status === 1)
+				statUserData.total.victoire += 1;
+			else if (data.status === 0)
+				statUserData.total.defaite += 1;
+			else if (data.status === 2)
+				statUserData.total.abandon += 1;
+			statUserData.total.nbParti += 1;
+		}
 	}
 	if (statUserData.total.nbParti > 0) {
 		statUserData.total.victoirePour100 = statUserData.total.victoire * 100 / statUserData.total.nbParti;
