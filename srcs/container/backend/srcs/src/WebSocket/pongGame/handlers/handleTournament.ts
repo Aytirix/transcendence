@@ -357,7 +357,7 @@ export function isOnFinishMatch(tournament: Tournament, player1: playerStat, pla
 		player2.inRoom = false
 		tournament.listPlayer.delete(player2);
 
-		player1.socket.send(JSON.stringify({type: "Win"}))
+			player1.socket.send(JSON.stringify({type: "Win"}))
 		player1.inRoom = true;
 		//penser a exit le looser peux etre
 		//player in game pour winner tjr a true et le perdant a false 
@@ -370,7 +370,7 @@ export function isOnFinishMatch(tournament: Tournament, player1: playerStat, pla
 		player1.inRoom = false
 		tournament.listPlayer.delete(player1);
 
-		player2.socket.send(JSON.stringify({type: "Win"}))
+			player2.socket.send(JSON.stringify({type: "Win"}))
 		player2.inRoom = true;
 
 	}
@@ -392,7 +392,6 @@ export function isOnFinishMatch(tournament: Tournament, player1: playerStat, pla
 		}
 		tournament.nextManche = true;
 	}
-
 }
 
 function checkReady(tournament: Tournament) : boolean {
