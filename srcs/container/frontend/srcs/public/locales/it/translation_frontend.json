@@ -326,13 +326,15 @@
 			"quitter": "Esci",
 			"nameJoueurs": "Nomi dei giocatori",
 			"place": "Posizione",
-			"nextaQualifierRounds": "Sei automaticamente qualificato per il prossimo round!"
+			"nextaQualifierRounds": "Sei automaticamente qualificato per il prossimo round!",
+			"certificat": "/images/certificatitalien.png"
 		},
 		"gamemenu": {
 			"samekeyboard": "Gioca in due (stessa tastiera)",
 			"solo": "Singolo",
 			"multi": "Contro un giocatore online",
 			"tournament": "Torneo online",
+			"statistiques": "Statistiche",
 			"exit": "Esci",
 			"create": "Crea",
 			"join": "Unisciti",
@@ -344,7 +346,24 @@
 			"entrerid": "Inserisci ID",
 			"entrernom": "Inserisci nome",
 			"joueurs": "Giocatori",
-			"parametres": "Impostazioni"
+			"parametres": "Impostazioni",
+			"victoires": "Vittorie",
+			"defaites": "Sconfitte",
+			"abandons": "Abbandoni",
+			"tournoisgagnes": "Tornei vinti",
+			"partiesjoue": "Partite giocate",
+			"lastfive": "Ultime 5 partite",
+			"parties": "partite",
+			"aucunmatch": "Nessuna partita ancora giocata",
+			"mode": "Modalità",
+			"Victoire": "Vittoria",
+			"Défaite": "Sconfitta",
+			"Abandon": "Abbandono",
+			"Tournament": "Torneo",
+			"Solo": "Solo",
+			"Multi": "Multigiocatore",
+			"SameKeyboard": "Stessa tastiera",
+			"MultiInvite": "Multigiocatore"
 		},
 		"samekeyboard": {
 			"go": "Si parte!",

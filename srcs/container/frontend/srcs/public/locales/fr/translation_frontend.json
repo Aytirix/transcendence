@@ -323,12 +323,13 @@
 	},
 	"pong": {
 		"tournament": {
-			"title": "Tournois",
+			"title": "Tournoi",
 			"manches": "Manches",
 			"quitter": "Quitter",
 			"nameJoueurs": "joueurs noms",
 			"place": "Place",
-			"nextaQualifierRounds": "Vous êtes qualifié d’office pour la prochaine manche !"
+			"nextaQualifierRounds": "Vous êtes qualifié d’office pour la prochaine manche !",
+			"certificat": "/images/certificatfrancais.png"
 		},
 		"gamemenu": {
 			"samekeyboard": "Jouer à deux (même clavier)",
@@ -347,7 +348,24 @@
 			"entrerid": "Entrez id",
 			"entrernom": "Entrez le nom",
 			"joueurs": "Joueurs",
-			"parametres": "Paramètres"
+			"parametres": "Paramètres",
+			"victoires": "Victoires",
+			"defaites": "Défaites",
+			"abandons": "Abandons",
+			"tournoisgagnes": "Tournois gagnés",
+			"partiesjoue": "Parties jouées",
+			"lastfive": "5 derniers matchs",
+			"parties": "parties",
+			"aucunmatch": "Aucun match encore joué",
+			"mode": "Mode",
+			"Victoire": "Victoire",
+			"Défaite": "Défaite",
+			"Abandon": "Abandon",
+			"Tournament": "Tournois",
+			"Solo": "Seul",
+			"Multi": "Multijoueur",
+			"SameKeyboard": "Même clavier",
+			"MultiInvite": "Multijoueur"
 		},
 		"samekeyboard": {
 			"go": "C'est parti",
