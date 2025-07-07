@@ -80,7 +80,7 @@ function Intro() {
 					</div>
 					<div
 						className="floating-element floating-element-6"
-						onClick={() => navigate('/pong/menu')}
+						onClick={() => navigate('/pong')}
 						style={{ cursor: 'pointer' }}
 					>
 						<img

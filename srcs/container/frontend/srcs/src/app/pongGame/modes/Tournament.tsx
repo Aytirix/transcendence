@@ -29,7 +29,7 @@ const TournamentPage: React.FC = () => {
 
 	const quit = () => {
 		socketRef.current?.send(JSON.stringify({ type: "Tournament", action: "Quit" }))
-		navigate('/pong/menu');
+		navigate('/pong');
 	}
 	useEffect(() => {
 		const socket = new WebSocket(`wss://${window.location.host}/api/pong`);
