@@ -4,7 +4,7 @@
 	max-width: 1000px;
 	margin: 0 auto;
 	z-index: 10;
-	padding: 1rem;
+	padding: 0 1rem;
 
 	.stats-title {
 		text-align: center;
@@ -12,10 +12,9 @@
 		padding-top: 10px;
 		position: relative;
 		top: 0;
-		font-size: 1.5rem;
+		font-size: 1.3rem;
 		color: #e5e7eb;
 		font-family: 'Press Start 2P', cursive;
-		margin-bottom: 2rem;
 	}
 
 	.stats-description {
@@ -70,8 +69,6 @@
 			color: #ff6b6b;
 			border-color: #ff6b6b;
 		}
-
-		
 	}
 
 
@@ -92,7 +89,7 @@
 			align-items: center;
 			padding: 0.5rem 0;
 			color: #e5e7eb;
-			font-size: 0.8rem;
+			font-size: 0.7rem;
 			border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 
 			&:last-child {
@@ -101,8 +98,7 @@
 
 			.stat-label {
 				color: #9ca3af;
-				align-items: left
-				;
+				align-items: left;
 			}
 			.stat-value {
 				font-size: 0.7rem;
@@ -119,7 +115,7 @@
 
 		h3 {
 			margin: 0 0 1rem 0;
-			font-size: 1rem;
+			font-size: 0.9rem;
 			color: #e5e7eb;
 			text-align: center;
 			font-family: 'Press Start 2P', cursive;
@@ -131,7 +127,7 @@
 			margin: 0;
 
 			li {
-				font-size: 0.9rem;
+				font-size: 0.8rem;
 				margin-bottom: 0.5rem;
 				position: relative;
 				color: #e5e7eb;
@@ -194,25 +190,6 @@
 				padding: 1rem;
 				background: none;
 			}
-		}
-	}
-}
-
-@media (max-width: 700px) {
-	.statistics {
-		padding: 0.7rem 0.3rem;
-		
-		.stats-title {
-			font-size: 1.3rem;
-			margin-bottom: 20px;
-		}
-		
-		.stats-section {
-			padding: 1rem;
-		}
-		
-		.stats-subtitle {
-			font-size: 0.9rem;
 		}
 	}
 }
