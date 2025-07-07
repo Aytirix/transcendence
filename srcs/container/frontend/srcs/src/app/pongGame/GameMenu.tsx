@@ -286,69 +286,69 @@ const GameMenu: React.FC = () => {
 			)}
 			{showStatistique && statistique && (
 				<div className="popup">
-					<h2 className="text-2xl font-bold text-center mb-4 th-menu">Statistiques</h2>
+					<h2 className="text-2xl font-bold text-center mb-4 th-menu">{t("pong.gamemenu.statistiques")}</h2>
 					<table className="w-full text-lg table-fixed">
 						<tbody>
 							<tr className="border-b border-gray-300">
-								<td className="w-1/2 font-semibold">Victoires</td>
+								<td className="w-1/2 font-semibold">{t("pong.gamemenu.victoires")}</td>
 								<td className="text-right text-green-500">
 									{statistique.total.victoire} ({statistique.total.victoirePour100.toFixed(1)}%)
 								</td>
 							</tr>
 							<tr className="border-b border-gray-300">
-								<td className="font-semibold">Défaites</td>
+								<td className="font-semibold">{t("pong.gamemenu.defaites")}</td>
 								<td className="text-right text-red-500">
 									{statistique.total.defaite} ({statistique.total.defaitePour100.toFixed(1)}%)
 								</td>
 							</tr>
 							<tr className="border-b border-gray-300">
-								<td className="font-semibold">Abandons</td>
+								<td className="font-semibold">{t("pong.gamemenu.abandons")}</td>
 								<td className="text-right text-yellow-500">
 									{statistique.total.abandon} ({statistique.total.abandonPour100.toFixed(1)}%)
 								</td>
 							</tr>
 
 							<tr className="border-t border-gray-400 mt-2">
-								<td className="pt-2 font-semibold">Tournois gagnés</td>
+								<td className="pt-2 font-semibold">{t("pong.gamemenu.tournoisgagnes")}</td>
 								<td className="text-right pt-2">{statistique.tournamentVictory}</td>
 							</tr>
 							<tr>
-								<td className="font-semibold">Parties jouées</td>
+								<td className="font-semibold">{t("pong.gamemenu.partiesjoue")}</td>
 								<td className="text-right">{statistique.total.nbParti}</td>
 							</tr>
 
 							{/* SOLO */}
-							<tr><td colSpan={2} className="pt-2 font-semibold text-blue-200 uppercase">Solo</td></tr>
-							<tr><td className="pl-2">Parties jouées</td><td className="text-right">{statistique.Solo.nbParti}</td></tr>
-							<tr><td className="pl-2">Victoires</td><td className="text-right text-green-500">{statistique.Solo.victoire} ({statistique.Solo.victoirePour100.toFixed(1)}%)</td></tr>
-							<tr><td className="pl-2">Défaites</td><td className="text-right text-red-500">{statistique.Solo.defaite} ({statistique.Solo.defaitePour100.toFixed(1)}%)</td></tr>
-							<tr className="border-b border-gray-300"><td className="pl-2">Abandons</td><td className="text-right text-yellow-500">{statistique.Solo.abandon} ({statistique.Solo.abandonPour100.toFixed(1)}%)</td></tr>
+							<tr><td colSpan={2} className="pt-2 font-semibold text-blue-200 uppercase">{t("pong.gamemenu.solo")}</td></tr>
+							<tr><td className="pl-2">{t("pong.gamemenu.partiesjoue")}</td><td className="text-right">{statistique.Solo.nbParti}</td></tr>
+							<tr><td className="pl-2">{t("pong.gamemenu.victoires")}</td><td className="text-right text-green-500">{statistique.Solo.victoire} ({statistique.Solo.victoirePour100.toFixed(1)}%)</td></tr>
+							<tr><td className="pl-2">{t("pong.gamemenu.defaites")}</td><td className="text-right text-red-500">{statistique.Solo.defaite} ({statistique.Solo.defaitePour100.toFixed(1)}%)</td></tr>
+							<tr className="border-b border-gray-300"><td className="pl-2">{t("pong.gamemenu.abandons")}</td><td className="text-right text-yellow-500">{statistique.Solo.abandon} ({statistique.Solo.abandonPour100.toFixed(1)}%)</td></tr>
 
 							{/* MULTI */}
-							<tr><td colSpan={2} className="pt-2 font-semibold text-blue-200 uppercase">Multijoueur</td></tr>
-							<tr><td className="pl-2">Parties jouées</td><td className="text-right">{statistique.Multi.nbParti}</td></tr>
-							<tr><td className="pl-2">Victoires</td><td className="text-right text-green-500">{statistique.Multi.victoire} ({statistique.Multi.victoirePour100.toFixed(1)}%)</td></tr>
-							<tr><td className="pl-2">Défaites</td><td className="text-right text-red-500">{statistique.Multi.defaite} ({statistique.Multi.defaitePour100.toFixed(1)}%)</td></tr>
-							<tr className="border-b border-gray-300"><td className="pl-2">Abandons</td><td className="text-right text-yellow-500">{statistique.Multi.abandon} ({statistique.Multi.abandonPour100.toFixed(1)}%)</td></tr>
+							<tr><td colSpan={2} className="pt-2 font-semibold text-blue-200 uppercase">{t("pong.gamemenu.multi")}</td></tr>
+							<tr><td className="pl-2">{t("pong.gamemenu.partiesjoue")}</td><td className="text-right">{statistique.Multi.nbParti}</td></tr>
+							<tr><td className="pl-2">{t("pong.gamemenu.victoires")}</td><td className="text-right text-green-500">{statistique.Multi.victoire} ({statistique.Multi.victoirePour100.toFixed(1)}%)</td></tr>
+							<tr><td className="pl-2">{t("pong.gamemenu.defaites")}</td><td className="text-right text-red-500">{statistique.Multi.defaite} ({statistique.Multi.defaitePour100.toFixed(1)}%)</td></tr>
+							<tr className="border-b border-gray-300"><td className="pl-2">{t("pong.gamemenu.abandons")}</td><td className="text-right text-yellow-500">{statistique.Multi.abandon} ({statistique.Multi.abandonPour100.toFixed(1)}%)</td></tr>
 
 							{/* TOURNAMENT */}
-							<tr><td colSpan={2} className="pt-2 font-semibold text-blue-200 uppercase">Tournoi</td></tr>
-							<tr><td className="pl-2">Parties jouées</td><td className="text-right">{statistique.Tournament.nbParti}</td></tr>
-							<tr><td className="pl-2">Victoires</td><td className="text-right text-green-500">{statistique.Tournament.victoire} ({statistique.Tournament.victoirePour100.toFixed(1)}%)</td></tr>
-							<tr><td className="pl-2">Défaites</td><td className="text-right text-red-500">{statistique.Tournament.defaite} ({statistique.Tournament.defaitePour100.toFixed(1)}%)</td></tr>
-							<tr className="border-b border-gray-300"><td className="pl-2">Abandons</td><td className="text-right text-yellow-500">{statistique.Tournament.abandon} ({statistique.Tournament.abandonPour100.toFixed(1)}%)</td></tr>
+							<tr><td colSpan={2} className="pt-2 font-semibold text-blue-200 uppercase">{t("pong.gamemenu.tournament")}</td></tr>
+							<tr><td className="pl-2">{t("pong.gamemenu.partiesjoue")}</td><td className="text-right">{statistique.Tournament.nbParti}</td></tr>
+							<tr><td className="pl-2">{t("pong.gamemenu.victoires")}</td><td className="text-right text-green-500">{statistique.Tournament.victoire} ({statistique.Tournament.victoirePour100.toFixed(1)}%)</td></tr>
+							<tr><td className="pl-2">{t("pong.gamemenu.defaites")}</td><td className="text-right text-red-500">{statistique.Tournament.defaite} ({statistique.Tournament.defaitePour100.toFixed(1)}%)</td></tr>
+							<tr className="border-b border-gray-300"><td className="pl-2">{t("pong.gamemenu.abandons")}</td><td className="text-right text-yellow-500">{statistique.Tournament.abandon} ({statistique.Tournament.abandonPour100.toFixed(1)}%)</td></tr>
 
 							{/* Same keyboard */}
-							<tr><td className="pt-2 font-semibold">Same Keyboard</td><td className="text-right">{statistique.SameKeyboard.nbParti} parties</td></tr>
+							<tr><td className="pt-2 font-semibold">{t("pong.gamemenu.samekeyboard")}</td><td className="text-right">{statistique.SameKeyboard.nbParti} {t("pong.gamemenu.parties")}</td></tr>
 
 							{/* Derniers matchs */}
 							<tr>
-								<td className="pt-4 font-semibold" colSpan={2}>5 derniers matchs</td>
+								<td className="pt-4 font-semibold" colSpan={2}>{t("pong.gamemenu.lastfive")}</td>
 							</tr>
 							{statistique.lastFive.length > 0 ? (
 								statistique.lastFive.map((match, index) => (
 									<tr key={index} className="border-b border-gray-200">
-										<td className="text-sm  text-blue-200 uppercase">Mode {match.mode} vs {match.opponentName}</td>
+										<td className="text-sm  text-blue-200 uppercase">{t("pong.gamemenu.mode")} {t(`pong.gamemenu.${match.mode}`)} {match.opponentName}</td>
 										<td className="text-sm text-right">
 											{match.date} – 
 											<span className={
@@ -356,14 +356,14 @@ const GameMenu: React.FC = () => {
 												match.status === "Défaite" ? "text-red-500" :
 												"text-yellow-500"
 											}>
-												{" " + match.status}
+												{`${t(`pong.gamemenu.${match.status}`)}`}
 											</span>
 										</td>
 									</tr>
 								))
 							) : (
 								<tr>
-									<td colSpan={2} className="text-center text-gray-400">Aucun match encore joué</td>
+									<td colSpan={2} className="text-center text-gray-400">{t("pong.gamemenu.aucunmatch")}</td>
 								</tr>
 							)}
 						</tbody>

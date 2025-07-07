@@ -323,7 +323,10 @@ function dispatchMatch(tournament: Tournament) {
 						name: tournament.waitingWinner[0].name,
 						avatar: tournament.waitingWinner[0].avatar,
 					}}))
-				}, 500)
+					tournament.waitingWinner[0].winnerTournament = false;
+					tournament.waitingWinner[0].inGame = false;
+					tournament.waitingWinner[0].inRoom = false;
+				}, 300)
 				// messageTournament(tournament, "WinnerTournament", `${tournament.waitingWinner[0].name} remporte le tournois`);
 				listTournament.delete(tournament.idTournament);
 			// }, 500)
@@ -408,7 +411,10 @@ export function isOnFinishMatch(tournament: Tournament, player1: playerStat, pla
 						name: tournament.waitingWinner[0].name,
 						avatar: tournament.waitingWinner[0].avatar,
 					}}))
-				}, 500)
+					tournament.waitingWinner[0].winnerTournament = false;
+					tournament.waitingWinner[0].inGame = false;
+					tournament.waitingWinner[0].inRoom = false;
+				}, 300)
 				// tournament.waitingWinner[0].socket.send(JSON.stringify({action: "WinnerTournament", value: `${tournament.waitingWinner[0].name} remporte le tournois` }))
 				listTournament.delete(tournament.idTournament);
 			// }, 500)

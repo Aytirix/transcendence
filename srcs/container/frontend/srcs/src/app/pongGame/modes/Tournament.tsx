@@ -147,10 +147,10 @@ const TournamentPage: React.FC = () => {
 											{name.name}
 										</div>
 										<div className="flex flex-col items-start text-xl">
-											<div>Victoire : {name.statistique.total.victoire}</div>
-											<div>Defaite : {name.statistique.total.defaite}</div>
-											<div>Tournois Gagnés : {name.statistique.tournamentVictory}</div>
-											<div>Abandons : {name.statistique.total.abandon}</div>
+											<div>{t("pong.gamemenu.victoires")} : {name.statistique.total.victoire}</div>
+											<div>{t("pong.gamemenu.defaites")} : {name.statistique.total.defaite}</div>
+											<div>{t("pong.gamemenu.tournoisgagnes")} : {name.statistique.tournamentVictory}</div>
+											<div>{t("pong.gamemenu.abandons")} : {name.statistique.total.abandon}</div>
 										</div>
 										<div className='mr-10 text-2xl'>
 											{i + 1}/{sizeTournament}

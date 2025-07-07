@@ -326,13 +326,15 @@
 			"quitter": "Salir",
 			"nameJoueurs": "Nombres de los jugadores",
 			"place": "Puesto",
-			"nextaQualifierRounds": "¡Estás clasificado automáticamente para la próxima ronda!"
+			"nextaQualifierRounds": "¡Estás clasificado automáticamente para la próxima ronda!",
+			"certificat": "/images/certificatespagnol.png"
 		},
 		"gamemenu": {
 			"samekeyboard": "Jugar a dos (mismo teclado)",
 			"solo": "Solo",
 			"multi": "Contra un jugador en línea",
 			"tournament": "Torneo en línea",
+			"statistiques": "Estadísticas",
 			"exit": "Salir",
 			"create": "Crear",
 			"join": "Unirse",
@@ -344,7 +346,24 @@
 			"entrerid": "Introduce el ID",
 			"entrernom": "Introduce el nombre",
 			"joueurs": "Jugadores",
-			"parametres": "Ajustes"
+			"parametres": "Ajustes",
+			"victoires": "Victorias",
+			"defaites": "Derrotas",
+			"abandons": "Abandonos",
+			"tournoisgagnes": "Torneos ganados",
+			"partiesjoue": "Partidas jugadas",
+			"lastfive": "Últimos 5 partidos",
+			"parties": "partidas",
+			"aucunmatch": "Aún no se ha jugado ningún partido",
+			"mode": "Modo",
+			"Victoire": "Victoria",
+			"Défaite": "Derrota",
+			"Abandon": "Abandono",
+			"Tournament": "Torneo",
+			"Solo": "Solo",
+			"Multi": "Multijugador",
+			"SameKeyboard": "Mismo teclado",
+			"MultiInvite": "Multijugador"
 		},
 		"samekeyboard": {
 			"go": "¡Vamos!",
