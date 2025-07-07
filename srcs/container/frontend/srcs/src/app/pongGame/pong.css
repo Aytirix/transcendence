@@ -1,4 +1,30 @@
 
+@keyframes popupGlowRed {
+  0%, 100% {
+    box-shadow:
+	  4px 4px 0 #550000,
+      -2px -2px 0 #550000,
+      0 0 0px rgba(255, 0, 0, 1),
+      0 0 0px rgba(255, 0, 0, 0.9),
+      0 0 0px rgba(255, 0, 0, 0.8),
+      0 0 50px rgba(255, 0, 0, 0.7),
+      0 0 80px rgba(255, 0, 0, 0.6),
+      0 0 100px rgba(255, 0, 0, 0.6);
+  }
+  50% {
+    box-shadow:
+	  4px 4px 0 #550000,
+     -2px -2px 0 #550000,
+      0 0 12px rgba(255, 50, 50, 1),
+      0 0 24px rgba(255, 50, 50, 0.95),
+      0 0 40px rgba(255, 60, 60, 0.9),
+      0 0 70px rgba(255, 80, 80, 0.85),
+      0 0 100px rgba(255, 100, 100, 0.8),
+      0 0 120px rgba(255, 100, 100, 0.8);
+  }
+}
+
+
 @keyframes textGlow {
   0%, 100% {
     text-shadow:
@@ -178,6 +204,90 @@
   z-index: 10;
   animation: textGlow 1.7s linear infinite;
 }
+
+.WinnerPage {
+  height: 100vh;
+  background-image: url("/images/WinnerPage.jpg");
+  background-size: cover;
+  background-position: center center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  flex-direction: column;
+  width: 100vw;
+  top: 0;
+  left: 0;
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.img-certificat {
+	position: absolute;
+	top: 85%;
+	transform: translate(-50%, -50%);
+	left: 95%;
+	font-weight: bold;
+	width: 300px;
+	height: 300px;
+}
+
+
+.img-logo {
+	position: absolute;
+	top: 0px;
+	right: 10%;
+	font-weight: bold;
+	width: 180px;
+	height: 150px;
+}
+
+.avatar-Winner {
+	position: fixed;
+	top: 4%;
+	font-weight: bold;
+	width: 140px;
+	height: 140px;
+	border-radius: 20px;
+	box-shadow: 0 0 15px rgba(36, 1, 1, 0.5);
+	padding: 5px;
+	background-color: #fbf9f900;
+	color: white;
+	border-radius: 20px;     /* 👈 Coins arrondis */
+	border: 1px solid rgba(224, 7, 7, 0.542);
+	display: flex;
+	justify-content: center;
+	text-align: center;
+	overflow: hidden;
+}
+
+.name-winner{
+	position: absolute;
+	top: 60%;
+	left: 5%;
+	font-weight: bold;
+	font-size: 43px;
+	text-shadow: 3px 3px 3px rgba(26, 25, 25, 0.753);
+	color: #f13e3ed5;
+}
+
+.popup-WinnerPage {
+	position: fixed;	
+	width: 500px;
+	height: 300px;
+	left: 50%;
+	top: 30%;
+	transform: translate(-50%, -50%);
+	padding: 20px;
+	background-color: #fdfcfc;
+	color: white;
+	border-radius: 20px;
+	animation: popupGlowRed 1.7s ease-in-out infinite;
+}
+	
 
 .page-custom {
   height: 100vh;

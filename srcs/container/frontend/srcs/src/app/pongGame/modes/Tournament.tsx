@@ -1,12 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from "react-router-dom";
-import { MatchDisplayData, Tournament } from '../types/data';
+import { MatchDisplayData, StatModeTournament, Tournament } from '../types/data';
 import ApiService from '../../../api/ApiService';
 import { useLanguage } from '../../../contexts/LanguageContext';
 
 const TournamentPage: React.FC = () => {
 	const [listTournament, setListTournament] = useState<Tournament[]>([])
-	const [listNameAvatar, setListNameAvatar] = useState<{ name: string, avatar: string }[]>([]);
+	const [listNameAvatar, setListNameAvatar] = useState<{ name: string, avatar: string, statistique: StatModeTournament}[]>([]);
 	const [sizeTournament, setSizeTournament] = useState<number | null>(null);
 	const [startTournament, setStartTournament] = useState(false);
 	const playerName = useRef<string | null>(null);
@@ -143,14 +143,14 @@ const TournamentPage: React.FC = () => {
 										<div className='popup-img-tournament'>
 											<img src={ApiService.getFile(name.avatar)} alt="" />
 										</div>
-										<div className='text-3xl	'>
+										<div className='text-4xl	'>
 											{name.name}
 										</div>
-										<div className="flex flex-col items-start">
-											<div>Victoire : </div>
-											<div>Defaite : </div>
-											<div>Tournois Gagnés :</div>
-											<div>Abandons :</div>
+										<div className="flex flex-col items-start text-xl">
+											<div>{t("pong.gamemenu.victoires")} : {name.statistique.total.victoire}</div>
+											<div>{t("pong.gamemenu.defaites")} : {name.statistique.total.defaite}</div>
+											<div>{t("pong.gamemenu.tournoisgagnes")} : {name.statistique.tournamentVictory}</div>
+											<div>{t("pong.gamemenu.abandons")} : {name.statistique.total.abandon}</div>
 										</div>
 										<div className='mr-10 text-2xl'>
 											{i + 1}/{sizeTournament}
@@ -175,8 +175,14 @@ const TournamentPage: React.FC = () => {
 					}
 				</>)
 				: <>
-					<h1 className='Title'>{nameWinner}</h1>
-				</>
+					<div className='WinnerPage'>
+						<div className='popup-WinnerPage'>
+							<div className='avatar-Winner'></div>
+							<img src="/images/logomarvel.png" alt="logo" className='img-logo'/>
+						</div>
+							<img src="/images/certificat.png" alt="certificat" className='img-certificat'/>
+					</div>
+		</>
 			}
 		</div>
 	);

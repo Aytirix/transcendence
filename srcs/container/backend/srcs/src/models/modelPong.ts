@@ -2,31 +2,53 @@ import { User, Friends, Group } from '@types';
 import executeReq from '@models/database';
 import { userStatsPong } from '../WebSocket/pongGame/types/playerStat';
 import { WebSocketServer, WebSocket } from 'ws';
+import { MatchSummary } from '../WebSocket/pongGame/types/playerStat';
 
 setInterval(async () => {
 	await checkTokenInvite();
 }, 60000);
 
-async function getStatisticsForUser(userId: number): Promise<userStatsPong> {
-	const query = `SELECT id, is_tournament, status FROM pong_stat WHERE user_id = ?`;
-	const statUser: any = await executeReq(query, [userId]);
+async function getStatisticsForUser(userId: number): Promise<any[]> {
+		const query = `
+			SELECT 
+				pong_stat.id,
+				pong_stat.is_tournament,
+				pong_stat.status,
+				pong_stat.match_date,
+				pong_stat.game_mode,
+				pong_stat.opponent_id,
+				users.username AS opponent_name
+			FROM pong_stat
+			LEFT JOIN users ON pong_stat.opponent_id = users.id
+			WHERE pong_stat.user_id = ?
+			ORDER BY pong_stat.match_date DESC
+		`;
+		const statUser: any = await executeReq(query, [userId]);
+		
 
-	let statUserData: any = {
-		victoire: 0,
-		defaite: 0,
-		abandon: 0,
-		tournamentVictory: 0,
-	};
 
-	return statUserData;
+	return statUser;
 }
 
-async function insertStatistic(userId: number, isTournament: number, status: number): Promise<boolean> {
+
+
+async function insertStatistic(userId: number, isTournament: number, status: number, gameMode: string, opponentId: number): Promise<boolean> {
 	const query = `
-		INSERT INTO pong_stat (user_id, is_tournament, status) 
-		VALUES (?, ?, ?)
+		INSERT INTO pong_stat (user_id, is_tournament, status, match_date, game_mode, opponent_id) 
+		VALUES (?, ?, ?, CURRENT_TIMESTAMP, ?, ?)
 	`;
-	const result: any = await executeReq(query, [userId, isTournament, status]);
+	const result: any = await executeReq(query, [userId, isTournament, status, gameMode, opponentId]);
+	if (!result || result.affectedRows === 0) {
+		return false;
+	}
+	return true;
+}
+
+async function deleteStatistic(userId: number): Promise<boolean> {
+	const query = `
+		DELETE FROM pong_stat WHERE user_id = ? AND is_tournament = 0 AND status = 1 LIMIT 1
+	`;
+	const result: any = await executeReq(query, [userId]);
 	if (!result || result.affectedRows === 0) {
 		return false;
 	}
@@ -130,6 +152,7 @@ async function checkUserIsInvited(friendId: number, userId?: number): Promise<{ 
 }
 
 export default {
+	deleteStatistic,
 	getStatisticsForUser,
 	insertStatistic,
 	insertTokenInvite,

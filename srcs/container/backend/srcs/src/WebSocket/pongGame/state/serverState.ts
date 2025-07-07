@@ -34,7 +34,9 @@ export function getIngame(id: number): { inGame: boolean, nav: string } {
 				case "Tournament":
 					redirection = "/pong/menu/GameTournament";
 					console.log("get in game tournament in room", player.inRoom);
-					if (player.inRoom) {
+					if (player.winnerTournament)
+						redirection = "/pong/menu/WinnerPage"
+					else if (player.inRoom) {
 						redirection = "/pong/menu/Tournament";
 					}
 					break;
