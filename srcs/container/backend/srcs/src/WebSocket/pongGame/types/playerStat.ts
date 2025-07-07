@@ -1,12 +1,39 @@
 import { Game } from "../game/Game";
 import { WebSocket } from "ws";
 
-export interface userStatsPong {
-	victoire: 0,
-	defaite: 0,
-	abandon: 0,
-	tournamentVictory: 0,
+	export interface StatMode {
+	victoire: number;
+	defaite: number;
+	abandon: number;
+	nbParti: number;
+	victoirePour100: number;
+	defaitePour100: number;
+	abandonPour100: number;
 }
+
+export interface SameKeyboardStat {
+	nbParti: number;
+}
+
+export interface MatchSummary {
+	mode: string;
+	date: string;
+	opponentName: string;
+	status: 'Victoire' | 'Défaite' | 'Abandon';
+}
+
+export interface userStatsPong {
+	total: StatMode;
+	tournamentVictory?: number;
+	Multi?: StatMode;
+	Tournament?: StatMode;
+	Solo?: StatMode;
+	SameKeyboard?: SameKeyboardStat;
+	lastFive?: MatchSummary[];
+}
+
+
+
 
 export interface playerStat {
 	game?: Game;
@@ -29,6 +56,7 @@ export interface playerStat {
 	isReady?: boolean;
 	readyToNext?: boolean;
 	switchManche?: boolean;
+	winnerTournament?: boolean
 };
 
 export interface Tournament {
@@ -42,6 +70,7 @@ export interface Tournament {
 	currentManche?: number;
 	waitingWinner?: playerStat [];
 	nextManche?: boolean;
+	isFinal?: boolean;
 	historyTournament?: {
 		nbRound: number,
 		round: number, 

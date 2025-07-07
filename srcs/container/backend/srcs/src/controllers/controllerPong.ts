@@ -9,6 +9,7 @@ import { getSocketByUserId } from '../WebSocket/chat/wsChat';
 import { reponse, State } from '@typesChat';
 import { WebSocketServer, WebSocket } from 'ws';
 import { User } from '@types';
+import { MatchSummary, userStatsPong } from '../WebSocket/pongGame/types/playerStat';
 
 // Tableau pour limiter les invitations - stocke les dernières invitations par paire d'utilisateurs
 // Clé: "userId_friendId", Valeur: timestamp de la dernière invitation
@@ -25,9 +26,140 @@ const cleanExpiredThrottleEntries = () => {
 	}
 };
 
+function getStatsMode(match: "Solo" | "Tournament" | "Multi" | "MultiInvite", statUserData: userStatsPong, statuser: any[]) {
+	if (match ===  "MultiInvite") //Pour regrouper dans multi
+		match = "Multi";
+	for (const data of statuser) {
+		if (data.game_mode === "MultiInvite") //Pour regrouper dans multi
+			data.game_mode = "Multi";
+		if (data.game_mode === match) {
+			if (data.is_tournament === 0) {
+				if (data.status === 1)
+					statUserData[match].victoire += 1;
+				else if (data.status === 0)
+					statUserData[match].defaite += 1;
+				else if (data.status === 2)
+					statUserData[match].abandon += 1;
+				statUserData[match].nbParti += 1;
+			}
+		}
+	}
+	if (statUserData[match].nbParti > 0) {
+		statUserData[match].victoirePour100 = statUserData[match].victoire * 100 / statUserData[match].nbParti;
+		statUserData[match].defaitePour100 = statUserData[match].defaite * 100 / statUserData[match].nbParti;
+		statUserData[match].abandonPour100 = statUserData[match].abandon * 100 / statUserData[match].nbParti;
+	}
+}
+
+export function getStatsSameKeyboard(statUserData: userStatsPong, statuser: any[]) {
+	for (const data of statuser) {
+		if (data.game_mode === "SameKeyboard")
+			statUserData.SameKeyboard.nbParti += 1;
+	}
+}
+
+export function getStatsTournamentWinner(statUserData: userStatsPong, statuser: any[]) {
+	for (const data of statuser) {
+		if (data.is_tournament)
+			statUserData.tournamentVictory += 1;
+	}
+}
+
+export function generalUserStats(statuser: any[], statUserData: userStatsPong) {
+	for (const data of statuser) {
+		if (data.is_tournament === 0) {
+			if (data.status === 1)
+				statUserData.total.victoire += 1;
+			else if (data.status === 0)
+				statUserData.total.defaite += 1;
+			else if (data.status === 2)
+				statUserData.total.abandon += 1;
+			statUserData.total.nbParti += 1;
+		}
+	}
+	if (statUserData.total.nbParti > 0) {
+		statUserData.total.victoirePour100 = statUserData.total.victoire * 100 / statUserData.total.nbParti;
+		statUserData.total.defaitePour100 = statUserData.total.defaite * 100 / statUserData.total.nbParti;
+		statUserData.total.abandonPour100 = statUserData.total.abandon * 100 / statUserData.total.nbParti;
+	}
+}
+
+export function getFiveLastMatch(statuser: any[], statUserData: userStatsPong) {
+	const filteredMatches = statuser.filter(match => match.is_tournament === 0);
+	const lastFive = filteredMatches.slice(0, 5);
+	for (const data of lastFive) {
+		let match: MatchSummary = {
+			status: "Défaite", // valeur par défaut
+			opponentName: data.opponent_name,
+			mode: data.game_mode,
+			date: data.match_date
+		};
+
+		if (data.status === 1)
+			match.status = "Victoire";
+		else if (data.status === 0)
+			match.status = "Défaite";
+		else if (data.status === 2)
+			match.status = "Abandon";
+		statUserData.lastFive.push(match);
+	}
+}
+
+
 export const getStatForPlayer = async (request: FastifyRequest, reply: FastifyReply) => {
+	
+		let statUserData: userStatsPong = {
+		total: {
+			victoire: 0,
+			defaite: 0,
+			abandon: 0,
+			nbParti: 0,
+			victoirePour100: 0,
+			defaitePour100: 0,
+			abandonPour100: 0
+		},
+		tournamentVictory: 0,
+		Multi: {
+			victoire: 0,
+			defaite: 0,
+			abandon: 0,
+			nbParti: 0,
+			victoirePour100: 0,
+			defaitePour100: 0,
+			abandonPour100: 0
+		},
+		Tournament: {
+			victoire: 0,
+			defaite: 0,
+			abandon: 0,
+			nbParti: 0,
+			victoirePour100: 0,
+			defaitePour100: 0,
+			abandonPour100: 0
+		},
+		Solo: {
+			victoire: 0,
+			defaite: 0,
+			abandon: 0,
+			nbParti: 0,
+			victoirePour100: 0,
+			defaitePour100: 0,
+			abandonPour100: 0
+		},
+		SameKeyboard: {
+			nbParti: 0
+		},
+		lastFive: []
+	};
 	const playerStats = await modelPong.getStatisticsForUser(request.session.user.id);
-	return reply.send(playerStats);
+	generalUserStats(playerStats, statUserData);
+	getStatsMode("Multi", statUserData, playerStats);
+	getStatsMode("Solo", statUserData, playerStats);
+	getStatsMode("Tournament", statUserData, playerStats);
+	getStatsTournamentWinner(statUserData, playerStats);
+	getStatsSameKeyboard(statUserData, playerStats)
+	getFiveLastMatch(playerStats, statUserData);
+	return reply.send(statUserData);
 };
 
 export const invitePlayer = async (request: FastifyRequest, reply: FastifyReply) => {
@@ -254,6 +386,8 @@ export const cancelInvite = async (ws: WebSocket, user: User, state: State, text
 };
 
 export default {
+	getStatsTournamentWinner,
+	generalUserStats,
 	getStatForPlayer,
 	invitePlayer,
 	confirmInvite,

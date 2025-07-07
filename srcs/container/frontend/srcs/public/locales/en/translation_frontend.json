@@ -360,13 +360,15 @@
 			"quitter": "Exit",
 			"nameJoueurs": "Player names",
 			"place": "Rank",
-			"nextaQualifierRounds": "You are automatically qualified for the next round!"
+			"nextaQualifierRounds": "You are automatically qualified for the next round!",
+			"certificat": "/images/certificatanglais.png"
 		},
 		"gamemenu": {
 			"samekeyboard": "Play together (same keyboard)",
 			"solo": "Solo",
 			"multi": "Play against an online player",
 			"tournament": "Online Tournament",
+			"statistiques": "Statistics",
 			"exit": "Exit",
 			"create": "Create",
 			"join": "Join",
@@ -378,7 +380,24 @@
 			"entrerid": "Enter ID",
 			"entrernom": "Enter name",
 			"joueurs": "Players",
-			"parametres": "Settings"
+			"parametres": "Settings",
+			"victoires": "Wins",
+			"defaites": "Losses",
+			"abandons": "Forfeits",
+			"tournoisgagnes": "Tournaments won",
+			"partiesjoue": "Games played",
+			"lastfive": "Last 5 matches",
+			"parties": "games",
+			"aucunmatch": "No match played yet",
+			"mode": "Mode",
+			"Victoire": "Win",
+			"Défaite": "Loss",
+			"Abandon": "Forfeit",
+			"Tournament": "Tournament",
+			"Solo": "Solo",
+			"Multi": "Multiplayer",
+			"SameKeyboard": "Same keyboard",
+			"MultiInvite": "Multiplayer"
 		},
 		"samekeyboard": {
 			"go": "Let's go",
