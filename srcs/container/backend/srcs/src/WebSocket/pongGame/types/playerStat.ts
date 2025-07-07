@@ -56,6 +56,7 @@ export interface playerStat {
 	isReady?: boolean;
 	readyToNext?: boolean;
 	switchManche?: boolean;
+	winnerTournament?: boolean
 };
 
 export interface Tournament {
@@ -69,6 +70,7 @@ export interface Tournament {
 	currentManche?: number;
 	waitingWinner?: playerStat [];
 	nextManche?: boolean;
+	isFinal?: boolean;
 	historyTournament?: {
 		nbRound: number,
 		round: number, 

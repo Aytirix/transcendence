@@ -175,8 +175,14 @@ const TournamentPage: React.FC = () => {
 					}
 				</>)
 				: <>
-					<h1 className='Title'>{nameWinner}</h1>
-				</>
+					<div className='WinnerPage'>
+						<div className='popup-WinnerPage'>
+							<div className='avatar-Winner'></div>
+							<img src="/images/logomarvel.png" alt="logo" className='img-logo'/>
+						</div>
+							<img src="/images/certificat.png" alt="certificat" className='img-certificat'/>
+					</div>
+		</>
 			}
 		</div>
 	);
