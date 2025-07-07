@@ -3,7 +3,7 @@
 .rules {
 	max-width: 1000px;
 	z-index: 10;
-	padding: 1rem;
+	padding: 0 1rem;
 
 	.rules-title {
 		text-align: center;
@@ -11,10 +11,9 @@
 		padding-top: 10px;
 		position: relative;
 		top: 0;
-		font-size: 1.5rem;
+		font-size: 1.3rem;
 		color: #e5e7eb;
 		font-family: 'Press Start 2P', cursive;
-		margin-bottom: 2rem;
 	}
 
 	.rules-description {
