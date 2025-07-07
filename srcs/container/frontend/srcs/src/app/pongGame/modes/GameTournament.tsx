@@ -14,7 +14,7 @@ const GameTournament: React.FC = () => {
 			const navigate = useNavigate();
 			const returnMenu = () => socketRef.current?.send(JSON.stringify({type: "EXIT", value: assignPlayer}));
 			const returnMenuWinner = () => { 
-				navigate('/pong/menu')
+				navigate('/pong')
 				engine.current?.dispose();
 			};
 			
@@ -118,7 +118,7 @@ const GameTournament: React.FC = () => {
 						engine.current?.dispose();
 						localStorage.removeItem("reconnection");
 						localStorage.removeItem("data");
-						navigate('/pong/menu');
+						navigate('/pong');
 						return;
 					}
 					if (data.type === "Remove") {
