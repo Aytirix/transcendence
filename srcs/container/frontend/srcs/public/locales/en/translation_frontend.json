@@ -217,7 +217,33 @@
 		},
 		"game": {
 			"quit": "Quit game",
-			"pacmanLife": "Pacman life"
+			"pacmanLife": "Pacman life",
+			"time": "Time",
+			"score": "Scores",
+			"total": "Total",
+			"controls": "Controls",
+			"move": "Move",
+			"statistics": "Statistics",
+			"remainingDots": "Remaining dots:",
+			"remainingPowerPills": "Remaining power pills:",
+			"instructions": {
+				"title": "Instructions",
+				"controls": "Controls",
+				"objectives": "Rules and objectives",
+				"move": "Use arrow keys to move",
+				"collectDots": "Collect all pellets to win",
+				"avoidGhosts": "Avoid ghosts trying to catch you",
+				"eatPowerPills": "Eat power pills to become temporarily invincible",
+				"pacman": {
+					"survival": "Survive and use your 3 lives wisely"
+				},
+				"ghost": {
+					"catchPacman": "Catch Pacman to win",
+					"avoidWhenFrightened": "Avoid Pacman when you are frightened (blue)",
+					"teamwork": "Work as a team with other ghosts",
+					"strategy": "Block exits and trap Pacman"
+				}
+			}
 		}
 	},
 	"pageNotFound": {

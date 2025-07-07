@@ -2,6 +2,7 @@
 import React from 'react';
 import '../../assets/styles/pacman/PacmanGame.scss';
 import { state } from '../../types/pacmanTypes';
+
 import {
 	GameHeader,
 	PauseMode,
@@ -17,6 +18,8 @@ import {
 	useWallTypes,
 	useKeyboardControls
 } from './hooks';
+
+import { useLanguage } from '../../../contexts/LanguageContext';
 
 interface PacmanGameProps {
 	state: state;
@@ -35,7 +38,7 @@ const PacmanGame: React.FC<PacmanGameProps> = ({ state }) => {
 	}, state.player?.id);
 	const { scale, offsetX, offsetY } = useGameLayout({ grid, tileSize });
 	const { getWallType } = useWallTypes();
-
+	const { t } = useLanguage();
 	// Configuration des contrôles clavier
 	useKeyboardControls({
 		ws: state.ws,
@@ -56,30 +59,76 @@ const PacmanGame: React.FC<PacmanGameProps> = ({ state }) => {
 
 			<div className="pacman-map-wrapper">
 				<div className='column-left'>
-					{/* Instructions de jeu */}
-					<div className="game-instructions">
-						<h4>Contrôles</h4>
+					{/* Bloc Contrôles */}
+					<div className="game-controls">
+						<h4>{t("pacman.game.instructions.controls")}</h4>
 						<div className="control-item">
 							<span className="key">↑↓←→</span>
-							<span className="action">Déplacer</span>
+							<span className="action">{t("pacman.game.instructions.move")}</span>
 						</div>
-						<div className="control-item">
-							<span className="key">WASD</span>
-							<span className="action">Alternatif</span>
-						</div>
+					</div>
+
+					{/* Bloc Règles/Objectifs */}
+					<div className="game-objectives">
+						<h4>{t("pacman.game.instructions.objectives")}</h4>
+						{(() => {
+							// Trouver le joueur actuel dans la liste des joueurs de la partie
+							const currentPlayer = players.find(p => p.id === state.player?.id);
+							const playerCharacter = currentPlayer?.character;
+							
+							return (
+								<>
+									{/* Instructions spécifiques à Pacman */}
+									{playerCharacter === 'P' && (
+										<>
+											<div className="instruction-note">
+												{t("pacman.game.instructions.collectDots")}
+											</div>
+											<div className="instruction-note">
+												{t("pacman.game.instructions.avoidGhosts")}
+											</div>
+											<div className="instruction-note">
+												{t("pacman.game.instructions.eatPowerPills")}
+											</div>
+											<div className="instruction-note">
+												{t("pacman.game.instructions.pacman.survival")}
+											</div>
+										</>
+									)}
+									
+									{/* Instructions spécifiques aux fantômes */}
+									{playerCharacter && playerCharacter !== 'P' && (
+										<>
+											<div className="instruction-note">
+												{t("pacman.game.instructions.ghost.catchPacman")}
+											</div>
+											<div className="instruction-note">
+												{t("pacman.game.instructions.ghost.avoidWhenFrightened")}
+											</div>
+											<div className="instruction-note">
+												{t("pacman.game.instructions.ghost.teamwork")}
+											</div>
+											<div className="instruction-note">
+												{t("pacman.game.instructions.ghost.strategy")}
+											</div>
+										</>
+									)}
+								</>
+							);
+						})()}
 					</div>
 
 					{/* Statistiques de la partie */}
 					<div className="game-stats">
-						<h4>Statistiques</h4>
+						<h4>{t("pacman.game.statistics")}</h4>
 						<div className="stat-item">
-							<span className="stat-label">Dots restants:</span>
+							<span className="stat-label">{t("pacman.game.remainingDots")}</span>
 							<span className="stat-value">
 								{grid?.join('').split('').filter(cell => cell === '.').length || 0}
 							</span>
 						</div>
 						<div className="stat-item">
-							<span className="stat-label">Power Pills:</span>
+							<span className="stat-label">{t("pacman.game.remainingPowerPills")}</span>
 							<span className="stat-value">
 								{grid?.join('').split('').filter(cell => cell === 'o').length || 0}
 							</span>
