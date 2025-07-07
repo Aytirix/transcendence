@@ -104,6 +104,7 @@ function createTournament(playerInfos: playerStat, msg: webMsg) {
 		currentMatch: [],
 		waitingWinner: [],
 		nextManche: false,
+		isFinal: false,
 	}
 	playerInfos.idTournament = tournament.idTournament;
 	playerInfos.mode = msg.type;
@@ -306,12 +307,18 @@ function dispatchMatch(tournament: Tournament) {
 	shuffle(tournament.waitingWinner);
 	const length : number = tournament.waitingWinner.length;
 	let stockWinner : playerStat;
+	tournament.isFinal = (length === 2);
 	if (length % 2 !== 0) {
 		if (length === 1) {
 			tournament.winner = true;
+
+			tournament.waitingWinner[0].winnerTournament = true;
+
 			console.log("envoi du vainqueur dans dispatch", tournament.waitingWinner[0].name)
 			setTimeout(() => {
-				messageTournament(tournament, "WinnerTournament", `${tournament.waitingWinner[0].name} remporte le tournois`);
+
+				tournament.waitingWinner[0].socket.send(JSON.stringify({type: "WinnerTournament"}))
+				// messageTournament(tournament, "WinnerTournament", `${tournament.waitingWinner[0].name} remporte le tournois`);
 				listTournament.delete(tournament.idTournament);
 			}, 500)
 			return ;
@@ -357,8 +364,10 @@ export function isOnFinishMatch(tournament: Tournament, player1: playerStat, pla
 		player2.inRoom = false
 		tournament.listPlayer.delete(player2);
 
+		if (!tournament.isFinal) {
+			player1.inRoom = true;
 			player1.socket.send(JSON.stringify({type: "Win"}))
-		player1.inRoom = true;
+		}
 		//penser a exit le looser peux etre
 		//player in game pour winner tjr a true et le perdant a false 
 		//in room a true 
@@ -369,21 +378,27 @@ export function isOnFinishMatch(tournament: Tournament, player1: playerStat, pla
 		player1.inGame = false
 		player1.inRoom = false
 		tournament.listPlayer.delete(player1);
-
+		//mettre boolean isFinal
+		if (!tournament.isFinal) {
+			player2.inRoom = true;
 			player2.socket.send(JSON.stringify({type: "Win"}))
-		player2.inRoom = true;
-
+		}
 	}
 	if (tournament.waitingWinner.length === tournament.currentMatch.length) {
 		tournament.currentMatch.length = 0;
 		if (tournament.waitingWinner.length === 1) {
 			tournament.winner = true;
+
+			tournament.waitingWinner[0].winnerTournament = true;
+
 			console.log("envoi du vainqueur", tournament.waitingWinner[0].name)
 			tournament.waitingWinner[0].id
 			modelPong.insertStatistic(tournament.waitingWinner[0].id, 1, 1, tournament.waitingWinner[0].mode, tournament.waitingWinner[0].id)
 			setTimeout(() => {
 				console.log("ENVOI DU WINNER ", tournament.waitingWinner[0].name)
-				tournament.waitingWinner[0].socket.send(JSON.stringify({action: "WinnerTournament", value: `${tournament.waitingWinner[0].name} remporte le tournois` }))
+				tournament.waitingWinner[0].socket.send(JSON.stringify({type: "WinnerTournament"}))
+
+				// tournament.waitingWinner[0].socket.send(JSON.stringify({action: "WinnerTournament", value: `${tournament.waitingWinner[0].name} remporte le tournois` }))
 				listTournament.delete(tournament.idTournament);
 			}, 500)
 			return ;

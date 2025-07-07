@@ -138,6 +138,13 @@ const GameTournament: React.FC = () => {
 								messagePause.current = t("pong.multi.pausead");
 						}
 					}
+					if (data.type === "WinnerTournament") {
+						console.log("WinnerTournament")
+						engine.current?.dispose();
+						localStorage.removeItem("reconnection");
+						localStorage.removeItem("data");
+						navigate("/pong/menu/WinnerPage");
+					}
 					if (data.type === "Win") {
 						// socket.close();
 						console.log("win")
