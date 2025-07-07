@@ -21,6 +21,7 @@ export type Group = {
 export type Message = {
   id: number;
   sender_id: string | number;
+  sender_username?: string;
   message: string;
   sent_at: string;
 };

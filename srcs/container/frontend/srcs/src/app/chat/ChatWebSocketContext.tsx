@@ -86,7 +86,7 @@ export const ChatWebSocketProvider: React.FC<ChatWebSocketProviderProps> = ({ ch
 
 	// Pages où on ne veut pas ouvrir la socket du chat
 	const authPages = useMemo(() => ["/login", "/register", "/forget-password", "/auth/checkCode"], []);
-	const shouldConnectWebSocket = useMemo(() => !authPages.includes(currentPathname), [currentPathname, authPages]);
+		const shouldConnectWebSocket = useMemo(() => !authPages.includes(currentPathname), [currentPathname, authPages]);
 
 	const setNavigateFunction = useCallback((navigate: (url: string) => void) => {
 		navigateRef.current = navigate;
@@ -127,14 +127,11 @@ export const ChatWebSocketProvider: React.FC<ChatWebSocketProviderProps> = ({ ch
 						const arr = Object.values(data.messages) as Message[];
 						arr.sort((a, b) => a.id - b.id);
 
-						// // Map sender_id to username
-						// for (const key in arr) {
-						// 	const sender_id = arr[key].sender_id;
-						// 	const username = friendsRef.current.find(f => f.id === sender_id)?.username;
-						// 	console.log("Message mapping:", username, sender_id, arr[key].message);
-						// 	console.log("Available friends:", friendsRef.current);
-						// 	arr[key].sender_id = username || "moi";
-						// }
+						for (const key in arr) {
+							const sender_id = arr[key].sender_id as number;
+							const username = friendsRef.current.find(f => f.id === sender_id)?.username;
+							(arr[key] as Message).sender_username = username || (sender_id === currentUserIdRef.current ? "Moi" : `User ${sender_id}`);
+						}
 
 						setGroupMessages(prev => ({
 							...prev,
@@ -362,7 +359,7 @@ export const ChatWebSocketProvider: React.FC<ChatWebSocketProviderProps> = ({ ch
 						);
 					}
 					break;
-				case "MultiInviteConfirm":
+				case "MultiInviteConfirm": {
 					// Utiliser la socket qui nous a envoyé ce message - si on reçoit le message, c'est qu'elle fonctionne !
 					const responseSocket = messageSocket || socket || socketRef.current;
 
@@ -377,6 +374,7 @@ export const ChatWebSocketProvider: React.FC<ChatWebSocketProviderProps> = ({ ch
 							}
 						});
 					break;
+				}
 				case "MultiInvitePending": {
 					const responseSocket = messageSocket || socket || socketRef.current;
 
@@ -461,8 +459,8 @@ export const ChatWebSocketProvider: React.FC<ChatWebSocketProviderProps> = ({ ch
 
 		// Fonction de recherche réutilisable
 		const performSearch = () => {
-			if (socket?.readyState !== WebSocket.OPEN) return;
-			socket.send(JSON.stringify({
+			if (socketRef.current?.readyState !== WebSocket.OPEN) return;
+			socketRef.current.send(JSON.stringify({
 				action: "search_user",
 				name: inputSearch,
 				group_id: null,
@@ -490,118 +488,118 @@ export const ChatWebSocketProvider: React.FC<ChatWebSocketProviderProps> = ({ ch
 			if (searchTimeout.current) clearTimeout(searchTimeout.current);
 			if (searchInterval.current) clearInterval(searchInterval.current);
 		};
-	}, [inputSearch, socket]);
+	}, [inputSearch]); // Supprimer socket des dépendances car on utilise socketRef
 
 	// --- Actions Chat ---
 	const sendMessage = useCallback((groupId: number, message: string) => {
-		if (!message.trim() || socket?.readyState !== WebSocket.OPEN) {
+		if (!message.trim() || socketRef.current?.readyState !== WebSocket.OPEN) {
 			console.warn("Cannot send message: invalid message or WebSocket not ready");
 			return;
 		}
 
-		socket.send(JSON.stringify({
+		socketRef.current.send(JSON.stringify({
 			action: "new_message",
 			group_id: groupId,
 			message: message,
 		}));
-	}, [socket]);
+	}, []); // Pas de dépendances car on utilise socketRef
 
 	const loadMessages = useCallback((groupId: number, firstMessageId: number = 0) => {
-		if (socket?.readyState !== WebSocket.OPEN) {
+		if (socketRef.current?.readyState !== WebSocket.OPEN) {
 			console.warn("Cannot load messages: WebSocket not ready");
 			return;
 		}
 
-		socket.send(JSON.stringify({
+		socketRef.current.send(JSON.stringify({
 			action: "loadMoreMessage",
 			group_id: groupId,
 			firstMessageId: firstMessageId,
 		}));
-	}, [socket]);
+	}, []); // Pas de dépendances
 
 	const createGroup = useCallback((groupName: string, userIds: number[]) => {
-		if (!groupName.trim() || userIds.length === 0 || socket?.readyState !== WebSocket.OPEN) {
+		if (!groupName.trim() || userIds.length === 0 || socketRef.current?.readyState !== WebSocket.OPEN) {
 			return;
 		}
 
-		socket.send(JSON.stringify({
+		socketRef.current.send(JSON.stringify({
 			action: "create_group",
 			group_name: groupName.trim(),
 			users_id: userIds,
 		}));
-	}, [socket]);
+	}, []); // Pas de dépendances
 
 	const deleteGroup = useCallback((groupId: number) => {
-		if (socket?.readyState !== WebSocket.OPEN) {
+		if (socketRef.current?.readyState !== WebSocket.OPEN) {
 			console.warn("Cannot delete group: WebSocket not ready");
 			return;
 		}
 
-		socket.send(JSON.stringify({
+		socketRef.current.send(JSON.stringify({
 			action: "delete_group",
 			group_id: groupId,
 		}));
-	}, [socket]);
+	}, []); // Pas de dépendances
 
 	// --- Actions Amis ---
 	const handleAddFriend = useCallback((userId: number) => {
-		if (socket?.readyState !== WebSocket.OPEN) return;
+		if (socketRef.current?.readyState !== WebSocket.OPEN) return;
 		console.log("add_friend", userId);
-		socket.send(JSON.stringify({
+		socketRef.current.send(JSON.stringify({
 			action: "add_friend",
 			user_id: userId,
 		}));
-	}, [socket]);
+	}, []); // Pas de dépendances car on utilise socketRef
 
 	const handleAcceptFriend = useCallback((userId: number) => {
-		if (socket?.readyState !== WebSocket.OPEN) return;
-		socket.send(JSON.stringify({
+		if (socketRef.current?.readyState !== WebSocket.OPEN) return;
+		socketRef.current.send(JSON.stringify({
 			action: "accept_friend",
 			user_id: userId,
 		}));
-	}, [socket]);
+	}, []); // Pas de dépendances
 
 	const handleRefuseFriend = useCallback((userId: number) => {
-		if (socket?.readyState !== WebSocket.OPEN) return;
-		socket.send(JSON.stringify({
+		if (socketRef.current?.readyState !== WebSocket.OPEN) return;
+		socketRef.current.send(JSON.stringify({
 			action: "refuse_friend",
 			user_id: userId,
 		}));
-	}, [socket]);
+	}, []); // Pas de dépendances
 
 	const handleCancelFriend = useCallback((userId: number) => {
-		if (socket?.readyState !== WebSocket.OPEN) return;
-		socket.send(JSON.stringify({
+		if (socketRef.current?.readyState !== WebSocket.OPEN) return;
+		socketRef.current.send(JSON.stringify({
 			action: "cancel_request",
 			user_id: userId,
 		}));
-	}, [socket]);
+	}, []); // Pas de dépendances
 
 	const handleRemoveFriend = useCallback((userId: number) => {
-		if (socket?.readyState !== WebSocket.OPEN) return;
-		socket.send(JSON.stringify({
+		if (socketRef.current?.readyState !== WebSocket.OPEN) return;
+		socketRef.current.send(JSON.stringify({
 			action: "remove_friend",
 			user_id: userId,
 		}));
-	}, [socket]);
+	}, []); // Pas de dépendances
 
 	const handleBlockedFriend = useCallback((userId: number) => {
-		if (socket?.readyState !== WebSocket.OPEN) return;
+		if (socketRef.current?.readyState !== WebSocket.OPEN) return;
 		console.log("block_user", userId);
-		socket.send(JSON.stringify({
+		socketRef.current.send(JSON.stringify({
 			action: "block_user",
 			user_id: userId,
 		}));
-	}, [socket]);
+	}, []); // Pas de dépendances
 
 	const handleUnBlockedFriend = useCallback((userId: number) => {
-		if (socket?.readyState !== WebSocket.OPEN) return;
+		if (socketRef.current?.readyState !== WebSocket.OPEN) return;
 		console.log("unblock_user", userId);
-		socket.send(JSON.stringify({
+		socketRef.current.send(JSON.stringify({
 			action: "unblock_user",
 			user_id: userId,
 		}));
-	}, [socket]);
+	}, []); // Pas de dépendances
 
 
 	const handleConfirmInvite = useCallback((token: string, ws?: WebSocket) => {
@@ -620,7 +618,7 @@ export const ChatWebSocketProvider: React.FC<ChatWebSocketProviderProps> = ({ ch
 			action: "MultiInviteRefuse",
 			token: token,
 		}));
-	}, [socket]);
+	}, []);
 
 	const handleCancelInvite = useCallback((token: string, ws?: WebSocket) => {
 		const targetSocket = ws || socketRef.current;
