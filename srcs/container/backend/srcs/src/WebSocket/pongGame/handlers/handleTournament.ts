@@ -315,12 +315,18 @@ function dispatchMatch(tournament: Tournament) {
 			tournament.waitingWinner[0].winnerTournament = true;
 
 			console.log("envoi du vainqueur dans dispatch", tournament.waitingWinner[0].name)
-			setTimeout(() => {
+			// setTimeout(() => {
 
 				tournament.waitingWinner[0].socket.send(JSON.stringify({type: "WinnerTournament"}))
+				setTimeout(() => {
+					tournament.waitingWinner[0].socket.send(JSON.stringify({type: "data", value: {
+						name: tournament.waitingWinner[0].name,
+						avatar: tournament.waitingWinner[0].avatar,
+					}}))
+				}, 500)
 				// messageTournament(tournament, "WinnerTournament", `${tournament.waitingWinner[0].name} remporte le tournois`);
 				listTournament.delete(tournament.idTournament);
-			}, 500)
+			// }, 500)
 			return ;
 		}
 		stockWinner = tournament.waitingWinner[0];
@@ -394,13 +400,18 @@ export function isOnFinishMatch(tournament: Tournament, player1: playerStat, pla
 			console.log("envoi du vainqueur", tournament.waitingWinner[0].name)
 			tournament.waitingWinner[0].id
 			modelPong.insertStatistic(tournament.waitingWinner[0].id, 1, 1, tournament.waitingWinner[0].mode, tournament.waitingWinner[0].id)
-			setTimeout(() => {
+			// setTimeout(() => {
 				console.log("ENVOI DU WINNER ", tournament.waitingWinner[0].name)
 				tournament.waitingWinner[0].socket.send(JSON.stringify({type: "WinnerTournament"}))
-
+				setTimeout(() => {
+					tournament.waitingWinner[0].socket.send(JSON.stringify({type: "data", value: {
+						name: tournament.waitingWinner[0].name,
+						avatar: tournament.waitingWinner[0].avatar,
+					}}))
+				}, 500)
 				// tournament.waitingWinner[0].socket.send(JSON.stringify({action: "WinnerTournament", value: `${tournament.waitingWinner[0].name} remporte le tournois` }))
 				listTournament.delete(tournament.idTournament);
-			}, 500)
+			// }, 500)
 			return ;
 			//penser a supprimer le tournois de la list ensuite et aussi a supprimer le tournois de la list quand le dernier joueur sort de la file d attente 
 			//penser au nettoyage des perdant nettoyage du gagnant avec un reset des donnees .

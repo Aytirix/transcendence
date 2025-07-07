@@ -218,17 +218,30 @@
 }
 
 .avatar-Winner {
-	color: rgb(95, 237, 7);
-	top: 0%;
+	position: fixed;
+	top: 4%;
 	font-weight: bold;
-	animation: textValidMenu 1.7s linear infinite;
 	width: 140px;
 	height: 140px;
-	background-color: #fbf9f932;
 	border-radius: 20px;
 	box-shadow: 0 0 15px rgba(183, 3, 3, 0.5);
+	padding: 5px;
+	background-color: #fbf9f900;
+	color: white;
+	border-radius: 20px;     /* 👈 Coins arrondis */
+	border: 1px solid rgba(238, 3, 3, 0.542);
+	display: flex;
+	justify-content: center;
+	text-align: center;
+	overflow: hidden;
 }
 
+.name-winner{
+	font-weight: bold;
+	font-size: 40px;
+	color: #fff8dc;
+	animation: textGlow 1.7s linear infinite;
+}
 .popup-WinnerPage {
 	position: fixed;	
 	width: 500px;
