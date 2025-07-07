@@ -216,7 +216,33 @@
 		},
 		"game": {
 			"quit": "Esci dalla partita",
-			"pacmanLife": "Vita Pacman"
+			"pacmanLife": "Vita Pacman",
+			"time": "Tempo",
+			"score": "Punteggio",
+			"total": "Totale",
+			"controls": "Controlli",
+			"move": "Muovi",
+			"statistics": "Statistiche",
+			"remainingDots": "Pastiglie rimanenti:",
+			"remainingPowerPills": "Super pastiglie rimanenti:",
+			"instructions": {
+				"title": "Istruzioni",
+				"controls": "Controlli",
+				"objectives": "Regole e obiettivi",
+				"move": "Usa i tasti freccia per muoverti",
+				"collectDots": "Raccogli tutte le pastiglie per vincere",
+				"avoidGhosts": "Evita i fantasmi che cercano di prenderti",
+				"eatPowerPills": "Mangia le super pastiglie per diventare temporaneamente invincibile",
+				"pacman": {
+					"survival": "Sopravvivi e usa le tue 3 vite saggiamente"
+				},
+				"ghost": {
+					"catchPacman": "Cattura Pacman per vincere",
+					"avoidWhenFrightened": "Evita Pacman quando sei spaventato (blu)",
+					"teamwork": "Lavora in squadra con altri fantasmi",
+					"strategy": "Blocca le uscite e intrappola Pacman"
+				}
+			}
 		}
 	},
 	"pageNotFound": {

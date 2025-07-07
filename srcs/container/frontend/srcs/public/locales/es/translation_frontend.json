@@ -216,7 +216,33 @@
 		},
 		"game": {
 			"quit": "Salir de la partida",
-			"pacmanLife": "Vida Pacman"
+			"pacmanLife": "Vida Pacman",
+			"time": "Tiempo",
+			"score": "Puntuación",
+			"total": "Total",
+			"controls": "Controles",
+			"move": "Mover",
+			"statistics": "Estadísticas",
+			"remainingDots": "Pastillas restantes:",
+			"remainingPowerPills": "Super pastillas restantes:",
+			"instructions": {
+				"title": "Instrucciones",
+				"controls": "Controles",
+				"objectives": "Reglas y objetivos",
+				"move": "Usa las teclas de flecha para moverte",
+				"collectDots": "Recoge todas las pastillas para ganar",
+				"avoidGhosts": "Evita los fantasmas que intentan atraparte",
+				"eatPowerPills": "Come super pastillas para volverse temporalmente invencible",
+				"pacman": {
+					"survival": "Sobrevive y usa tus 3 vidas sabiamente"
+				},
+				"ghost": {
+					"catchPacman": "Atrapa a Pacman para ganar",
+					"avoidWhenFrightened": "Evita a Pacman cuando estés asustado (azul)",
+					"teamwork": "Trabaja en equipo con otros fantasmas",
+					"strategy": "Bloquea las salidas y atrapa a Pacman"
+				}
+			}
 		}
 	},
 	"pageNotFound": {

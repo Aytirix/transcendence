@@ -112,8 +112,8 @@ const GamePlayers: React.FC<GamePlayersProps> = ({
 					const baseStyle = {
 						top: posY - half,
 						left: posX - half,
-						width: tileSize,
-						height: tileSize,
+						width: tileSize - 3,
+						height: tileSize - 3,
 						backgroundImage: `url(${ghostImage})`,
 						backgroundSize: 'contain',
 						backgroundRepeat: 'no-repeat',

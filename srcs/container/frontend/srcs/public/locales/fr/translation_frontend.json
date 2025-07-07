@@ -78,7 +78,7 @@
 		"at_42_school": "à l'école 42",
 		"developed_by": "Développé par"
 	},
-	
+
 	"credits": {
 		"contributions_title": "Contributions",
 		"role": {
@@ -217,7 +217,31 @@
 		},
 		"game": {
 			"quit": "Quitter la partie",
-			"pacmanLife": "Vie Pacman"
+			"pacmanLife": "Vie Pacman",
+			"time": "Temps",
+			"score": "Scores",
+			"total": "Total",
+			"statistics": "Statistiques",
+			"remainingDots": "Pastilles restantes:",
+			"remainingPowerPills": "Super pastilles restantes:",
+			"instructions": {
+				"title": "Instructions",
+				"controls": "Contrôles",
+				"objectives": "Règles et objectifs",
+				"move": "Utilisez les touches fléchées pour déplacer",
+				"collectDots": "Collectez toutes les pastilles pour gagner",
+				"avoidGhosts": "Évitez les fantômes qui essaient de vous attraper",
+				"eatPowerPills": "Mangez les super pastilles pour devenir invincible temporairement",
+				"pacman": {
+					"survival": "Survivez et utilisez vos 3 vies à bon escient"
+				},
+				"ghost": {
+					"catchPacman": "Attrapez Pacman pour remporter la victoire",
+					"avoidWhenFrightened": "Évitez Pacman quand vous êtes effrayé (bleu)",
+					"teamwork": "Travaillez en équipe avec les autres fantômes",
+					"strategy": "Bloquez les sorties et piégez Pacman"
+				}
+			}
 		}
 	},
 	"pageNotFound": {

@@ -115,19 +115,19 @@ const GameSidebar: React.FC<GameSidebarProps> = ({ players, state }) => {
 
 			{/* Section des scores avec classement */}
 			<div className="scores-section">
-				<h4 className="section-title">🏆 SCORES</h4>
+				<h4 className="section-title">🏆 {t("pacman.game.score")}</h4>
 				<div className="scores-list">
 					{sortedPlayers.map((player, index) => renderPlayerScore(player, index + 1))}
 				</div>
 				<div className="total-score">
-					<span className="total-label">Total:</span>
+					<span className="total-label">{t("pacman.game.total")}</span>
 					<span className="total-value">{totalScore.toLocaleString()}</span>
 				</div>
 			</div>
 
 			{/* Info de jeu - style classique comme .debug-console */}
 			<div className="game-stats">
-				<h4 className="section-title">⏱️ Temps</h4>
+				<h4 className="section-title">⏱️ {t("pacman.game.time")}</h4>
 				<span className="stat-value">{formatTime(gameTime)}</span>
 			</div>
 
