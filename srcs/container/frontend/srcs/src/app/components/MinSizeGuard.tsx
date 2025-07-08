@@ -1,5 +1,5 @@
 import { useState, useEffect, ReactNode } from 'react';
-import { useTranslation } from 'react-i18next';
+import { useLanguage } from '../../contexts/LanguageContext';
 import { useNavigate } from 'react-router-dom';
 import '../assets/styles/MinSizeGuard.scss';
 
@@ -22,7 +22,7 @@ const MinSizeGuard = ({
 	hideWhenBlocked = false,
 	blockChromium = false
 }: MinSizeGuardProps) => {
-	const { t } = useTranslation();
+	const { t } = useLanguage();
 	const navigate = useNavigate();
 	const [windowSize, setWindowSize] = useState({
 		width: window.innerWidth,

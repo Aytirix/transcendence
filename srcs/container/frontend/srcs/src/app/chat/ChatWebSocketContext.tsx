@@ -169,7 +169,7 @@ export const ChatWebSocketProvider: React.FC<ChatWebSocketProviderProps> = ({ ch
 					break;
 				}
 
-				case "delete_group": {
+				case "leave_group": {
 					if (data.group_id) {
 						setGroups(prev => prev.filter(g => g.id !== data.group_id));
 						setGroupMessages(prev => {
@@ -397,6 +397,9 @@ export const ChatWebSocketProvider: React.FC<ChatWebSocketProviderProps> = ({ ch
 				case "MultiInviteCancel":
 					notification.dismissAll();
 					notification.info(data.txt);
+					break;
+				case "pong":
+					// WebSocket pong response - connection is healthy
 					break;
 				default:
 					console.log("Unhandled WebSocket action:", data.action);

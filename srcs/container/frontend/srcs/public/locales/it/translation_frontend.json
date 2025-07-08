@@ -250,7 +250,37 @@
 		"leaveChannel": "Esci dal canale",
 		"inviteToGame": "Invita al gioco",
 		"blockUser": "Blocca utente",
-		"unblockUser": "Sblocca utente"
+		"unblockUser": "Sblocca utente",
+		"noMessages": "Nessun messaggio",
+		"noMessagesInConversation": "Nessun messaggio in questa conversazione.",
+		"me": "Io",
+		"user": "Utente",
+		"selectGroup": "Seleziona un gruppo...",
+		"member": "membro",
+		"members": "membri",
+		"onlineCount": "online",
+		"unknownUser": "Utente sconosciuto",
+		"groupNoName": "Gruppo senza nome",
+		"justNow": "proprio ora",
+		"minutesAgo": "{{count}}min fa",
+		"hoursAgo": "{{count}}h fa",
+		"daysAgo": "{{count}}g fa",
+		"noGroups": "Nessun gruppo",
+		"noGroupsAvailable": "Nessun gruppo disponibile",
+		"deleteGroup": "Elimina gruppo",
+		"showSidebar": "Mostra barra laterale",
+		"hideSidebar": "Nascondi barra laterale",
+		"messages": "Messaggi",
+		"search": "Cerca...",
+		"cancelCreation": "Annulla creazione",
+		"createGroup": "Crea gruppo",
+		"groupName": "Nome del gruppo",
+		"selectFriends": "Seleziona amici:",
+		"noFriendsAvailableForGroup": "Nessun amico disponibile per la creazione del gruppo.",
+		"createTheGroup": "Crea il gruppo",
+		"connected": "Connesso",
+		"discussionWith": "Discussione con: ",
+		"groupDiscussion": "Discussione di gruppo: "
 	},
 	"common": {
 		"loading": "Caricamento...",
@@ -481,7 +511,8 @@
 			"refuse": "Rifiuta richiesta di amicizia",
 			"cancel": "Annulla richiesta di amicizia",
 			"remove": "Rimuovi amico",
-			"add": "Aggiungi come amico"
+			"add": "Aggiungi come amico",
+			"pongInvite": "Invita al Pong"
 		},
 		"notifications": {
 			"PonginviteSent": "Invito inviato a {{username}} per giocare a Pong"

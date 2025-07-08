@@ -3,7 +3,7 @@
 import React from "react";
 import { useChatWebSocket } from "./ChatWebSocketContext";
 import ApiService from "../../api/ApiService";
-import { useTranslation } from 'react-i18next';
+import { useLanguage } from '../../contexts/LanguageContext';
 import notification from "../components/Notifications";
 
 const FriendPage: React.FC = () => {
@@ -21,7 +21,7 @@ const FriendPage: React.FC = () => {
 		handleUnBlockedFriend,
 		handleCancelInvite,
 	} = useChatWebSocket();
-	const { t } = useTranslation();
+	const { t } = useLanguage();
 
 	// Filtrer les amis selon le terme de recherche
 
@@ -30,7 +30,8 @@ const FriendPage: React.FC = () => {
 	async function testInvitePong(friend: any) {
 		const response = await ApiService.post(`/pong/invitePlayer`, { friendId: friend.id });
 		if (response.ok) {
-			notification.cancel(`${t('friendPage.notifications.PonginviteSent', { username: friend.username })}`).then(() => {
+			const message = t('friendPage.notifications.PonginviteSent').replace('{{username}}', friend.username);
+			notification.cancel(message).then(() => {
 				handleCancelInvite(response.token);
 			});
 		}
@@ -109,11 +110,11 @@ const FriendPage: React.FC = () => {
 					<img src="/images/croix.png" alt={t('friendPage.tooltips.remove')} className="w-7 h-7" />
 				</button>
 				<button
-					title="Pong test Invite"
+					title={t('friendPage.tooltips.pongInvite')}
 					className="!bg-[#ffffff00] hover:scale-110 !border-none !p-1"
 					onClick={() => testInvitePong(friend)}
 				>
-					<img src="/images/intro/floating-pong.png" alt="Pong test Invite" className="w-7 h-7" />
+					<img src="/images/intro/floating-pong.png" alt={t('friendPage.tooltips.pongInvite')} className="w-7 h-7" />
 				</button>
 			</div>
 		);
@@ -166,7 +167,7 @@ const FriendPage: React.FC = () => {
 
 					{filteredFriends.length === 0 && inputSearch ? (
 						<div className="text-center text-gray-400 py-8 flex-1 flex items-center justify-center">
-							{t('friendPage.noFriendsFound', { search: inputSearch })}
+							{t('friendPage.noFriendsFound').replace('{search}', inputSearch)}
 						</div>
 					) : filteredFriends.length === 0 && friends.length === 0 ? (
 						<div className="text-center text-gray-400 py-8 flex-1 flex items-center justify-center">
