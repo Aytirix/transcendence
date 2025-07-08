@@ -137,10 +137,10 @@ const PacmanGame: React.FC<PacmanGameProps> = ({ state }) => {
 
 					{/* État du jeu */}
 					<div className="game-status">
-						<h4>État</h4>
+						<h4>{t('pacman.game.status')}</h4>
 						<div className="status-indicator">
 							<span className={`status-dot ${state.game.launch ? 'active' : 'inactive'}`}></span>
-							<span className="status-text">{state.game.launch ? 'En cours' : 'En attente'}</span>
+							<span className="status-text">{state.game.launch ? t('pacman.game.inProgress') : t('pacman.game.waiting')}</span>
 						</div>
 					</div>
 				</div>

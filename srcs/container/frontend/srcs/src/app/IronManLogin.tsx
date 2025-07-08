@@ -13,7 +13,7 @@ interface LoginSchema {
 }
 
 const IronManLogin: React.FC = () => {
-	const { t, currentLanguage } = useLanguage();
+	const { t } = useLanguage();
 	const [form, setForm] = useState<LoginSchema>({ email: '', password: '' });
 	const [loading, setLoading] = useState(false);
 
@@ -26,8 +26,8 @@ const IronManLogin: React.FC = () => {
 		setLoading(true);
 
 		try {
-			const resp: any = await ApiService.post('/login', form) as ApiService;
-		} catch (err) {
+			await ApiService.post('/login', form);
+		} catch {
 			notification.error(t('errors.networkError'));
 		} finally {
 			setLoading(false);

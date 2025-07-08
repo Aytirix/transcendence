@@ -9,6 +9,19 @@ export type Member = {
   lang?: string;
 };
 
+export type User = {
+  id: number;
+  username: string;
+  avatar?: string;
+  lang?: string;
+  relation?: {
+    status: "pending" | "friend" | "blocked" | "";
+    target: number;
+    privmsg_id?: number | null;
+  };
+  online?: boolean;
+};
+
 export type Group = {
   id: number;
   name: string | null;

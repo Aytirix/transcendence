@@ -1,5 +1,6 @@
 import React from 'react';
 import { player, state } from '../../../types/pacmanTypes';
+import { useLanguage } from '../../../../contexts/LanguageContext';
 
 interface AudioControlsProps {
 	audioEnabled: boolean;
@@ -7,17 +8,19 @@ interface AudioControlsProps {
 	state: state;
 }
 
-const AudioControls: React.FC<AudioControlsProps> = ({ audioEnabled, players, state }) => {
+const AudioControls: React.FC<AudioControlsProps> = ({ audioEnabled }) => {
+	const { t } = useLanguage();
+	
 	return (
 		<div className="audio-controls">
 			{!audioEnabled && (
 				<div className="audio-warning">
-					<span>🔇 Click anywhere to enable audio</span>
+					<span>🔇 {t('pacman.game.clickToEnableAudio')}</span>
 				</div>
 			)}
 			{audioEnabled && (
 				<div className="audio-status">
-					<span>🔊 Audio enabled</span>
+					<span>🔊 {t('pacman.game.audioEnabled')}</span>
 				</div>
 			)}
 		</div>

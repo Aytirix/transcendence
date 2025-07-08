@@ -1,5 +1,6 @@
 import './app/assets/styles/index.css';
 import './app/assets/styles/App.scss';
+import './app/assets/styles/chat.scss';
 import './i18next/i18next';
 import { createRoot } from 'react-dom/client';
 import SingletonGuard from './app/components/SingleWindowGuard.tsx';
@@ -31,14 +32,12 @@ function AppContent() {
 
 	return (
 		<NavigationBridge onNavigateReady={setNavigateFunction} onLocationReady={setLocationFunction}>
-			<LanguageProvider>
-				<SingletonGuard>
-					<AuthProvider>
-						<IronManNavBar />
-						<AppRouter />
-					</AuthProvider>
-				</SingletonGuard>
-			</LanguageProvider>
+			<SingletonGuard>
+				<AuthProvider>
+					<IronManNavBar />
+					<AppRouter />
+				</AuthProvider>
+			</SingletonGuard>
 		</NavigationBridge>
 	);
 }
@@ -46,11 +45,13 @@ function AppContent() {
 createRoot(document.getElementById('root')!).render(
 	<DisableNativeContextMenu>
 		<ToastPortalContainer />
-		<ChatWebSocketProvider>
-			<BrowserRouter>
-				<AppContent />
-			</BrowserRouter>
-			<ToastPortalContainer />
-		</ChatWebSocketProvider>
+		<LanguageProvider>
+			<ChatWebSocketProvider>
+				<BrowserRouter>
+					<AppContent />
+				</BrowserRouter>
+				<ToastPortalContainer />
+			</ChatWebSocketProvider>
+		</LanguageProvider>
 	</DisableNativeContextMenu>
 );
