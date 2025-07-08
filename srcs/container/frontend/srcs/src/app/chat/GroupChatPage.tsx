@@ -5,6 +5,7 @@ import { useChatWebSocket } from "./ChatWebSocketContext";
 import { Group, Message } from "./types/chat";
 import ApiService from "../../api/ApiService";
 import { useLanguage } from '../../contexts/LanguageContext';
+import { useAuth } from '../../contexts/AuthContext';
 import "../assets/styles/chat.scss";
 
 const GroupsMessagesPage: React.FC = () => {
@@ -19,6 +20,7 @@ const GroupsMessagesPage: React.FC = () => {
 		currentUserId,
 	} = useChatWebSocket();
 	const { t } = useLanguage();
+	const { user } = useAuth();
 
 	// État local pour l'interface utilisateur
 	const [selectedGroup, setSelectedGroup] = useState<Group | null>(null);
@@ -90,12 +92,22 @@ const GroupsMessagesPage: React.FC = () => {
 		)
 	}
 
-	function getAvatarById(id: any): string | undefined {
+	function getAvatarById(id: string | number): string | undefined {
+		// Si c'est l'utilisateur actuel, utiliser son avatar depuis le contexte
+		if (id === currentUserId && user?.avatar) {
+			return user.avatar;
+		}
+		
 		const friend = friends.find(friend => friend.id === id);
 		return friend?.avatar;
 	}
 
-	function getNameById(id: any): string | undefined {
+	function getNameById(id: string | number): string | undefined {
+		// Si c'est l'utilisateur actuel, utiliser son nom depuis le contexte
+		if (id === currentUserId && user?.username) {
+			return user.username;
+		}
+		
 		const friend = friends.find(friend => friend.id === id);
 		return friend?.username;
 	}
@@ -117,9 +129,9 @@ const GroupsMessagesPage: React.FC = () => {
 						if (diffInMinutes < 1) {
 							return t('chat.now');
 						} else if (diffInMinutes < 60) {
-							return t('chat.minutesAgo').replace('{{count}}', diffInMinutes.toString());
+							return t('chat.minutesAgo', { count: diffInMinutes });
 						} else if (diffInHours < 24) {
-							return t('chat.hoursAgo').replace('{{count}}', diffInHours.toString());
+							return t('chat.hoursAgo', { count: diffInHours });
 						} else if (diffInDays === 1) {
 							return t('chat.yesterday');
 						} else {
@@ -192,15 +204,6 @@ const GroupsMessagesPage: React.FC = () => {
 	const HeaderMessages: React.FC = () => {
 		const displayName = selectedGroup ? getGroupDisplayName(selectedGroup) : t('chat.selectGroup');
 		
-        const getOnlineMembers = () => {
-            if (!selectedGroup || !selectedGroup.onlines_id) return [];
-            
-            return selectedGroup.members.filter(member => 
-                selectedGroup.onlines_id.includes(member.id)
-            );
-        };
-
-        const onlineMembers = getOnlineMembers();
 		return (
 			<div className="chat-content__header">
 				<div className="chat-content__header-info">
@@ -209,7 +212,7 @@ const GroupsMessagesPage: React.FC = () => {
 							{selectedGroup?.private ? t('chat.discussionWith') : t('chat.groupDiscussion')}
 							{displayName}
 						</div>
-						{!selectedGroup?.private && selectedGroup && (
+						{/* {!selectedGroup?.private && selectedGroup && (
 							<div className="chat-content__header-status">
 								{selectedGroup.members.length > 1 && 
 									`${selectedGroup.members.length} ${selectedGroup.members.length > 1 ? t('chat.members') : t('chat.member')}`
@@ -223,20 +226,26 @@ const GroupsMessagesPage: React.FC = () => {
 									</>
 								)}
 							</div>
-						)}
+						)} */}
 					</div>
 				</div>
-				{/* Section des membres en ligne */}
-                {selectedGroup && onlineMembers.length > 0 && (
+				{/* Section des membres */}
+                {selectedGroup && selectedGroup.members.length > 0 && (
                     <div className="chat-content__header-online">
                         <div className="chat-content__header-online-list">
-                            {onlineMembers.map((member) => (
-                                <div key={member.id} className="chat-content__header-online-member">
-                                    <span className="chat-content__header-online-name">
-                                        {member.username}
-                                    </span>
-                                </div>
-                            ))}
+                            {selectedGroup.members.map((member) => {
+                                const isOnline = selectedGroup.onlines_id?.includes(member.id) || false;
+                                return (
+                                    <div 
+                                        key={member.id} 
+                                        className={`chat-content__header-online-member ${isOnline ? 'chat-content__header-online-member--online' : 'chat-content__header-online-member--offline'}`}
+                                    >
+                                        <span className="chat-content__header-online-name">
+                                            {member.username}
+                                        </span>
+                                    </div>
+                                );
+                            })}
                         </div>
                     </div>
                 )}
@@ -244,7 +253,7 @@ const GroupsMessagesPage: React.FC = () => {
 		)
 	}
 
-	const memberGroup = useCallback((group: any) => {
+	const memberGroup = useCallback((group: Group) => {
 		for (let i = 0; i < group.members.length; i++) {
 			const member = group.members[i];
 			if (member.id === currentUserId) {
@@ -261,7 +270,7 @@ const GroupsMessagesPage: React.FC = () => {
 		displayName: string;
 		g: Group;
 	};
-	const GroupPrivate: React.FC<GroupProps> = ({ g }: any) => {
+	const GroupPrivate: React.FC<GroupProps> = ({ g }) => {
 		const member = memberGroup(g);
 		return (
 			<>
