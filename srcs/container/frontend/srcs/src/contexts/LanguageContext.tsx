@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import ApiService from '../api/ApiService';
 
 interface LanguageContextType {
-	t: (key: string) => string;
+	t: (key: string, options?: Record<string, string | number>) => string;
 	setLanguage: (lang: string, updateBackend?: boolean) => void;
 	currentLanguage: string;
 }
