@@ -1,6 +1,7 @@
 import React from 'react';
 import { player } from '../../../types/pacmanTypes';
 import { GhostImages, PacmanImages, GamePlayer, DirectionalImages } from '../types/gameTypes';
+import { useAuth } from '../../../../contexts/AuthContext';
 
 interface GamePlayersProps {
 	players: player[];
@@ -20,6 +21,24 @@ const GamePlayers: React.FC<GamePlayersProps> = ({
 	pacmanImages, 
 	frightenedState 
 }) => {
+	const { user } = useAuth(); // Obtenir l'utilisateur connecté
+	
+	// Fonction pour obtenir la couleur du point selon le personnage
+	const getGhostDotColor = (ghostChar: string | undefined): string => {
+		switch (ghostChar) {
+			case 'B': // Blinky
+				return '#ff0000';
+			case 'I': // Inky
+				return '#00ffff';
+			case 'Y': // Pinky
+				return '#ffb8ff';
+			case 'C': // Clyde
+				return '#ffb852';
+			default:
+				return '#ffffff';
+		}
+	};
+
 	return (
 		<>
 			{players.map(player => {
@@ -57,12 +76,31 @@ const GamePlayers: React.FC<GamePlayersProps> = ({
 					} as React.CSSProperties;
 
 					return (
-						<div
-							key={gamePlayer.id}
-							className="player pacman"
-							style={baseStyle}
-							title={`${gamePlayer.username} (${gamePlayer.score} pts)`}
-						/>
+						<div key={gamePlayer.id} className="player-container">
+							<div
+								className="player pacman"
+								style={baseStyle}
+								title={`${gamePlayer.username} (${gamePlayer.score} pts)`}
+							/>
+							{/* Triangle au-dessus du personnage seulement pour l'utilisateur connecté */}
+							{user && gamePlayer.id === user.id && (
+								<div 
+									className="player-triangle-indicator"
+									style={{
+										position: 'absolute',
+										top: posY - half - 20,
+										left: posX - 6,
+										width: 0,
+										height: 0,
+										borderLeft: '6px solid transparent',
+										borderRight: '6px solid transparent',
+										borderTop: '12px solid #FFEE00',
+										filter: 'drop-shadow(0 0 4px #FFEE00)',
+										zIndex: 15
+									}}
+								/>
+							)}
+						</div>
 					);
 				}
 				// Pour les fantômes
@@ -127,12 +165,31 @@ const GamePlayers: React.FC<GamePlayersProps> = ({
 					if (isBlinking) ghostClass += " blinking";
 
 					return (
-						<div
-							key={gamePlayer.id}
-							className={ghostClass}
-							style={baseStyle}
-							title={`${gamePlayer.username} (${gamePlayer.score} pts)`}
-						></div>
+						<div key={gamePlayer.id} className="player-container">
+							<div
+								className={ghostClass}
+								style={baseStyle}
+								title={`${gamePlayer.username} (${gamePlayer.score} pts)`}
+							></div>
+							{/* Triangle au-dessus du fantôme seulement pour l'utilisateur connecté */}
+							{user && gamePlayer.id === user.id && (
+								<div 
+									className="player-triangle-indicator"
+									style={{
+										position: 'absolute',
+										top: posY - half - 20,
+										left: posX - 6,
+										width: 0,
+										height: 0,
+										borderLeft: '6px solid transparent',
+										borderRight: '6px solid transparent',
+										borderTop: `12px solid ${getGhostDotColor(ghostChar)}`,
+										filter: `drop-shadow(0 0 4px ${getGhostDotColor(ghostChar)})`,
+										zIndex: 15
+									}}
+								/>
+							)}
+						</div>
 					);
 				}
 			})}

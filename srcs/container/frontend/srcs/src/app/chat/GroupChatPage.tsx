@@ -1,6 +1,6 @@
 // src/GroupsMessagesPage.tsx
 
-import React, { useEffect, useState, useCallback, useRef, useMemo } from "react";
+import React, { useEffect, useState, useCallback, useRef } from "react";
 import { useChatWebSocket } from "./ChatWebSocketContext";
 import { Group, Message } from "./types/chat";
 import ApiService from "../../api/ApiService";
@@ -12,14 +12,14 @@ const GroupsMessagesPage: React.FC = () => {
 	const {
 		groups,
 		friends,
-		searchResults,
-		inputSearch,
 		setInputSearch,
 		groupMessages,
 		sendMessage,
 		loadMessages,
 		createGroup,
 		deleteGroup,
+		addUserToGroup,
+		removeUserFromGroup,
 		currentUserId,
 	} = useChatWebSocket();
 	const { t } = useLanguage();
@@ -28,47 +28,19 @@ const GroupsMessagesPage: React.FC = () => {
 	// État local pour l'interface utilisateur
 	const [selectedGroup, setSelectedGroup] = useState<Group | null>(null);
 	const [input, setInput] = useState("");
-	//const [searchQuery, setSearchQuery] = useState('');
+	const [searchQuery, setSearchQuery] = useState('');
 
 	// Création de groupe
 	const [showCreateGroup, setShowCreateGroup] = useState(false);
 	const [newGroupName, setNewGroupName] = useState("");
 	const [selectedUsersForGroup, setSelectedUsersForGroup] = useState<number[]>([]);
+	
+	// Gestion de groupe (ajout/suppression de membres)
+	const [showGroupManagement, setShowGroupManagement] = useState(false);
+	const [managingGroup, setManagingGroup] = useState<Group | null>(null);
+	
 	// Sidebar visibility state
 	const [sidebarVisible, setSidebarVisible] = useState(true);
-
-	// Dériver la valeur hasSearchInput pour éviter l'expression complexe dans useMemo
-	const hasSearchInput = inputSearch.length > 0;
-	
-	// Utiliser les utilisateurs du contexte (amis + résultats de recherche) - Memoizé pour éviter les re-renders
-	const availableUsers = useMemo(() => {
-		return hasSearchInput ? (searchResults ?? []) : friends;
-	}, [hasSearchInput, searchResults, friends]);
-	
-	// Type pour les utilisateurs
-	type UserType = typeof friends[0];
-	
-	// Filtrer les utilisateurs selon la recherche locale et exclure l'utilisateur actuel et les utilisateurs bloqués - Memoizé
-	const filteredUsers = useMemo(() => {
-		return availableUsers.filter((user: UserType) => 
-			user.id !== currentUserId &&
-			(!user.relation || user.relation.status !== 'blocked')
-		);
-	}, [availableUsers, currentUserId]);
-	
-	// Ajouter les utilisateurs sélectionnés qui ne sont pas dans la liste filtrée - Memoizé
-	const selectedUsersData = useMemo(() => {
-		if (selectedUsersForGroup.length === 0) return [];
-		return friends.filter((user: UserType) => 
-			selectedUsersForGroup.includes(user.id) && 
-			!filteredUsers.some((filteredUser: UserType) => filteredUser.id === user.id)
-		);
-	}, [friends, selectedUsersForGroup, filteredUsers]);
-	
-	// Combinaison finale : utilisateurs filtrés + utilisateurs sélectionnés - Memoizé avec une clé stable
-	const displayedUsers = useMemo(() => {
-		return [...selectedUsersData, ...filteredUsers];
-	}, [selectedUsersData, filteredUsers]);
 
 	// Messages du groupe actuellement sélectionné
 	const selectedMessages: Message[] = selectedGroup ? groupMessages[selectedGroup.id] || [] : [];
@@ -117,6 +89,41 @@ const GroupsMessagesPage: React.FC = () => {
 				: [...prev, userId]
 		);
 	}, []);
+
+	// Fonctions de gestion de groupe
+	const handleAddUserToGroup = useCallback((groupId: number, userId: number) => {
+		addUserToGroup(groupId, userId);
+	}, [addUserToGroup]);
+
+	const handleRemoveUserFromGroup = useCallback((groupId: number, userId: number) => {
+		removeUserFromGroup(groupId, userId);
+	}, [removeUserFromGroup]);
+
+	const openGroupManagement = useCallback((group: Group) => {
+		setManagingGroup(group);
+		setShowGroupManagement(true);
+	}, []);
+
+	const closeGroupManagement = useCallback(() => {
+		setManagingGroup(null);
+		setShowGroupManagement(false);
+	}, []);
+
+	// Vérifier si l'utilisateur actuel est propriétaire du groupe
+	const isGroupOwner = useCallback((group: Group) => {
+		return group.owners_id && group.owners_id.includes(currentUserId || 0);
+	}, [currentUserId]);
+
+	// Obtenir les amis qui ne sont pas encore dans le groupe
+	const getAvailableFriendsForGroup = useCallback((group: Group) => {
+		if (!group) return [];
+		const groupMemberIds = group.members.map(member => member.id);
+		return friends
+			.filter(friend => 
+				friend.relation.status === "friend" && 
+				!groupMemberIds.includes(friend.id)
+			);
+	}, [friends]);
 
 	const NoMessage: React.FC = () => {
 		return (
@@ -214,10 +221,7 @@ const GroupsMessagesPage: React.FC = () => {
 	};
 
 	const renderContent = () => {
-		if (showCreateGroup) {
-			return <CreateGroupForm />;
-		}
-		else if (selectedMessages.length === 0) {
+		if (selectedMessages.length === 0) {
 			return <NoMessage />;
 		}
 		else {
@@ -248,7 +252,7 @@ const GroupsMessagesPage: React.FC = () => {
 	};
 
 	const HeaderMessages: React.FC = () => {
-		if (showCreateGroup) {
+		/* if (showCreateGroup) {
 			return (
 				<div className="chat-content__header">
 					<div className="chat-content__header-info">
@@ -260,7 +264,7 @@ const GroupsMessagesPage: React.FC = () => {
 					</div>
 				</div>
 			);
-		}
+		} */
 
 		const displayName = selectedGroup ? getGroupDisplayName(selectedGroup) : t('chat.selectGroup');
 		
@@ -269,9 +273,19 @@ const GroupsMessagesPage: React.FC = () => {
 				<div className="chat-content__header-info">
 					<div className="chat-content__header-details">
 						<div className="chat-content__header-name">
-							{selectedGroup?.private ? t('chat.discussionWith') : t('chat.groupDiscussion')}
+							{selectedGroup ? (selectedGroup.private ? t('chat.discussionWith') : t('chat.groupDiscussion')) : ''}
 							{displayName}
 						</div>
+						{/* Group management button for non-private groups where user is owner */}
+						{selectedGroup && !selectedGroup.private && isGroupOwner(selectedGroup) && (
+							<button
+								className="chat-group-manage-btn"
+								onClick={() => openGroupManagement(selectedGroup)}
+								title={t('chat.manageGroup')}
+							>
+								⚙️ {t('chat.manage')}
+							</button>
+						)}
 						{/* {!selectedGroup?.private && selectedGroup && (
 							<div className="chat-content__header-status">
 								{selectedGroup.members.length > 1 && 
@@ -475,164 +489,6 @@ const GroupsMessagesPage: React.FC = () => {
 		)
 	}
 
-	// Composant pour le formulaire de création de groupe
-	const CreateGroupForm = () => {
-		return (
-			<div className="chat-create-group-main">
-				<div className="chat-create-group-main__header">
-					<h2>✨ {t('chat.createGroup')}</h2>
-					<p style={{ color: 'rgba(255, 255, 255, 0.7)', fontSize: '0.9rem', margin: 0 }}>
-						{t('chat.createGroupDescription') || 'Créez un nouveau groupe pour discuter avec vos amis'}
-					</p>
-				</div>
-				
-				<div className="chat-create-group-main__content">
-					<div className="chat-create-group-main__form">
-						<div className="chat-modal__form-field">
-							<label>📝 {t('chat.groupName')}</label>
-							<input
-								type="text"
-								className="chat-modal__input"
-								placeholder={t('chat.groupName')}
-								value={newGroupName}
-								onChange={(e) => setNewGroupName(e.target.value)}
-								maxLength={50}
-							/>
-							<small style={{ color: 'rgba(255, 255, 255, 0.6)', fontSize: '0.8rem' }}>
-								{newGroupName.length}/50
-							</small>
-						</div>
-
-						<div className="chat-modal__form-field">
-							<label>👥 {t('chat.selectUsers')} ({selectedUsersForGroup.length})</label>
-							<div style={{ position: 'relative' }}>
-								<input
-									type="text"
-									className="chat-modal__input"
-									placeholder={t('chat.searchUsers')}
-									value={inputSearch}
-									onChange={(e) => setInputSearch(e.target.value)}
-									style={{ paddingLeft: '2.5rem' }}
-								/>
-								<span style={{ 
-									position: 'absolute', 
-									left: '0.75rem', 
-									top: '50%', 
-									transform: 'translateY(-50%)', 
-									color: 'rgba(255, 255, 255, 0.5)',
-									fontSize: '1.1rem'
-								}}>
-									🔍
-								</span>
-							</div>
-						</div>
-
-						<div className="chat-create-group-main__users">
-							{displayedUsers.length === 0 ? (
-								<div className="chat-friend-selection-empty">
-									<div style={{ fontSize: '3rem', marginBottom: '1rem' }}>
-										{inputSearch ? '🔍' : '👥'}
-									</div>
-									{inputSearch ? t('chat.noUsersFound') : t('chat.searchToFindUsers')}
-								</div>
-							) : (
-								<div className="chat-create-group-main__users-grid">
-									{displayedUsers.map((user: UserType) => (
-										<label 
-											key={user.id} 
-											className={`chat-friend-selection-item chat-friend-selection-item--main ${
-												selectedUsersForGroup.includes(user.id) ? 'selected' : ''
-											}`}
-											style={{
-												background: selectedUsersForGroup.includes(user.id) 
-													? 'rgba(120, 119, 198, 0.2)' 
-													: 'rgba(255, 255, 255, 0.05)',
-												borderColor: selectedUsersForGroup.includes(user.id)
-													? '#7877c6'
-													: 'rgba(255, 255, 255, 0.1)'
-											}}
-										>
-											<input
-												type="checkbox"
-												checked={selectedUsersForGroup.includes(user.id)}
-												onChange={() => toggleUserSelection(user.id)}
-											/>
-											<div className="chat-friend-avatar-medium">
-												<img 
-													src={ApiService.getFile(user.avatar)} 
-													alt={user.username}
-													onError={(e) => {
-														(e.target as HTMLImageElement).src = ApiService.getFile(null);
-													}}
-												/>
-												{selectedUsersForGroup.includes(user.id) && (
-													<div style={{
-														position: 'absolute',
-														top: '-2px',
-														right: '-2px',
-														width: '16px',
-														height: '16px',
-														background: '#7877c6',
-														borderRadius: '50%',
-														display: 'flex',
-														alignItems: 'center',
-														justifyContent: 'center',
-														fontSize: '10px',
-														color: 'white'
-													}}>
-														✓
-													</div>
-												)}
-											</div>
-											<div style={{ display: 'flex', flexDirection: 'column', flex: 1 }}>
-												<span className="chat-friend-username">{user.username}</span>
-												{user.relation?.status === 'friend' && (
-													<small style={{ color: 'rgba(255, 255, 255, 0.6)', fontSize: '0.7rem' }}>
-														👥 Ami
-													</small>
-												)}
-											</div>
-										</label>
-									))}
-								</div>
-							)}
-						</div>
-
-						<div className="chat-create-group-main__actions">
-							<button
-								className="chat-modal__button chat-modal__button--secondary"
-								onClick={() => setShowCreateGroup(false)}
-							>
-								❌ {t('chat.cancelCreation')}
-							</button>
-							<button
-								className="chat-modal__button chat-modal__button--primary"
-								onClick={handleCreateGroup}
-								disabled={!newGroupName.trim() || selectedUsersForGroup.length === 0}
-								style={{
-									opacity: (!newGroupName.trim() || selectedUsersForGroup.length === 0) ? 0.6 : 1
-								}}
-							>
-								🚀 {t('chat.createTheGroup')}
-								{selectedUsersForGroup.length > 0 && (
-									<span style={{ 
-										marginLeft: '0.5rem', 
-										background: 'rgba(255, 255, 255, 0.2)', 
-										padding: '0.2rem 0.5rem', 
-										borderRadius: '12px',
-										fontSize: '0.8rem'
-									}}>
-										{selectedUsersForGroup.length}
-									</span>
-								)}
-							</button>
-						</div>
-					</div>
-				</div>
-			</div>
-		);
-	};
-
 	return (
 		<div className="chat-page">
 			{/* Sidebar pour les groupes */}
@@ -643,14 +499,14 @@ const GroupsMessagesPage: React.FC = () => {
 						className="chat-sidebar-toggle-button chat-sidebar-toggle-button--show"
 						onClick={() => setSidebarVisible(true)}
 						aria-label={t('chat.showSidebar')}
-					>▶</button>
+					>ᐅ</button>
 				)}
 				{sidebarVisible && (
 					<button
 						className="chat-sidebar-toggle-button chat-sidebar-toggle-button--hide"
 						onClick={() => setSidebarVisible(false)}
 						aria-label={t('chat.hideSidebar')}
-					>◀</button>
+					>ᐊ</button>
 				)}
 				<div className={sidebarVisible ? 'chat-sidebar-visible' : 'chat-sidebar-hidden'}>
 					<aside className="chat-sidebar">
@@ -682,12 +538,62 @@ const GroupsMessagesPage: React.FC = () => {
 							>
 								{showCreateGroup ? t('chat.cancelCreation') : t('chat.createGroup')}
 							</button>
+
+							{showCreateGroup && (
+								<div className="chat-modal__form">
+									<input
+										type="text"
+										className="chat-modal__input"
+										placeholder={t('chat.groupName')}
+										value={newGroupName}
+										onChange={(e) => setNewGroupName(e.target.value)}
+									/>
+
+									<div className="chat-friend-selection-title">
+										{t('chat.selectFriends')}
+									</div>
+									<div className="chat-friend-selection-container">
+										{friends.length === 0 ? (
+											<div className="chat-friend-selection-empty">
+												{t('chat.noFriendsAvailableForGroup')}
+											</div>
+										) : (
+											friends
+												.filter(f => f.relation.status !== "blocked")
+												.map(f =>  (
+													<label key={f.id} className="chat-friend-selection-item">
+														<input
+															type="checkbox"
+															checked={selectedUsersForGroup.includes(f.id)}
+															onChange={() => toggleUserSelection(f.id)}
+														/>
+														<div className="chat-friend-avatar-small">
+															<img 
+																src={ApiService.getFile(f.avatar)} 
+																alt={f.username}
+																onError={(e) => {
+																	(e.target as HTMLImageElement).src = ApiService.getFile(null);
+																}}
+															/>
+														</div>
+														<span>{f.username}</span>
+													</label>
+												))
+										)}
+									</div>
+
+									<button
+										className="chat-modal__button chat-modal__button--primary chat-create-group-submit"
+										onClick={handleCreateGroup}
+										disabled={!newGroupName.trim() || selectedUsersForGroup.length === 0}
+									>
+										{t('chat.createTheGroup')}
+									</button>
+								</div>
+							)}
 						</div>
 						
-						{/* Liste des groupes ou amis selon l'onglet actif */}
-						
 						<ListGroups />
-						
 					</div>
 
 						{/* Indicateur de statut WebSocket */}
@@ -704,36 +610,122 @@ const GroupsMessagesPage: React.FC = () => {
 				<HeaderMessages />
 				{renderContent()}
 				
-				{/* Zone de saisie - masquée en mode création de groupe */}
-				{!showCreateGroup && (
-					<div className="chat-content__input">
-						<div className="chat-content__input-container">
-							<textarea
-								className="chat-content__input-field chat-input-no-resize"
-								placeholder={t("chat.messagePlaceholder")}
-								value={input}
-								onChange={(e) => setInput(e.target.value)}
-								onKeyDown={(e) => { 
-									if (e.key === "Enter" && !e.shiftKey) {
-										e.preventDefault();
-										handleSendMessage();
-									} 
-								}}
-								rows={1}
-							/>
-							<button
-								className="chat-content__input-send"
-								onClick={handleSendMessage}
-								disabled={!selectedGroup || !input.trim()}
-							>
-								<svg fill="none" stroke="currentColor" viewBox="0 0 24 24" className="chat-send-icon">
-									<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
-								</svg>
+				{/* Zone de saisie */}
+				<div className="chat-content__input">
+					<div className="chat-content__input-container">
+						<textarea
+							className="chat-content__input-field chat-input-no-resize"
+							placeholder={t("chat.messagePlaceholder")}
+							value={input}
+							onChange={(e) => setInput(e.target.value)}
+							onKeyDown={(e) => { 
+								if (e.key === "Enter" && !e.shiftKey) {
+									e.preventDefault();
+									handleSendMessage();
+								} 
+							}}
+							rows={1}
+						/>
+						<button
+							className="chat-content__input-send"
+							onClick={handleSendMessage}
+							disabled={!selectedGroup || !input.trim()}
+						>
+							<svg fill="none" stroke="currentColor" viewBox="0 0 24 24" className="chat-send-icon">
+								<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+							</svg>
+						</button>
+					</div>
+				</div>
+			</div>
+
+			{/* Group Management Modal */}
+			{showGroupManagement && managingGroup && (
+				<div className="chat-modal-overlay" onClick={closeGroupManagement}>
+					<div className="chat-modal" onClick={(e) => e.stopPropagation()}>
+						<div className="chat-modal__header">
+							<h3>{t('chat.manageGroup')}: {managingGroup.name}</h3>
+							<button className="chat-modal__close" onClick={closeGroupManagement}>
+								×
 							</button>
 						</div>
+
+						<div className="chat-modal__content">
+							{/* Current Members Section */}
+							<div className="chat-group-management-section">
+								<h4>{t('chat.currentMembers')} ({managingGroup.members.length})</h4>
+								<div className="chat-group-members-list">
+									{managingGroup.members.map(member => (
+										<div key={member.id} className="chat-group-member-item">
+											<div className="chat-group-member-info">
+												<div className="chat-friend-avatar-small">
+													<img 
+														src={ApiService.getFile(member.avatar)} 
+														alt={member.username}
+														onError={(e) => {
+															(e.target as HTMLImageElement).src = ApiService.getFile(null);
+														}}
+													/>
+												</div>
+												<span>{member.username}</span>
+												{managingGroup.owners_id.includes(member.id) && (
+													<span className="chat-owner-badge">👑</span>
+												)}
+											</div>
+											{/* Only show remove button if it's not the current user and not an owner */}
+											{member.id !== currentUserId && !managingGroup.owners_id.includes(member.id) && (
+												<button
+													className="chat-remove-member-btn"
+													onClick={() => handleRemoveUserFromGroup(managingGroup.id, member.id)}
+													title={t('chat.removeMember')}
+												>
+													🗑️
+												</button>
+											)}
+										</div>
+									))}
+								</div>
+							</div>
+
+							{/* Add Members Section */}
+							<div className="chat-group-management-section">
+								<h4>{t('chat.addMembers')}</h4>
+								<div className="chat-add-members-list">
+									{getAvailableFriendsForGroup(managingGroup).length === 0 ? (
+										<div className="chat-no-available-friends">
+											{t('chat.noFriendsToAdd')}
+										</div>
+									) : (
+										getAvailableFriendsForGroup(managingGroup).map(friend => (
+											<div key={friend.id} className="chat-group-member-item">
+												<div className="chat-group-member-info">
+													<div className="chat-friend-avatar-small">
+														<img 
+															src={ApiService.getFile(friend.avatar)} 
+															alt={friend.username}
+															onError={(e) => {
+																(e.target as HTMLImageElement).src = ApiService.getFile(null);
+															}}
+														/>
+													</div>
+													<span>{friend.username}</span>
+												</div>
+												<button
+													className="chat-add-member-btn"
+													onClick={() => handleAddUserToGroup(managingGroup.id, friend.id)}
+													title={t('chat.addMember')}
+												>
+													➕
+												</button>
+											</div>
+										))
+									)}
+								</div>
+							</div>
+						</div>
 					</div>
-				)}
-			</div>
+				</div>
+			)}
 		</div>
 	);
 };

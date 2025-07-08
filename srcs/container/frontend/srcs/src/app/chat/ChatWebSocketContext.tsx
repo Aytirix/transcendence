@@ -28,6 +28,10 @@ interface ChatWebSocketContextType {
 	createGroup: (groupName: string, userIds: number[]) => void;
 	deleteGroup: (groupId: number) => void;
 
+	// Group Management Actions
+	addUserToGroup: (groupId: number, userId: number) => void;
+	removeUserFromGroup: (groupId: number, userId: number) => void;
+
 	// Friends Actions
 	handleAddFriend: (userId: number) => void;
 	handleAcceptFriend: (userId: number) => void;
@@ -173,15 +177,40 @@ export const ChatWebSocketProvider: React.FC<ChatWebSocketProviderProps> = ({ ch
 
 				case "leave_group": {
 					if (data.group_id) {
-						setGroups(prev => prev.filter(g => g.id !== data.group_id));
-						setGroupMessages(prev => {
-							const newMessages = { ...prev };
-							delete newMessages[data.group_id];
-							return newMessages;
-						});
+						// If user_id is provided and it's not the current user, remove that user from the group
+						if (data.user_id && data.user_id !== currentUserIdRef.current) {
+							setGroups(prev => prev.map(group => 
+								group.id === data.group_id 
+									? { 
+										...group, 
+										members: group.members.filter(member => member.id !== data.user_id),
+										onlines_id: group.onlines_id.filter(id => id !== data.user_id)
+									}
+									: group
+							));
+						} else {
+							// Current user left or was removed from the group, remove the entire group
+							setGroups(prev => prev.filter(g => g.id !== data.group_id));
+							setGroupMessages(prev => {
+								const newMessages = { ...prev };
+								delete newMessages[data.group_id];
+								return newMessages;
+							});
+						}
 					}
 					break;
 				}
+
+				case "add_user_group":
+					if (data.result === "ok" && data.group_id && data.user) {
+						// Add the user to the group's members list
+						setGroups(prev => prev.map(group => 
+							group.id === data.group_id 
+								? { ...group, members: [...group.members, data.user] }
+								: group
+						));
+					}
+					break;
 
 				// --- Actions amis ---
 				case "search_user":
@@ -574,6 +603,33 @@ export const ChatWebSocketProvider: React.FC<ChatWebSocketProviderProps> = ({ ch
 		}));
 	}, []); // Pas de dépendances
 
+	// --- Group Management Actions ---
+	const addUserToGroup = useCallback((groupId: number, userId: number) => {
+		if (socketRef.current?.readyState !== WebSocket.OPEN) {
+			console.warn("Cannot add user to group: WebSocket not ready");
+			return;
+		}
+
+		socketRef.current.send(JSON.stringify({
+			action: "add_user_group",
+			group_id: groupId,
+			user_id: userId,
+		}));
+	}, []); // Pas de dépendances
+
+	const removeUserFromGroup = useCallback((groupId: number, userId: number) => {
+		if (socketRef.current?.readyState !== WebSocket.OPEN) {
+			console.warn("Cannot remove user from group: WebSocket not ready");
+			return;
+		}
+
+		socketRef.current.send(JSON.stringify({
+			action: "remove_user_group",
+			group_id: groupId,
+			user_id: userId,
+		}));
+	}, []); // Pas de dépendances
+
 	// --- Actions Amis ---
 	const handleAddFriend = useCallback((userId: number) => {
 		if (socketRef.current?.readyState !== WebSocket.OPEN) return;
@@ -702,6 +758,8 @@ export const ChatWebSocketProvider: React.FC<ChatWebSocketProviderProps> = ({ ch
 		loadMessages,
 		createGroup,
 		deleteGroup,
+		addUserToGroup,
+		removeUserFromGroup,
 		handleAddFriend,
 		handleAcceptFriend,
 		handleRefuseFriend,
@@ -727,6 +785,8 @@ export const ChatWebSocketProvider: React.FC<ChatWebSocketProviderProps> = ({ ch
 		loadMessages,
 		createGroup,
 		deleteGroup,
+		addUserToGroup,
+		removeUserFromGroup,
 		handleAddFriend,
 		handleAcceptFriend,
 		handleRefuseFriend,

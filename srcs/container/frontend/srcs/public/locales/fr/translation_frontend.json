@@ -321,7 +321,14 @@
 		"createTheGroup": "Créer le groupe",
 		"connected": "Connecté",
 		"discussionWith": "Discussion avec ",
-		"groupDiscussion": "Discussion de groupe : "
+		"groupDiscussion": "Discussion de groupe : ",
+		"manageGroup": "Gérer le groupe",
+		"manage": "Gérer",
+		"currentMembers": "Membres actuels",
+		"addMembers": "Ajouter des membres",
+		"noFriendsToAdd": "Aucun ami disponible à ajouter",
+		"removeMember": "Retirer le membre",
+		"addMember": "Ajouter le membre"
 	},
 	"common": {
 		"loading": "Chargement...",

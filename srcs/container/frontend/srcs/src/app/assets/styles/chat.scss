@@ -1288,3 +1288,122 @@
 		width: 100%;
 	}
 }
+
+// Group Management Styles
+.chat-group-manage-btn {
+	background: rgba(120, 119, 198, 0.2);
+	border: 1px solid rgba(120, 119, 198, 0.3);
+	color: white;
+	padding: 0.4rem 0.8rem;
+	border-radius: 8px;
+	font-size: 0.85rem;
+	cursor: pointer;
+	transition: all 0.3s ease;
+	margin-left: 1rem;
+
+	&:hover {
+		background: rgba(120, 119, 198, 0.3);
+		border-color: rgba(120, 119, 198, 0.5);
+		transform: translateY(-1px);
+	}
+}
+
+.chat-modal-overlay {
+	position: fixed;
+	inset: 0;
+	background: rgba(0, 0, 0, 0.6);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	z-index: 1000;
+	backdrop-filter: blur(4px);
+}
+
+.chat-group-management-section {
+	margin-bottom: 2rem;
+
+	h4 {
+		color: #ffffff;
+		margin-bottom: 1rem;
+		font-size: 1.1rem;
+		border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+		padding-bottom: 0.5rem;
+	}
+}
+
+.chat-group-members-list,
+.chat-add-members-list {
+	max-height: 200px;
+	overflow-y: auto;
+	border: 1px solid rgba(255, 255, 255, 0.2);
+	border-radius: 8px;
+	padding: 0.5rem;
+}
+
+.chat-group-member-item {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: 0.5rem;
+	border-radius: 6px;
+	margin-bottom: 0.5rem;
+	background: rgba(255, 255, 255, 0.05);
+	border: 1px solid rgba(255, 255, 255, 0.1);
+	transition: all 0.3s ease;
+
+	&:hover {
+		background: rgba(255, 255, 255, 0.1);
+		border-color: rgba(255, 255, 255, 0.2);
+	}
+
+	&:last-child {
+		margin-bottom: 0;
+	}
+}
+
+.chat-group-member-info {
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+
+	span {
+		color: white;
+		font-weight: 500;
+	}
+}
+
+.chat-owner-badge {
+	font-size: 0.8rem;
+	margin-left: 0.5rem;
+}
+
+.chat-remove-member-btn,
+.chat-add-member-btn {
+	background: none;
+	border: none;
+	font-size: 1.2rem;
+	cursor: pointer;
+	padding: 0.2rem;
+	border-radius: 4px;
+	transition: all 0.3s ease;
+
+	&:hover {
+		background: rgba(255, 255, 255, 0.2);
+		transform: scale(1.1);
+	}
+}
+
+.chat-remove-member-btn:hover {
+	background: rgba(255, 0, 0, 0.2);
+}
+
+.chat-add-member-btn:hover {
+	background: rgba(0, 255, 0, 0.2);
+}
+
+.chat-no-available-friends {
+	text-align: center;
+	color: rgba(255, 255, 255, 0.6);
+	font-style: italic;
+	padding: 1rem;
+}
