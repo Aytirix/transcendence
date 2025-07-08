@@ -3,8 +3,15 @@ import { Ball } from "../Ball";
 import { Game } from "../Game";
 import { Paddle } from "../Paddle";
 import { join } from "path";
+import dotenv from 'dotenv';
 
 
+dotenv.config();
+const BACKEND_PATH = process.env.BACKEND_PATH;
+if (!BACKEND_PATH) {
+	throw new Error("BACKEND_PATH environment variable is not set.");
+}
+const qLearningPath = join(BACKEND_PATH, 'pongAi', 'qLearning.json');
 
 export interface QTable {
 	[key: string]: [number, number , number, number, number, number, number, number, number];
@@ -47,8 +54,7 @@ export class Ai {
 	) {
 
 			try {
-				const filePath = join(__dirname, 'fileJson', 'qLearning.json');;
-				const jsonString = readFileSync(filePath, 'utf8');
+				const jsonString = readFileSync(qLearningPath, 'utf8');
 				this.qTable = JSON.parse(jsonString);
 			} catch (err) {
 				console.warn("⚠️ Aucune Q-table chargée, IA démarre à zéro.");

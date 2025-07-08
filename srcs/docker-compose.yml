@@ -32,6 +32,7 @@ services:
     container_name: backend
     environment:
       - NODE_PROJET=${NODE_PROJET}
+      - BACKEND_PATH=${BACKEND_PATH}
     volumes:
       - backend_data:${BACKEND_PATH}
     working_dir: ${BACKEND_PATH}

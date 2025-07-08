@@ -5,10 +5,19 @@ import { Ai } from './game/pongAi/qLearning';
 import { Paddle } from './game/Paddle';
 import { join } from 'path';
 import { writeFile } from 'fs';
+import dotenv from 'dotenv';
+
+dotenv.config();
+const BACKEND_PATH = process.env.BACKEND_PATH;
+if (!BACKEND_PATH) {
+  throw new Error("BACKEND_PATH environment variable is not set.");
+}
+const qLearningPath = join(BACKEND_PATH, 'pongAi', 'qLearning.json');
+const qLearningPath2 = join(BACKEND_PATH, 'pongAi', 'qLearning2.json');
 
 //Pour compiler "npx tsc" // pour lancer l entrainement "node /dist/trainAi.js"
 
-// Hyper-paramètres 
+// Hyper-paramètres
 const INITIAL_ALPHA    = 0.2;     // learning rate de départ
 const MIN_ALPHA        = 0.05;    // learning rate minimal
 const INITIAL_EPSILON  = 0.5;     // exploration maximale au départ
@@ -19,8 +28,8 @@ const N_GAMES   = 5_000_000;     // 5 millions de parties d’entraînement
 const WIN_SCORE = 23;             // score nécessaire pour gagner une partie
 
 // Chemins vers les Q-tables
-const pathQ1 = join(__dirname, '..', 'game', 'pongAi', 'fileJson', 'qLearning.json');
-const pathQ2 = join(__dirname, '..', 'game', 'pongAi', 'fileJson', 'qLearning2.json');
+const pathQ1 = qLearningPath;
+const pathQ2 = qLearningPath2;
 
 // Initialisation des deux IA
 let ai1 = new Ai(INITIAL_ALPHA, INITIAL_EPSILON, GAMMA, false);
