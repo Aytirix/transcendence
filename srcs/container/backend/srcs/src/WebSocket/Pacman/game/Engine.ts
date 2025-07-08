@@ -673,7 +673,7 @@ export default class Engine {
 					this.reward += reward;
 				}
 				this.checkGhostPacmanCollision(player as Pacman);
-				this.checkWinCondition();
+				this.checkWinCondition(player as Pacman);
 			}
 		});
 		// this.debug();
@@ -683,7 +683,7 @@ export default class Engine {
 	 * Vérifie si Pac-Man a mangé toutes les pastilles
 	 * @returns true si la partie est terminée (toutes les pastilles mangées)
 	 */
-	private checkWinCondition(): boolean {
+	private checkWinCondition(pacman: Pacman): boolean {
 		// Vérifier s'il reste des pastilles sur la carte
 		const consumePelletOrBonus = this.map.countRemainingPellets();
 		if (consumePelletOrBonus === 0) {
@@ -694,6 +694,7 @@ export default class Engine {
 			this.win = 'pacman';
 			const pacmanId = Array.from(this.players.values()).find(p => p instanceof Pacman)?.player.id;
 			this.reward += 50000;
+			pacman.score += 2000;
 			this.pause({ key: 'pacman.engine.gameFinishedPacmanWins' });
 			this.addStatistics();
 			this.broadcastState();
@@ -740,6 +741,7 @@ export default class Engine {
 		this.stop();
 		pacman.life -= 1;
 		pacman.death_count += 1;
+		pacman.score -= 1500;
 		if (pacman.life >= 1) {
 			const pacmanId = Array.from(this.players.values()).find(p => p instanceof Pacman)?.player.id;
 			this.reward += -200;
