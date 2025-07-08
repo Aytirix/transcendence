@@ -251,7 +251,37 @@
 		"leaveChannel": "Leave channel",
 		"inviteToGame": "Invite to game",
 		"blockUser": "Block user",
-		"unblockUser": "Unblock user"
+		"unblockUser": "Unblock user",
+		"noMessages": "No messages",
+		"noMessagesInConversation": "No messages in this conversation.",
+		"me": "Me",
+		"user": "User",
+		"selectGroup": "Select a group...",
+		"member": "member",
+		"members": "members",
+		"onlineCount": "online",
+		"unknownUser": "Unknown user",
+		"groupNoName": "Unnamed group",
+		"justNow": "just now",
+		"minutesAgo": "{{count}}min ago",
+		"hoursAgo": "{{count}}h ago",
+		"daysAgo": "{{count}}d ago",
+		"noGroups": "No groups",
+		"noGroupsAvailable": "No groups available",
+		"deleteGroup": "Delete group",
+		"showSidebar": "Show sidebar",
+		"hideSidebar": "Hide sidebar",
+		"messages": "Messages",
+		"search": "Search...",
+		"cancelCreation": "Cancel creation",
+		"createGroup": "Create group",
+		"groupName": "Group name",
+		"selectFriends": "Select friends:",
+		"noFriendsAvailableForGroup": "No friends available for group creation.",
+		"createTheGroup": "Create the group",
+		"connected": "Connected",
+		"discussionWith": "Discussion with: ",
+		"groupDiscussion": "Group discussion: "
 	},
 	"common": {
 		"loading": "Loading...",
@@ -482,7 +512,8 @@
 			"refuse": "Decline friend request",
 			"cancel": "Cancel friend request",
 			"remove": "Remove friend",
-			"add": "Add as friend"
+			"add": "Add as friend",
+			"pongInvite": "Invite to Pong"
 		},
 		"notifications": {
 			"PonginviteSent": "Invitation sent to {{username}} to play Pong"

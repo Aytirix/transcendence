@@ -34,7 +34,7 @@ export const getSocketByUserId = (userId: number): WebSocket | null => {
 	}
 	return null;
 }
-
+/*
 export const startInitConnexionInterval = (user: User, ws: WebSocket): void => {
 	// Nettoyer l'intervalle existant s'il y en a un
 	if (userIntervals.has(user.id)) {
@@ -73,7 +73,7 @@ export const cleanupAllIntervals = (): void => {
 		clearInterval(interval);
 	});
 	userIntervals.clear();
-}
+} */
 
 export const checkInvitePong = async (ws: WebSocket, user: User): Promise<void> => {
 	const result = await modelPong.checkUserIsInvited(user.id);
@@ -105,7 +105,7 @@ async function chatWebSocket(ws: WebSocket, user: User): Promise<void> {
 	checkInvitePong(ws, user);
 	
 	// Démarrer l'envoi périodique d'init_connexion toutes les 500ms
-	startInitConnexionInterval(user, ws);
+	//startInitConnexionInterval(user, ws);
 	ws.on('message', (message: Buffer) => {
 		let text: request | null = null;
 		try {
@@ -189,12 +189,12 @@ async function chatWebSocket(ws: WebSocket, user: User): Promise<void> {
 	});
 
 	ws.on('close', () => {
-		stopInitConnexionInterval(user.id);
+		//stopInitConnexionInterval(user.id);
 		controllersChat.user_disconnected(ws, user, state);
 	});
 
 	ws.on('error', (error: Error) => {
-		stopInitConnexionInterval(user.id);
+		//stopInitConnexionInterval(user.id);
 		controllersChat.removeOnlineUser(state, user);
 		if (ws.readyState === WebSocket.OPEN) {
 			ws.close(1008, JSON.stringify({ action: 'error', result: 'error', notification: [ws.i18n.t('errors.wsError')] }));
