@@ -214,15 +214,19 @@ async function createPrivateGroup(user: User, friend: User, state: State): Promi
 	if (result.length > 0) {
 		const group = result[0];
 		const groupId = group.id;
-		const group2: Group = {
+		let group2: Group = {
 			id: group.id,
 			name: group.name || '',
 			members: [user, friend],
 			owners_id: [user.id, friend.id],
-			onlines_id: [user.id, ...(friend.online ? [friend.id] : [])],
+			onlines_id: [user.id],
 			messages: new Map<number, Message>(),
 			private: true,
 		};
+		console.log(`user ${user.username} online: ${user.online}`);
+		console.log(`friend ${friend.username} online: ${friend.online}`);
+		if (friend.online) group2.onlines_id.push(friend.id);
+		console.log(`group2.onlines_id: ${group2.onlines_id}`);
 		state.groups.set(groupId, group2);
 		return group2;
 	}
