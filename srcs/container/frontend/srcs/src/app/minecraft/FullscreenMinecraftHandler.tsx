@@ -462,7 +462,7 @@ export async function getMinecraftStorageSizeMB(worldIsSave: boolean = true, rsI
 }
 
 // Lance la sauvegarde Minecraft en arrière-plan (non bloquant)
-export function setMinecraftInfo() {
+export function setMinecraftInfo(t: (key: string, options?: Record<string, string | number>) => string) {
 	(async () => {
 		let lastAccess = localStorage.getItem('lastMinecraftAccess');
 		if (!lastAccess) lastAccess = '0';
@@ -500,7 +500,7 @@ export function setMinecraftInfo() {
 		// Vérification taille avant envoi (10 Mo max)
 		const compressedSize = new Blob([compressed]).size;
 		if (compressedSize > 10 * 1024 * 1024) {
-			notification.warn(`⚠️ LIMITE DEPASSER ⚠️\nLa sauvegarde Minecraft dépasse la limite de 10 Mo.\nVeuillez réduire la taille des packs de ressources ou des mondes en solo.`,
+			notification.warn(t('minecraft.sizeLimitExceeded'),
 				{
 					autoClose: false,
 					position: 'top-center',
@@ -529,7 +529,7 @@ export function setMinecraftInfo() {
 				const result = await ApiService.post('/setMinecraftUser', { compressed });
 				console.log('Résultat de la sauvegarde Minecraft:', result);
 				if (!result.ok) {
-					notification.error("❌ Erreur lors de la sauvegarde Minecraft.",
+					notification.error(t('minecraft.saveError'),
 						{
 							autoClose: 1000,
 							position: 'top-center',

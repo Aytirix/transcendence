@@ -30,7 +30,7 @@ const FriendPage: React.FC = () => {
 	async function testInvitePong(friend: any) {
 		const response = await ApiService.post(`/pong/invitePlayer`, { friendId: friend.id });
 		if (response.ok) {
-			const message = t('friendPage.notifications.PonginviteSent').replace('{{username}}', friend.username);
+			const message = t('friendPage.notifications.PonginviteSent', { username: friend.username });
 			notification.cancel(message).then(() => {
 				handleCancelInvite(response.token);
 			});

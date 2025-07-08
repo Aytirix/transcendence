@@ -41,14 +41,14 @@ const PlayerCard: React.FC<PlayerCardProps> = ({
 					<button
 						className="kick-btn"
 						onClick={() => onKick(player.id)}
-						title="Exclure"
+						title={t('pacman.menu.lobby.gameForm.kickPlayer')}
 					>
 						×
 					</button>
 					<button
 						className="promote-btn"
 						onClick={() => onSetOwner(player.id)}
-						title="Promouvoir comme propriétaire"
+						title={t('pacman.menu.lobby.gameForm.promotePlayer')}
 					>
 						↑
 					</button>
