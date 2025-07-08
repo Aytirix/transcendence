@@ -320,7 +320,14 @@
 		"createTheGroup": "Crear el grupo",
 		"connected": "Conectado",
 		"discussionWith": "Discusión con ",
-		"groupDiscussion": "Discusión de grupo: "
+		"groupDiscussion": "Discusión de grupo: ",
+		"manageGroup": "Gestionar grupo",
+		"manage": "Gestionar",
+		"currentMembers": "Miembros actuales",
+		"addMembers": "Añadir miembros",
+		"noFriendsToAdd": "No hay amigos disponibles para añadir",
+		"removeMember": "Eliminar miembro",
+		"addMember": "Añadir miembro"
 	},
 	"common": {
 		"loading": "Cargando...",

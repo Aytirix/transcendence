@@ -283,9 +283,42 @@
 		transition: transform 0.2s ease-in-out;
 	}
 
+	.player-container {
+		position: relative;
+	}
+
+	.player-dot-indicator {
+		animation: dot-pulse 2s ease-in-out infinite;
+		transition: all 0.3s ease;
+
+		&:hover {
+			transform: scale(1.2);
+		}
+	}
+
+	.player-triangle-indicator {
+		animation: triangle-pulse 2s ease-in-out infinite;
+		transition: all 0.3s ease;
+
+		&:hover {
+			transform: scale(1.1);
+		}
+	}
+
 	@keyframes blink {
 		from { opacity: 0.5; }
 		to { opacity: 1; }
+	}
+
+	@keyframes triangle-pulse {
+		0%, 100% { 
+			opacity: 1; 
+			transform: translateY(0px);
+		}
+		50% { 
+			opacity: 0.6; 
+			transform: translateY(-3px);
+		}
 	}
 
 
