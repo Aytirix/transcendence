@@ -18,6 +18,9 @@ let state: State = {
 	friends: new Map<number, Friends>(),
 };
 
+// Map pour stocker les intervalles d'envoi d'init_connexion par utilisateur
+const userIntervals = new Map<number, NodeJS.Timeout>();
+
 (async () => {
 	state.friends = await modelsFriends.loadAllFriendRelationsFromDB();
 })();
@@ -31,6 +34,46 @@ export const getSocketByUserId = (userId: number): WebSocket | null => {
 	}
 	return null;
 }
+/*
+export const startInitConnexionInterval = (user: User, ws: WebSocket): void => {
+	// Nettoyer l'intervalle existant s'il y en a un
+	if (userIntervals.has(user.id)) {
+		clearInterval(userIntervals.get(user.id)!);
+	}
+	
+	// Créer un nouvel intervalle qui envoie init_connexion toutes les 500ms
+	const interval = setInterval(async () => {
+		// Vérifier que la WebSocket est toujours ouverte
+		if (ws.readyState === ws.OPEN && state.onlineSockets.has(user.id)) {
+			try {
+				await controllersChat.init_connexion(ws, user, state);
+			} catch (error) {
+				console.error(`Erreur lors de l'envoi d'init_connexion pour l'utilisateur ${user.id}:`, error);
+				// Si erreur, arrêter l'intervalle
+				stopInitConnexionInterval(user.id);
+			}
+		} else {
+			// Si la WebSocket est fermée, arrêter l'intervalle
+			stopInitConnexionInterval(user.id);
+		}
+	}, 500);
+	
+	userIntervals.set(user.id, interval);
+}
+
+export const stopInitConnexionInterval = (userId: number): void => {
+	if (userIntervals.has(userId)) {
+		clearInterval(userIntervals.get(userId)!);
+		userIntervals.delete(userId);
+	}
+}
+
+export const cleanupAllIntervals = (): void => {
+	userIntervals.forEach((interval, userId) => {
+		clearInterval(interval);
+	});
+	userIntervals.clear();
+} */
 
 export const checkInvitePong = async (ws: WebSocket, user: User): Promise<void> => {
 	const result = await modelPong.checkUserIsInvited(user.id);
@@ -60,6 +103,9 @@ export const checkInvitePong = async (ws: WebSocket, user: User): Promise<void> 
 async function chatWebSocket(ws: WebSocket, user: User): Promise<void> {
 	controllersChat.init_connexion(ws, user, state);
 	checkInvitePong(ws, user);
+	
+	// Démarrer l'envoi périodique d'init_connexion toutes les 500ms
+	//startInitConnexionInterval(user, ws);
 	ws.on('message', (message: Buffer) => {
 		let text: request | null = null;
 		try {
@@ -140,31 +186,15 @@ async function chatWebSocket(ws: WebSocket, user: User): Promise<void> {
 				ws.send(JSON.stringify({ action: 'error', result: 'error', notification: [ws.i18n.t('pacman.rooms.actionNotFound')] })); // to close
 				break;
 		}
-
-		const st = JSON.stringify({
-			action: 'state',
-			state: {
-				groups: mapToObject(state.groups),
-				friends: state.friends,
-				users_connected: mapToObject(state.user),
-				user: user,
-				lenOnlineSockets: state.onlineSockets.size,
-			}
-		}
-		);
-		// console.log('État actuel:', st);
-		// writeFile('./state.json', st, (err) => {
-		// 	if (err) {
-		// 		console.error('Erreur lors de l\'écriture du fichier state.json:', err);
-		// 	}
-		// });
 	});
 
 	ws.on('close', () => {
+		//stopInitConnexionInterval(user.id);
 		controllersChat.user_disconnected(ws, user, state);
 	});
 
 	ws.on('error', (error: Error) => {
+		//stopInitConnexionInterval(user.id);
 		controllersChat.removeOnlineUser(state, user);
 		if (ws.readyState === WebSocket.OPEN) {
 			ws.close(1008, JSON.stringify({ action: 'error', result: 'error', notification: [ws.i18n.t('errors.wsError')] }));

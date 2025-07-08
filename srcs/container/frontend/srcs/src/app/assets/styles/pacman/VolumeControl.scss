@@ -14,6 +14,17 @@
   border-radius: 8px;
   font-family: 'Press Start 2P', cursive;
 
+
+  /* Accent colored icon */
+  &__icon {
+    /* Lucide icons inherit stroke from currentColor */
+    color: #FFEE00;
+    stroke-width: 1.5;
+    width: 1rem;
+    height: 1rem;
+    flex-shrink: 0;
+  }
+  
   &__slider {
     width: 5rem;
     height: 0.4rem;

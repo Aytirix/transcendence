@@ -1,16 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { SoundManager } from '../utils/SoundManager';
+import { Volume2 } from 'lucide-react';
+
 import '../../assets/styles/pacman/CreatePacmanMap.scss';
 import '../../assets/styles/pacman/VolumeControl.scss';
 
 
 export const VolumeControl: React.FC = () => {
     const [volume, setVolume] = useState(0.5);
-    const [audioEnabled, setAudioEnabled] = useState(false);
     const soundManager = SoundManager.getInstance();
 
     useEffect(() => {
-        setAudioEnabled(soundManager.isAudioEnabled());
         setVolume(soundManager.getVolume());
     }, [soundManager]);
 
@@ -20,19 +20,10 @@ export const VolumeControl: React.FC = () => {
         soundManager.setVolume(newVolume);
     };
 
-    const handleTestSound = async () => {
-        if (!audioEnabled) {
-            const success = await soundManager.enableAudio();
-            setAudioEnabled(success);
-        }
-        if (audioEnabled || soundManager.isAudioEnabled()) {
-            soundManager.playEating();
-        }
-    };
-
     return (
         <div className="volume-control" style={{'--volume-progress': `${volume * 100}%`} as React.CSSProperties}>
-            <input
+            <Volume2 className="volume-control__icon" />
+			<input
                 type="range"
                 min="0"
                 max="1"
