@@ -1,6 +1,6 @@
 // src/GroupsMessagesPage.tsx
 
-import React, { useEffect, useState, useCallback, useMemo } from "react";
+import React, { useEffect, useState, useCallback, useRef } from "react";
 import { useChatWebSocket } from "./ChatWebSocketContext";
 import { Group, Message } from "./types/chat";
 import ApiService from "../../api/ApiService";
@@ -41,6 +41,22 @@ const GroupsMessagesPage: React.FC = () => {
 			setSelectedGroup(groups[0]);
 		}
 	}, [groups, selectedGroup]);
+
+	// Détecter les nouveaux groupes privés et les sélectionner automatiquement
+	const prevGroupsLength = useRef(groups.length);
+	useEffect(() => {
+		// Si un nouveau groupe a été ajouté
+		if (groups.length > prevGroupsLength.current) {
+			const newGroups = groups.slice(prevGroupsLength.current);
+			// Chercher un groupe privé parmi les nouveaux groupes
+			const newPrivateGroup = newGroups.find(g => g.private);
+			if (newPrivateGroup) {
+				console.log("Auto-selecting new private group:", newPrivateGroup);
+				setSelectedGroup(newPrivateGroup);
+			}
+		}
+		prevGroupsLength.current = groups.length;
+	}, [groups]);
 
 	// Charger les messages quand un groupe est sélectionné
 	useEffect(() => {
@@ -149,14 +165,14 @@ const GroupsMessagesPage: React.FC = () => {
 		);
 	};
 
-	const renderContent = useMemo(() => {
+	const renderContent = () => {
 		if (selectedMessages.length === 0) {
 			return <NoMessage />;
 		}
 		else {
 			return <Messages />;
 		}
-	}, [selectedMessages.length]);
+	};
 
 	const handleCreateGroup = () => {
 		// Vérification que les champs sont bien remplis
@@ -176,6 +192,15 @@ const GroupsMessagesPage: React.FC = () => {
 	const HeaderMessages: React.FC = () => {
 		const displayName = selectedGroup ? getGroupDisplayName(selectedGroup) : t('chat.selectGroup');
 		
+        const getOnlineMembers = () => {
+            if (!selectedGroup || !selectedGroup.onlines_id) return [];
+            
+            return selectedGroup.members.filter(member => 
+                selectedGroup.onlines_id.includes(member.id)
+            );
+        };
+
+        const onlineMembers = getOnlineMembers();
 		return (
 			<div className="chat-content__header">
 				<div className="chat-content__header-info">
@@ -201,6 +226,20 @@ const GroupsMessagesPage: React.FC = () => {
 						)}
 					</div>
 				</div>
+				{/* Section des membres en ligne */}
+                {selectedGroup && onlineMembers.length > 0 && (
+                    <div className="chat-content__header-online">
+                        <div className="chat-content__header-online-list">
+                            {onlineMembers.map((member) => (
+                                <div key={member.id} className="chat-content__header-online-member">
+                                    <span className="chat-content__header-online-name">
+                                        {member.username}
+                                    </span>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                )}
 			</div>
 		)
 	}
@@ -488,7 +527,7 @@ const GroupsMessagesPage: React.FC = () => {
 			{/* Zone de contenu principal */}
 			<div className="chat-content">
 				<HeaderMessages />
-				{renderContent}
+				{renderContent()}
 				
 				{/* Zone de saisie */}
 				<div className="chat-content__input">

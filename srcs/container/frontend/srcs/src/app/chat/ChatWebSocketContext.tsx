@@ -236,18 +236,46 @@ export const ChatWebSocketProvider: React.FC<ChatWebSocketProviderProps> = ({ ch
 					if (data.result === "ok") {
 						setFriends(prev => sortFriends(prev.map(friend =>
 							friend.id === data.user_id
-								? { ...friend, relation: { ...friend.relation, status: "friend" }, online: data.isConnected }
+								? { 
+									...friend, 
+									relation: { 
+										...friend.relation, 
+										status: "friend",
+										privmsg_id: data.group?.id || friend.relation.privmsg_id 
+									}, 
+									online: data.isConnected 
+								}
 								: friend
 						)));
 						setSearchResults(prev =>
 							prev
 								? sortFriends(prev.map(user =>
 									user.id === data.user_id
-										? { ...user, relation: { ...user.relation, status: "friend" } }
+										? { 
+											...user, 
+											relation: { 
+												...user.relation, 
+												status: "friend",
+												privmsg_id: data.group?.id || user.relation.privmsg_id 
+											} 
+										}
 										: user
 								))
 								: []
 						);
+
+						// Ajouter le groupe privé à la liste des groupes
+						if (data.group) {
+							setGroups(prev => {
+								// Vérifier si le groupe n'existe pas déjà
+								const groupExists = prev.some(g => g.id === data.group.id);
+								if (!groupExists) {
+									console.log("Adding new private group:", data.group);
+									return [...prev, data.group];
+								}
+								return prev;
+							});
+						}
 					}
 					break;
 
