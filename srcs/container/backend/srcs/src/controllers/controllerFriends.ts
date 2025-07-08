@@ -1,5 +1,5 @@
 import { Group, User, Friends } from '@types';
-import { State, req_accept_friend, res_accept_friend, res_add_friend, req_add_friend, req_remove_friend, res_remove_friend, req_refuse_friend, res_refuse_friend, reponse, req_block_user, res_block_user, req_search_user, res_search_user, res_disconnect } from '@typesChat';
+import { State, req_accept_friend, res_accept_friend, res_add_friend, req_add_friend, req_remove_friend, res_remove_friend, req_refuse_friend, res_refuse_friend, reponse, req_block_user, res_block_user, req_search_user, res_search_user, res_disconnect, res_leaveGroup } from '@typesChat';
 import { WebSocket } from 'ws';
 import modelsChat from '@models/modelChat';
 import modelsFriends from '@models/modelFriends';
@@ -277,7 +277,15 @@ export const removeFriend = async (ws: WebSocket, user: User, state: State, text
 				result: 'ok',
 				notification: [{ key: 'RelationFriends.friendRemovedYou', params: { username: user.username } }],
 			} as res_remove_friend);
+			sendToFriend(friend, state, {
+				action: 'leave_group',
+				result: 'ok',
+				group_id: relation.group_id,
+				user_id: user.id,
+			} as res_leaveGroup);
 
+
+			ws.send(JSON.stringify({ action: 'leave_group', result: 'ok', group_id: relation.group_id, user_id: friend.id } as res_leaveGroup));
 			ws.send(JSON.stringify({
 				action: 'remove_friend',
 				user_id: friend.id,
