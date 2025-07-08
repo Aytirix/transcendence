@@ -15,12 +15,13 @@ export type Group = {
   members: Member[];
   owners_id: number[];
   onlines_id: number[];
-  private: number;
+  private: boolean;
 };
 
 export type Message = {
   id: number;
   sender_id: string | number;
+  sender_username?: string;
   message: string;
   sent_at: string;
 };
