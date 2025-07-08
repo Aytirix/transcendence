@@ -4,7 +4,7 @@ import React, { createContext, useContext, useCallback, useState, useEffect, use
 import useSafeWebSocket, { WebSocketStatus } from '../../api/useSafeWebSocket';
 import { Group, Message, Friend } from './types/chat';
 import notification from '../components/Notifications'
-import { useLanguage } from '../../contexts/LanguageContext';
+import { useSafeLanguage } from '../../contexts/LanguageContext';
 
 interface ChatWebSocketContextType {
 	// WebSocket status
@@ -63,7 +63,7 @@ interface ChatWebSocketProviderProps {
 }
 
 export const ChatWebSocketProvider: React.FC<ChatWebSocketProviderProps> = ({ children }) => {
-	const { t } = useLanguage();
+	const { t } = useSafeLanguage();
 	const [groups, setGroups] = useState<Group[]>([]);
 	const [friends, setFriends] = useState<Friend[]>([]);
 	const [groupMessages, setGroupMessages] = useState<{ [groupId: number]: Message[] }>({});
@@ -92,7 +92,7 @@ export const ChatWebSocketProvider: React.FC<ChatWebSocketProviderProps> = ({ ch
 
 	// Pages où on ne veut pas ouvrir la socket du chat
 	const authPages = useMemo(() => ["/login", "/register", "/forget-password", "/auth/checkCode"], []);
-		const shouldConnectWebSocket = useMemo(() => !authPages.includes(currentPathname), [currentPathname, authPages]);
+	const shouldConnectWebSocket = useMemo(() => !authPages.includes(currentPathname), [currentPathname, authPages]);
 
 	const setNavigateFunction = useCallback((navigate: (url: string) => void) => {
 		navigateRef.current = navigate;
@@ -154,7 +154,7 @@ export const ChatWebSocketProvider: React.FC<ChatWebSocketProviderProps> = ({ ch
 				case "init_connected": {
 					const groupArray: Group[] = Object.values(data.groups || {});
 					setGroups(groupArray);
-					console.log("Groups initialized:", groupArray);
+					console.log("Groups initialized:", groups);
 
 					setCurrentUserId(data.user.id);
 					console.log(`Current user ID: ${data.user.id}`);
@@ -267,14 +267,14 @@ export const ChatWebSocketProvider: React.FC<ChatWebSocketProviderProps> = ({ ch
 					if (data.result === "ok") {
 						setFriends(prev => sortFriends(prev.map(friend =>
 							friend.id === data.user_id
-								? { 
-									...friend, 
-									relation: { 
-										...friend.relation, 
+								? {
+									...friend,
+									relation: {
+										...friend.relation,
 										status: "friend",
-										privmsg_id: data.group?.id || friend.relation.privmsg_id 
-									}, 
-									online: data.isConnected 
+										privmsg_id: data.group?.id || friend.relation.privmsg_id
+									},
+									online: data.isConnected
 								}
 								: friend
 						)));
@@ -282,13 +282,14 @@ export const ChatWebSocketProvider: React.FC<ChatWebSocketProviderProps> = ({ ch
 							prev
 								? sortFriends(prev.map(user =>
 									user.id === data.user_id
-										? { 
-											...user, 
-											relation: { 
-												...user.relation, 
+										? {
+											...user,
+											relation: {
+												...user.relation,
 												status: "friend",
-												privmsg_id: data.group?.id || user.relation.privmsg_id 
-											} 
+												privmsg_id: data.group?.id || user.relation.privmsg_id
+											},
+											online: data.isConnected
 										}
 										: user
 								))
@@ -399,6 +400,17 @@ export const ChatWebSocketProvider: React.FC<ChatWebSocketProviderProps> = ({ ch
 								))
 								: []
 						);
+						setGroups(prev => prev.map(group => {
+							const isMember = group.members.some(member => member.id === data.user_id);
+							const isOnline = group.onlines_id.includes(data.user_id);
+							if (isMember && !isOnline) {
+								return {
+									...group,
+									onlines_id: [...group.onlines_id, data.user_id]
+								};
+							}
+							return group;
+						}));
 					}
 					break;
 
@@ -416,7 +428,14 @@ export const ChatWebSocketProvider: React.FC<ChatWebSocketProviderProps> = ({ ch
 								))
 								: []
 						);
+						setGroups(prev => prev.map(group => {
+							return {
+								...group,
+								onlines_id: group.onlines_id.filter(id => id !== data.user_id)
+							};
+						}));
 					}
+					console.log("all groups after disconnect:",groups);
 					break;
 				case "MultiInviteConfirm": {
 					// Utiliser la socket qui nous a envoyé ce message - si on reçoit le message, c'est qu'elle fonctionne !

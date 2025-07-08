@@ -39,16 +39,16 @@ async function initWebSocket(server: FastifyInstance) {
 
 		ws.on('close', () => {
 			console.log(`WebSocket déconnecté [${path}] [${session.user.id}] ${session.user.username}`);
-			const userKey = `${path}_${session.user.id}`;
-			if (userConnected.has(userKey)) userConnected.delete(userKey);
-			else console.warn(`User not found in connected users list: ${session.user.id}`);
+			// const userKey = `${path}_${session.user.id}`;
+			// if (userConnected.has(userKey)) userConnected.delete(userKey);
+			// else console.warn(`User not found in connected users list: ${session.user.id}`);
 		});
 
 		ws.on('error', (error: Error) => {
 			console.error(`WebSocket erreur [${path}] [${session.user.id}] ${session.user.username}:`, error);
-			const userKey = `${path}_${session.user.id}`;
-			if (userConnected.has(userKey)) userConnected.delete(userKey);
-			else console.warn(`User not found in connected users list: ${session.user.id}`);
+			// const userKey = `${path}_${session.user.id}`;
+			// if (userConnected.has(userKey)) userConnected.delete(userKey);
+			// else console.warn(`User not found in connected users list: ${session.user.id}`);
 		});
 	});
 
@@ -62,31 +62,31 @@ async function initWebSocket(server: FastifyInstance) {
 				return;
 			}
 
-			const userKey = `${request.url}_${session.user.id}`;
-			const existingSocket = userConnected.get(userKey);
-			if (existingSocket && existingSocket.readyState === WebSocket.OPEN) {
-				console.warn(`User already connected: ${session.user.id}`);
-				socket.write('HTTP/1.1 409 Conflict\r\n\r\n');
-				socket.destroy();
-				return;
-			} else if (existingSocket) {
-				userConnected.delete(userKey);
-			}
+			// const userKey = `${request.url}_${session.user.id}`;
+			// const existingSocket = userConnected.get(userKey);
+			// if (existingSocket && existingSocket.readyState === WebSocket.OPEN) {
+			// 	console.warn(`User already connected: ${session.user.id}`);
+			// 	socket.write('HTTP/1.1 409 Conflict\r\n\r\n');
+			// 	socket.destroy();
+			// 	return;
+			// } else if (existingSocket) {
+			// 	userConnected.delete(userKey);
+			// }
 
-			if (request.url === '/pong' && userConnected.has(`/Pacman_${session.user.id}`)) {
-				socket.write('HTTP/1.1 409 Conflict\r\n\r\n');
-				socket.destroy();
-				return;
-			}
+			// if (request.url === '/pong' && userConnected.has(`/Pacman_${session.user.id}`)) {
+			// 	socket.write('HTTP/1.1 409 Conflict\r\n\r\n');
+			// 	socket.destroy();
+			// 	return;
+			// }
 
-			if (request.url === '/Pacman' && userConnected.has(`/pong_${session.user.id}`)) {
-				socket.write('HTTP/1.1 409 Conflict\r\n\r\n');
-				socket.destroy();
-				return;
-			}
+			// if (request.url === '/Pacman' && userConnected.has(`/pong_${session.user.id}`)) {
+			// 	socket.write('HTTP/1.1 409 Conflict\r\n\r\n');
+			// 	socket.destroy();
+			// 	return;
+			// }
 
 			wss?.handleUpgrade(request, socket, head, (ws: WebSocket) => {
-				userConnected.set(userKey, ws);
+				// userConnected.set(userKey, ws);
 				wss?.emit('connection', ws, session, request);
 			});
 		} catch (err) {

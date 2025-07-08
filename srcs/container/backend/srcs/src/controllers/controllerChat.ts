@@ -81,6 +81,13 @@ export const addOnlineUser = (state: State, ws: WebSocket, user: User) => {
 		userToUpdate.online = true;
 	}
 	state.onlineSockets.set(user.id, ws);
+	state.groups.forEach((group: Group) => {
+		if (group.members.some(member => member.id === user.id)) {
+			if (!group.onlines_id.includes(user.id)) {
+				group.onlines_id.push(user.id);
+			}
+		}
+	});
 };
 
 export const removeOnlineUser = (state: State, user: User) => {
@@ -94,8 +101,12 @@ export const removeOnlineUser = (state: State, user: User) => {
 		if (!state.onlineSockets.has(user.id)) {
 			state.user.delete(user.id);
 		}
-	}
-	);
+	});
+	state.groups.forEach((group: Group) => {
+		if (group.onlines_id.includes(user.id)) {
+			group.onlines_id = group.onlines_id.filter(id => id !== user.id);
+		}
+	});
 };
 
 export const BlockedUserId = (user: User, state: State) => {

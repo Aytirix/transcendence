@@ -3,6 +3,15 @@ import { Ball } from "../Ball";
 import { Game } from "../Game";
 import { Paddle } from "../Paddle";
 import { join } from "path";
+import dotenv from 'dotenv';
+
+dotenv.config();
+const BACKEND_PATH = process.env.BACKEND_PATH;
+if (!BACKEND_PATH) {
+  throw new Error("BACKEND_PATH environment variable is not set.");
+}
+const qLearningPath = join(BACKEND_PATH, 'pongAi', 'qLearning.json');
+const qLearningPath2 = join(BACKEND_PATH, 'pongAi', 'qLearning2.json');
 
 export interface QTable {
 	[key: string]: [number, number , number, number, number, number, number, number, number];
@@ -44,7 +53,7 @@ export class Ai {
 	) {
 		if (this.json2 === false) {
 			try {
-				const filePath = join(__dirname, '..', '..', '..', 'game', 'pongAi', 'fileJson', 'qLearning2.json');;
+				const filePath = qLearningPath2;
 				const jsonString = readFileSync(filePath, 'utf8');
 				this.qTable = JSON.parse(jsonString);
 			} catch (err) {
@@ -54,7 +63,7 @@ export class Ai {
 		}
 		else if (this.json2 === true) {
 			try {
-				const filePath = join(__dirname, '..', '..', '..', 'game', 'pongAi', 'fileJson', 'qLearning.json');;
+				const filePath = qLearningPath;
 				const jsonString = readFileSync(filePath, 'utf8');
 				this.qTable = JSON.parse(jsonString);
 			} catch (err) {

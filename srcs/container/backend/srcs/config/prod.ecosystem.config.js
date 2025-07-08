@@ -9,7 +9,7 @@ module.exports = {
 			exec_mode: "fork",
 			autorestart: true,
 			restart_delay: 500,
-			max_memory_restart: "1G",
+			max_memory_restart: "2G",
 			watch: false,
 			log_file: "./logs/api_transcendence.log",
 			out_file: "./logs/api_transcendence_out.log",

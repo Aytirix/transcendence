@@ -26,9 +26,15 @@ const GroupsMessagesPage: React.FC = () => {
 	const { user } = useAuth();
 
 	// État local pour l'interface utilisateur
-	const [selectedGroup, setSelectedGroup] = useState<Group | null>(null);
+	const [selectedGroupId, setSelectedGroupId] = useState<number | null>(null);
 	const [input, setInput] = useState("");
 	const [searchQuery, setSearchQuery] = useState('');
+
+	// Dériver selectedGroup depuis les groupes du contexte pour qu'il se mette à jour automatiquement
+	const selectedGroup = useMemo(() => {
+		if (!selectedGroupId) return null;
+		return groups.find(g => g.id === selectedGroupId) || null;
+	}, [groups, selectedGroupId]);
 
 	// Création de groupe
 	const [showCreateGroup, setShowCreateGroup] = useState(false);
@@ -48,7 +54,7 @@ const GroupsMessagesPage: React.FC = () => {
 	// Sélectionner automatiquement le premier groupe lors du chargement
 	useEffect(() => {
 		if (groups.length > 0 && !selectedGroup) {
-			setSelectedGroup(groups[0]);
+			setSelectedGroupId(groups[0].id);
 		}
 	}, [groups, selectedGroup]);
 
@@ -62,7 +68,7 @@ const GroupsMessagesPage: React.FC = () => {
 			const newPrivateGroup = newGroups.find(g => g.private);
 			if (newPrivateGroup) {
 				console.log("Auto-selecting new private group:", newPrivateGroup);
-				setSelectedGroup(newPrivateGroup);
+				setSelectedGroupId(newPrivateGroup.id);
 			}
 		}
 		prevGroupsLength.current = groups.length;
@@ -454,7 +460,7 @@ const GroupsMessagesPage: React.FC = () => {
 							<div
 								key={g.id}
 								className={`chat-group-item ${isSelected ? 'chat-group-item--active' : ''} ${isRecentActivity ? 'chat-group-item--recent' : ''} chat-group-item__container`}
-								onClick={() => setSelectedGroup(g)}
+								onClick={() => setSelectedGroupId(g.id)}
 							>
 								<div className="chat-group-item__content chat-group-item__main-content">
 									{ g.private ? (
