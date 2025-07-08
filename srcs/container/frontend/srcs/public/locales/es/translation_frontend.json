@@ -133,7 +133,9 @@
 					"mapPlaceholder": "Selecciona un mapa",
 					"quit": "Salir de la sala",
 					"startGame": "Iniciar partida",
-					"waitingForPlayers": "Esperando jugadores"
+					"waitingForPlayers": "Esperando jugadores",
+					"kickPlayer": "Expulsar",
+					"promotePlayer": "Promover como propietario"
 				}
 			},
 			"liveGames": {
@@ -343,6 +345,13 @@
 		"timeout": "Tiempo de espera agotado",
 		"connectionLost": "Conexión perdida"
 	},
+	"websocket": {
+		"connecting": "Conectando...",
+		"connected": "Conectado",
+		"disconnected": "Desconectado",
+		"error": "Error de conexión",
+		"reconnecting": "Reconectando..."
+	},
 	"validation": {
 		"required": "Este campo es obligatorio",
 		"email": "Correo electrónico inválido",
@@ -380,7 +389,9 @@
 		"soloWorldsSize": "Tamaño de los mundos individuales",
 		"resourcePacksSize": "Tamaño de los resource packs",
 		"totalSize": "Tamaño total guardado",
-		"closeSettings": "Cerrar"
+		"closeSettings": "Cerrar",
+		"saveError": "Error al guardar los datos de Minecraft",
+		"sizeLimitExceeded": "Límite de tamaño excedido para los datos de Minecraft"
 	},
 	"pong": {
 		"tournament": {

@@ -134,7 +134,9 @@
 					"mapPlaceholder": "Select a map",
 					"quit": "Leave room",
 					"startGame": "Start game",
-					"waitingForPlayers": "Waiting for players"
+					"waitingForPlayers": "Waiting for players",
+					"kickPlayer": "Kick",
+					"promotePlayer": "Promote as owner"
 				}
 			},
 			"liveGames" : {
@@ -344,6 +346,13 @@
 		"timeout": "Timeout exceeded",
 		"connectionLost": "Connection lost"
 	},
+	"websocket": {
+		"connecting": "Connecting...",
+		"connected": "Connected",
+		"disconnected": "Disconnected",
+		"error": "Connection error",
+		"reconnecting": "Reconnecting..."
+	},
 	"validation": {
 		"required": "This field is required",
 		"email": "Invalid email",
@@ -381,7 +390,9 @@
 		"soloWorldsSize": "Solo worlds size",
 		"resourcePacksSize": "Resource packs size",
 		"totalSize": "Total size",
-		"closeSettings": "Close"
+		"closeSettings": "Close",
+		"saveError": "Error saving Minecraft data",
+		"sizeLimitExceeded": "Size limit exceeded for Minecraft data"
 	},
 	"pong": {
 		"tournament": {

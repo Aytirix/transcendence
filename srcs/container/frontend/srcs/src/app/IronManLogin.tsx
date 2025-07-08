@@ -28,7 +28,7 @@ const IronManLogin: React.FC = () => {
 		try {
 			const resp: any = await ApiService.post('/login', form) as ApiService;
 		} catch (err) {
-			notification.error('Erreur réseau ou serveur.');
+			notification.error(t('errors.networkError'));
 		} finally {
 			setLoading(false);
 		}

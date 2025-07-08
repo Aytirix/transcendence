@@ -4,6 +4,7 @@ import React, { createContext, useContext, useCallback, useState, useEffect, use
 import useSafeWebSocket, { WebSocketStatus } from '../../api/useSafeWebSocket';
 import { Group, Message, Friend } from './types/chat';
 import notification from '../components/Notifications'
+import { useLanguage } from '../../contexts/LanguageContext';
 
 interface ChatWebSocketContextType {
 	// WebSocket status
@@ -58,6 +59,7 @@ interface ChatWebSocketProviderProps {
 }
 
 export const ChatWebSocketProvider: React.FC<ChatWebSocketProviderProps> = ({ children }) => {
+	const { t } = useLanguage();
 	const [groups, setGroups] = useState<Group[]>([]);
 	const [friends, setFriends] = useState<Friend[]>([]);
 	const [groupMessages, setGroupMessages] = useState<{ [groupId: number]: Message[] }>({});
@@ -130,7 +132,7 @@ export const ChatWebSocketProvider: React.FC<ChatWebSocketProviderProps> = ({ ch
 						for (const key in arr) {
 							const sender_id = arr[key].sender_id as number;
 							const username = friendsRef.current.find(f => f.id === sender_id)?.username;
-							(arr[key] as Message).sender_username = username || (sender_id === currentUserIdRef.current ? "Moi" : `User ${sender_id}`);
+							(arr[key] as Message).sender_username = username || (sender_id === currentUserIdRef.current ? t('chat.me') : `${t('chat.user')} ${sender_id}`);
 						}
 
 						setGroupMessages(prev => ({

@@ -1,20 +1,22 @@
 import FullscreenMinecraftHandler, { setMinecraftInfo } from './FullscreenMinecraftHandler';
 import notification from '../components/Notifications';
 import React from 'react';
+import { useLanguage } from '../../contexts/LanguageContext';
 
 const Minecraft: React.FC = () => {
+	const { t } = useLanguage();
 
 	React.useEffect(() => {
 		const interval = setInterval(() => {
-			setMinecraftInfo();
+			setMinecraftInfo(t);
 		}, 10 * 60 * 1000); // 10 minutes
 
 		return () => {
 			clearInterval(interval);
-			setMinecraftInfo();
+			setMinecraftInfo(t);
 			notification.dismiss('minecraft-storage-size');
 		};
-	}, []);
+	}, [t]);
 
 	return (
 		<FullscreenMinecraftHandler>

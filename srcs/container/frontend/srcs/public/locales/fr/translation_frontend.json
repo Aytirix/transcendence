@@ -134,7 +134,9 @@
 					"mapPlaceholder": "Sélectionnez une carte",
 					"quit": "Quitter la salle",
 					"startGame": "Lancer la partie",
-					"waitingForPlayers": "En attente de joueurs"
+					"waitingForPlayers": "En attente de joueurs",
+					"kickPlayer": "Exclure",
+					"promotePlayer": "Promouvoir comme propriétaire"
 				}
 			},
 			"liveGames": {
@@ -343,6 +345,13 @@
 		"timeout": "Délai d'attente dépassé",
 		"connectionLost": "Connexion perdue"
 	},
+	"websocket": {
+		"connecting": "Connexion...",
+		"connected": "Connecté",
+		"closed": "Fermé",
+		"error": "Erreur",
+		"reconnecting": "Reconnexion..."
+	},
 	"validation": {
 		"required": "Ce champ est requis",
 		"email": "Email invalide",
@@ -380,7 +389,9 @@
 		"soloWorldsSize": "Taille des mondes solo",
 		"resourcePacksSize": "Taille des resource packs",
 		"totalSize": "Taille totale sauvegardée",
-		"closeSettings": "Fermer"
+		"closeSettings": "Fermer",
+		"saveError": "❌ Erreur lors de la sauvegarde Minecraft.",
+		"sizeLimitExceeded": "⚠️ LIMITE DEPASSER ⚠️\nLa sauvegarde Minecraft dépasse la limite de 10 Mo.\nVeuillez réduire la taille des packs de ressources ou des mondes en solo."
 	},
 	"pong": {
 		"tournament": {
