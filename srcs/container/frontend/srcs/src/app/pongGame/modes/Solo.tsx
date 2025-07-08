@@ -24,6 +24,7 @@ const Solo: React.FC = () => {
 	const socketRef = useRef<WebSocket | null>(null);
 	const deleteGo = useRef(false);
 
+
 	const [isReady3d, setIsReady3d] = useState(false);
 	const [isCinematic, setIscinematic] = useState(false);
 	const [parsedData, setParsedData] = useState<Parse | null>(null);
@@ -132,10 +133,12 @@ const Solo: React.FC = () => {
 				localStorage.removeItem("reconnection");
 				localStorage.removeItem("data");
 				setisWinner(true);
-				if (parsedData?.player1.score === 21)
-					setNameWinner(namePlayer1!)
-				else
-					setNameWinner(namePlayer2)
+				if (data.value)
+					setNameWinner(data.value);
+				// if (parsedData?.player1.score === 21)
+				// 	setNameWinner(namePlayer1!)
+				// else
+				// 	setNameWinner(namePlayer2)
 				camera!.current!.position.x = 338.131;
 				camera!.current!.position.y = 136.188;
 				camera!.current!.position.z = -481.417;
