@@ -1,5 +1,5 @@
 import { Group, User, Friends } from '@types';
-import { State, req_accept_friend, res_accept_friend, res_add_friend, req_add_friend, req_remove_friend, res_remove_friend, req_refuse_friend, res_refuse_friend, reponse, req_block_user, res_block_user, req_search_user, res_search_user, res_disconnect, res_leaveGroup } from '@typesChat';
+import { State, req_accept_friend, res_accept_friend, res_add_friend, req_add_friend, req_remove_friend, res_remove_friend, req_refuse_friend, res_refuse_friend, reponse, req_block_user, res_block_user, req_search_user, res_search_user, res_disconnect, res_leaveGroup, send_friend_connected } from '@typesChat';
 import { WebSocket } from 'ws';
 import modelsChat from '@models/modelChat';
 import modelsFriends from '@models/modelFriends';
@@ -303,10 +303,10 @@ export const acceptFriend = async (ws: WebSocket, user: User, state: State, text
 
 	const relation = getRelationFriend(user.id, user_id, state);
 	if (!relation) return ws.send(JSON.stringify({ action: 'error', result: 'error', notification: ws.i18n.t('RelationFriends.noRelationWithUser') } as reponse));
-	console.log('end getRelationFriend', relation);
 
 	if (relation.status === 'pending' && relation.target === user.id) {
 		const friend = await modelsUser.getUserById(user_id);
+		friend.online = userIsConnected(friend, state);
 		let groupPrivMsg: Group | null = await modelsChat.createPrivateGroup(user, friend, state);
 		if (groupPrivMsg == null) {
 			console.log('Error creating private group');
@@ -317,14 +317,12 @@ export const acceptFriend = async (ws: WebSocket, user: User, state: State, text
 			ws.send(JSON.stringify({ action: 'error', result: 'error', notification: ws.i18n.t(`RelationFriends.errorAcceptRequest`) } as reponse));
 			return;
 		}
-		console.log('state after updateFriendRelation', JSON.stringify(mapToObject(state.friends)));
-		console.log('groupPrivMsg after updateFriendRelation', JSON.stringify(mapToObject(state.groups)));
 		if (friend) {
 			ws.send(JSON.stringify({
 				action: 'accept_friend',
 				result: 'ok',
 				user_id: friend.id,
-				isConnected: userIsConnected(user, state),
+				isConnected: true,
 				group: groupPrivMsg,
 				notification: ws.i18n.t('RelationFriends.acceptedFriendRequestYou', { username: friend.username }),
 			} as res_accept_friend));
@@ -333,7 +331,7 @@ export const acceptFriend = async (ws: WebSocket, user: User, state: State, text
 			action: 'accept_friend',
 			result: 'ok',
 			user_id: user.id,
-			isConnected: userIsConnected(friend, state),
+			isConnected: true,
 			group: groupPrivMsg,
 			notification: [{ key: 'RelationFriends.acceptedFriendRequest', params: { username: user.username } }],
 		} as res_accept_friend);

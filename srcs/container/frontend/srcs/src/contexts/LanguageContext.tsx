@@ -75,3 +75,13 @@ export const useLanguage = () => {
 	}
 	return context;
 };
+
+// Version sécurisée qui ne lance pas d'erreur si le contexte n'est pas disponible
+export const useSafeLanguage = () => {
+	const context = useContext(LanguageContext);
+	return context || {
+		t: (key: string) => key, // Retourner la clé par défaut
+		setLanguage: () => {},
+		currentLanguage: 'fr'
+	};
+};
