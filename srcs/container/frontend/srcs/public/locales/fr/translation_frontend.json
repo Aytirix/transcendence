@@ -328,7 +328,8 @@
 		"addMembers": "Ajouter des membres",
 		"noFriendsToAdd": "Aucun ami disponible à ajouter",
 		"removeMember": "Retirer le membre",
-		"addMember": "Ajouter le membre"
+		"addMember": "Ajouter le membre",
+		"loadMoreMessages": "Charger plus de messages"
 	},
 	"common": {
 		"loading": "Chargement...",

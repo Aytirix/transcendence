@@ -64,22 +64,22 @@ const GamePlayers: React.FC<GamePlayersProps> = ({
 					const posX = gamePlayer.position?.x ?? 0;
 					const posY = gamePlayer.position?.y ?? 0;
 
-					const baseStyle = {
-						top: posY - half,
-						left: posX - half,
-						width: tileSize,
-						height: tileSize,
-						backgroundImage: `url(${pacmanImage})`,
-						backgroundSize: 'contain',
-						backgroundRepeat: 'no-repeat',
-						backgroundPosition: 'center',
-					} as React.CSSProperties;
-
 					return (
-						<div key={gamePlayer.id} className="player-container">
+						<div key={gamePlayer.id} className="player-container" style={{
+							position: 'absolute',
+							top: posY - half,
+							left: posX - half,
+						}}>
 							<div
 								className="player pacman"
-								style={baseStyle}
+								style={{
+									width: tileSize,
+									height: tileSize,
+									backgroundImage: `url(${pacmanImage})`,
+									backgroundSize: 'contain',
+									backgroundRepeat: 'no-repeat',
+									backgroundPosition: 'center',
+								}}
 								title={`${gamePlayer.username} (${gamePlayer.score} pts)`}
 							/>
 							{/* Triangle au-dessus du personnage seulement pour l'utilisateur connecté */}
@@ -88,8 +88,8 @@ const GamePlayers: React.FC<GamePlayersProps> = ({
 									className="player-triangle-indicator"
 									style={{
 										position: 'absolute',
-										top: posY - half - 20,
-										left: posX - 6,
+										top: -20,
+										left: half - 6,
 										width: 0,
 										height: 0,
 										borderLeft: '6px solid transparent',
@@ -147,17 +147,6 @@ const GamePlayers: React.FC<GamePlayersProps> = ({
 					const posX = gamePlayer.position?.x ?? 0;
 					const posY = gamePlayer.position?.y ?? 0;
 
-					const baseStyle = {
-						top: posY - half,
-						left: posX - half,
-						width: tileSize - 3,
-						height: tileSize - 3,
-						backgroundImage: `url(${ghostImage})`,
-						backgroundSize: 'contain',
-						backgroundRepeat: 'no-repeat',
-						backgroundPosition: 'center',
-					} as React.CSSProperties;
-
 					// Style spécifique pour les fantômes
 					let ghostClass = "player ghost";
 					if (isReturningToSpawn) ghostClass += " returning-to-spawn";
@@ -165,10 +154,21 @@ const GamePlayers: React.FC<GamePlayersProps> = ({
 					if (isBlinking) ghostClass += " blinking";
 
 					return (
-						<div key={gamePlayer.id} className="player-container">
+						<div key={gamePlayer.id} className="player-container" style={{
+							position: 'absolute',
+							top: posY - half,
+							left: posX - half,
+						}}>
 							<div
 								className={ghostClass}
-								style={baseStyle}
+								style={{
+									width: tileSize - 3,
+									height: tileSize - 3,
+									backgroundImage: `url(${ghostImage})`,
+									backgroundSize: 'contain',
+									backgroundRepeat: 'no-repeat',
+									backgroundPosition: 'center',
+								}}
 								title={`${gamePlayer.username} (${gamePlayer.score} pts)`}
 							></div>
 							{/* Triangle au-dessus du fantôme seulement pour l'utilisateur connecté */}
@@ -177,8 +177,8 @@ const GamePlayers: React.FC<GamePlayersProps> = ({
 									className="player-triangle-indicator"
 									style={{
 										position: 'absolute',
-										top: posY - half - 20,
-										left: posX - 6,
+										top: -20,
+										left: half - 6,
 										width: 0,
 										height: 0,
 										borderLeft: '6px solid transparent',

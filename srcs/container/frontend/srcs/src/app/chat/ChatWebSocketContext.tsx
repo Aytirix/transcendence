@@ -141,7 +141,7 @@ export const ChatWebSocketProvider: React.FC<ChatWebSocketProviderProps> = ({ ch
 
 						setGroupMessages(prev => ({
 							...prev,
-							[data.group_id]: arr
+							[data.group_id]: [...arr, ...(prev[data.group_id] || [])]
 						}));
 					} else if (data.group_id) {
 						setGroupMessages(prev => ({
