@@ -17,7 +17,7 @@ export function handleReconnection(socket: WebSocket, user: User) : boolean {
 				waitingID.delete(user.id);
 				tempPlayer.socket.send(JSON.stringify({type: "SameKeyboard"}));
 				tempPlayer.game.getPlayer1().getPlayerInfos().socket = socket;
-				tempPlayer.game.setStatus("KICKOFF"); //playing
+				tempPlayer.game.setStatus("KICKOFF");
 				return (true);
 			}
 			else if (tempPlayer.mode === "Solo") {
@@ -47,8 +47,7 @@ export function handleReconnection(socket: WebSocket, user: User) : boolean {
 					tempPlayer.game.getPlayer2().getPlayerInfos().socket.send(JSON.stringify({ type: "assign", value: "p2" }))
 				}
 
-				tempPlayer.game.setStatus("KICKOFF"); //KICKOFF
-				// console.log("essai")
+				tempPlayer.game.setStatus("KICKOFF");
 				return (true);
 			}
 			else if (tempPlayer.mode === "MultiInvite") {
@@ -67,8 +66,7 @@ export function handleReconnection(socket: WebSocket, user: User) : boolean {
 					tempPlayer.game.getPlayer2().getPlayerInfos().socket.send(JSON.stringify({ type: "assign", value: "p2" }))
 				}
 
-				tempPlayer.game.setStatus("KICKOFF"); //KICKOFF
-				// console.log("essai")
+				tempPlayer.game.setStatus("KICKOFF");
 				return (true);
 			}
 			else if (tempPlayer.mode === "Tournament") {
@@ -94,7 +92,6 @@ export function handleReconnection(socket: WebSocket, user: User) : boolean {
 				return (true);
 			}
 		}
-			// console.log("apres sans waiting user id", user.id);
 			socket.send(JSON.stringify({type: "Remove"}));
 	return (false);
 }

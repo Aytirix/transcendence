@@ -9,12 +9,10 @@ import { Game } from "../game/Game";
 export function handleSolo(playerInfos: playerStat, msg: webMsg) {
 	if (!playerInfos) return;
 	playerInfos.mode = msg.type;
-	// if (playerInfos.inGame === false) {
 	playerInfos.inGame = true;
 	playerInfos.game = createGame(playerInfos);
 	console.log(`start game solo with ia for ${playerInfos.name}`);
 	playerInfos.game.start();
-	// }
 }
 
 export function handleCollisionWithPlayer1(ball: Ball, player1: Paddle, player2: Paddle, game: Game) {
