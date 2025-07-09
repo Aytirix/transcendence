@@ -123,7 +123,6 @@
 			font-family: inherit;
 			
 			&:focus {
-			///	outline: none;
 				border-color: #FFEE00;
 				box-shadow: 
 				0 0 15px rgba(#FFEE00, 0.4),
@@ -201,7 +200,6 @@
 			max-width: 800px;
 			justify-content: center;
 			padding: 15px 20px;
-			//background: linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(51, 65, 85, 0.8) 100%);
 			border-radius: 10px;
 			border: 2px solid rgba(#0066ff, 0.4);
 			backdrop-filter: blur(10px);
@@ -252,12 +250,10 @@
 		}
 	}
 	
-	// Layout components améliorés
 	.left-panel {
 		width: 260px;
 		flex-shrink: 0;
 		z-index: 10;
-		//background: linear-gradient(135deg, rgba(30, 41, 59, 0.9) 0%, rgba(51, 65, 85, 0.9) 100%);
 		border-radius: 15px;
 		border: 2px solid rgba(#0066ff, 0.4);
 		padding: 15px;
@@ -285,7 +281,6 @@
 		margin: 0 auto 20px auto;
 	}
 	
-	// Tile selector amélioré
 	.tile-selector {
 		display: grid;
 		grid-template-columns: repeat(3, 1fr);
@@ -293,7 +288,6 @@
 		max-height: 600px;
 		padding-right: 6px;
 		
-		// Scrollbar personnalisée
 		&::-webkit-scrollbar {
 			width: 6px;
 		}
@@ -344,7 +338,6 @@
 				border-radius: 4px;
 				transition: all 0.3s ease;
 				
-				// Tile types avec des styles améliorés
 				&.wall {
 					background: linear-gradient(135deg, #0066ff 0%, #0052cc 100%);
 					border-radius: 4px;
@@ -403,7 +396,6 @@
 					
 				}
 				
-				// Spawn points avec des styles améliorés
 				&.spawn {
 					display: flex;
 					justify-content: center;
@@ -588,7 +580,6 @@
 				position: relative;
 			}
 			
-			// Scrollbar personnalisée pour les erreurs
 			&::-webkit-scrollbar {
 				width: 10px;
 			}
@@ -635,7 +626,6 @@
 				padding-left: 20px;
 			}
 			
-			// Scrollbar personnalisée pour le succès
 			&::-webkit-scrollbar {
 				width: 10px;
 			}

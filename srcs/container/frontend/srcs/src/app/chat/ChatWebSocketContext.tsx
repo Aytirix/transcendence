@@ -475,7 +475,7 @@ export const ChatWebSocketProvider: React.FC<ChatWebSocketProviderProps> = ({ ch
 			}
 		} catch (error) {
 		}
-	}, []); // Pas de dépendances car on utilise les refs
+	}, []);
 
 	// --- Configuration WebSocket ---
 	const socket = useSafeWebSocket({
@@ -485,7 +485,6 @@ export const ChatWebSocketProvider: React.FC<ChatWebSocketProviderProps> = ({ ch
 		pingInterval: 30000,
 	});
 
-	// Mettre à jour la ref de la socket
 	useEffect(() => {
 		socketRef.current = socket;
 	}, [socket]);
@@ -503,9 +502,7 @@ export const ChatWebSocketProvider: React.FC<ChatWebSocketProviderProps> = ({ ch
 		}
 	}, [shouldConnectWebSocket, socket]);
 
-	// --- Recherche d'ami (debounce + interval) ---
 	useEffect(() => {
-		// Nettoyer les timers existants
 		if (searchTimeout.current) clearTimeout(searchTimeout.current);
 		if (searchInterval.current) clearInterval(searchInterval.current);
 
@@ -514,8 +511,6 @@ export const ChatWebSocketProvider: React.FC<ChatWebSocketProviderProps> = ({ ch
 			setSearchResults([]);
 			return;
 		}
-
-		// Fonction de recherche réutilisable
 		const performSearch = () => {
 			if (socketRef.current?.readyState !== WebSocket.OPEN) return;
 			socketRef.current.send(JSON.stringify({
@@ -524,16 +519,10 @@ export const ChatWebSocketProvider: React.FC<ChatWebSocketProviderProps> = ({ ch
 				group_id: null,
 			}));
 		};
-
-		// Debounce initial : attendre 500ms après la dernière modification
 		searchTimeout.current = setTimeout(() => {
-			// Première recherche après le debounce
 			performSearch();
-
-			// Démarrer l'interval pour répéter la recherche toutes les 100ms
 			searchInterval.current = setInterval(() => {
 				if (!inputSearch.trim()) {
-					// Si l'input devient vide, arrêter l'interval
 					if (searchInterval.current) clearInterval(searchInterval.current);
 					return;
 				}
@@ -541,7 +530,6 @@ export const ChatWebSocketProvider: React.FC<ChatWebSocketProviderProps> = ({ ch
 			}, 500);
 		}, 10);
 
-		// Cleanup function
 		return () => {
 			if (searchTimeout.current) clearTimeout(searchTimeout.current);
 			if (searchInterval.current) clearInterval(searchInterval.current);
@@ -560,7 +548,7 @@ export const ChatWebSocketProvider: React.FC<ChatWebSocketProviderProps> = ({ ch
 			group_id: groupId,
 			message: message,
 		}));
-	}, []); // Pas de dépendances car on utilise socketRef
+	}, []);
 
 	const loadMessages = useCallback((groupId: number, firstMessageId: number = 0) => {
 		if (socketRef.current?.readyState !== WebSocket.OPEN) {
@@ -573,7 +561,7 @@ export const ChatWebSocketProvider: React.FC<ChatWebSocketProviderProps> = ({ ch
 			group_id: groupId,
 			firstMessageId: firstMessageId,
 		}));
-	}, []); // Pas de dépendances
+	}, []);
 
 	const createGroup = useCallback((groupName: string, userIds: number[]) => {
 		if (!groupName.trim() || userIds.length === 0 || socketRef.current?.readyState !== WebSocket.OPEN) {
@@ -585,7 +573,7 @@ export const ChatWebSocketProvider: React.FC<ChatWebSocketProviderProps> = ({ ch
 			group_name: groupName.trim(),
 			users_id: userIds,
 		}));
-	}, []); // Pas de dépendances
+	}, []); 
 
 	const deleteGroup = useCallback((groupId: number) => {
 		if (socketRef.current?.readyState !== WebSocket.OPEN) {
@@ -597,7 +585,7 @@ export const ChatWebSocketProvider: React.FC<ChatWebSocketProviderProps> = ({ ch
 			action: "delete_group",
 			group_id: groupId,
 		}));
-	}, []); // Pas de dépendances
+	}, []);
 
 	// --- Group Management Actions ---
 	const addUserToGroup = useCallback((groupId: number, userId: number) => {
@@ -611,7 +599,7 @@ export const ChatWebSocketProvider: React.FC<ChatWebSocketProviderProps> = ({ ch
 			group_id: groupId,
 			user_id: userId,
 		}));
-	}, []); // Pas de dépendances
+	}, []);
 
 	const removeUserFromGroup = useCallback((groupId: number, userId: number) => {
 		if (socketRef.current?.readyState !== WebSocket.OPEN) {
@@ -624,7 +612,7 @@ export const ChatWebSocketProvider: React.FC<ChatWebSocketProviderProps> = ({ ch
 			group_id: groupId,
 			user_id: userId,
 		}));
-	}, []); // Pas de dépendances
+	}, []);
 
 	// --- Actions Amis ---
 	const handleAddFriend = useCallback((userId: number) => {
@@ -633,7 +621,7 @@ export const ChatWebSocketProvider: React.FC<ChatWebSocketProviderProps> = ({ ch
 			action: "add_friend",
 			user_id: userId,
 		}));
-	}, []); // Pas de dépendances car on utilise socketRef
+	}, []);
 
 	const handleAcceptFriend = useCallback((userId: number) => {
 		if (socketRef.current?.readyState !== WebSocket.OPEN) return;
@@ -641,7 +629,7 @@ export const ChatWebSocketProvider: React.FC<ChatWebSocketProviderProps> = ({ ch
 			action: "accept_friend",
 			user_id: userId,
 		}));
-	}, []); // Pas de dépendances
+	}, []);
 
 	const handleRefuseFriend = useCallback((userId: number) => {
 		if (socketRef.current?.readyState !== WebSocket.OPEN) return;
@@ -649,7 +637,7 @@ export const ChatWebSocketProvider: React.FC<ChatWebSocketProviderProps> = ({ ch
 			action: "refuse_friend",
 			user_id: userId,
 		}));
-	}, []); // Pas de dépendances
+	}, []);
 
 	const handleCancelFriend = useCallback((userId: number) => {
 		if (socketRef.current?.readyState !== WebSocket.OPEN) return;
@@ -657,7 +645,7 @@ export const ChatWebSocketProvider: React.FC<ChatWebSocketProviderProps> = ({ ch
 			action: "cancel_request",
 			user_id: userId,
 		}));
-	}, []); // Pas de dépendances
+	}, []);
 
 	const handleRemoveFriend = useCallback((userId: number) => {
 		if (socketRef.current?.readyState !== WebSocket.OPEN) return;
@@ -665,7 +653,7 @@ export const ChatWebSocketProvider: React.FC<ChatWebSocketProviderProps> = ({ ch
 			action: "remove_friend",
 			user_id: userId,
 		}));
-	}, []); // Pas de dépendances
+	}, []);
 
 	const handleBlockedFriend = useCallback((userId: number) => {
 		if (socketRef.current?.readyState !== WebSocket.OPEN) return;
@@ -673,7 +661,7 @@ export const ChatWebSocketProvider: React.FC<ChatWebSocketProviderProps> = ({ ch
 			action: "block_user",
 			user_id: userId,
 		}));
-	}, []); // Pas de dépendances
+	}, []);
 
 	const handleUnBlockedFriend = useCallback((userId: number) => {
 		if (socketRef.current?.readyState !== WebSocket.OPEN) return;
@@ -681,7 +669,7 @@ export const ChatWebSocketProvider: React.FC<ChatWebSocketProviderProps> = ({ ch
 			action: "unblock_user",
 			user_id: userId,
 		}));
-	}, []); // Pas de dépendances
+	}, []);
 
 
 	const handleConfirmInvite = useCallback((token: string, ws?: WebSocket) => {

@@ -52,9 +52,18 @@ const GroupsMessagesPage: React.FC = () => {
 	const messagesEndRef = useRef<HTMLDivElement>(null);
 	const messagesContainerRef = useRef<HTMLDivElement>(null);
 	const [isLoadingMoreMessages, setIsLoadingMoreMessages] = useState(false);
+	const [hasMoreMessages, setHasMoreMessages] = useState<Record<number, boolean>>({});
+	const [messageLoadCounts, setMessageLoadCounts] = useState<Record<number, number>>({});
 
 	// Messages du groupe actuellement sélectionné
 	const selectedMessages: Message[] = selectedGroup ? groupMessages[selectedGroup.id] || [] : [];
+
+	// Fonction utilitaire pour scroller vers le bas
+	const scrollToBottom = useCallback((smooth: boolean = false) => {
+		if (messagesEndRef.current) {
+			messagesEndRef.current.scrollIntoView({ behavior: smooth ? 'smooth' : 'auto' });
+		}
+	}, []);
 
 	// Sélectionner automatiquement le premier groupe lors du chargement
 	useEffect(() => {
@@ -81,30 +90,70 @@ const GroupsMessagesPage: React.FC = () => {
 	// Charger les messages quand un groupe est sélectionné
 	useEffect(() => {
 		if (selectedGroup) {
-			// Forcer le scroll en bas immédiatement avant de charger les messages
-			if (messagesContainerRef.current) {
-				messagesContainerRef.current.scrollTop = messagesContainerRef.current.scrollHeight;
-			}
+			// Réinitialiser l'état pour ce groupe
+			setHasMoreMessages(prev => ({
+				...prev,
+				[selectedGroup.id]: true // Assumer qu'il y a des messages au début
+			}));
+			setMessageLoadCounts(prev => ({
+				...prev,
+				[selectedGroup.id]: 0
+			}));
+			
 			loadMessages(selectedGroup.id, 0);
+			
+			// Scroll vers le bas après un petit délai
+			setTimeout(() => scrollToBottom(false), 200);
 		}
-	}, [selectedGroup, loadMessages]);
+	}, [selectedGroup, loadMessages, scrollToBottom]);
 
 	// Autoscroll vers le bas quand de nouveaux messages arrivent
 	useEffect(() => {
-		if (messagesContainerRef.current) {
-			messagesContainerRef.current.scrollTop = messagesContainerRef.current.scrollHeight;
+		// Utiliser la fonction utilitaire pour un scroll fluide
+		scrollToBottom(true);
+	}, [selectedMessages, scrollToBottom]);
+
+	// Détecter si on a atteint la fin des messages
+	useEffect(() => {
+		if (!selectedGroup) return;
+		
+		const groupId = selectedGroup.id;
+		const currentCount = selectedMessages.length;
+		const previousCount = messageLoadCounts[groupId];
+		
+		// Si on a tracké un chargement précédent et que le nombre n'a pas changé de manière significative
+		// (moins de 10 nouveaux messages), on considère qu'il n'y a plus de messages
+		if (previousCount !== undefined && currentCount - previousCount < 10) {
+			setHasMoreMessages(prev => ({
+				...prev,
+				[groupId]: false
+			}));
+		} else if (previousCount === undefined || currentCount - previousCount >= 10) {
+			// Si c'est la première fois ou qu'on a eu beaucoup de nouveaux messages, on assume qu'il peut y en avoir plus
+			setHasMoreMessages(prev => ({
+				...prev,
+				[groupId]: true
+			}));
 		}
-	}, [selectedMessages]);
+	}, [selectedMessages, selectedGroup, messageLoadCounts]);
 
 	// Fonction pour charger plus de messages
 	const handleLoadMoreMessages = useCallback(() => {
 		if (!selectedGroup || selectedMessages.length === 0 || isLoadingMoreMessages) return;
 		
-		setIsLoadingMoreMessages(true);
 		// Récupérer l'ID du message le plus ancien (le premier dans le tableau trié)
+		setIsLoadingMoreMessages(true);
 		const oldestMessageId = selectedMessages[0]?.id;
+		const currentMessageCount = selectedMessages.length;
+		
 		if (oldestMessageId) {
 			loadMessages(selectedGroup.id, oldestMessageId);
+			
+			// Tracker le nombre de messages avant le chargement pour savoir s'il y en a plus
+			setMessageLoadCounts(prev => ({
+				...prev,
+				[selectedGroup.id]: currentMessageCount
+			}));
 		}
 		
 		// Reset loading state après un délai
@@ -116,7 +165,10 @@ const GroupsMessagesPage: React.FC = () => {
 		if (!input.trim() || !selectedGroup) return;
 		sendMessage(selectedGroup.id, input);
 		setInput("");
-	}, [input, selectedGroup, sendMessage]);
+		
+		// Forcer le scroll vers le bas après l'envoi du message
+		setTimeout(() => scrollToBottom(true), 100);
+	}, [input, selectedGroup, sendMessage, scrollToBottom]);
 
 	const toggleUserSelection = useCallback((userId: number) => {
 		setSelectedUsersForGroup(prev =>
@@ -192,10 +244,15 @@ const GroupsMessagesPage: React.FC = () => {
 	}
 
 	const Messages: React.FC = () => {
+		// Déterminer si on doit montrer le bouton "Load More"
+		const shouldShowLoadMore = selectedGroup && selectedMessages.length >= 2 && 
+			selectedMessages[0]?.id > 1 && 
+			hasMoreMessages[selectedGroup.id] !== false;
+
 		return (
 			<div className="chat-content__messages" ref={messagesContainerRef}>
-				{/* Bouton Load More Messages - uniquement si le premier message a un ID > 1 */}
-				{selectedMessages.length > 0 && selectedMessages[0]?.id > 1 && (
+				{/* Bouton Load More Messages */}
+				{shouldShowLoadMore && (
 					<div className="chat-load-more-container">
 						<button
 							className="chat-load-more-btn"

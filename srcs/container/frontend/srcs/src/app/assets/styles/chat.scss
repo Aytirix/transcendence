@@ -7,12 +7,11 @@
 }
 
 .chat-page {
-	margin-top: 60px; // Compenser la navbar fixe
+	margin-top: 60px;
 	display: flex;
 	color: #ffffff;
-	height: calc(100vh - 60px); // Hauteur dynamique pour s'adapter à la navbar
+	height: calc(100vh - 60px);
 	overflow: hidden;
-	// Fond animé avec particules subtiles (style de référence)
 	&::before {
 		content: '';
 		position: fixed;
@@ -53,7 +52,7 @@
 	flex-direction: column;
 	position: relative;
 	z-index: 10;
-	overflow: hidden; // Important pour forcer le scroll dans les sous-éléments
+	overflow: hidden;
 
 	&__header {
 		padding: 1.5rem;
@@ -107,14 +106,14 @@
 		overflow: hidden;
 		display: flex;
 		flex-direction: column;
-		min-height: 0; // Important pour le flexbox scroll
+		min-height: 0;
 	}
 
 	&__list {
 		flex: 1;
 		overflow-y: auto;
 		padding: 1rem;
-		min-height: 0; // Important pour permettre le scroll
+		min-height: 0;
 		
 		&::-webkit-scrollbar {
 			width: 6px;
@@ -242,11 +241,9 @@
 	}
 }
 
-
-// Chat content area
 .chat-content {
 	flex: 1;
-	height: calc(100vh - 60px); // Ajustement pour la navbar
+	height: calc(100vh - 60px);
 	display: flex;
 	flex-direction: column;
 	position: relative;
@@ -290,102 +287,95 @@
 			color: #b8c6db;
 		}
 
-    &-online-compact {
-		color: #b8c6db;
-		margin-left: 0.25rem;
-    }
-	
-    &-online {
-		font-size: 0.6rem;
-		margin-top: 1rem;
-		padding-top: 1rem;
-		border-top: 1px solid rgba(255, 255, 255, 0.15);
-		
-		&-list {
-			display: flex;
-			flex-wrap: wrap;
-			gap: 0.5rem;
-			max-height: 100px;
-			overflow-y: auto;
-			
-			&::-webkit-scrollbar {
-			width: 4px;
-			}
-			
-			&::-webkit-scrollbar-track {
-			background: transparent;
-			}
-			
-			&::-webkit-scrollbar-thumb {
-			background: rgba(0, 0, 0, 0.1);
-			border-radius: 2px;
-			}
+		&-online-compact {
+			color: #b8c6db;
+			margin-left: 0.25rem;
 		}
 		
-		&-member {
-			display: flex;
-			align-items: center;
-			padding: 0.4rem 0.8rem;
-			background: rgba(255, 255, 255, 0.05);
-			border-radius: 20px;
-			border: 1.3px solid rgba(255, 255, 255, 0.15);
-			transition: all 0.2s ease;
+		&-online {
+			font-size: 0.6rem;
+			margin-top: 1rem;
+			padding-top: 1rem;
+			border-top: 1px solid rgba(255, 255, 255, 0.15);
 			
-			// Styles pour les membres en ligne
-			&--online {
-			border-color: #4ecdc4;
-			background: rgba(78, 205, 196, 0.1);
+			&-list {
+				display: flex;
+				flex-wrap: wrap;
+				gap: 0.5rem;
+				max-height: 100px;
+				overflow-y: auto;
+				
+				&::-webkit-scrollbar {
+					width: 4px;
+				}
+				
+				&::-webkit-scrollbar-track {
+					background: transparent;
+				}
+				
+				&::-webkit-scrollbar-thumb {
+					background: rgba(0, 0, 0, 0.1);
+					border-radius: 2px;
+				}
 			}
 			
-			// Styles pour les membres hors ligne
-			&--offline {
-			border-color: rgba(255, 255, 255, 0.15);
-			background: rgba(255, 255, 255, 0.05);
+			&-member {
+				display: flex;
+				align-items: center;
+				padding: 0.4rem 0.8rem;
+				background: rgba(255, 255, 255, 0.05);
+				border-radius: 20px;
+				border: 1.3px solid rgba(255, 255, 255, 0.15);
+				transition: all 0.2s ease;
+				
+				&--online {
+					border-color: #4ecdc4;
+					background: rgba(78, 205, 196, 0.1);
+				}
+				
+				&--offline {
+					border-color: rgba(255, 255, 255, 0.15);
+					background: rgba(255, 255, 255, 0.05);
+				}
+				
+				&:hover {
+					box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+				
+				&.chat-content__header-online-member--online {
+					background: rgba(78, 205, 196, 0.15);
+					border-color: #4ecdc4;
+				}
+				
+				&.chat-content__header-online-member--offline {
+					background: rgba(255, 255, 255, 0.08);
+				}
 			}
-			
-			&:hover {
-			box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-			
-			&.chat-content__header-online-member--online {
-				background: rgba(78, 205, 196, 0.15);
-				border-color: #4ecdc4;
-			}
-			
-			&.chat-content__header-online-member--offline {
-				background: rgba(255, 255, 255, 0.08);
+				
 			}
 			}
-			
-			/* &:hover {
-			background: rgba(0, 0, 0, 0.1);
-			border-color: #4ecdc4;
-			transform: translateY(-1px);
-			} */
-		}
-		}
-		}
+			}
 
-		&__messages {
-			flex: 1;
-			overflow-y: auto;
-			padding: 1rem;
-			display: flex;
-			flex-direction: column;
-			gap: 1rem;
-			
-			&::-webkit-scrollbar {
-			width: 8px;
-			}
+			&__messages {
+				flex: 1;
+				overflow-y: auto;
+				padding: 1rem;
+				display: flex;
+				flex-direction: column;
+				gap: 1rem;
+				
+				&::-webkit-scrollbar {
+				width: 8px;
+				}
 
-			&::-webkit-scrollbar-track {
-			background: transparent;
-			}
+				&::-webkit-scrollbar-track {
+				background: transparent;
+				}
 
-			&::-webkit-scrollbar-thumb {
-			background: rgba(0, 0, 0, 0.1);
-		border-radius: 4px;
+				&::-webkit-scrollbar-thumb {
+				background: rgba(0, 0, 0, 0.1);
+			border-radius: 4px;
+			}
 		}
-	}
 
 	&__load-more {
 		display: flex;
@@ -480,7 +470,6 @@
 	}
 }
 
-// Load More Messages Button Styles
 .chat-load-more-container {
 	display: flex;
 	justify-content: center;
@@ -513,7 +502,6 @@
 
 }
 
-// Message styles
 .chat-message {
 	display: flex;
 	gap: 1rem;
@@ -593,7 +581,6 @@
 		max-width: 100%;
 		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 		
-		// Amélioration de l'apparence avec un léger gradient
 		&::before {
 			content: '';
 			position: absolute;
@@ -747,7 +734,6 @@
 	}
 }
 
-// Utility classes
 .chat-empty-state {
 	flex: 1;
 	display: flex;
@@ -779,7 +765,7 @@
 @media (max-width: 768px) {
 .chat-page {
 	flex-direction: column;
-	margin-top: 60px; // Navbar plus petite sur mobile
+	margin-top: 60px;
 	height: calc(100vh - 60px);
 }
 
@@ -875,7 +861,6 @@
 	}
 }
 
-// Nouvelles classes pour remplacer les styles inline
 .chat-avatar-image {
 	width: 100%;
 	height: 100%;
@@ -1037,8 +1022,6 @@
 	height: 24px;
 }
 
-// === STYLES POUR LE FORMULAIRE DE CRÉATION DE GROUPE ===
-
 .chat-create-group-main {
 	padding: 2rem;
 	height: 100%;
@@ -1139,7 +1122,6 @@
 	}
 }
 
-// Amélioration des éléments de formulaire
 .chat-modal__form-field {
 	display: flex;
 	flex-direction: column;
@@ -1180,7 +1162,6 @@
 	}
 }
 
-// Amélioration des éléments de sélection d'utilisateurs
 .chat-friend-selection-item {
 	display: flex;
 	align-items: center;
@@ -1269,7 +1250,6 @@
 	border: 2px dashed rgba(255, 255, 255, 0.2);
 }
 
-// Amélioration des boutons
 .chat-modal__button {
 	padding: 0.75rem 1.5rem;
 	border: none;
@@ -1337,7 +1317,6 @@
 	}
 }
 
-// Animation d'entrée pour le formulaire
 @keyframes slideInUp {
 	from {
 		opacity: 0;
@@ -1353,7 +1332,6 @@
 	animation: slideInUp 0.4s ease-out;
 }
 
-// Responsive design
 @media (max-width: 768px) {
 	.chat-create-group-main {
 		margin: 0.5rem;
@@ -1374,7 +1352,6 @@
 	}
 }
 
-// Group Management Styles
 .chat-group-manage-btn {
 	background: rgba(120, 119, 198, 0.2);
 	border: 1px solid rgba(120, 119, 198, 0.3);
