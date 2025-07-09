@@ -33,12 +33,12 @@ export const Login = async (request: FastifyRequest, reply: FastifyReply) => {
 
 	request.i18n.changeLanguage(user.lang || 'fr');
 
-	if (process.env.NODE_PROJET === 'dev' || request.session.user.twofa == false) request.session.user = user;
+	if (process.env.NODE_PROJET === 'dev' || user.twofa == false) request.session.user = user;
 	else controller2FA.sendRegisterVerifyEmail(request, user.email, "loginAccount_confirm_email", user);
 
 	return reply.send({
-		message: request.i18n.t('login.welcome'),
-		redirect: process.env.NODE_PROJET === 'dev' ? '/' : null,
+		message: user.twofa ? request.i18n.t('login.welcome-confirm') : request.i18n.t('login.welcome'),
+		redirect: (process.env.NODE_PROJET === 'dev' || user.twofa == false) ? '/' : null,
 	});
 };
 
@@ -224,6 +224,7 @@ export async function authGoogleCallback(request: FastifyRequest, reply: Fastify
 					username: user.username,
 					lang: user.lang,
 					avatar: user.avatar,
+					twofa: user.twofa || false,
 				},
 			});
 		}
@@ -241,6 +242,7 @@ export async function authGoogleCallback(request: FastifyRequest, reply: Fastify
 					username: user.username,
 					lang: user.lang,
 					avatar: user.avatar || null,
+					twofa: user.twofa || false,
 				},
 			});
 		}
@@ -315,6 +317,7 @@ export async function authGoogleCallback(request: FastifyRequest, reply: Fastify
 				username: user.username,
 				lang: user.lang,
 				avatar: user.avatar || null,
+				twofa: user.twofa || false,
 			},
 		});
 	} catch (error) {

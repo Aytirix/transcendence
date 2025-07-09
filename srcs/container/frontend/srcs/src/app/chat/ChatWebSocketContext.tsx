@@ -117,10 +117,16 @@ export const ChatWebSocketProvider: React.FC<ChatWebSocketProviderProps> = ({ ch
 			switch (data.action) {
 				case "new_message":
 					if (data.group_id && data.result === "ok" && data.message) {
-						setGroupMessages(prev => ({
-							...prev,
-							[data.group_id]: [...(prev[data.group_id] || []), data.message]
-						}));
+						setGroupMessages(prev => {
+							const existingMessages = prev[data.group_id] || [];
+							const updatedMessages = [...existingMessages, data.message];
+							// Trier par ID décroissant (plus récent en premier)
+							updatedMessages.sort((a, b) => b.id - a.id);
+							return {
+								...prev,
+								[data.group_id]: updatedMessages
+							};
+						});
 					}
 					if (data.friends) {
 						setFriends(prev => [...prev, data.friends]);
@@ -130,7 +136,7 @@ export const ChatWebSocketProvider: React.FC<ChatWebSocketProviderProps> = ({ ch
 				case "loadMoreMessage":
 					if (data.messages && data.group_id) {
 						const arr = Object.values(data.messages) as Message[];
-						arr.sort((a, b) => a.id - b.id);
+						arr.sort((a, b) => b.id - a.id);
 
 						for (const key in arr) {
 							const sender_id = arr[key].sender_id as number;
@@ -174,10 +180,10 @@ export const ChatWebSocketProvider: React.FC<ChatWebSocketProviderProps> = ({ ch
 					if (data.group_id) {
 						// If user_id is provided and it's not the current user, remove that user from the group
 						if (data.user_id && data.user_id !== currentUserIdRef.current) {
-							setGroups(prev => prev.map(group => 
-								group.id === data.group_id 
-									? { 
-										...group, 
+							setGroups(prev => prev.map(group =>
+								group.id === data.group_id
+									? {
+										...group,
 										members: group.members.filter(member => member.id !== data.user_id),
 										onlines_id: group.onlines_id.filter(id => id !== data.user_id)
 									}
@@ -199,8 +205,8 @@ export const ChatWebSocketProvider: React.FC<ChatWebSocketProviderProps> = ({ ch
 				case "add_user_group":
 					if (data.result === "ok" && data.group_id && data.user) {
 						// Add the user to the group's members list
-						setGroups(prev => prev.map(group => 
-							group.id === data.group_id 
+						setGroups(prev => prev.map(group =>
+							group.id === data.group_id
 								? { ...group, members: [...group.members, data.user] }
 								: group
 						));
@@ -493,7 +499,7 @@ export const ChatWebSocketProvider: React.FC<ChatWebSocketProviderProps> = ({ ch
 		socketRef.current = socket;
 	}, [socket]);
 
-	
+
 	useEffect(() => {
 		if (!shouldConnectWebSocket && socket) {
 			socket.close();
@@ -577,7 +583,7 @@ export const ChatWebSocketProvider: React.FC<ChatWebSocketProviderProps> = ({ ch
 			group_name: groupName.trim(),
 			users_id: userIds,
 		}));
-	}, []); 
+	}, []);
 
 	const deleteGroup = useCallback((groupId: number) => {
 		if (socketRef.current?.readyState !== WebSocket.OPEN) {

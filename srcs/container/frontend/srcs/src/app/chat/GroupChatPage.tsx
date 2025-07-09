@@ -60,15 +60,10 @@ const GroupsMessagesPage: React.FC = () => {
 	const [hasMoreMessages, setHasMoreMessages] = useState<Record<number, boolean>>({});
 	const [messageLoadCounts, setMessageLoadCounts] = useState<Record<number, number>>({});
 
-	// Messages du groupe actuellement sélectionné
-	const selectedMessages: Message[] = selectedGroup ? groupMessages[selectedGroup.id] || [] : [];
-
-	// Fonction utilitaire pour scroller vers le bas
-	const scrollToBottom = useCallback((smooth: boolean = false) => {
-		if (messagesEndRef.current) {
-			messagesEndRef.current.scrollIntoView({ behavior: smooth ? 'smooth' : 'auto' });
-		}
-	}, []);
+	// Messages du groupe actuellement sélectionné (triés par ID décroissant pour affichage du plus récent au plus ancien)
+	const selectedMessages: Message[] = selectedGroup 
+		? (groupMessages[selectedGroup.id] || []).slice().sort((a, b) => b.id - a.id)
+		: [];
 
 	async function testInvitePong(friend: any) {
 		const response = await ApiService.post(`/pong/invitePlayer`, { friendId: friend.id });
@@ -105,38 +100,25 @@ const GroupsMessagesPage: React.FC = () => {
 	// Charger les messages quand un groupe est sélectionné (utiliser l'ID au lieu de l'objet entier)
 	useEffect(() => {
 		if (selectedGroupId) {
-			// Réinitialiser l'état pour ce groupe
-			setHasMoreMessages(prev => ({
-				...prev,
-				[selectedGroupId]: true // Assumer qu'il y a des messages au début
-			}));
-			setMessageLoadCounts(prev => ({
-				...prev,
-				[selectedGroupId]: 0
-			}));
+			// Vérifier si des messages sont déjà chargés pour ce groupe
+			const existingMessages = groupMessages[selectedGroupId];
+			const hasExistingMessages = existingMessages && existingMessages.length > 0;
+			
+			// Réinitialiser l'état pour ce groupe seulement si pas de messages existants
+			if (!hasExistingMessages) {
+				setHasMoreMessages(prev => ({
+					...prev,
+					[selectedGroupId]: true // Assumer qu'il y a des messages au début
+				}));
+				setMessageLoadCounts(prev => ({
+					...prev,
+					[selectedGroupId]: 0
+				}));
 
-			loadMessages(selectedGroupId, 0);
-
-			// Scroll vers le bas après un petit délai
-			setTimeout(() => scrollToBottom(false), 200);
+				loadMessages(selectedGroupId, 0);
+			}
 		}
-	}, [selectedGroupId, loadMessages, scrollToBottom]);
-
-	// Suivre le nombre de messages pour l'autoscroll
-	const prevMessageCount = useRef<number>(0);
-
-	// Autoscroll vers le bas seulement quand de nouveaux messages arrivent
-	useEffect(() => {
-		const currentMessageCount = selectedMessages.length;
-
-		// Seulement scroller si le nombre de messages a augmenté (nouveaux messages)
-		if (currentMessageCount > prevMessageCount.current && prevMessageCount.current > 0) {
-			scrollToBottom(true);
-		}
-
-		// Mettre à jour le compteur précédent
-		prevMessageCount.current = currentMessageCount;
-	}, [selectedMessages, scrollToBottom]);
+	}, [selectedGroupId, loadMessages, groupMessages]);
 
 	// Détecter si on a atteint la fin des messages
 	useEffect(() => {
@@ -149,18 +131,28 @@ const GroupsMessagesPage: React.FC = () => {
 		// Si on a tracké un chargement précédent et que le nombre n'a pas changé de manière significative
 		// (moins de 10 nouveaux messages), on considère qu'il n'y a plus de messages
 		if (previousCount !== undefined && currentCount - previousCount < 10) {
-			setHasMoreMessages(prev => ({
-				...prev,
-				[groupId]: false
-			}));
+			setHasMoreMessages(prev => {
+				if (prev[groupId] !== false) {
+					return {
+						...prev,
+						[groupId]: false
+					};
+				}
+				return prev;
+			});
 		} else if (previousCount === undefined || currentCount - previousCount >= 10) {
 			// Si c'est la première fois ou qu'on a eu beaucoup de nouveaux messages, on assume qu'il peut y en avoir plus
-			setHasMoreMessages(prev => ({
-				...prev,
-				[groupId]: true
-			}));
+			setHasMoreMessages(prev => {
+				if (prev[groupId] !== true) {
+					return {
+						...prev,
+						[groupId]: true
+					};
+				}
+				return prev;
+			});
 		}
-	}, [selectedMessages, selectedGroup, messageLoadCounts]);
+	}, [selectedGroup?.id, selectedMessages.length, messageLoadCounts]);
 
 	// Fonction pour charger plus de messages
 	const handleLoadMoreMessages = useCallback(() => {
@@ -190,10 +182,7 @@ const GroupsMessagesPage: React.FC = () => {
 		if (!input.trim() || !selectedGroup) return;
 		sendMessage(selectedGroup.id, input);
 		setInput("");
-
-		// Forcer le scroll vers le bas après l'envoi du message
-		setTimeout(() => scrollToBottom(true), 100);
-	}, [input, selectedGroup, sendMessage, scrollToBottom]);
+	}, [input, selectedGroup, sendMessage]);
 
 	const toggleUserSelection = useCallback((userId: number) => {
 		setSelectedUsersForGroup(prev =>
@@ -283,19 +272,6 @@ const GroupsMessagesPage: React.FC = () => {
 
 		return (
 			<div className="chat-content__messages" ref={messagesContainerRef}>
-				{/* Bouton Load More Messages */}
-				{shouldShowLoadMore && (
-					<div className="chat-load-more-container">
-						<button
-							className="chat-load-more-btn"
-							onClick={handleLoadMoreMessages}
-							disabled={isLoadingMoreMessages}
-						>
-							{isLoadingMoreMessages ? t('chat.loading') : t('chat.loadMoreMessages')}
-						</button>
-					</div>
-				)}
-
 				{selectedMessages.map((m, idx) => {
 					const isOwnMessage = m.sender_id === currentUserId;
 					const senderName = getNameById(m.sender_id);
@@ -356,6 +332,19 @@ const GroupsMessagesPage: React.FC = () => {
 						</div>
 					);
 				})}
+
+				{/* Bouton Load More Messages en bas */}
+				{shouldShowLoadMore && (
+					<div className="chat-load-more-container">
+						<button
+							className="chat-load-more-btn"
+							onClick={handleLoadMoreMessages}
+							disabled={isLoadingMoreMessages}
+						>
+							{isLoadingMoreMessages ? t('chat.loading') : t('chat.loadMoreMessages')}
+						</button>
+					</div>
+				)}
 
 				{/* Référence pour l'autoscroll */}
 				<div ref={messagesEndRef} />
@@ -538,7 +527,10 @@ const GroupsMessagesPage: React.FC = () => {
 		const messages = groupMessages[groupId];
 		if (!messages || messages.length === 0) return 0;
 
-		const lastMessage = messages[messages.length - 1];
+		// Trouver le message avec l'ID le plus élevé (le plus récent)
+		const lastMessage = messages.reduce((latest, current) => {
+			return current.id > latest.id ? current : latest;
+		});
 		return lastMessage.sent_at ? new Date(lastMessage.sent_at).getTime() : 0;
 	}, [groupMessages]);
 
@@ -582,7 +574,7 @@ const GroupsMessagesPage: React.FC = () => {
 				// Sinon trier par dernier message (plus récent en premier)
 				return bLastMessage - aLastMessage;
 			});
-		}, [groups, getLastMessageTime]);
+		}, [groups, groupMessages]);
 
 		return (
 			<div className="chat-sidebar__list">
