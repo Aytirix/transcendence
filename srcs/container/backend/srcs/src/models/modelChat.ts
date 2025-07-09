@@ -75,7 +75,6 @@ async function getMessagesFromGroup(
 		FROM group_messages
 		WHERE group_id = ?
 		  ${lastId ? 'AND id < ?' : ''}
-		ORDER BY sent_at DESC
 		LIMIT ?
 	  `;
 		const params = lastId
@@ -86,6 +85,8 @@ async function getMessagesFromGroup(
 		if (rows.length === 0) {
 			break;
 		}
+
+		rows.sort((a, b) => new Date(b.sent_at).getTime() - new Date(a.sent_at).getTime());
 
 		for (const r of rows) {
 			const msg: Message = {
