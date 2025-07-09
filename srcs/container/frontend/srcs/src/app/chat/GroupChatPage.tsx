@@ -59,6 +59,7 @@ const GroupsMessagesPage: React.FC = () => {
 	const [isLoadingMoreMessages, setIsLoadingMoreMessages] = useState(false);
 	const [hasMoreMessages, setHasMoreMessages] = useState<Record<number, boolean>>({});
 	const [messageLoadCounts, setMessageLoadCounts] = useState<Record<number, number>>({});
+	const [pendingLoadRequests, setPendingLoadRequests] = useState<Set<number>>(new Set());
 
 	// Messages du groupe actuellement sélectionné (triés par ID décroissant pour affichage du plus récent au plus ancien)
 	const selectedMessages: Message[] = selectedGroup 
@@ -115,7 +116,10 @@ const GroupsMessagesPage: React.FC = () => {
 					[selectedGroupId]: 0
 				}));
 
-				loadMessages(selectedGroupId, 0);
+				loadMessages(selectedGroupId, 0, () => {
+					// Le chargement initial est terminé
+					console.log(`Messages initiaux chargés pour le groupe ${selectedGroupId}`);
+				});
 			}
 		}
 	}, [selectedGroupId, loadMessages, groupMessages]);
@@ -128,54 +132,76 @@ const GroupsMessagesPage: React.FC = () => {
 		const currentCount = selectedMessages.length;
 		const previousCount = messageLoadCounts[groupId];
 
-		// Si on a tracké un chargement précédent et que le nombre n'a pas changé de manière significative
-		// (moins de 10 nouveaux messages), on considère qu'il n'y a plus de messages
-		if (previousCount !== undefined && currentCount - previousCount < 10) {
-			setHasMoreMessages(prev => {
-				if (prev[groupId] !== false) {
-					return {
-						...prev,
-						[groupId]: false
-					};
-				}
-				return prev;
-			});
-		} else if (previousCount === undefined || currentCount - previousCount >= 10) {
-			// Si c'est la première fois ou qu'on a eu beaucoup de nouveaux messages, on assume qu'il peut y en avoir plus
-			setHasMoreMessages(prev => {
-				if (prev[groupId] !== true) {
-					return {
-						...prev,
-						[groupId]: true
-					};
-				}
-				return prev;
-			});
+		// Seulement traiter si on a eu un chargement précédent et qu'on n'est pas en train de charger
+		if (previousCount !== undefined && !isLoadingMoreMessages) {
+			const newMessagesReceived = currentCount - previousCount;
+			
+			// Si on a reçu moins de 10 nouveaux messages, considérer qu'il n'y en a plus
+			if (newMessagesReceived < 10) {
+				setHasMoreMessages(prev => ({
+					...prev,
+					[groupId]: false
+				}));
+			} else if (newMessagesReceived >= 10) {
+				// Si on a reçu 10+ messages, il pourrait y en avoir plus
+				setHasMoreMessages(prev => ({
+					...prev,
+					[groupId]: true
+				}));
+			}
 		}
-	}, [selectedGroup?.id, selectedMessages.length, messageLoadCounts]);
+	}, [selectedGroup?.id, selectedMessages.length, messageLoadCounts, isLoadingMoreMessages]);
 
 	// Fonction pour charger plus de messages
 	const handleLoadMoreMessages = useCallback(() => {
 		if (!selectedGroup || selectedMessages.length === 0 || isLoadingMoreMessages) return;
 
+		// Vérifier qu'on a bien des messages et éviter les doublons
+		if (hasMoreMessages[selectedGroup.id] === false) {
+			return; // Pas plus de messages disponibles
+		}
+
+		// Éviter les requêtes multiples pour le même groupe
+		if (pendingLoadRequests.has(selectedGroup.id)) {
+			return; // Une requête est déjà en cours pour ce groupe
+		}
+
 		// Récupérer l'ID du message le plus ancien (le premier dans le tableau trié)
 		setIsLoadingMoreMessages(true);
+		setPendingLoadRequests(prev => new Set(prev).add(selectedGroup.id));
 		const oldestMessageId = selectedMessages[0]?.id;
 		const currentMessageCount = selectedMessages.length;
 
-		if (oldestMessageId) {
-			loadMessages(selectedGroup.id, oldestMessageId);
-
+		if (oldestMessageId && oldestMessageId > 1) { // S'assurer qu'on n'est pas déjà au premier message
 			// Tracker le nombre de messages avant le chargement pour savoir s'il y en a plus
 			setMessageLoadCounts(prev => ({
 				...prev,
 				[selectedGroup.id]: currentMessageCount
 			}));
-		}
 
-		// Reset loading state après un délai
-		setTimeout(() => setIsLoadingMoreMessages(false), 1000);
-	}, [selectedGroup, selectedMessages, isLoadingMoreMessages, loadMessages]);
+			// Charger les messages avec callback pour réinitialiser l'état
+			loadMessages(selectedGroup.id, oldestMessageId, () => {
+				setIsLoadingMoreMessages(false);
+				setPendingLoadRequests(prev => {
+					const newSet = new Set(prev);
+					newSet.delete(selectedGroup.id);
+					return newSet;
+				});
+			});
+		} else {
+			// Si on est déjà au premier message, marquer comme terminé
+			setHasMoreMessages(prev => ({
+				...prev,
+				[selectedGroup.id]: false
+			}));
+			setIsLoadingMoreMessages(false);
+			setPendingLoadRequests(prev => {
+				const newSet = new Set(prev);
+				newSet.delete(selectedGroup.id);
+				return newSet;
+			});
+		}
+	}, [selectedGroup, selectedMessages, isLoadingMoreMessages, loadMessages, hasMoreMessages, pendingLoadRequests]);
 
 	// Envoyer un message
 	const handleSendMessage = useCallback(() => {
@@ -259,7 +285,7 @@ const GroupsMessagesPage: React.FC = () => {
 
 	const handleUsernameClick = (userId: number, username: string) => {
 		// Don't open modal for the current user
-		if (userId === currentUserId) return;
+		//if (userId === currentUserId) return;
 
 		openUserProfile(userId, username);
 	};
@@ -432,8 +458,8 @@ const GroupsMessagesPage: React.FC = () => {
 										className={`chat-content__header-online-member ${isOnline ? 'chat-content__header-online-member--online' : 'chat-content__header-online-member--offline'}`}
 									>
 										<span
-											className={`chat-content__header-online-name ${member.id !== currentUserId ? 'clickable-username' : ''}`}
-											onClick={() => member.id !== currentUserId && handleUsernameClick(member.id, member.username)}
+											className={`chat-content__header-online-name clickable-username`}
+											onClick={() => handleUsernameClick(member.id, member.username)}
 										>
 											{member.username}
 										</span>

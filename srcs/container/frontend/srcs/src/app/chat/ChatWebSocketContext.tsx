@@ -24,7 +24,7 @@ interface ChatWebSocketContextType {
 
 	// Chat Actions
 	sendMessage: (groupId: number, message: string) => void;
-	loadMessages: (groupId: number, firstMessageId?: number) => void;
+	loadMessages: (groupId: number, firstMessageId?: number, onComplete?: () => void) => void;
 	createGroup: (groupName: string, userIds: number[]) => void;
 	deleteGroup: (groupId: number) => void;
 
@@ -78,6 +78,7 @@ export const ChatWebSocketProvider: React.FC<ChatWebSocketProviderProps> = ({ ch
 	const friendsRef = useRef<Friend[]>(friends);
 	const currentUserIdRef = useRef<number | null>(currentUserId);
 	const socketRef = useRef<WebSocket | null>(null);
+	const loadMessagesCallbacksRef = useRef<Map<string, () => void>>(new Map());
 
 	// Mettre à jour les refs quand les states changent
 	useEffect(() => {
@@ -153,6 +154,14 @@ export const ChatWebSocketProvider: React.FC<ChatWebSocketProviderProps> = ({ ch
 							...prev,
 							[data.group_id]: []
 						}));
+					}
+
+					// Appeler le callback de completion s'il existe
+					const callbackKey = `loadMessages_${data.group_id}`;
+					const callback = loadMessagesCallbacksRef.current.get(callbackKey);
+					if (callback) {
+						callback();
+						loadMessagesCallbacksRef.current.delete(callbackKey);
 					}
 					break;
 
@@ -560,10 +569,27 @@ export const ChatWebSocketProvider: React.FC<ChatWebSocketProviderProps> = ({ ch
 		}));
 	}, []);
 
-	const loadMessages = useCallback((groupId: number, firstMessageId: number = 0) => {
+	const loadMessages = useCallback((groupId: number, firstMessageId: number = 0, onComplete?: () => void) => {
 		if (socketRef.current?.readyState !== WebSocket.OPEN) {
 			console.warn("Cannot load messages: WebSocket not ready");
+			if (onComplete) onComplete();
 			return;
+		}
+
+		// Stocker le callback si fourni
+		if (onComplete) {
+			const callbackKey = `loadMessages_${groupId}`;
+			loadMessagesCallbacksRef.current.set(callbackKey, onComplete);
+			
+			// Timeout de sécurité après 5 secondes
+			setTimeout(() => {
+				const callback = loadMessagesCallbacksRef.current.get(callbackKey);
+				if (callback) {
+					console.warn(`Timeout de chargement des messages pour le groupe ${groupId}`);
+					callback();
+					loadMessagesCallbacksRef.current.delete(callbackKey);
+				}
+			}, 5000);
 		}
 
 		socketRef.current.send(JSON.stringify({
