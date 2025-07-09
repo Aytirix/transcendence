@@ -9,7 +9,8 @@ import { promisify } from "util";
 import { pipeline } from "stream";
 import { WebSocket } from 'ws';
 import { setLangSocketsForUser } from '../WebSocket/wsInit';
-
+import StateManager from '@wsPacman/game/StateManager';
+import { socketIsOpen } from  '../WebSocket/wsInit';
 require('dotenv').config();
 
 const Auth2Client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
@@ -17,21 +18,28 @@ const Auth2Client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 export const Login = async (request: FastifyRequest, reply: FastifyReply) => {
 	const { email, password } = request.body as { email: string; password: string };
 
+	
 	const user = await userModel.Login(email, password);
-
+	
 	if (user === false) {
 		return reply.status(401).send({
 			message: request.i18n.t('login.passwordNotSet'),
 		});
 	}
-
+	
 	if (user === null) {
 		return reply.status(401).send({
 			message: request.i18n.t('login.failed'),
 		});
 	}
-
+	
 	request.i18n.changeLanguage(user.lang || 'fr');
+	
+	if (StateManager.RoomManager.PlayerInRoom(user.id) || socketIsOpen(user.id, '/pong')) {
+		return reply.status(403).send({
+			message: request.i18n.t('errors.user.inGame'),
+		});
+	}
 
 	if (process.env.NODE_PROJET === 'dev' || user.twofa == false) request.session.user = user;
 	else controller2FA.sendRegisterVerifyEmail(request, user.email, "loginAccount_confirm_email", user);
@@ -182,6 +190,7 @@ export const UpdateUser = async (request: FastifyRequest, reply: FastifyReply) =
 
 export const Logout = async (request: FastifyRequest, reply: FastifyReply, msg: boolean = true) => {
 	await request.session.destroy();
+
 	if (msg) {
 		return reply.send({
 			message: request.i18n.t('login.logout'),

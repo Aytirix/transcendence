@@ -10,6 +10,7 @@
 			"notMatching": "The verification code does not match."
 		},
 		"user": {
+			"inGame": "You cannot log in while you are in game.",
 			"noChanges": "No changes have been detected.",
 			"invalidUserId": "The user ID is invalid.",
 			"userIdRequired": "The user ID is required.",

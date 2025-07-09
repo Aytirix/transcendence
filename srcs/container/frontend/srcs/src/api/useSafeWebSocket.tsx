@@ -75,8 +75,7 @@ export function useSafeWebSocket({ endpoint, onMessage, onStatusChange, reconnec
 			handleCloseOrError('Closed');
 		};
 
-		socket.onerror = (error) => {
-			console.error('WebSocket error:', error, 'URL:', wsUrl);
+		socket.onerror = () => {
 			handleCloseOrError('Error');
 		};
 	};

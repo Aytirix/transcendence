@@ -62,16 +62,16 @@ async function initWebSocket(server: FastifyInstance) {
 				return;
 			}
 
-			// const userKey = `${request.url}_${session.user.id}`;
-			// const existingSocket = userConnected.get(userKey);
-			// if (existingSocket && existingSocket.readyState === WebSocket.OPEN) {
-			// 	console.warn(`User already connected: ${session.user.id}`);
-			// 	socket.write('HTTP/1.1 409 Conflict\r\n\r\n');
-			// 	socket.destroy();
-			// 	return;
-			// } else if (existingSocket) {
-			// 	userConnected.delete(userKey);
-			// }
+			const userKey = `${request.url}_${session.user.id}`;
+			const existingSocket = userConnected.get(userKey);
+			if (existingSocket && existingSocket.readyState === WebSocket.OPEN) {
+				console.warn(`User already connected: ${session.user.id}`);
+				socket.write('HTTP/1.1 409 Conflict\r\n\r\n');
+				socket.destroy();
+				return;
+			} else if (existingSocket) {
+				userConnected.delete(userKey);
+			}
 
 			// if (request.url === '/pong' && userConnected.has(`/Pacman_${session.user.id}`)) {
 			// 	socket.write('HTTP/1.1 409 Conflict\r\n\r\n');
@@ -86,7 +86,7 @@ async function initWebSocket(server: FastifyInstance) {
 			// }
 
 			wss?.handleUpgrade(request, socket, head, (ws: WebSocket) => {
-				// userConnected.set(userKey, ws);
+				userConnected.set(userKey, ws);
 				wss?.emit('connection', ws, session, request);
 			});
 		} catch (err) {
@@ -97,6 +97,19 @@ async function initWebSocket(server: FastifyInstance) {
 	});
 }
 
+const socketIsOpen = (userId: number, path: string): boolean => {
+	const userKey = `${path}_${userId}`;
+	if (userConnected.has(userKey)) {
+		const ws = userConnected.get(userKey);
+		if (ws && ws.readyState === WebSocket.OPEN) {
+			return true;
+		} else {
+			userConnected.delete(userKey);
+		}
+	}
+	return false;
+};
+
 const setLangSocketsForUser = (userId: number, lang: string): void => {
 	userConnected.forEach((ws, key) => {
 		if (key.startsWith(`/chat_${userId}`) || key.startsWith(`/pong_${userId}`) || key.startsWith(`/Pacman_${userId}`)) {
@@ -105,4 +118,8 @@ const setLangSocketsForUser = (userId: number, lang: string): void => {
 	});
 };
 
-export { initWebSocket, setLangSocketsForUser };
+export { 
+	initWebSocket, 
+	setLangSocketsForUser,
+	socketIsOpen 
+};
