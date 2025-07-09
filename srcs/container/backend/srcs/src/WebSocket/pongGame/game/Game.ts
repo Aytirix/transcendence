@@ -119,7 +119,7 @@ export class Game {
 				this.resetDisplay("SameKeyboard");
 			}
 			else if (this.player1.getPlayerInfos().mode === "Solo") {
-				this.player1.getPlayerInfos().socket.send(JSON.stringify({type: "FINISHED"}));
+				// this.player1.getPlayerInfos().socket.send(JSON.stringify({type: "FINISHED"}));
 				handleFinish(this.player1.getPlayerInfos());
 				this.resetDisplay("Solo");
 			}
@@ -167,8 +167,8 @@ export class Game {
 		if (this.player1.isCollidingWithBall(this.ball)) {
 			this.ball.d_x = -1;
 			// if (this.ball.pos_x + this.ball.radius > this.player1.pos_x)
-			this.ball.pos_x = this.player1.pos_x - this.ball.radius; 
-			if (this.ball.speed <= 12.5)
+				this.ball.pos_x = this.player1.pos_x - this.ball.radius; 
+			if (this.ball.speed <= 12)
 				this.ball.speed += 0.5;
 			this.player1.zoneEffect(this.ball);
 			if (this.player1.getPlayerInfos().mode === "Solo") //controler ici si ca fait pas bug le fait de regler la ball par rapport a la raquette 
@@ -252,8 +252,12 @@ export class Game {
 				modelPong.insertStatistic(player1.getPlayerInfos().id, 0, 1, this.player1.getPlayerInfos().mode, this.player2.getPlayerInfos().id)
 				modelPong.insertStatistic(player2.getPlayerInfos().id, 0, 0, this.player2.getPlayerInfos().mode, this.player1.getPlayerInfos().id)
 			}
-			else if (player1.getPlayerInfos().mode === "Solo")
+			else if (player1.getPlayerInfos().mode === "Solo") {
+				this.player1.getPlayerInfos().socket.send(JSON.stringify({type: "FINISHED", value: this.player1.getPlayerInfos().name}));
 				modelPong.insertStatistic(player1.getPlayerInfos().id, 0, 1, this.player1.getPlayerInfos().mode, 0)
+			}
+			else if (player1.getPlayerInfos().mode === "SameKeyboard")
+				this.player1.getPlayerInfos().socket.send(JSON.stringify({type: "FINISHED", value: "Thanos"}));
 			console.log("Winner is player 1")
 			return (true);
 		}
@@ -271,8 +275,12 @@ export class Game {
 				modelPong.insertStatistic(player2.getPlayerInfos().id, 0, 1, this.player2.getPlayerInfos().mode, this.player1.getPlayerInfos().id)
 				modelPong.insertStatistic(player1.getPlayerInfos().id, 0, 0, this.player1.getPlayerInfos().mode, this.player2.getPlayerInfos().id)
 			}
-			else if (player1.getPlayerInfos().mode === "Solo")
+			else if (player1.getPlayerInfos().mode === "Solo") {
+				this.player1.getPlayerInfos().socket.send(JSON.stringify({type: "FINISHED", value: "Ironman"}));
 				modelPong.insertStatistic(player1.getPlayerInfos().id, 0, 0, this.player1.getPlayerInfos().mode, 0)
+			}
+			else if (player1.getPlayerInfos().mode === "SameKeyboard")
+				this.player1.getPlayerInfos().socket.send(JSON.stringify({type: "FINISHED", value: "Ironman"}));
 			console.log("Winner is player 2")
 			return (true);
 		}
