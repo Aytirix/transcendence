@@ -82,14 +82,18 @@ const GroupsMessagesPage: React.FC = () => {
 	// Charger les messages quand un groupe est sélectionné
 	useEffect(() => {
 		if (selectedGroup) {
+			// Forcer le scroll en bas immédiatement avant de charger les messages
+			if (messagesContainerRef.current) {
+				messagesContainerRef.current.scrollTop = messagesContainerRef.current.scrollHeight;
+			}
 			loadMessages(selectedGroup.id, 0);
 		}
 	}, [selectedGroup, loadMessages]);
 
 	// Autoscroll vers le bas quand de nouveaux messages arrivent
 	useEffect(() => {
-		if (messagesEndRef.current) {
-			messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
+		if (messagesContainerRef.current) {
+			messagesContainerRef.current.scrollTop = messagesContainerRef.current.scrollHeight;
 		}
 	}, [selectedMessages]);
 
@@ -235,7 +239,7 @@ const GroupsMessagesPage: React.FC = () => {
 
 					return (
 						<div
-							key={m.id ?? idx}
+							key={`${selectedGroup?.id}-${m.id}-${idx}`}
 							className={`chat-message ${isOwnMessage ? 'chat-message--own' : ''}`}
 						>
 							<div className="chat-message__avatar">
