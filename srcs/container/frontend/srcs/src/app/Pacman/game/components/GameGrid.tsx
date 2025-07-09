@@ -41,12 +41,35 @@ const GameGrid: React.FC<GameGridProps> = ({ grid, tileSize, getWallType }) => {
 						>
 							{char === '-' && (
 								<div
-									className={`door ${(grid[rowIndex]?.[colIndex - 1] === '#' && grid[rowIndex]?.[colIndex + 1] === '#')
-										? 'horizontal'
-										: (grid[rowIndex - 1]?.[colIndex] === '#' && grid[rowIndex + 1]?.[colIndex] === '#')
-											? 'vertical'
-											: ''
-										}`}
+									className={`door ${(() => {
+										const left = grid[rowIndex]?.[colIndex - 1];
+										const right = grid[rowIndex]?.[colIndex + 1];
+										const top = grid[rowIndex - 1]?.[colIndex];
+										const bottom = grid[rowIndex + 1]?.[colIndex];
+										
+										// Fonction pour vérifier si c'est un obstacle (mur ou porte)
+										const isObstacle = (cell: string) => cell === '#' || cell === '-';
+										
+										// Vérifier les orientations principales
+										const isHorizontal = isObstacle(left) && isObstacle(right);
+										const isVertical = isObstacle(top) && isObstacle(bottom);
+										
+										if (isHorizontal) return 'horizontal';
+										if (isVertical) return 'vertical';
+										
+										// Cas des formes en L - déterminer l'orientation spécifique
+										const hasTopLeft = isObstacle(top) && isObstacle(left);
+										const hasTopRight = isObstacle(top) && isObstacle(right);
+										const hasBottomLeft = isObstacle(bottom) && isObstacle(left);
+										const hasBottomRight = isObstacle(bottom) && isObstacle(right);
+										
+										if (hasTopLeft) return 'l-shape-top-left';
+										if (hasTopRight) return 'l-shape-top-right';
+										if (hasBottomLeft) return 'l-shape-bottom-left';
+										if (hasBottomRight) return 'l-shape-bottom-right';
+										
+										return '';
+									})()}`}
 								/>
 							)}
 							{char === 'T' && <img src={portalImg} alt="portal" className="tunnel" />}
