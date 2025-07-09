@@ -4,8 +4,3 @@
 **/dist
 srcs/container/backend/srcs/logs
 srcs/build/**
-PacmanAI/__pycache__
-PacmanAI/venv
-PacmanAI/venv
-srcs/container/backend/srcs/minecraft_data
-srcs/container/backend/srcs/uploads
