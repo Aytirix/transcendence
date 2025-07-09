@@ -102,30 +102,40 @@ const GroupsMessagesPage: React.FC = () => {
 		prevGroupsLength.current = groups.length;
 	}, [groups]);
 
-	// Charger les messages quand un groupe est sélectionné
+	// Charger les messages quand un groupe est sélectionné (utiliser l'ID au lieu de l'objet entier)
 	useEffect(() => {
-		if (selectedGroup) {
+		if (selectedGroupId) {
 			// Réinitialiser l'état pour ce groupe
 			setHasMoreMessages(prev => ({
 				...prev,
-				[selectedGroup.id]: true // Assumer qu'il y a des messages au début
+				[selectedGroupId]: true // Assumer qu'il y a des messages au début
 			}));
 			setMessageLoadCounts(prev => ({
 				...prev,
-				[selectedGroup.id]: 0
+				[selectedGroupId]: 0
 			}));
 			
-			loadMessages(selectedGroup.id, 0);
+			loadMessages(selectedGroupId, 0);
 			
 			// Scroll vers le bas après un petit délai
 			setTimeout(() => scrollToBottom(false), 200);
 		}
-	}, [selectedGroup, loadMessages, scrollToBottom]);
+	}, [selectedGroupId, loadMessages, scrollToBottom]);
 
-	// Autoscroll vers le bas quand de nouveaux messages arrivent
+	// Suivre le nombre de messages pour l'autoscroll
+	const prevMessageCount = useRef<number>(0);
+	
+	// Autoscroll vers le bas seulement quand de nouveaux messages arrivent
 	useEffect(() => {
-		// Utiliser la fonction utilitaire pour un scroll fluide
-		scrollToBottom(true);
+		const currentMessageCount = selectedMessages.length;
+		
+		// Seulement scroller si le nombre de messages a augmenté (nouveaux messages)
+		if (currentMessageCount > prevMessageCount.current && prevMessageCount.current > 0) {
+			scrollToBottom(true);
+		}
+		
+		// Mettre à jour le compteur précédent
+		prevMessageCount.current = currentMessageCount;
 	}, [selectedMessages, scrollToBottom]);
 
 	// Détecter si on a atteint la fin des messages

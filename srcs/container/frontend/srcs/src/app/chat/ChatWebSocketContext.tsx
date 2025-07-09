@@ -421,10 +421,14 @@ export const ChatWebSocketProvider: React.FC<ChatWebSocketProviderProps> = ({ ch
 								: []
 						);
 						setGroups(prev => prev.map(group => {
-							return {
-								...group,
-								onlines_id: group.onlines_id.filter(id => id !== data.user_id)
-							};
+							// Seulement mettre à jour si l'utilisateur est dans la liste onlines_id
+							if (group.onlines_id && group.onlines_id.includes(data.user_id)) {
+								return {
+									...group,
+									onlines_id: group.onlines_id.filter(id => id !== data.user_id)
+								};
+							}
+							return group; // Retourner l'objet original sans modification
 						}));
 					}
 					break;
