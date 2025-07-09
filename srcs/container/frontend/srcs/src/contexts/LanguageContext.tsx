@@ -30,7 +30,6 @@ export const LanguageProvider = ({ children }: any) => {
 				if (authResponse.isAuthenticated) {
 					// Mettre à jour la langue sur le serveur via update-user
 					await ApiService.put('/update-user', { lang }, false);
-					console.log('🌐 Language updated on server:', lang);
 				}
 			} catch (error) {
 				console.error('❌ Failed to update language on server:', error);

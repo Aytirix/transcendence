@@ -125,7 +125,6 @@ const MultiPlayers: React.FC = () => {
 		
 					}
 					if (data.type === "Pause") {
-						console.log("pause front end");
 						setIsPause(data.value);
 						if (data.message) {
 							if (data.message === "Press [ ESP ] for PLAY")

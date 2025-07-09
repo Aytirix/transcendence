@@ -117,8 +117,6 @@ const GroupsMessagesPage: React.FC = () => {
 				}));
 
 				loadMessages(selectedGroupId, 0, () => {
-					// Le chargement initial est terminé
-					console.log(`Messages initiaux chargés pour le groupe ${selectedGroupId}`);
 				});
 			}
 		}
