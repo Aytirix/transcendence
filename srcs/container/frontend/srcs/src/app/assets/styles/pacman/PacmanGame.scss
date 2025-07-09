@@ -29,7 +29,7 @@
 	display: flex;
 	justify-content: center;
 	align-items: center;
-	height: 100px;
+	padding-top: 15px;
 	color: #FFEE00;
 	font-size: 2rem;
 	font-family: 'Press Start 2P', cursive;
@@ -61,7 +61,8 @@
 		padding: 15px;
 		gap: 20px;
 		font-family: 'Press Start 2P', cursive;
-		max-width: 350px;
+		min-width: 250px;
+		max-width: 300px;
 	}
 
 	.game-sidebar {
@@ -69,7 +70,8 @@
 		flex-direction: column;
 		gap: 20px;
 		font-family: 'Press Start 2P', cursive;
-		max-width: 350px;
+		min-width: 250px;
+		max-width: 400px;
 	}
 	.pacman-map-container {
 		position: relative;
@@ -77,8 +79,6 @@
 		display: flex;
 		justify-content: center;
 		align-items: center;
-		//const CONTAINER_SIZE_WIDTH = 659;
-		//const CONTAINER_SIZE_HEIGHT = 711;
 		width: 671px;
 		height: 721px;
 		margin: 0 auto;
