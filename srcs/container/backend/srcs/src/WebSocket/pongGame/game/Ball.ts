@@ -5,7 +5,7 @@ export class Ball {
 		public d_x: number,
 		public d_y: number,
 		public speed: number = 9, //7 readonly
-		public readonly radius: number = 4
+		public readonly radius: number = 8
 	) {}
 	move(): void{
 		this.pos_x += this.d_x * this.speed;
