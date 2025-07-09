@@ -268,6 +268,8 @@
 	},
 	"pong": {
 		"invitePlayer": {
+			"idRequired": "Veuillez spécifier l'ID de l'utilisateur",
+			"invalidId": "L'ID de l'utilisateur doit être un nombre valide.",
 			"friendId": "ID de l'ami à inviter",
 			"required": "L'ID de l'ami est requis.",
 			"invalid": "L'ID de l'ami doit être un nombre valide.",

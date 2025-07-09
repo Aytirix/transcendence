@@ -95,6 +95,7 @@ export const update = {
 		properties: {
 			...register.body.properties,
 			username: { type: 'string', minLength: 3, maxLength: 10, pattern: '^[a-zA-Z0-9\u00C0-\u017F]+$' },
+			twofa: { type: 'boolean' },
 		},
 		required: [],
 		errorMessage: {
@@ -117,8 +118,9 @@ export const update = {
 						username: { type: 'string', minLength: 3, maxLength: 10, pattern: '^[a-zA-Z0-9\u00C0-\u017F]+$' },
 						lang: { type: 'string', enum: ['fr', 'en', 'it', 'es'] },
 						avatar: { type: 'string' },
+						twofa: { type: 'boolean' },
 					},
-					required: ['id', 'email', 'username', 'lang', 'avatar'],
+					required: ['id', 'email', 'username', 'lang', 'avatar', 'twofa'],
 				},
 			},
 			required: ['user'],

@@ -19,6 +19,7 @@ export interface ProfileForm {
 	confirmPassword?: string;
 	lang?: string;
 	avatar?: string;
+	twofa?: boolean;
 }
 
 const UserProfile: React.FC = () => {
@@ -31,9 +32,8 @@ const UserProfile: React.FC = () => {
 		confirmPassword: '',
 		lang: user?.lang || '',
 		avatar: defaultAvatars[0],
+		twofa: user?.twofa || false,
 	});
-	const [preview, setPreview] = useState<string | null>(null); // Pour custom avatar
-	const [customAvatarUrl, setCustomAvatarUrl] = useState<string | null>(null);
 	const [uploading, setUploading] = useState(false);
 	const [loading, setLoading] = useState(false);
 
@@ -48,14 +48,10 @@ const UserProfile: React.FC = () => {
 	// Choix d'un avatar par défaut
 	const handleAvatarSelect = (avatar: string) => {
 		setForm({ ...form, avatar });
-		setPreview(null);
-		setCustomAvatarUrl(null);
 	};
 
 	// Upload custom avatar
 	const handleCustomAvatar = (e: ChangeEvent<HTMLInputElement>) => {
-		setCustomAvatarUrl(null);
-
 		const file = e.target.files?.[0];
 		if (!file) return;
 
@@ -67,15 +63,20 @@ const UserProfile: React.FC = () => {
 			notification.error(t('profile.avatar.errors.fileTooLarge'));
 			return;
 		}
-		const reader = new FileReader();
-		reader.onloadend = () => setPreview(reader.result as string);
-		reader.readAsDataURL(file);
 
 		handleUpload(file);
 	};
 
 	const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-		setForm({ ...form, [e.target.name]: e.target.value });
+		const { name, value, type } = e.target;
+		let finalValue: string | boolean = value;
+		
+		// Gérer les valeurs booléennes pour les checkboxes
+		if (type === 'checkbox' && 'checked' in e.target) {
+			finalValue = (e.target as HTMLInputElement).checked;
+		}
+		
+		setForm({ ...form, [name]: finalValue });
 	};
 
 	const handleUpload = async (file: File) => {
@@ -92,7 +93,6 @@ const UserProfile: React.FC = () => {
 				}
 				return;
 			}
-			setCustomAvatarUrl(result.url);
 			setForm({ ...form, avatar: result.fileName });
 			setUploading(false);
 			setUser((prevUser) => prevUser ? { ...prevUser, avatar: `${result.fileName}?v=${Date.now()}` } : null);
@@ -108,7 +108,12 @@ const UserProfile: React.FC = () => {
 
 		try {
 			let tab = { ...form };
-			Object.keys(tab).forEach((key) => { if (!tab[key as keyof ProfileForm]) delete tab[key as keyof ProfileForm]; });
+			// Supprimer les valeurs vides mais préserver twofa même si false
+			Object.keys(tab).forEach((key) => { 
+				if (key !== 'twofa' && !tab[key as keyof ProfileForm]) {
+					delete tab[key as keyof ProfileForm]; 
+				}
+			});
 
 			if (!defaultAvatars.includes(tab.avatar || '')) {
 				tab.avatar = '';
@@ -125,7 +130,7 @@ const UserProfile: React.FC = () => {
 					setLanguage(tab.lang, false);
 				}
 
-				if (emailChanged) {
+				if (emailChanged && tab.email) {
 					notification.alert(t('profile.email.confirmationRequired', { email: tab.email }), 'email-confirmation-alert');
 				}
 			}

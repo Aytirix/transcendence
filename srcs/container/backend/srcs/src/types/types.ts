@@ -12,6 +12,7 @@ export interface User {
 	lang?: string;
 	google_token?: string;
 	avatar?: string;
+	twofa?: boolean;
 	privmsg_id?: number;
 	online?: boolean;
 	relation?: {
