@@ -8,4 +8,9 @@ export default async (fastify: FastifyInstance) => {
 		preHandler: [Middleware.isAuthenticated],
 		schema: pacmanSchema.getStatisticsForUser,
 	}, pacmanController.getStatisticsForUser);
+
+	fastify.get('/pacman/statistics/:userId', {
+		preHandler: [Middleware.isAuthenticated],
+		schema: pacmanSchema.getStatisticsForSpecificUser,
+	}, pacmanController.getStatisticsForSpecificUser);
 };

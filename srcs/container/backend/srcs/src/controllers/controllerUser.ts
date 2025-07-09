@@ -396,6 +396,35 @@ export const ForgetPassword = async (request: FastifyRequest, reply: FastifyRepl
 	});
 }
 
+export const getUserProfile = async (request: FastifyRequest, reply: FastifyReply) => {
+	const { userId } = request.params as { userId: string };
+
+	if (!userId || isNaN(Number(userId))) {
+		return reply.status(400).send({
+			success: false,
+			message: request.i18n.t('errors.user.invalidUserId'),
+		});
+	}
+
+	const user = await userModel.getUserById(Number(userId));
+	if (!user) {
+		return reply.status(404).send({
+			success: false,
+			message: request.i18n.t('errors.user.notFound'),
+		});
+	}
+
+	return reply.status(200).send({
+		success: true,
+		user: {
+			id: user.id,
+			username: user.username,
+			avatar: user.avatar,
+			lang: user.lang,
+		},
+	});
+}
+
 export default {
 	Login,
 	Register,
@@ -404,4 +433,5 @@ export default {
 	authGoogleCallback,
 	UploadAvatar,
 	ForgetPassword,
+	getUserProfile,
 };

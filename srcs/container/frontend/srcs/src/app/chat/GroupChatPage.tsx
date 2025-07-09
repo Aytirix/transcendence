@@ -6,6 +6,9 @@ import { Group, Message } from "./types/chat";
 import ApiService from "../../api/ApiService";
 import { useLanguage } from '../../contexts/LanguageContext';
 import { useAuth } from '../../contexts/AuthContext';
+import UserProfileModal from '../components/UserProfileModal';
+import { useUserProfileModal } from '../hooks/useUserProfileModal';
+import notification from "../components/Notifications";
 import "../assets/styles/chat.scss";
 
 const GroupsMessagesPage: React.FC = () => {
@@ -19,11 +22,13 @@ const GroupsMessagesPage: React.FC = () => {
 		createGroup,
 		deleteGroup,
 		addUserToGroup,
+		handleCancelInvite,
 		removeUserFromGroup,
 		currentUserId,
 	} = useChatWebSocket();
 	const { t } = useLanguage();
 	const { user } = useAuth();
+	const { modalState, openUserProfile, closeUserProfile } = useUserProfileModal();
 
 	// État local pour l'interface utilisateur
 	const [selectedGroupId, setSelectedGroupId] = useState<number | null>(null);
@@ -52,10 +57,29 @@ const GroupsMessagesPage: React.FC = () => {
 	const messagesEndRef = useRef<HTMLDivElement>(null);
 	const messagesContainerRef = useRef<HTMLDivElement>(null);
 	const [isLoadingMoreMessages, setIsLoadingMoreMessages] = useState(false);
+	const [hasMoreMessages, setHasMoreMessages] = useState<Record<number, boolean>>({});
+	const [messageLoadCounts, setMessageLoadCounts] = useState<Record<number, number>>({});
 
 	// Messages du groupe actuellement sélectionné
 	const selectedMessages: Message[] = selectedGroup ? groupMessages[selectedGroup.id] || [] : [];
 
+	// Fonction utilitaire pour scroller vers le bas
+	const scrollToBottom = useCallback((smooth: boolean = false) => {
+		if (messagesEndRef.current) {
+			messagesEndRef.current.scrollIntoView({ behavior: smooth ? 'smooth' : 'auto' });
+		}
+	}, []);
+
+	async function testInvitePong(friend: any) {
+		const response = await ApiService.post(`/pong/invitePlayer`, { friendId: friend.id });
+		if (response.ok) {
+			const message = t('friendPage.notifications.PonginviteSent', { username: friend.username });
+			notification.cancel(message).then(() => {
+				handleCancelInvite(response.token);
+			});
+		}
+		return response;
+	}
 	// Sélectionner automatiquement le premier groupe lors du chargement
 	useEffect(() => {
 		if (groups.length > 0 && !selectedGroup) {
@@ -81,30 +105,70 @@ const GroupsMessagesPage: React.FC = () => {
 	// Charger les messages quand un groupe est sélectionné
 	useEffect(() => {
 		if (selectedGroup) {
-			// Forcer le scroll en bas immédiatement avant de charger les messages
-			if (messagesContainerRef.current) {
-				messagesContainerRef.current.scrollTop = messagesContainerRef.current.scrollHeight;
-			}
+			// Réinitialiser l'état pour ce groupe
+			setHasMoreMessages(prev => ({
+				...prev,
+				[selectedGroup.id]: true // Assumer qu'il y a des messages au début
+			}));
+			setMessageLoadCounts(prev => ({
+				...prev,
+				[selectedGroup.id]: 0
+			}));
+			
 			loadMessages(selectedGroup.id, 0);
+			
+			// Scroll vers le bas après un petit délai
+			setTimeout(() => scrollToBottom(false), 200);
 		}
-	}, [selectedGroup, loadMessages]);
+	}, [selectedGroup, loadMessages, scrollToBottom]);
 
 	// Autoscroll vers le bas quand de nouveaux messages arrivent
 	useEffect(() => {
-		if (messagesContainerRef.current) {
-			messagesContainerRef.current.scrollTop = messagesContainerRef.current.scrollHeight;
+		// Utiliser la fonction utilitaire pour un scroll fluide
+		scrollToBottom(true);
+	}, [selectedMessages, scrollToBottom]);
+
+	// Détecter si on a atteint la fin des messages
+	useEffect(() => {
+		if (!selectedGroup) return;
+		
+		const groupId = selectedGroup.id;
+		const currentCount = selectedMessages.length;
+		const previousCount = messageLoadCounts[groupId];
+		
+		// Si on a tracké un chargement précédent et que le nombre n'a pas changé de manière significative
+		// (moins de 10 nouveaux messages), on considère qu'il n'y a plus de messages
+		if (previousCount !== undefined && currentCount - previousCount < 10) {
+			setHasMoreMessages(prev => ({
+				...prev,
+				[groupId]: false
+			}));
+		} else if (previousCount === undefined || currentCount - previousCount >= 10) {
+			// Si c'est la première fois ou qu'on a eu beaucoup de nouveaux messages, on assume qu'il peut y en avoir plus
+			setHasMoreMessages(prev => ({
+				...prev,
+				[groupId]: true
+			}));
 		}
-	}, [selectedMessages]);
+	}, [selectedMessages, selectedGroup, messageLoadCounts]);
 
 	// Fonction pour charger plus de messages
 	const handleLoadMoreMessages = useCallback(() => {
 		if (!selectedGroup || selectedMessages.length === 0 || isLoadingMoreMessages) return;
 		
-		setIsLoadingMoreMessages(true);
 		// Récupérer l'ID du message le plus ancien (le premier dans le tableau trié)
+		setIsLoadingMoreMessages(true);
 		const oldestMessageId = selectedMessages[0]?.id;
+		const currentMessageCount = selectedMessages.length;
+		
 		if (oldestMessageId) {
 			loadMessages(selectedGroup.id, oldestMessageId);
+			
+			// Tracker le nombre de messages avant le chargement pour savoir s'il y en a plus
+			setMessageLoadCounts(prev => ({
+				...prev,
+				[selectedGroup.id]: currentMessageCount
+			}));
 		}
 		
 		// Reset loading state après un délai
@@ -116,7 +180,10 @@ const GroupsMessagesPage: React.FC = () => {
 		if (!input.trim() || !selectedGroup) return;
 		sendMessage(selectedGroup.id, input);
 		setInput("");
-	}, [input, selectedGroup, sendMessage]);
+		
+		// Forcer le scroll vers le bas après l'envoi du message
+		setTimeout(() => scrollToBottom(true), 100);
+	}, [input, selectedGroup, sendMessage, scrollToBottom]);
 
 	const toggleUserSelection = useCallback((userId: number) => {
 		setSelectedUsersForGroup(prev =>
@@ -191,11 +258,23 @@ const GroupsMessagesPage: React.FC = () => {
 		return friend?.username;
 	}
 
+	const handleUsernameClick = (userId: number, username: string) => {
+		// Don't open modal for the current user
+		if (userId === currentUserId) return;
+		
+		openUserProfile(userId, username);
+	};
+
 	const Messages: React.FC = () => {
+		// Déterminer si on doit montrer le bouton "Load More"
+		const shouldShowLoadMore = selectedGroup && selectedMessages.length >= 2 && 
+			selectedMessages[0]?.id > 1 && 
+			hasMoreMessages[selectedGroup.id] !== false;
+
 		return (
 			<div className="chat-content__messages" ref={messagesContainerRef}>
-				{/* Bouton Load More Messages - uniquement si le premier message a un ID > 1 */}
-				{selectedMessages.length > 0 && selectedMessages[0]?.id > 1 && (
+				{/* Bouton Load More Messages */}
+				{shouldShowLoadMore && (
 					<div className="chat-load-more-container">
 						<button
 							className="chat-load-more-btn"
@@ -255,7 +334,9 @@ const GroupsMessagesPage: React.FC = () => {
 							
 							<div className="chat-message__content">
 								<div className="chat-message__header">
-									<span className="chat-message__author">{senderName}</span>
+									<span className="chat-message__author">
+										{senderName}
+									</span>
 									<time className="chat-message__time">
 										{m.sent_at ? formatRelativeTime(new Date(m.sent_at)) : ""}
 									</time>
@@ -304,32 +385,32 @@ const GroupsMessagesPage: React.FC = () => {
 	};
 
 	const HeaderMessages: React.FC = () => {
-		/* if (showCreateGroup) {
-			return (
-				<div className="chat-content__header">
-					<div className="chat-content__header-info">
-						<div className="chat-content__header-details">
-							<div className="chat-content__header-name">
-								{t('chat.createGroup')}
-							</div>
-						</div>
-					</div>
-				</div>
-			);
-		} */
 
 		const displayName = selectedGroup ? getGroupDisplayName(selectedGroup) : t('chat.selectGroup');
 		
 		return (
 			<div className="chat-content__header">
 				{/* Group management button for non-private groups where user is owner */}
-				{selectedGroup && !selectedGroup.private && isGroupOwner(selectedGroup) && (
+				{selectedGroup && !selectedGroup.private ? (
+					isGroupOwner(selectedGroup) && (
+						<button
+							className="chat-group-manage-btn chat-group-manage-btn--top-right"
+							onClick={() => openGroupManagement(selectedGroup)}
+							title={t('chat.manageGroup')}
+						>
+							⚙️ {t('chat.manage')}
+						</button>
+					)
+				) : selectedGroup && selectedGroup.private && (
 					<button
+						title={t('friendPage.tooltips.pongInvite')}
 						className="chat-group-manage-btn chat-group-manage-btn--top-right"
-						onClick={() => openGroupManagement(selectedGroup)}
-						title={t('chat.manageGroup')}
+						onClick={() => {
+							const member = memberGroup(selectedGroup);
+							if (member) testInvitePong(member);
+						}}
 					>
-						⚙️ {t('chat.manage')}
+						<img src="/images/intro/floating-pong.png" alt={t('friendPage.tooltips.pongInvite')} className="w-7 h-7" />
 					</button>
 				)}
 				<div className="chat-content__header-info">
@@ -338,21 +419,6 @@ const GroupsMessagesPage: React.FC = () => {
 							{selectedGroup ? (selectedGroup.private ? t('chat.discussionWith') : t('chat.groupDiscussion')) : ''}
 							{displayName}
 						</div>
-						{/* {!selectedGroup?.private && selectedGroup && (
-							<div className="chat-content__header-status">
-								{selectedGroup.members.length > 1 && 
-									`${selectedGroup.members.length} ${selectedGroup.members.length > 1 ? t('chat.members') : t('chat.member')}`
-								}
-								{selectedGroup.onlines_id && selectedGroup.onlines_id.length > 0 && (
-									<>
-										{" • "}
-										<span className="chat-online-indicator">
-											{selectedGroup.onlines_id.length} {t('chat.onlineCount')}
-										</span>
-									</>
-								)}
-							</div>
-						)} */}
 					</div>
 				</div>
 				{/* Section des membres */}
@@ -366,7 +432,10 @@ const GroupsMessagesPage: React.FC = () => {
 										key={member.id} 
 										className={`chat-content__header-online-member ${isOnline ? 'chat-content__header-online-member--online' : 'chat-content__header-online-member--offline'}`}
 									>
-										<span className="chat-content__header-online-name">
+										<span 
+											className={`chat-content__header-online-name ${member.id !== currentUserId ? 'clickable-username' : ''}`}
+											onClick={() => member.id !== currentUserId && handleUsernameClick(member.id, member.username)}
+										>
 											{member.username}
 										</span>
 									</div>
@@ -799,6 +868,14 @@ const GroupsMessagesPage: React.FC = () => {
 					</div>
 				);
 			})()}
+			
+			{/* User Profile Modal */}
+			<UserProfileModal
+				isOpen={modalState.isOpen}
+				userId={modalState.userId || 0}
+				username={modalState.username}
+				onClose={closeUserProfile}
+			/>
 		</div>
 	);
 };

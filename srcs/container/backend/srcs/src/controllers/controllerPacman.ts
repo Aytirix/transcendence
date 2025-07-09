@@ -272,6 +272,20 @@ export const getStatisticsForUser = async (request: FastifyRequest, reply: Fasti
 	return reply.status(200).send({ success: true, stats });
 }
 
+export const getStatisticsForSpecificUser = async (request: FastifyRequest, reply: FastifyReply) => {
+	const { userId } = request.params as { userId: string };
+
+	if (!userId || isNaN(Number(userId))) {
+		return reply.status(400).send({
+			success: false,
+			message: request.i18n.t('errors.user.invalidUserId'),
+		});
+	}
+
+	const stats = await pacmanModel.getStatisticsForUser(Number(userId));
+	return reply.status(200).send({ success: true, stats });
+}
+
 export default {
 	sendResponse,
 	getAllMapForUser,
@@ -289,5 +303,6 @@ export default {
 	handlePlayerMove,
 	handleJoinRoomSpectator,
 	setRoomMap,
-	getStatisticsForUser
+	getStatisticsForUser,
+	getStatisticsForSpecificUser
 };

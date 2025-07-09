@@ -354,7 +354,8 @@
 		"sort": "Ordenar",
 		"yes": "Sí",
 		"no": "No",
-		"ok": "OK"
+		"ok": "OK",
+		"retry": "Reintentar"
 	},
 	"errors": {
 		"networkError": "Error de red",
@@ -568,6 +569,42 @@
 		},
 		"email": {
 			"confirmationRequired": "Por favor, revisa tu correo electrónico\n{{email}}\npara confirmar tu cambio.\nEl correo electrónico expira en 15 minutos."
+		},
+		"modal": {
+			"title": "Perfil de {{username}}",
+			"loading": "Cargando perfil de usuario...",
+			"errorLoading": "Error al cargar el perfil de usuario",
+			"tabs": {
+				"profile": "Perfil",
+				"pong": "Estadísticas Pong",
+				"pacman": "Estadísticas Pacman"
+			},
+			"pong": {
+				"wins": "Victorias",
+				"losses": "Derrotas",
+				"abandons": "Abandonos",
+				"winRate": "Tasa de victorias",
+				"matchHistory": "Historial de partidas",
+				"noMatches": "Aún no has jugado partidas de Pong"
+			},
+			"pacman": {
+				"gamesAsPacman": "Partidas como Pacman",
+				"gamesAsGhost": "Partidas como Fantasma",
+				"bestScore": "Mejor puntuación",
+				"matchHistory": "Historial de partidas",
+				"noMatches": "Aún no has jugado partidas de Pacman",
+				"asRole": "como {{role}}",
+				"score": "Puntuación",
+				"pacmanRecords": "Top Jugadores Pacman",
+				"ghostRecords": "Top Jugadores Fantasmas",
+				"noRecords": "No hay récords disponibles"
+			},
+			"match": {
+				"win": "VICTORIA",
+				"loss": "DERROTA",
+				"abandon": "ABANDONO",
+				"vs": "vs"
+			}
 		}
 	},
 	"singlePage": {
