@@ -58,7 +58,6 @@ const Solo: React.FC = () => {
 		camera.current!.rotation.y = data.camera.rot_y;
 
 	}
-	// Initialisation Babylon + WebSocket
 	useEffect(() => {
 		const canvas = canvasRef.current;
 		if (!canvas) return;
@@ -67,7 +66,6 @@ const Solo: React.FC = () => {
 		socketRef.current = socket;
 
 		if (reconnection) {
-			console.log("reco :", reconnection);
 			if (reconnection === "Solo") {
 				setIscinematic(true);
 				setStartReco(true);
@@ -135,10 +133,6 @@ const Solo: React.FC = () => {
 				setisWinner(true);
 				if (data.value)
 					setNameWinner(data.value);
-				// if (parsedData?.player1.score === 21)
-				// 	setNameWinner(namePlayer1!)
-				// else
-				// 	setNameWinner(namePlayer2)
 				camera!.current!.position.x = 338.131;
 				camera!.current!.position.y = 136.188;
 				camera!.current!.position.z = -481.417;
@@ -163,7 +157,6 @@ const Solo: React.FC = () => {
 				}));
 			}
 		};
-		// Nettoyage
 		return () => {
 			engine.current?.dispose();
 			socket.close();
@@ -193,12 +186,10 @@ const Solo: React.FC = () => {
 				deleteGo.current = true;
 				return () => clearTimeout(goTimeout);
 			}, 500);
-			// sessionStorage.setItem("inGame", "true");
 			socketRef.current.send(JSON.stringify({ type: "Solo" }));
 		}
 	}, [isReady3d, isCinematic, count]);
 
-	// Mise à jour des positions
 	useEffect(() => {
 		if (!ball.current || !parsedData || !isReady3d || !isCinematic) return;
 
@@ -214,7 +205,6 @@ const Solo: React.FC = () => {
 		paddle2.current!.position.z = paddleUp - ((parsedData.player1.pos_y + 50) * (paddleUp - paddleDown)) / pixelHeight;
 	}, [parsedData, isReady3d, isCinematic]);
 
-	// Ping pour maintenir la connexion WebSocket
 	useEffect(() => {
 		if (!isReady3d || !socketRef.current) return;
 
@@ -226,7 +216,6 @@ const Solo: React.FC = () => {
 		return () => clearInterval(interval);
 	}, [isReady3d]);
 
-	// Gestion des touches clavier
 	useEffect(() => {
 		if (!isReady3d || !socketRef.current || !isCinematic) return;
 		const handlePause = (event: KeyboardEvent) => {

@@ -59,7 +59,6 @@ export function pongWebSocket(socket: WebSocket, user: User) {
 				handleMulti(playerInfos, msg);
 				break ;
 			case "MultiInvite" :
-				console.log("MultiInvite")
 				handleMultiInvite(playerInfos, msg);
 				break ;
 			case "Solo" :
@@ -115,7 +114,7 @@ export function pongWebSocket(socket: WebSocket, user: User) {
 			if (playerInfos && playerInfos.game) {
 				if (playerInfos.name !== playerInfos.game.getPlayer1().getPlayerInfos().name) {
 					playerInfos.game.getPlayer1().getPlayerInfos().socket.send(JSON.stringify({type: "Pause", value: true, message: "Adversaire en pause. Reprise imminente."}))
-				}//if multi
+				}
 				else {
 					playerInfos.game.getPlayer2().getPlayerInfos().socket.send(JSON.stringify({type: "Pause", value: true, message: "Adversaire en pause. Reprise imminente."}))
 				}
@@ -123,11 +122,3 @@ export function pongWebSocket(socket: WebSocket, user: User) {
 		}
 	});
 }
-
-//aide memoire ne pas oublier de mettre le bon nom du winner du tournois dans la db sur isonfinish gab
-//gerer si le tournois est full dans game menu et ne pas pouvoir rentrer
-//mettre a jour la room au fur a mesure que les joueurs gagne les manche
-//regler probleme de ball et extremite raquette
-//gerer si un joueur est deco avant le debut de la partie de detecter et afficher un mess car sinon ca reste sur c est parti en attendant qu il arrive
-//avatar par default si marche pas le custum
-//gerer le redimenssionement de la photo dans la room
