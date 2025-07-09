@@ -44,7 +44,7 @@ const MultiPlayers: React.FC = () => {
 			const reconnection = localStorage.getItem("reconnection");
 
 			const {t} = useLanguage();
-			const messagePause = useRef(t("pong.multi.pause"))
+			const [messagePause, setMessagePause] = useState(t("pong.multi.pause"));
 			
 		
 			const keyPressed = useRef({
@@ -125,12 +125,13 @@ const MultiPlayers: React.FC = () => {
 		
 					}
 					if (data.type === "Pause") {
+						console.log("pause front end");
 						setIsPause(data.value);
 						if (data.message) {
 							if (data.message === "Press [ ESP ] for PLAY")
-								messagePause.current = t("pong.multi.pause");
+								setMessagePause(t("pong.multi.pause"));
 							else if (data.message === "Adversaire en pause. Reprise imminente.")
-								messagePause.current = t("pong.multi.pausead");
+								setMessagePause(t("pong.multi.pausead"));
 						}
 					}
 					if (data.type === "assign") {
@@ -300,7 +301,8 @@ const MultiPlayers: React.FC = () => {
 				localStorage.setItem("reconnection", "MultiPlayers");
 
 				let i: number = -1209
-				camera.current!.rotation.x = 0.081;
+				camera.current!.rotation.x = 0.081;									{/* {messagePause.current} */}
+
 				camera.current!.rotation.y = 1.599;
 				camera.current!.position.y = 21.71;
 				camera.current!.position.z = -1.446;
@@ -339,7 +341,7 @@ const MultiPlayers: React.FC = () => {
 							 {/* jeu en pause */}
 							{isPause && isReady3d && isCinematic && !isWinner && (
 								<h1 className='Start-go'>
-									{messagePause.current}
+									{messagePause}
 								</h1>
 							)}
 		
