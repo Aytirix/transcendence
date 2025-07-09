@@ -32,7 +32,7 @@ const WinnerPage: React.FC = () => {
 	return(
 		<div className='WinnerPage'>
 			<div className='popup-WinnerPage'>
-				<h1 className="name-winner">Pong1</h1>
+				<h1 className="name-winner">{dataPlayer?.name}</h1>
 				<div className='avatar-Winner'>
 					<img src={ApiService.getFile(dataPlayer?.avatar)} alt="Avatar" className="w-full h-full object-cover rounded-[20px]"/>
 				</div>
