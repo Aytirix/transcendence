@@ -252,7 +252,7 @@ class ToastNotification {
 	static dismissAll() {
 		// Fermer tous les toasts
 		toast.dismiss();
-		
+
 		// Fermer tous les modals ouverts
 		ToastNotification.openModals.forEach(closeModalFn => {
 			try {
@@ -261,7 +261,21 @@ class ToastNotification {
 				console.error('Error closing modal:', error);
 			}
 		});
-		
+
+		// Vider la liste des modals
+		ToastNotification.openModals.clear();
+	}
+
+	static dismissModal() {
+		// Fermer tous les modals ouverts
+		ToastNotification.openModals.forEach(closeModalFn => {
+			try {
+				closeModalFn();
+			} catch (error) {
+				console.error('Error closing modal:', error);
+			}
+		});
+
 		// Vider la liste des modals
 		ToastNotification.openModals.clear();
 	}

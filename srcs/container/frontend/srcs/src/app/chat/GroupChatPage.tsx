@@ -10,6 +10,7 @@ import UserProfileModal from '../components/UserProfileModal';
 import { useUserProfileModal } from '../hooks/useUserProfileModal';
 import notification from "../components/Notifications";
 import "../assets/styles/chat.scss";
+import MinSizeGuard from "../components/MinSizeGuard";
 
 const GroupsMessagesPage: React.FC = () => {
 	const {
@@ -62,7 +63,7 @@ const GroupsMessagesPage: React.FC = () => {
 	const [pendingLoadRequests, setPendingLoadRequests] = useState<Set<number>>(new Set());
 
 	// Messages du groupe actuellement sélectionné (triés par ID décroissant pour affichage du plus récent au plus ancien)
-	const selectedMessages: Message[] = selectedGroup 
+	const selectedMessages: Message[] = selectedGroup
 		? (groupMessages[selectedGroup.id] || []).slice().sort((a, b) => b.id - a.id)
 		: [];
 
@@ -104,7 +105,7 @@ const GroupsMessagesPage: React.FC = () => {
 			// Vérifier si des messages sont déjà chargés pour ce groupe
 			const existingMessages = groupMessages[selectedGroupId];
 			const hasExistingMessages = existingMessages && existingMessages.length > 0;
-			
+
 			// Réinitialiser l'état pour ce groupe seulement si pas de messages existants
 			if (!hasExistingMessages) {
 				setHasMoreMessages(prev => ({
@@ -133,7 +134,7 @@ const GroupsMessagesPage: React.FC = () => {
 		// Seulement traiter si on a eu un chargement précédent et qu'on n'est pas en train de charger
 		if (previousCount !== undefined && !isLoadingMoreMessages) {
 			const newMessagesReceived = currentCount - previousCount;
-			
+
 			// Si on a reçu moins de 10 nouveaux messages, considérer qu'il n'y en a plus
 			if (newMessagesReceived < 10) {
 				setHasMoreMessages(prev => ({
@@ -425,16 +426,18 @@ const GroupsMessagesPage: React.FC = () => {
 						</button>
 					)
 				) : selectedGroup && selectedGroup.private && (
-					<button
-						title={t('friendPage.tooltips.pongInvite')}
-						className="chat-group-manage-btn chat-group-manage-btn--top-right"
-						onClick={() => {
-							const member = memberGroup(selectedGroup);
-							if (member) testInvitePong(member);
-						}}
-					>
-						<img src="/images/intro/floating-pong.png" alt={t('friendPage.tooltips.pongInvite')} className="w-7 h-7" />
-					</button>
+					<MinSizeGuard minWidth={1500} minHeight={850} hideWhenBlocked={true}>
+						<button
+							title={t('friendPage.tooltips.pongInvite')}
+							className="chat-group-manage-btn chat-group-manage-btn--top-right"
+							onClick={() => {
+								const member = memberGroup(selectedGroup);
+								if (member) testInvitePong(member);
+							}}
+						>
+							<img src="/images/intro/floating-pong.png" alt={t('friendPage.tooltips.pongInvite')} className="w-7 h-7" />
+						</button>
+					</MinSizeGuard>
 				)}
 				<div className="chat-content__header-info">
 					<div className="chat-content__header-details">

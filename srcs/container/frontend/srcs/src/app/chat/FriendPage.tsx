@@ -7,6 +7,7 @@ import { useLanguage } from '../../contexts/LanguageContext';
 import notification from "../components/Notifications";
 import UserProfileModal from '../components/UserProfileModal';
 import { useUserProfileModal } from '../hooks/useUserProfileModal';
+import MinSizeGuard from '../components/MinSizeGuard';
 
 const FriendPage: React.FC = () => {
 	const {
@@ -112,13 +113,15 @@ const FriendPage: React.FC = () => {
 				>
 					<img src="/images/croix.png" alt={t('friendPage.tooltips.remove')} className="w-7 h-7" />
 				</button>
-				<button
-					title={t('friendPage.tooltips.pongInvite')}
-					className="!bg-[#ffffff00] hover:scale-110 !border-none !p-1"
-					onClick={() => testInvitePong(friend)}
-				>
-					<img src="/images/intro/floating-pong.png" alt={t('friendPage.tooltips.pongInvite')} className="w-7 h-7" />
-				</button>
+				<MinSizeGuard minWidth={1500} minHeight={850} hideWhenBlocked={true}>
+					<button
+						title={t('friendPage.tooltips.pongInvite')}
+						className="!bg-[#ffffff00] hover:scale-110 !border-none !p-1"
+						onClick={() => testInvitePong(friend)}
+					>
+						<img src="/images/intro/floating-pong.png" alt={t('friendPage.tooltips.pongInvite')} className="w-7 h-7" />
+					</button>
+				</MinSizeGuard>
 			</div>
 		);
 	}
@@ -192,7 +195,7 @@ const FriendPage: React.FC = () => {
 											{/* Contenu principal */}
 											<div className="flex-1">
 												{/* Pseudo en haut */}
-												<div 
+												<div
 													className="text-white font-semibold text-lg mb-2 text-left clickable-username"
 													onClick={() => openUserProfile(friend.id, friend.username)}
 												>
@@ -246,7 +249,7 @@ const FriendPage: React.FC = () => {
 					)}
 				</fieldset>
 			</div>
-			
+
 			{/* User Profile Modal */}
 			<UserProfileModal
 				isOpen={modalState.isOpen}

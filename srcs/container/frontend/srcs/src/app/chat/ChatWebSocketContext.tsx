@@ -448,8 +448,15 @@ export const ChatWebSocketProvider: React.FC<ChatWebSocketProviderProps> = ({ ch
 					}
 					break;
 				case "MultiInviteConfirm": {
-					// Utiliser la socket qui nous a envoyé ce message - si on reçoit le message, c'est qu'elle fonctionne !
 					const responseSocket = messageSocket || socket || socketRef.current;
+
+					if (window.innerWidth < 1500 || window.innerHeight < 750) {
+						if (!responseSocket) return console.error("No valid WebSocket available to confirm invite");
+						setTimeout(() => {
+							handleRefuseInvite(data.token, responseSocket, true);
+						}, 1000);
+						return;
+					}
 
 					notification.confirm(data.txt)
 						.then((result) => {
@@ -483,7 +490,7 @@ export const ChatWebSocketProvider: React.FC<ChatWebSocketProviderProps> = ({ ch
 					break;
 				case "MultiInviteRefuse":
 				case "MultiInviteCancel":
-					notification.dismissAll();
+					notification.dismissModal();
 					notification.info(data.txt);
 					break;
 				case "pong":
@@ -580,7 +587,7 @@ export const ChatWebSocketProvider: React.FC<ChatWebSocketProviderProps> = ({ ch
 		if (onComplete) {
 			const callbackKey = `loadMessages_${groupId}`;
 			loadMessagesCallbacksRef.current.set(callbackKey, onComplete);
-			
+
 			// Timeout de sécurité après 5 secondes
 			setTimeout(() => {
 				const callback = loadMessagesCallbacksRef.current.get(callbackKey);
@@ -718,11 +725,12 @@ export const ChatWebSocketProvider: React.FC<ChatWebSocketProviderProps> = ({ ch
 		}));
 	}, []);
 
-	const handleRefuseInvite = useCallback((token: string, ws: WebSocket) => {
+	const handleRefuseInvite = useCallback((token: string, ws: WebSocket, errScreenSize: boolean = false) => {
 
 		ws.send(JSON.stringify({
 			action: "MultiInviteRefuse",
 			token: token,
+			errScreenSize: errScreenSize,
 		}));
 	}, []);
 
