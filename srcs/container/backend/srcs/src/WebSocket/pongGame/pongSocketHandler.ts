@@ -122,6 +122,3 @@ export function pongWebSocket(socket: WebSocket, user: User) {
 		}
 	});
 }
-//mise a jour stats nombre de tournois gagner dans la room 
-//mettre a jour la room au fur a mesure que les joueurs gagne les manche
-//gerer si un joueur est deco avant le debut de la partie de detecter et afficher un mess car sinon ca reste sur c est parti en attendant qu il arrive
