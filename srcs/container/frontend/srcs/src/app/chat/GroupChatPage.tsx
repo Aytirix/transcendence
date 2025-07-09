@@ -482,7 +482,25 @@ const GroupsMessagesPage: React.FC = () => {
 	}, [deleteGroup]);
 
 	const ListGroups: React.FC = () => {
-		//const allGroups = sortGroupsByLastActivity(groups);
+		// Trier les groupes par activité récente (dernier message)
+		const sortedGroups = useMemo(() => {
+			return [...groups].sort((a, b) => {
+				const aLastMessage = getLastMessageTime(a.id);
+				const bLastMessage = getLastMessageTime(b.id);
+				
+				// Si aucun des deux n'a de messages, trier par ID décroissant (plus récent créé en premier)
+				if (aLastMessage === 0 && bLastMessage === 0) {
+					return b.id - a.id;
+				}
+				
+				// Si un seul a des messages, celui avec messages en premier
+				if (aLastMessage === 0) return 1;
+				if (bLastMessage === 0) return -1;
+				
+				// Sinon trier par dernier message (plus récent en premier)
+				return bLastMessage - aLastMessage;
+			});
+		}, [groups, getLastMessageTime]);
 		
 		return (
 			<div className="chat-sidebar__list">
@@ -494,7 +512,7 @@ const GroupsMessagesPage: React.FC = () => {
 						<div className="chat-empty-state__text">{t('chat.noGroupsAvailable')}</div>
 					</div>
 				) : (
-					groups.map((g) => {
+					sortedGroups.map((g) => {
 						const isSelected = selectedGroup?.id === g.id;
 						const lastMessageTime = getLastMessageTime(g.id);
 						const isRecentActivity = lastMessageTime && (Date.now() - lastMessageTime) < 5 * 60 * 1000; // 5 minutes
