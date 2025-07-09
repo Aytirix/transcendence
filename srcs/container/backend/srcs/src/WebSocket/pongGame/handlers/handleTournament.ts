@@ -315,8 +315,7 @@ function dispatchMatch(tournament: Tournament) {
 			tournament.waitingWinner[0].winnerTournament = true;
 
 			console.log("envoi du vainqueur dans dispatch", tournament.waitingWinner[0].name)
-			// setTimeout(() => {
-				modelPong.insertStatistic(tournament.waitingWinner[0].id, 1, 1, tournament.waitingWinner[0].mode, tournament.waitingWinner[0].id)
+				modelPong.insertStatistic(tournament.waitingWinner[0].id, 1, 1, tournament.waitingWinner[0].mode, 0)
 				tournament.waitingWinner[0].socket.send(JSON.stringify({type: "WinnerTournament"}))
 				setTimeout(() => {
 					tournament.waitingWinner[0].socket.send(JSON.stringify({type: "data", value: {
@@ -327,15 +326,12 @@ function dispatchMatch(tournament: Tournament) {
 					tournament.waitingWinner[0].inGame = false;
 					tournament.waitingWinner[0].inRoom = false;
 				}, 300)
-				// messageTournament(tournament, "WinnerTournament", `${tournament.waitingWinner[0].name} remporte le tournois`);
 				listTournament.delete(tournament.idTournament);
-			// }, 500)
 			return ;
 		}
 		stockWinner = tournament.waitingWinner[0];
 		tournament.waitingWinner.splice(0, 1);
 		stockWinner.socket.send(JSON.stringify({action: "WinNextManche"}))
-		//preparer pour plus de joueur
 	}
 	for (let i: number = 0; i < tournament.waitingWinner.length; i += 2) {
 		tournament.currentMatch.push({
@@ -365,10 +361,10 @@ function dispatchMatch(tournament: Tournament) {
 }
 
 export function isOnFinishMatch(tournament: Tournament, player1: playerStat, player2: playerStat) {
-	console.log("🎯 Traitement du match terminé entre", player1.name, "et", player2.name);
-	console.log("Résultats :", player1.name, player1.resultMatchTournament, "|", player2.name, player2.resultMatchTournament);
+	let looseId: number = 0;
 	if (player1 && player1.resultMatchTournament === "Win") {
 		tournament.waitingWinner.push(player1);
+		looseId = player2.id
 		player2.inGame = false
 		player2.inRoom = false
 		tournament.listPlayer.delete(player2);
@@ -377,17 +373,14 @@ export function isOnFinishMatch(tournament: Tournament, player1: playerStat, pla
 			player1.inRoom = true;
 			player1.socket.send(JSON.stringify({type: "Win"}))
 		}
-		//penser a exit le looser peux etre
-		//player in game pour winner tjr a true et le perdant a false 
-		//in room a true 
 	}
 	else if (player2 && player2.resultMatchTournament === "Win") {
 
 		tournament.waitingWinner.push(player2);
+		looseId = player1.id
 		player1.inGame = false
 		player1.inRoom = false
 		tournament.listPlayer.delete(player1);
-		//mettre boolean isFinal
 		if (!tournament.isFinal) {
 			player2.inRoom = true;
 			player2.socket.send(JSON.stringify({type: "Win"}))
@@ -402,8 +395,7 @@ export function isOnFinishMatch(tournament: Tournament, player1: playerStat, pla
 
 			console.log("envoi du vainqueur", tournament.waitingWinner[0].name)
 			tournament.waitingWinner[0].id
-			modelPong.insertStatistic(tournament.waitingWinner[0].id, 1, 1, tournament.waitingWinner[0].mode, tournament.waitingWinner[0].id)
-			// setTimeout(() => {
+			modelPong.insertStatistic(tournament.waitingWinner[0].id, 1, 1, tournament.waitingWinner[0].mode, looseId);
 				console.log("ENVOI DU WINNER ", tournament.waitingWinner[0].name)
 				tournament.waitingWinner[0].socket.send(JSON.stringify({type: "WinnerTournament"}))
 				setTimeout(() => {
@@ -415,12 +407,9 @@ export function isOnFinishMatch(tournament: Tournament, player1: playerStat, pla
 					tournament.waitingWinner[0].inGame = false;
 					tournament.waitingWinner[0].inRoom = false;
 				}, 300)
-				// tournament.waitingWinner[0].socket.send(JSON.stringify({action: "WinnerTournament", value: `${tournament.waitingWinner[0].name} remporte le tournois` }))
 				listTournament.delete(tournament.idTournament);
 			// }, 500)
 			return ;
-			//penser a supprimer le tournois de la list ensuite et aussi a supprimer le tournois de la list quand le dernier joueur sort de la file d attente 
-			//penser au nettoyage des perdant nettoyage du gagnant avec un reset des donnees .
 		}
 		tournament.nextManche = true;
 	}
