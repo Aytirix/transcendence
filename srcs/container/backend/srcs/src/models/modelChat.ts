@@ -98,10 +98,6 @@ async function getMessagesFromGroup(
 	);
 	collected = new Map(sortedMessages);
 
-	for (const [id, msg] of collected) {
-		console.log(`Message ID: ${id}, Sender ID: ${msg.sender_id}, Message: ${msg.message}, Sent At: ${msg.sent_at}`);
-	}
-
 	return collected;
 }
 
