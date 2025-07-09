@@ -1,6 +1,6 @@
 // src/GroupsMessagesPage.tsx
 
-import React, { useEffect, useState, useCallback, useRef } from "react";
+import React, { useEffect, useState, useCallback, useRef, useMemo } from "react";
 import { useChatWebSocket } from "./ChatWebSocketContext";
 import { Group, Message } from "./types/chat";
 import ApiService from "../../api/ApiService";
@@ -48,6 +48,11 @@ const GroupsMessagesPage: React.FC = () => {
 	// Sidebar visibility state
 	const [sidebarVisible, setSidebarVisible] = useState(true);
 
+	// Ref pour l'autoscroll
+	const messagesEndRef = useRef<HTMLDivElement>(null);
+	const messagesContainerRef = useRef<HTMLDivElement>(null);
+	const [isLoadingMoreMessages, setIsLoadingMoreMessages] = useState(false);
+
 	// Messages du groupe actuellement sélectionné
 	const selectedMessages: Message[] = selectedGroup ? groupMessages[selectedGroup.id] || [] : [];
 
@@ -80,6 +85,28 @@ const GroupsMessagesPage: React.FC = () => {
 			loadMessages(selectedGroup.id, 0);
 		}
 	}, [selectedGroup, loadMessages]);
+
+	// Autoscroll vers le bas quand de nouveaux messages arrivent
+	useEffect(() => {
+		if (messagesEndRef.current) {
+			messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
+		}
+	}, [selectedMessages]);
+
+	// Fonction pour charger plus de messages
+	const handleLoadMoreMessages = useCallback(() => {
+		if (!selectedGroup || selectedMessages.length === 0 || isLoadingMoreMessages) return;
+		
+		setIsLoadingMoreMessages(true);
+		// Récupérer l'ID du message le plus ancien (le premier dans le tableau trié)
+		const oldestMessageId = selectedMessages[0]?.id;
+		if (oldestMessageId) {
+			loadMessages(selectedGroup.id, oldestMessageId);
+		}
+		
+		// Reset loading state après un délai
+		setTimeout(() => setIsLoadingMoreMessages(false), 1000);
+	}, [selectedGroup, selectedMessages, isLoadingMoreMessages, loadMessages]);
 
 	// Envoyer un message
 	const handleSendMessage = useCallback(() => {
@@ -163,7 +190,20 @@ const GroupsMessagesPage: React.FC = () => {
 
 	const Messages: React.FC = () => {
 		return (
-			<div className="chat-content__messages">
+			<div className="chat-content__messages" ref={messagesContainerRef}>
+				{/* Bouton Load More Messages - uniquement si le premier message a un ID > 1 */}
+				{selectedMessages.length > 0 && selectedMessages[0]?.id > 1 && (
+					<div className="chat-load-more-container">
+						<button
+							className="chat-load-more-btn"
+							onClick={handleLoadMoreMessages}
+							disabled={isLoadingMoreMessages}
+						>
+							{isLoadingMoreMessages ? t('chat.loading') : t('chat.loadMoreMessages')}
+						</button>
+					</div>
+				)}
+
 				{selectedMessages.map((m, idx) => {
 					const isOwnMessage = m.sender_id === currentUserId;
 					const senderName = getNameById(m.sender_id);
@@ -222,6 +262,9 @@ const GroupsMessagesPage: React.FC = () => {
 						</div>
 					);
 				})}
+				
+				{/* Référence pour l'autoscroll */}
+				<div ref={messagesEndRef} />
 			</div>
 		);
 	};
@@ -276,22 +319,22 @@ const GroupsMessagesPage: React.FC = () => {
 		
 		return (
 			<div className="chat-content__header">
+				{/* Group management button for non-private groups where user is owner */}
+				{selectedGroup && !selectedGroup.private && isGroupOwner(selectedGroup) && (
+					<button
+						className="chat-group-manage-btn chat-group-manage-btn--top-right"
+						onClick={() => openGroupManagement(selectedGroup)}
+						title={t('chat.manageGroup')}
+					>
+						⚙️ {t('chat.manage')}
+					</button>
+				)}
 				<div className="chat-content__header-info">
 					<div className="chat-content__header-details">
 						<div className="chat-content__header-name">
 							{selectedGroup ? (selectedGroup.private ? t('chat.discussionWith') : t('chat.groupDiscussion')) : ''}
 							{displayName}
 						</div>
-						{/* Group management button for non-private groups where user is owner */}
-						{selectedGroup && !selectedGroup.private && isGroupOwner(selectedGroup) && (
-							<button
-								className="chat-group-manage-btn"
-								onClick={() => openGroupManagement(selectedGroup)}
-								title={t('chat.manageGroup')}
-							>
-								⚙️ {t('chat.manage')}
-							</button>
-						)}
 						{/* {!selectedGroup?.private && selectedGroup && (
 							<div className="chat-content__header-status">
 								{selectedGroup.members.length > 1 && 
@@ -310,25 +353,25 @@ const GroupsMessagesPage: React.FC = () => {
 					</div>
 				</div>
 				{/* Section des membres */}
-                {selectedGroup && selectedGroup.members.length > 0 && (
-                    <div className="chat-content__header-online">
-                        <div className="chat-content__header-online-list">
-                            {selectedGroup.members.map((member) => {
-                                const isOnline = selectedGroup.onlines_id?.includes(member.id) || false;
-                                return (
-                                    <div 
-                                        key={member.id} 
-                                        className={`chat-content__header-online-member ${isOnline ? 'chat-content__header-online-member--online' : 'chat-content__header-online-member--offline'}`}
-                                    >
-                                        <span className="chat-content__header-online-name">
-                                            {member.username}
-                                        </span>
-                                    </div>
-                                );
-                            })}
-                        </div>
-                    </div>
-                )}
+				{selectedGroup && selectedGroup.members.length > 0 && (
+					<div className="chat-content__header-online">
+						<div className="chat-content__header-online-list">
+							{selectedGroup.members.map((member) => {
+								const isOnline = selectedGroup.onlines_id?.includes(member.id) || false;
+								return (
+									<div 
+										key={member.id} 
+										className={`chat-content__header-online-member ${isOnline ? 'chat-content__header-online-member--online' : 'chat-content__header-online-member--offline'}`}
+									>
+										<span className="chat-content__header-online-name">
+											{member.username}
+										</span>
+									</div>
+								);
+							})}
+						</div>
+					</div>
+				)}
 			</div>
 		)
 	}
@@ -646,92 +689,95 @@ const GroupsMessagesPage: React.FC = () => {
 			</div>
 
 			{/* Group Management Modal */}
-			{showGroupManagement && managingGroup && (
-				<div className="chat-modal-overlay" onClick={closeGroupManagement}>
-					<div className="chat-modal" onClick={(e) => e.stopPropagation()}>
-						<div className="chat-modal__header">
-							<h3>{t('chat.manageGroup')}: {managingGroup.name}</h3>
-							<button className="chat-modal__close" onClick={closeGroupManagement}>
-								×
-							</button>
-						</div>
+			{showGroupManagement && managingGroup && (() => {
+				// Obtenir la version à jour du groupe depuis le contexte
+				const currentGroup = groups.find(g => g.id === managingGroup.id);
+				if (!currentGroup) return null;
 
-						<div className="chat-modal__content">
-							{/* Current Members Section */}
-							<div className="chat-group-management-section">
-								<h4>{t('chat.currentMembers')} ({managingGroup.members.length})</h4>
-								<div className="chat-group-members-list">
-									{managingGroup.members.map(member => (
-										<div key={member.id} className="chat-group-member-item">
-											<div className="chat-group-member-info">
-												<div className="chat-friend-avatar-small">
-													<img 
-														src={ApiService.getFile(member.avatar)} 
-														alt={member.username}
-														onError={(e) => {
-															(e.target as HTMLImageElement).src = ApiService.getFile(null);
-														}}
-													/>
-												</div>
-												<span>{member.username}</span>
-												{managingGroup.owners_id.includes(member.id) && (
-													<span className="chat-owner-badge">👑</span>
-												)}
-											</div>
-											{/* Only show remove button if it's not the current user and not an owner */}
-											{member.id !== currentUserId && !managingGroup.owners_id.includes(member.id) && (
-												<button
-													className="chat-remove-member-btn"
-													onClick={() => handleRemoveUserFromGroup(managingGroup.id, member.id)}
-													title={t('chat.removeMember')}
-												>
-													🗑️
-												</button>
-											)}
-										</div>
-									))}
-								</div>
-							</div>
+				return (
+					<div className="chat-modal-overlay" onClick={closeGroupManagement}>
+						<div className="chat-modal" onClick={(e) => e.stopPropagation()}>
 
-							{/* Add Members Section */}
-							<div className="chat-group-management-section">
-								<h4>{t('chat.addMembers')}</h4>
-								<div className="chat-add-members-list">
-									{getAvailableFriendsForGroup(managingGroup).length === 0 ? (
-										<div className="chat-no-available-friends">
-											{t('chat.noFriendsToAdd')}
-										</div>
-									) : (
-										getAvailableFriendsForGroup(managingGroup).map(friend => (
-											<div key={friend.id} className="chat-group-member-item">
+							<div className="chat-modal__content">
+								{/* Current Members Section */}
+								<button className="chat-modal__close" onClick={closeGroupManagement}>
+									×
+								</button>
+								<div className="chat-group-management-section">
+									<h4>{t('chat.currentMembers')} ({currentGroup.members.length})</h4>
+									<div className="chat-group-members-list">
+										{currentGroup.members.map(member => (
+											<div key={member.id} className="chat-group-member-item">
 												<div className="chat-group-member-info">
 													<div className="chat-friend-avatar-small">
 														<img 
-															src={ApiService.getFile(friend.avatar)} 
-															alt={friend.username}
+															src={ApiService.getFile(member.avatar)} 
+															alt={member.username}
 															onError={(e) => {
 																(e.target as HTMLImageElement).src = ApiService.getFile(null);
 															}}
 														/>
 													</div>
-													<span>{friend.username}</span>
+													<span>{member.username}</span>
+													{currentGroup.owners_id.includes(member.id) && (
+														<span className="chat-owner-badge">👑</span>
+													)}
 												</div>
-												<button
-													className="chat-add-member-btn"
-													onClick={() => handleAddUserToGroup(managingGroup.id, friend.id)}
-													title={t('chat.addMember')}
-												>
-													➕
-												</button>
+												{/* Only show remove button if it's not the current user and not an owner */}
+												{member.id !== currentUserId && !currentGroup.owners_id.includes(member.id) && (
+													<button
+														className="chat-remove-member-btn"
+														onClick={() => handleRemoveUserFromGroup(currentGroup.id, member.id)}
+														title={t('chat.removeMember')}
+													>
+														🗑️
+													</button>
+												)}
 											</div>
-										))
-									)}
+										))}
+									</div>
+								</div>
+
+								{/* Add Members Section */}
+								<div className="chat-group-management-section">
+									<h4>{t('chat.addMembers')}</h4>
+									<div className="chat-add-members-list">
+										{getAvailableFriendsForGroup(currentGroup).length === 0 ? (
+											<div className="chat-no-available-friends">
+												{t('chat.noFriendsToAdd')}
+											</div>
+										) : (
+											getAvailableFriendsForGroup(currentGroup).map(friend => (
+												<div key={friend.id} className="chat-group-member-item">
+													<div className="chat-group-member-info">
+														<div className="chat-friend-avatar-small">
+															<img 
+																src={ApiService.getFile(friend.avatar)} 
+																alt={friend.username}
+																onError={(e) => {
+																	(e.target as HTMLImageElement).src = ApiService.getFile(null);
+																}}
+															/>
+														</div>
+														<span>{friend.username}</span>
+													</div>
+													<button
+														className="chat-add-member-btn"
+														onClick={() => handleAddUserToGroup(currentGroup.id, friend.id)}
+														title={t('chat.addMember')}
+													>
+														➕
+													</button>
+												</div>
+											))
+										)}
+									</div>
 								</div>
 							</div>
 						</div>
 					</div>
-				</div>
-			)}
+				);
+			})()}
 		</div>
 	);
 };

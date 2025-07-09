@@ -272,6 +272,7 @@
 	},
 	"chat": {
 		"title": "Chat",
+		"loading": "Loading...",
 		"sendMessage": "Send message",
 		"messagePlaceholder": "Type your message...",
 		"send": "Send",
@@ -328,7 +329,8 @@
 		"addMembers": "Add Members",
 		"noFriendsToAdd": "No friends available to add",
 		"removeMember": "Remove member",
-		"addMember": "Add member"
+		"addMember": "Add member",
+		"loadMoreMessages": "Load More Messages"
 	},
 	"common": {
 		"loading": "Loading...",

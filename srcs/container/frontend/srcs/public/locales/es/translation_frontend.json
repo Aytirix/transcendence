@@ -271,6 +271,7 @@
 	},
 	"chat": {
 		"title": "Chat",
+		"loading": "Cargando...",
 		"sendMessage": "Enviar mensaje",
 		"messagePlaceholder": "Escribe tu mensaje...",
 		"send": "Enviar",
@@ -327,7 +328,8 @@
 		"addMembers": "Añadir miembros",
 		"noFriendsToAdd": "No hay amigos disponibles para añadir",
 		"removeMember": "Eliminar miembro",
-		"addMember": "Añadir miembro"
+		"addMember": "Añadir miembro",
+		"loadMoreMessages": "Cargar más mensajes"
 	},
 	"common": {
 		"loading": "Cargando...",

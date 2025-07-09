@@ -20,7 +20,7 @@
 	height: 100vh;
 	overflow: auto;
 	font-family: 'Press Start 2P', cursive;
-	padding: 20px;
+	padding: 18px;
 
 	.modal-overlay {
 		position: fixed;
@@ -45,7 +45,7 @@
 
 			h3 {
 				color: #FFEE00;
-				font-size: 1.2rem;
+				font-size: 1rem;
 				margin-bottom: 20px;
 				text-align: center;
 			}
@@ -57,7 +57,7 @@
 				background: #374151;
 				color: white;
 				border-radius: 6px;
-				font-size: 1rem;
+				font-size: 0.7rem;
 				margin-bottom: 10px;
 
 				&:focus {
@@ -73,7 +73,7 @@
 				color: white;
 				border: none;
 				border-radius: 6px;
-				font-size: 1rem;
+				font-size: 0.9rem;
 				cursor: pointer;
 				margin-top: 10px;
 
@@ -84,20 +84,21 @@
 
 			.error_name {
 				color: #ef4444;
-				font-size: 0.8rem;
+				font-size: 0.6rem;
 				margin-top: 5px;
 			}
 		}
 	}
 		
 	.map-name {
+		width: 260px;
 		display: flex;
 		flex-direction: column;
 		align-items: center;
 		z-index: 10;
 		justify-content: center;
-		border-radius: 15px;
-		padding: 20px;
+		border-radius: 10px;
+		padding: 12px;
 		border: 2px solid rgba(#0066ff, 0.4);
 		box-shadow: 
 		0 8px 32px rgba(0, 0, 0, 0.3),
@@ -105,8 +106,8 @@
 		position: relative;
 		
 		label {
-			font-size: 0.9rem;
-			margin: 10px;
+			font-size: 0.7rem;
+			margin: 6px;
 			color: #FFEE00;
 		}
 		
@@ -116,9 +117,9 @@
 			background-color: #374151;
 			border: 2px solid rgba(#0066ff, 0.6);
 			color: white;
-			padding: 10px 16px;
-			border-radius: 10px;
-			font-size: 0.9rem;
+			padding: 8px 12px;
+			border-radius: 8px;
+			font-size: 0.5rem;
 			font-family: inherit;
 			
 			&:focus {
@@ -147,11 +148,11 @@
 		
 	h2 {
 		text-align: center;
-		font-size: 2rem;
-		margin: 20px auto 30px auto;
-		letter-spacing: 2px;
+		font-size: 1.5rem;
+		margin: 0 auto 30px auto;
+		letter-spacing: 1px;
 		z-index: 20;
-		padding: 20px 30px;
+		padding: 12px 30px;
 		border-radius: 15px;
 		border: 2px solid #FFEE00;
 		color: #FFEE00;
@@ -173,7 +174,7 @@
 			left: -2px;
 			right: -2px;
 			bottom: -2px;
-			border-radius: 15px;
+			border-radius: 10px;
 			z-index: -1;
 			opacity: 0.3;
 		}
@@ -194,14 +195,14 @@
 		.toolbar {
 			display: flex;
 			flex-direction: column;
-			gap: 15px;
-			margin-top: 20px;
+			gap: 10px;
+			margin-top: 15px;
 			width: 100%;
-			max-width: 900px;
+			max-width: 800px;
 			justify-content: center;
-			padding: 20px 30px;
+			padding: 15px 20px;
 			//background: linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(51, 65, 85, 0.8) 100%);
-			border-radius: 15px;
+			border-radius: 10px;
 			border: 2px solid rgba(#0066ff, 0.4);
 			backdrop-filter: blur(10px);
 			box-shadow: 
@@ -211,16 +212,16 @@
 			.tool-group {
 				display: flex;
 				flex-direction: column;
-				gap: 12px;
+				gap: 8px;
 				
 				button {
 					background: #374151;
 					color: white;
 					border: 2px solid #475569;
-					border-radius: 6px;
-					padding: 8px 16px;
+					border-radius: 5px;
+					padding: 6px 12px;
 					font-family: inherit;
-					font-size: 0.8rem;
+					font-size: 0.6rem;
 					cursor: pointer;
 					transition: all 0.2s ease;
 					width: 100%;
@@ -253,13 +254,13 @@
 	
 	// Layout components améliorés
 	.left-panel {
-		width: 280px;
+		width: 260px;
 		flex-shrink: 0;
 		z-index: 10;
 		//background: linear-gradient(135deg, rgba(30, 41, 59, 0.9) 0%, rgba(51, 65, 85, 0.9) 100%);
 		border-radius: 15px;
 		border: 2px solid rgba(#0066ff, 0.4);
-		padding: 20px;
+		padding: 15px;
 		backdrop-filter: blur(10px);
 		box-shadow: 
 		0 10px 40px rgba(0, 0, 0, 0.3),
@@ -280,41 +281,41 @@
 		align-items: flex-start;
 		gap: 30px;
 		width: 100%;
-		max-width: 1200px;
-		margin: 0 auto 30px auto;
+		max-width: 1000px;
+		margin: 0 auto 20px auto;
 	}
 	
 	// Tile selector amélioré
 	.tile-selector {
 		display: grid;
 		grid-template-columns: repeat(3, 1fr);
-		gap: 10px;
+		gap: 6px;
 		max-height: 600px;
-		padding-right: 8px;
+		padding-right: 6px;
 		
 		// Scrollbar personnalisée
 		&::-webkit-scrollbar {
-			width: 8px;
+			width: 6px;
 		}
 		
 		&::-webkit-scrollbar-track {
 			background: rgba(0, 0, 0, 0.2);
-			border-radius: 4px;
+			border-radius: 3px;
 		}
 		
 		&::-webkit-scrollbar-thumb {
-			border-radius: 4px;
+			border-radius: 3px;
 			transition: all 0.3s ease;
 		}
 		
 		.tile-option {
-			padding: 12px;
+			padding: 8px;
 			display: flex;
 			flex-direction: column;
 			align-items: center;
 			cursor: pointer;
 			border: 2px solid transparent;
-			border-radius: 12px;
+			border-radius: 8px;
 			transition: all 0.3s ease;
 			background: linear-gradient(135deg, rgba(51, 65, 85, 0.6) 0%, rgba(71, 85, 105, 0.6) 100%);
 			backdrop-filter: blur(5px);
@@ -323,17 +324,17 @@
 			
 			&:hover {
 				background: linear-gradient(135deg, rgba(71, 85, 105, 0.8) 0%, rgba(100, 116, 139, 0.8) 100%);
-				transform: translateY(-2px);
-				box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+				transform: translateY(-1px);
+				box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
 			}
 			
 			&.selected {
 				border-color: #FFEE00;
 				background: linear-gradient(135deg, rgba(#FFEE00, 0.2) 0%, rgba(#FFEE00, 0.1) 100%);
 				box-shadow: 
-				0 0 20px rgba(#FFEE00, 0.3),
-				0 8px 25px rgba(0, 0, 0, 0.3);
-				transform: translateY(-2px);
+				0 0 15px rgba(#FFEE00, 0.3),
+				0 4px 15px rgba(0, 0, 0, 0.3);
+				transform: translateY(-1px);
 			}
 			.tile {
 				width: 24px;
@@ -359,15 +360,15 @@
 				}
 				
 				.dot {
-					@include dot-style(7px, #ffeb3b);
+					@include dot-style(5px, #ffeb3b);
 					@include local-center-absolute;
-					box-shadow: 0 0 8px rgba(#ffeb3b, 0.6);
+					box-shadow: 0 0 6px rgba(#ffeb3b, 0.6);
 				}
 				
 				.big-dot {
-					@include dot-style(12px, #ffeb3b);
+					@include dot-style(9px, #ffeb3b);
 					@include local-center-absolute;
-					box-shadow: 0 0 15px rgba(#ffeb3b, 0.8);
+					box-shadow: 0 0 12px rgba(#ffeb3b, 0.8);
 					animation: pulse 2s infinite;
 				}
 				
@@ -393,7 +394,7 @@
 					align-items: center;
 					color: #00ccff;
 					font-weight: bold;
-					font-size: 11px;
+					font-size: 9px;
 					background: linear-gradient(135deg, rgba(#00ccff, 0.2) 0%, rgba(#0099cc, 0.2) 100%);
 					box-shadow: 
 					0 0 15px rgba(#00ccff, 0.5),
@@ -408,9 +409,9 @@
 					justify-content: center;
 					align-items: center;
 					font-weight: bold;
-					font-size: 14px;
+					font-size: 10px;
 					border-radius: 50%;
-					box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+					box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
 					position: relative;
 					
 					&.spawn-pacman {
@@ -441,13 +442,13 @@
 			}
 			
 			span {
-				font-size: 0.7rem;
+				font-size: 0.45rem;
 				text-align: center;
 				overflow: hidden;
 				color: #e5e7eb;
 				font-weight: 600;
 				text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
-				margin-top: 4px;
+				margin-top: 3px;
 			}
 		}
 	}
@@ -474,18 +475,12 @@
 				justify-content: center;
 				align-items: center;
 				position: relative;
-				width: 24px;
-				height: 24px;
+				width: 25px;
+				height: 25px;
 				cursor: pointer;
 				transition: all 0.2s ease;
 				background: linear-gradient(135deg, #111 0%, #222 100%);
-				
-				/* &:hover {
-					background: linear-gradient(135deg, #333 0%, #444 100%);
-					transform: scale(1.05);
-					z-index: 10;
-					box-shadow: 0 0 15px rgba(#FFEE00, 0.5);
-				} */
+
 				
 				&.wall {
 					background: linear-gradient(135deg, #0066ff 0%, #0052cc 100%);
@@ -496,59 +491,58 @@
 				}
 				
 				.dot {
-					@include dot-style(4px, #ffeb3b);
+					@include dot-style(3px, #ffeb3b);
 				}
 				
 				.big-dot {
-					@include dot-style(7px, #ffeb3b);
+					@include dot-style(5px, #ffeb3b);
 					animation: pulse 2s infinite;
 				}
 				
 				.door-line {
 					width: 80%;
-					height: 4px;
+					height: 3px;
 					background: linear-gradient(90deg, #ffd700 0%, #ffeb3b 100%);
 					border-radius: 2px;
-					box-shadow: 0 0 10px rgba(#ffd700, 0.7);
+					box-shadow: 0 0 8px rgba(#ffd700, 0.7);
 				}
 				
-			}
-			.spawn-pacman {
-				font-size: 10px;
-				color: black;
-				background: linear-gradient(135deg, #ffeb3b 0%, #ffc107 100%);
-			}
-			.spawn-blinky {
-				font-size: 10px;
-				color: white;
-				background: linear-gradient(135deg, #f44336 0%, #d32f2f 100%);
-			}
-			.spawn-inky {
-				font-size: 10px;
-				color: white;
-				background: linear-gradient(135deg, #2196f3 0%, #1976d2 100%);
-			}
-			.spawn-pinky {
-				font-size: 10px;
-				color: white;
-				background: linear-gradient(135deg, #e38ada 0%, #ca3eca 100%);
-			}
-			.spawn-clyde {
-				font-size: 10px;
-				color: white;
-				background: linear-gradient(135deg, #ff9800 0%, #be6002 100%);
-			}
+			}		.spawn-pacman {
+			font-size: 8px;
+			color: black;
+			background: linear-gradient(135deg, #ffeb3b 0%, #ffc107 100%);
+		}
+		.spawn-blinky {
+			font-size: 8px;
+			color: white;
+			background: linear-gradient(135deg, #f44336 0%, #d32f2f 100%);
+		}
+		.spawn-inky {
+			font-size: 8px;
+			color: white;
+			background: linear-gradient(135deg, #2196f3 0%, #1976d2 100%);
+		}
+		.spawn-pinky {
+			font-size: 8px;
+			color: white;
+			background: linear-gradient(135deg, #e38ada 0%, #ca3eca 100%);
+		}
+		.spawn-clyde {
+			font-size: 8px;
+			color: white;
+			background: linear-gradient(135deg, #ff9800 0%, #be6002 100%);
+		}
 		}
 	}
 	.map-console {
 		width: 100%;
-		max-width: 1200px;
-		min-height: 200px;
-		max-height: 500px;
+		max-width: 1000px;
+		min-height: 150px;
+		max-height: 400px;
 		z-index: 10;
 		background: linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(51, 65, 85) 100%);
-		padding: 20px;
-		border-radius: 15px;
+		padding: 15px;
+		border-radius: 10px;
 		border: 2px solid rgba(#3b82f6, 0.6);
 		box-shadow: 
 		0 15px 50px rgba(0, 0, 0, 0.4),
@@ -557,8 +551,8 @@
 
 		h3 {
 			color: #60a5fa;
-			font-size: 1.1rem;
-			margin-bottom: 20px;
+			font-size: 0.7rem;
+			margin-bottom: 10px;
 			font-family: 'Press Start 2P', cursive;
 			text-shadow: 
 			0 0 15px rgba(#60a5fa, 0.7),
@@ -568,31 +562,30 @@
 		}
 		.console-output {
 			background: #000;
+			border-radius: 15px;
 		}
 		.console-error {
 			background: linear-gradient(135deg, rgba(239, 68, 68, 0.1) 0%, rgba(220, 38, 38, 0.15) 100%);
 			padding: 15px 20px;
-			margin-bottom: 15px;
+			border-radius: 5px;
 			overflow-y: auto;
-			max-height: 200px;
+			max-height: 150px;
 			position: relative;
-			border-radius: 5;
+			border-radius: 15px;
 			
 			
 			.error-header {
 				font-weight: bold;
-				margin-bottom: 12px;
+				margin-bottom: 7px;
 				color: #f56969;
-				font-size: 1rem;
+				font-size: 0.8rem;
 				text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
 			}
 			
 			.error-item {
-				padding: 6px 0;
 				color: #f56969;
-				font-size: 0.9rem;
+				font-size: 0.7rem;
 				position: relative;
-				padding-left: 20px;
 			}
 			
 			// Scrollbar personnalisée pour les erreurs
@@ -637,7 +630,7 @@
 			.error-item {
 				padding: 6px 0;
 				color: #22c55e;
-				font-size: 0.9rem;
+				font-size: 0.7rem;
 				position: relative;
 				padding-left: 20px;
 			}
@@ -660,6 +653,32 @@
 				&:hover {
 					background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
 				}
+			}
+		}
+
+		.console-info {
+			background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(37, 99, 235, 0.15) 100%);
+			padding: 15px 20px;
+			margin-bottom: 15px;
+			overflow-y: auto;
+			max-height: 200px;
+			position: relative;
+			border-radius: 5px;
+			
+			.error-header {
+				font-weight: bold;
+				margin-bottom: 12px;
+				color: #3b82f6;
+				font-size: 1rem;
+				text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+			}
+			
+			.error-item {
+				padding: 6px 0;
+				color: #3b82f6;
+				font-size: 0.7rem;
+				position: relative;
+				padding-left: 20px;
 			}
 		}
 	}
