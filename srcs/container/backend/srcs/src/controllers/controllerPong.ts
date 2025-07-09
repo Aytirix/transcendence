@@ -27,7 +27,7 @@ const cleanExpiredThrottleEntries = () => {
 };
 
 function getStatsMode(match: "Solo" | "Tournament" | "Multi" | "MultiInvite", statUserData: userStatsPong, statuser: any[]) {
-	if (match ===  "MultiInvite") //Pour regrouper dans multi
+	if (match === "MultiInvite") //Pour regrouper dans multi
 		match = "Multi";
 	for (const data of statuser) {
 		if (data.game_mode === "MultiInvite") //Pour regrouper dans multi
@@ -107,8 +107,8 @@ export function getFiveLastMatch(statuser: any[], statUserData: userStatsPong) {
 
 
 export const getStatForPlayer = async (request: FastifyRequest, reply: FastifyReply) => {
-	
-		let statUserData: userStatsPong = {
+
+	let statUserData: userStatsPong = {
 		total: {
 			victoire: 0,
 			defaite: 0,
@@ -361,6 +361,7 @@ export const confirmInvite = async (ws: WebSocket, user: User, state: State, tex
 
 export const refuseInvite = async (ws: WebSocket, user: User, state: State, text: reponse) => {
 	const { token } = text as unknown as { token: string };
+	const { errScreenSize } = text as unknown as { errScreenSize?: boolean };
 	if (!token) {
 		ws.send(JSON.stringify({ action: 'error', result: 'error', notification: [ws.i18n.t('pong.invitePlayer.tokenMissing')] }));
 		return;
@@ -399,6 +400,14 @@ export const refuseInvite = async (ws: WebSocket, user: User, state: State, text
 	}
 
 	await modelPong.deleteTokenInvite(data.userId, data.friendId);
+
+	if (errScreenSize) {
+		friendSocket.send(JSON.stringify({
+			action: 'MultiInviteRefuse',
+			txt: friendSocket.i18n.t('pong.invitePlayer.minScreenSize', { username: user.username }),
+		}));
+		return;
+	}
 
 	friendSocket.send(JSON.stringify({
 		action: 'MultiInviteRefuse',

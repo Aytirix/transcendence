@@ -272,6 +272,7 @@
 	},
 	"pong": {
 		"invitePlayer": {
+			"minScreenSize": "Your friend must have a screen resolution of at least 1500x850 to play Pong.",
 			"idRequired": "Please specify the user ID",
 			"invalidId": "User ID must be a valid number.",
 			"friendId": "Friend ID to invite",
