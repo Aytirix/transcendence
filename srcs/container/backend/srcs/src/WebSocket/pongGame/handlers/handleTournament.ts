@@ -36,18 +36,12 @@ export function handleTournament(playerInfos: playerStat, msg: webMsg) {
 		if (!game) return;
 		if (game.getPlayer1().getPlayerInfos().id === playerInfos.id) {
 			game.setPlayer1Ready(true);
-			// game.getPlayer1().getPlayerInfos().socket.send(JSON.stringify({ type: "assign", value: "p1" }))
-			// game.getPlayer1().getPlayerInfos().socket.send(JSON.stringify({ type: "Pause" }))
 		} else if (game.getPlayer2().getPlayerInfos().id === playerInfos.id) {
 			game.setPlayer2Ready(true);
-			// game.getPlayer2().getPlayerInfos().socket.send(JSON.stringify({ type: "assign", value: "p2" }))
-			// game.getPlayer2().getPlayerInfos().socket.send(JSON.stringify({ type: "Pause" }))
 		}
 		if (game.getPlayer1Ready() && game.getPlayer2Ready()) {
 			game.setStatus("PLAYING");
-			// setTimeout(() => {
 				game.start();
-			// }, 3000)
 		}
 	}
 	else if (msg.action === "readyToNext") {
@@ -65,11 +59,11 @@ function quitTournament(playerInfos: playerStat) {
 		if (id === playerInfos.idTournament) {
 			const idx = tournament.waitingWinner.indexOf(playerInfos);
 			if (idx !== -1) {
-				tournament.waitingWinner.splice(idx, 1); // je supprime un element a l index donne
+				tournament.waitingWinner.splice(idx, 1);
 				for (let i : number = 0; i < tournament.currentMatch.length; i++) {
 					const match = tournament.currentMatch[i];
 					if (match.player1.id === playerInfos.id || match.player2.id === playerInfos.id) {
-						tournament.currentMatch.splice(i, 1); // je supprime le match à l’index i
+						tournament.currentMatch.splice(i, 1);
 						break;
 					}
 				}
@@ -163,7 +157,6 @@ async function updateTournament() {
 			value: []
 		};
 
-		// mise a jour du fichier json pour envoi a tout les players
 		for (const [id, tournament] of listTournament) {
 			let listPlayerTemp: Array<any> = [];
 			for (const player of tournament.listPlayer) {
@@ -209,7 +202,6 @@ function startTournament(id: number, tournament: Tournament) {
 	randomMatch(tournament);
 	displayTournament(tournament);
 	createMatchPairs(tournament);
-	//avant de passer a la manche suivante redisplay et afficher gagnant perdant 
 }
 
 function messageTournament(tournament: Tournament, action: string, message: string) {
@@ -314,9 +306,7 @@ function dispatchMatch(tournament: Tournament) {
 
 			tournament.waitingWinner[0].winnerTournament = true;
 
-			console.log("envoi du vainqueur dans dispatch", tournament.waitingWinner[0].name)
-			// setTimeout(() => {
-				modelPong.insertStatistic(tournament.waitingWinner[0].id, 1, 1, tournament.waitingWinner[0].mode, tournament.waitingWinner[0].id)
+				modelPong.insertStatistic(tournament.waitingWinner[0].id, 1, 1, tournament.waitingWinner[0].mode, 0)
 				tournament.waitingWinner[0].socket.send(JSON.stringify({type: "WinnerTournament"}))
 				setTimeout(() => {
 					tournament.waitingWinner[0].socket.send(JSON.stringify({type: "data", value: {
@@ -327,15 +317,12 @@ function dispatchMatch(tournament: Tournament) {
 					tournament.waitingWinner[0].inGame = false;
 					tournament.waitingWinner[0].inRoom = false;
 				}, 300)
-				// messageTournament(tournament, "WinnerTournament", `${tournament.waitingWinner[0].name} remporte le tournois`);
 				listTournament.delete(tournament.idTournament);
-			// }, 500)
 			return ;
 		}
 		stockWinner = tournament.waitingWinner[0];
 		tournament.waitingWinner.splice(0, 1);
 		stockWinner.socket.send(JSON.stringify({action: "WinNextManche"}))
-		//preparer pour plus de joueur
 	}
 	for (let i: number = 0; i < tournament.waitingWinner.length; i += 2) {
 		tournament.currentMatch.push({
@@ -357,18 +344,16 @@ function dispatchMatch(tournament: Tournament) {
 			player2: tournament.waitingWinner[0]
 		});
 	}
-	//voir comment gerer ca current
-	console.log(tournament.currentMatch)
 	messageTournament(tournament, "Start", "nouvelle Manche");
 	displayTournament(tournament);
 	createMatchPairs(tournament);
 }
 
 export function isOnFinishMatch(tournament: Tournament, player1: playerStat, player2: playerStat) {
-	console.log("🎯 Traitement du match terminé entre", player1.name, "et", player2.name);
-	console.log("Résultats :", player1.name, player1.resultMatchTournament, "|", player2.name, player2.resultMatchTournament);
+	let looseId: number = 0;
 	if (player1 && player1.resultMatchTournament === "Win") {
 		tournament.waitingWinner.push(player1);
+		looseId = player2.id
 		player2.inGame = false
 		player2.inRoom = false
 		tournament.listPlayer.delete(player2);
@@ -377,17 +362,14 @@ export function isOnFinishMatch(tournament: Tournament, player1: playerStat, pla
 			player1.inRoom = true;
 			player1.socket.send(JSON.stringify({type: "Win"}))
 		}
-		//penser a exit le looser peux etre
-		//player in game pour winner tjr a true et le perdant a false 
-		//in room a true 
 	}
 	else if (player2 && player2.resultMatchTournament === "Win") {
 
 		tournament.waitingWinner.push(player2);
+		looseId = player1.id
 		player1.inGame = false
 		player1.inRoom = false
 		tournament.listPlayer.delete(player1);
-		//mettre boolean isFinal
 		if (!tournament.isFinal) {
 			player2.inRoom = true;
 			player2.socket.send(JSON.stringify({type: "Win"}))
@@ -400,11 +382,7 @@ export function isOnFinishMatch(tournament: Tournament, player1: playerStat, pla
 
 			tournament.waitingWinner[0].winnerTournament = true;
 
-			console.log("envoi du vainqueur", tournament.waitingWinner[0].name)
-			tournament.waitingWinner[0].id
-			modelPong.insertStatistic(tournament.waitingWinner[0].id, 1, 1, tournament.waitingWinner[0].mode, tournament.waitingWinner[0].id)
-			// setTimeout(() => {
-				console.log("ENVOI DU WINNER ", tournament.waitingWinner[0].name)
+			modelPong.insertStatistic(tournament.waitingWinner[0].id, 1, 1, tournament.waitingWinner[0].mode, looseId);
 				tournament.waitingWinner[0].socket.send(JSON.stringify({type: "WinnerTournament"}))
 				setTimeout(() => {
 					tournament.waitingWinner[0].socket.send(JSON.stringify({type: "data", value: {
@@ -415,12 +393,8 @@ export function isOnFinishMatch(tournament: Tournament, player1: playerStat, pla
 					tournament.waitingWinner[0].inGame = false;
 					tournament.waitingWinner[0].inRoom = false;
 				}, 300)
-				// tournament.waitingWinner[0].socket.send(JSON.stringify({action: "WinnerTournament", value: `${tournament.waitingWinner[0].name} remporte le tournois` }))
 				listTournament.delete(tournament.idTournament);
-			// }, 500)
 			return ;
-			//penser a supprimer le tournois de la list ensuite et aussi a supprimer le tournois de la list quand le dernier joueur sort de la file d attente 
-			//penser au nettoyage des perdant nettoyage du gagnant avec un reset des donnees .
 		}
 		tournament.nextManche = true;
 	}
@@ -456,7 +430,6 @@ async function actualiseDisplay(playerinfos: playerStat) {
 			action: "LIST_RESPONSE",
 			value: []
 		};
-	//mise a jour du fichier json pour envoi a tout les players
 	for (const [id, tournament] of listTournament) {
 		let listPlayerTemp: Array<any> = [];
 			for (const player of tournament.listPlayer) {

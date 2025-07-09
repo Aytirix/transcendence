@@ -4,8 +4,8 @@ import { Ai } from "./pongAi/qLearning";
 
 export class Paddle {
 	constructor (
-		public pos_x: number, //20
-		public pos_y: number, // 250
+		public pos_x: number,
+		public pos_y: number,
 		
 		private playerInfos?: playerStat,
 		private ai?: Ai,
@@ -18,18 +18,17 @@ export class Paddle {
 
 	) {}
 	move(cmd: string): void {
-		// console.log(cmd)
 		switch (cmd) {
 		case "up" :
 			if (this.pos_y >= 3) {
 				for (let i: number = 0; i < 16; i++)
-					this.pos_y -= 0.5; // vitesse max 8
+					this.pos_y -= 0.5;
 			}
 			break;
 		case "down" :
 			if (this.pos_y + this.height <= 600) {
 				for (let i: number = 0; i < 16; i++)
-					this.pos_y += 0.5; //vitesse max 8
+					this.pos_y += 0.5;
 			}
 			break;
 		case "center" :

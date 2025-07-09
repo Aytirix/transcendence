@@ -78,7 +78,6 @@ const MultiPlayersInvite: React.FC = () => {
 	}
 		, [socketRef.current]);
 
-	// Initialisation Babylon + WebSocket
 	useEffect(() => {
 		const canvas = canvasRef.current;
 		if (!canvas) return;
@@ -87,12 +86,10 @@ const MultiPlayersInvite: React.FC = () => {
 		socketRef.current = socket;
 
 		if (reconnection) {
-			console.log("reco :", reconnection);
 			if (reconnection === "MultiPlayersInvite") {
 				setIscinematic(true);
 				setStartReco(true);
 				setIsPause(true);
-				console.log("reconnection")
 			}
 			else {
 				localStorage.removeItem("reconnection")
@@ -149,7 +146,6 @@ const MultiPlayersInvite: React.FC = () => {
 
 			}
 			if (data.type === "Pause") {
-				console.log(`pause = ${isPause}`)
 				setIsPause(data.value);
 				if (data.message) {
 					if (data.message === "Press [ ESP ] for PLAY")
@@ -179,7 +175,6 @@ const MultiPlayersInvite: React.FC = () => {
 			if (data.type === "FINISHED") {
 				localStorage.removeItem("reconnection");
 				localStorage.removeItem("data");
-				console.log(data.value)
 				if (data.value === "win") {
 					if (assignPlayer.current === "p1")
 						nameWinner.current = namePlayer1!.current
@@ -199,7 +194,7 @@ const MultiPlayersInvite: React.FC = () => {
 				camera!.current!.position.z = -481.417;
 				camera!.current!.rotation.x = 0.280;
 				camera!.current!.rotation.y = -0.561;
-				socket.close(); //ici
+				socket.close();
 			}
 			if (data.ball && data.player1 && data.player2) {
 			if (!player1Avatar)
@@ -279,7 +274,6 @@ const MultiPlayersInvite: React.FC = () => {
 		paddle2.current!.position.z = paddleUp - ((parsedData.player1.pos_y + 50) * (paddleUp - paddleDown)) / pixelHeight;
 	}, [parsedData, isReady3d, isCinematic]);
 
-	// Ping pour maintenir la connexion WebSocket
 	useEffect(() => {
 		if (!isReady3d || !socketRef.current) return;
 
@@ -291,12 +285,11 @@ const MultiPlayersInvite: React.FC = () => {
 		return () => clearInterval(interval);
 	}, [isReady3d]);
 
-	// Gestion des touches clavier
 	useEffect(() => {
 		if (!isReady3d || !socketRef.current || !isCinematic || !waitingPlayers) return;
 		const handlePause = (event: KeyboardEvent) => {
 			if (event.key === ' ') {
-				socketRef.current?.send(JSON.stringify({ type: "Pause" })); //value p1
+				socketRef.current?.send(JSON.stringify({ type: "Pause" }));
 			}
 		}
 		window.addEventListener('keydown', handlePause)
@@ -318,9 +311,9 @@ const MultiPlayersInvite: React.FC = () => {
 			const socket = socketRef.current;
 			if (!socket || socket.readyState !== WebSocket.OPEN) return;
 			if (keyPressed.current.p1_down)
-				socket.send(JSON.stringify({ type: "Move", value: `${assignPlayer.current}_down` })); //determiner le player 1
+				socket.send(JSON.stringify({ type: "Move", value: `${assignPlayer.current}_down` }));
 			else if (keyPressed.current.p1_up)
-				socket.send(JSON.stringify({ type: "Move", value: `${assignPlayer.current}_up` })); //eterminer le player 1
+				socket.send(JSON.stringify({ type: "Move", value: `${assignPlayer.current}_up` }));
 		}, 1000 / 60);
 
 		return () => {
@@ -332,7 +325,7 @@ const MultiPlayersInvite: React.FC = () => {
 
 	useEffect(() => {
 		if (!isReady3d || !socketRef.current || isCinematic) return;
-		localStorage.setItem("reconnection", "MultiPlayersInvite"); //certqinement a cause de ca
+		localStorage.setItem("reconnection", "MultiPlayersInvite");
 		let i: number = -1209
 		camera.current!.rotation.x = 0.081;
 		camera.current!.rotation.y = 1.599;
