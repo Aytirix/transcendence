@@ -210,21 +210,11 @@ export const loadMoreMessage = async (ws: WebSocket, user: User, state: State, r
 
 	const listUserIdBlocked = BlockedUserId(user, state);
 
-	let messagesFiltered = filterBlockedUserMessages(group.messages, user, state);
+	let lstMsgId = req.firstMessageId === 0 ? null : req.firstMessageId;
 
-	// voir combien il y a de message avant le lastMessage deja recuperer de la db
-	const messagesToGet: Map<number, Message> = new Map(
-		Array.from(messagesFiltered.entries()).filter(([_, message]: [number, Message]) => {
-			if (req.firstMessageId === 0 || message.id < req.firstMessageId) return true;
-			return false;
-		}));
-	let messages: Map<number, Message>;
-	if (messagesToGet.size >= 20) messages = new Map(Array.from(messagesToGet.entries()).slice(0, 20));
-	else {
-		const messagesFromDb = await modelsChat.getMessagesFromGroup(group, 20 - messagesToGet.size, listUserIdBlocked);
-		messages = new Map([...messagesToGet, ...messagesFromDb]);
-	}
-	ws.send(JSON.stringify({ action: 'loadMoreMessage', result: 'ok', group_id: group.id, messages: mapToObject(messages) } as res_loadMoreMessage));
+	const messagesFromDb = await modelsChat.getMessagesFromGroup(group, 20, listUserIdBlocked, lstMsgId);
+
+	ws.send(JSON.stringify({ action: 'loadMoreMessage', result: 'ok', group_id: group.id, messages: mapToObject(messagesFromDb) } as res_loadMoreMessage));
 }
 
 export const createGroup = async (ws: WebSocket, user: User, state: State, req: req_createGroup) => {

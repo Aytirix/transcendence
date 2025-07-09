@@ -57,7 +57,8 @@
 		"success": "Ahora está conectado.",
 		"alreadyLoggedIn": "Ya está conectado.",
 		"notLoggedIn": "Por favor, inicie sesión para acceder a este recurso.",
-		"welcome": "Por favor, consulte su correo electrónico para validar su cuenta.",
+		"welcome-confirm": "Por favor, consulte su correo electrónico para validar su cuenta.",
+		"welcome": "¡Bienvenido a transcendence!",
 		"logout": "Desconexión exitosa."
 	},
 	"user": {

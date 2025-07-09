@@ -168,6 +168,7 @@ export const isAuth = {
 						username: { type: 'string', minLength: 3, maxLength: 10, pattern: '^[a-zA-Z0-9]+$' },
 						lang: { type: 'string', enum: ['fr', 'en', 'it', 'es'] },
 						avatar: { type: 'string' },
+						twofa: { type: 'boolean' },
 					},
 				},
 			},

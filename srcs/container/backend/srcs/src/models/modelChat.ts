@@ -62,55 +62,48 @@ async function getAllUserFromGroup(group: Group) {
 async function getMessagesFromGroup(
 	group: Group,
 	limit: number = 20,
-	ignoreUserId: number[] = []
+	ignoreUserId: number[] = [],
+	lastId: number | null = null
 ): Promise<Map<number, Message>> {
 	let collected: Map<number, Message> = new Map();
-	let allFetched: Map<number, Message> = new Map();
-	let lastId = (group.messages && group.messages.size > 0) ? Math.min(...group.messages.keys()) : null;
-	const batchSize = Math.max(limit * 2, 50);
 
-	while (collected.size < limit) {
-		const sql = `
-		SELECT id, sender_id, message, sent_at
-		FROM group_messages
-		WHERE group_id = ?
-		  ${lastId ? 'AND id < ?' : ''}
-		LIMIT ?
-	  `;
-		const params = lastId
-			? [group.id, lastId, batchSize]
-			: [group.id, batchSize];
-		const rows = await executeReq(sql, params) as any[];
+	const sql = `
+	SELECT id, sender_id, message, sent_at
+	FROM group_messages
+	WHERE group_id = ? ${lastId ? 'AND id < ?' : ''}`;
+	const params = lastId
+		? [group.id, lastId]
+		: [group.id];
+	const rows = await executeReq(sql, params) as any[];
 
-		if (rows.length === 0) {
-			break;
-		}
-
-		rows.sort((a, b) => new Date(b.sent_at).getTime() - new Date(a.sent_at).getTime());
-
-		for (const r of rows) {
-			const msg: Message = {
-				id: r.id,
-				sender_id: r.sender_id,
-				message: r.message,
-				sent_at: new Date(r.sent_at),
-			};
-			allFetched.set(msg.id, msg);
-			if (!ignoreUserId.includes(msg.sender_id) && collected.size < limit) {
-				collected.set(msg.id, msg);
-			}
-		}
-		lastId = rows[rows.length - 1].id;
+	if (rows.length === 0) {
+		return collected;
 	}
-	// ajouter les messages dans le groupe
-	for (const msg of allFetched.values()) {
-		if (!group.messages.has(msg.id)) {
-			group.messages.set(msg.id, msg);
+
+	for (const r of rows) {
+		const msg: Message = {
+			id: r.id,
+			sender_id: r.sender_id,
+			message: r.message,
+			sent_at: new Date(r.sent_at),
+		};
+		if (!ignoreUserId.includes(msg.sender_id)) {
+			collected.set(msg.id, msg);
 		}
+		group.messages.set(msg.id, msg);
 	}
+
+	const sortedMessages = [...collected.entries()].sort(
+		(a, b) => b[1].sent_at.getTime() - a[1].sent_at.getTime()
+	);
+	collected = new Map(sortedMessages);
+
+	for (const [id, msg] of collected) {
+		console.log(`Message ID: ${id}, Sender ID: ${msg.sender_id}, Message: ${msg.message}, Sent At: ${msg.sent_at}`);
+	}
+
 	return collected;
 }
-
 
 async function newMessage(group: Group, user: User, message: string, sent_at: Date) {
 	const query = `INSERT INTO group_messages (group_id, sender_id, message, sent_at) VALUES (?, ?, ?, ?)`;

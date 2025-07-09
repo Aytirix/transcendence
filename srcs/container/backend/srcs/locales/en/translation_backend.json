@@ -57,7 +57,8 @@
 		"success": "You are now logged in.",
 		"alreadyLoggedIn": "You are already logged in.",
 		"notLoggedIn": "Please log in to access this resource.",
-		"welcome": "Please check your email to validate your account.",
+		"welcome-confirm": "Please check your email to validate your account.",
+		"welcome": "Welcome to transcendence!",
 		"logout": "Logout successful."
 	},
 	"user": {
