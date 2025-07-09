@@ -46,7 +46,7 @@ const MultiPlayersInvite: React.FC = () => {
 	const [player2Avatar, setPlayer2Avatar] = useState<string | undefined>(undefined);
 
 	const {t} = useLanguage();
-	const messagePause = useRef(t("pong.multi.pause"))
+	const [messagePause, setMessagePause] = useState(t("pong.multi.pause"));
 
 
 	const data = searchParams.get('data');
@@ -149,9 +149,9 @@ const MultiPlayersInvite: React.FC = () => {
 				setIsPause(data.value);
 				if (data.message) {
 					if (data.message === "Press [ ESP ] for PLAY")
-						messagePause.current = t("pong.multi.pause");
+						setMessagePause(t("pong.multi.pause"));
 					else if (data.message === "Adversaire en pause. Reprise imminente.")
-						messagePause.current = t("pong.multi.pausead");
+						setMessagePause(t("pong.multi.pausead"));
 				}
 			}
 			if (data.type === "assign") {
@@ -366,7 +366,7 @@ const MultiPlayersInvite: React.FC = () => {
 				{/* jeu en pause */}
 				{isPause && isReady3d && isCinematic && !isWinner && (
 					<h1 className='Start-go'>
-						{messagePause.current}
+						{messagePause}
 					</h1>
 				)}
 
