@@ -96,4 +96,46 @@ export default {
 			500: messageResponse,
 		},
 	},
+	getStatisticsForSpecificUser: {
+		tags: ['Pacman'],
+		summary: 'Obtenir les statistiques Pacman pour un utilisateur spécifique',
+		description: 'Récupérer les statistiques de jeu Pacman pour un utilisateur donné par son ID.',
+		params: {
+			type: 'object',
+			properties: {
+				userId: { type: 'string', pattern: '^[0-9]+$' }
+			},
+			required: ['userId'],
+			additionalProperties: false,
+			errorMessage: {
+				required: {
+					userId: 'errors.user.userIdRequired',
+				},
+				properties: {
+					userId: 'errors.user.invalidUserId',
+				},
+			}
+		},
+		response: {
+			200: {
+				type: 'object',
+				properties: {
+					success: { type: 'boolean' },
+					stats: {
+						type: 'object',
+						additionalProperties: true
+					},
+				},
+			},
+			400: {
+				type: 'object',
+				properties: {
+					success: { type: 'boolean', const: false },
+					message: { type: 'string' },
+				},
+			},
+			401: messageResponse,
+			500: messageResponse,
+		},
+	},
 };

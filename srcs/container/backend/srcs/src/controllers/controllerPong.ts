@@ -162,6 +162,70 @@ export const getStatForPlayer = async (request: FastifyRequest, reply: FastifyRe
 	return reply.send(statUserData);
 };
 
+export const getStatForUser = async (request: FastifyRequest, reply: FastifyReply) => {
+	const { userId } = request.params as { userId: string };
+
+	if (!userId || isNaN(Number(userId))) {
+		return reply.status(400).send({
+			success: false,
+			message: request.i18n.t('errors.user.invalidUserId'),
+		});
+	}
+
+	let statUserData: userStatsPong = {
+		total: {
+			victoire: 0,
+			defaite: 0,
+			abandon: 0,
+			nbParti: 0,
+			victoirePour100: 0,
+			defaitePour100: 0,
+			abandonPour100: 0
+		},
+		tournamentVictory: 0,
+		Multi: {
+			victoire: 0,
+			defaite: 0,
+			abandon: 0,
+			nbParti: 0,
+			victoirePour100: 0,
+			defaitePour100: 0,
+			abandonPour100: 0
+		},
+		Tournament: {
+			victoire: 0,
+			defaite: 0,
+			abandon: 0,
+			nbParti: 0,
+			victoirePour100: 0,
+			defaitePour100: 0,
+			abandonPour100: 0
+		},
+		Solo: {
+			victoire: 0,
+			defaite: 0,
+			abandon: 0,
+			nbParti: 0,
+			victoirePour100: 0,
+			defaitePour100: 0,
+			abandonPour100: 0
+		},
+		SameKeyboard: {
+			nbParti: 0
+		},
+		lastFive: []
+	};
+	const playerStats = await modelPong.getStatisticsForUser(Number(userId));
+	generalUserStats(playerStats, statUserData);
+	getStatsMode("Multi", statUserData, playerStats);
+	getStatsMode("Solo", statUserData, playerStats);
+	getStatsMode("Tournament", statUserData, playerStats);
+	getStatsTournamentWinner(statUserData, playerStats);
+	getStatsSameKeyboard(statUserData, playerStats)
+	getFiveLastMatch(playerStats, statUserData);
+	return reply.send({ success: true, stats: statUserData });
+};
+
 export const invitePlayer = async (request: FastifyRequest, reply: FastifyReply) => {
 	const { friendId } = request.body as { friendId: number };
 
@@ -389,6 +453,7 @@ export default {
 	getStatsTournamentWinner,
 	generalUserStats,
 	getStatForPlayer,
+	getStatForUser,
 	invitePlayer,
 	confirmInvite,
 	refuseInvite,

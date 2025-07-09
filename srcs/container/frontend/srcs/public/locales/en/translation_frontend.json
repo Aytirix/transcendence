@@ -79,7 +79,6 @@
 		"at_42_school": "at 42 school",
 		"developed_by": "Developed by"
 	},
-	
 	"credits": {
 		"contributions_title": "Contributions",
 		"role": {
@@ -355,7 +354,8 @@
 		"sort": "Sort",
 		"yes": "Yes",
 		"no": "No",
-		"ok": "OK"
+		"ok": "OK",
+		"retry": "Retry"
 	},
 	"errors": {
 		"networkError": "Network error",
@@ -566,6 +566,42 @@
 		},
 		"email": {
 			"confirmationRequired": "Please check your email\n{{email}}\nto confirm your change.\nThe email expires in 15 minutes."
+		},
+		"modal": {
+			"title": "{{username}}'s Profile",
+			"loading": "Loading user profile...",
+			"errorLoading": "Error loading user profile",
+			"tabs": {
+				"profile": "Profile",
+				"pong": "Pong Stats",
+				"pacman": "Pacman Stats"
+			},
+			"pong": {
+				"wins": "Wins",
+				"losses": "Losses",
+				"abandons": "Abandons",
+				"winRate": "Win Rate",
+				"matchHistory": "Match History",
+				"noMatches": "No Pong matches played yet"
+			},
+			"pacman": {
+				"gamesAsPacman": "Games as Pacman",
+				"gamesAsGhost": "Games as Ghost",
+				"bestScore": "Best Score",
+				"matchHistory": "Match History",
+				"noMatches": "No Pacman games played yet",
+				"asRole": "as {{role}}",
+				"score": "Score",
+				"pacmanRecords": "Top Pacman Players",
+				"ghostRecords": "Top Ghost Players",
+				"noRecords": "No records available"
+			},
+			"match": {
+				"win": "WIN",
+				"loss": "LOSS",
+				"abandon": "ABANDON",
+				"vs": "vs"
+			}
 		}
 	},
 	"singlePage": {

@@ -5,6 +5,8 @@ import { useChatWebSocket } from "./ChatWebSocketContext";
 import ApiService from "../../api/ApiService";
 import { useLanguage } from '../../contexts/LanguageContext';
 import notification from "../components/Notifications";
+import UserProfileModal from '../components/UserProfileModal';
+import { useUserProfileModal } from '../hooks/useUserProfileModal';
 
 const FriendPage: React.FC = () => {
 	const {
@@ -22,6 +24,7 @@ const FriendPage: React.FC = () => {
 		handleCancelInvite,
 	} = useChatWebSocket();
 	const { t } = useLanguage();
+	const { modalState, openUserProfile, closeUserProfile } = useUserProfileModal();
 
 	// Filtrer les amis selon le terme de recherche
 
@@ -189,7 +192,12 @@ const FriendPage: React.FC = () => {
 											{/* Contenu principal */}
 											<div className="flex-1">
 												{/* Pseudo en haut */}
-												<div className="text-white font-semibold text-lg mb-2 text-left">{friend.username}</div>
+												<div 
+													className="text-white font-semibold text-lg mb-2 text-left clickable-username"
+													onClick={() => openUserProfile(friend.id, friend.username)}
+												>
+													{friend.username}
+												</div>
 
 												{/* Drapeau + Status à gauche, Boutons à droite */}
 												<div className="flex justify-between items-center">
@@ -238,6 +246,14 @@ const FriendPage: React.FC = () => {
 					)}
 				</fieldset>
 			</div>
+			
+			{/* User Profile Modal */}
+			<UserProfileModal
+				isOpen={modalState.isOpen}
+				userId={modalState.userId || 0}
+				username={modalState.username}
+				onClose={closeUserProfile}
+			/>
 		</div>
 	);
 };

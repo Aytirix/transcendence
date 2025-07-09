@@ -1,3 +1,5 @@
+@import './user-profile-modal.scss';
+
 @mixin glassmorphism($opacity: 0.08) {
 	background: rgba(255, 255, 255, $opacity);
 	backdrop-filter: blur(15px);
@@ -351,6 +353,19 @@
 				}
 			}
 				
+			}
+			
+			&-name {
+				&.clickable-username {
+					cursor: pointer;
+					color: #4ecdc4;
+					transition: color 0.2s ease;
+					
+					&:hover {
+						color: #66d9d2;
+						text-decoration: underline;
+					}
+				}
 			}
 			}
 			}
@@ -1353,7 +1368,7 @@
 }
 
 .chat-group-manage-btn {
-	background: rgba(120, 119, 198, 0.2);
+	background:transparent;
 	border: 1px solid rgba(120, 119, 198, 0.3);
 	color: white;
 	padding: 0.4rem 0.8rem;
