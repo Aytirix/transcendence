@@ -527,7 +527,6 @@ export function setMinecraftInfo(t: (key: string, options?: Record<string, strin
 		) {
 			try {
 				const result = await ApiService.post('/setMinecraftUser', { compressed });
-				console.log('Résultat de la sauvegarde Minecraft:', result);
 				if (!result.ok) {
 					notification.error(t('minecraft.saveError'),
 						{

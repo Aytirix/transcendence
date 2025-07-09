@@ -71,13 +71,7 @@ export function useSafeWebSocket({ endpoint, onMessage, onStatusChange, reconnec
 			}
 		};
 
-		socket.onclose = (event) => {
-			console.log('WebSocket closed:', {
-				code: event.code,
-				reason: event.reason,
-				wasClean: event.wasClean,
-				url: wsUrl
-			});
+		socket.onclose = () => {
 			handleCloseOrError('Closed');
 		};
 
