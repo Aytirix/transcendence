@@ -45,11 +45,11 @@ const GroupsMessagesPage: React.FC = () => {
 	const [showCreateGroup, setShowCreateGroup] = useState(false);
 	const [newGroupName, setNewGroupName] = useState("");
 	const [selectedUsersForGroup, setSelectedUsersForGroup] = useState<number[]>([]);
-	
+
 	// Gestion de groupe (ajout/suppression de membres)
 	const [showGroupManagement, setShowGroupManagement] = useState(false);
 	const [managingGroup, setManagingGroup] = useState<Group | null>(null);
-	
+
 	// Sidebar visibility state
 	const [sidebarVisible, setSidebarVisible] = useState(true);
 
@@ -114,9 +114,9 @@ const GroupsMessagesPage: React.FC = () => {
 				...prev,
 				[selectedGroupId]: 0
 			}));
-			
+
 			loadMessages(selectedGroupId, 0);
-			
+
 			// Scroll vers le bas après un petit délai
 			setTimeout(() => scrollToBottom(false), 200);
 		}
@@ -124,16 +124,16 @@ const GroupsMessagesPage: React.FC = () => {
 
 	// Suivre le nombre de messages pour l'autoscroll
 	const prevMessageCount = useRef<number>(0);
-	
+
 	// Autoscroll vers le bas seulement quand de nouveaux messages arrivent
 	useEffect(() => {
 		const currentMessageCount = selectedMessages.length;
-		
+
 		// Seulement scroller si le nombre de messages a augmenté (nouveaux messages)
 		if (currentMessageCount > prevMessageCount.current && prevMessageCount.current > 0) {
 			scrollToBottom(true);
 		}
-		
+
 		// Mettre à jour le compteur précédent
 		prevMessageCount.current = currentMessageCount;
 	}, [selectedMessages, scrollToBottom]);
@@ -141,11 +141,11 @@ const GroupsMessagesPage: React.FC = () => {
 	// Détecter si on a atteint la fin des messages
 	useEffect(() => {
 		if (!selectedGroup) return;
-		
+
 		const groupId = selectedGroup.id;
 		const currentCount = selectedMessages.length;
 		const previousCount = messageLoadCounts[groupId];
-		
+
 		// Si on a tracké un chargement précédent et que le nombre n'a pas changé de manière significative
 		// (moins de 10 nouveaux messages), on considère qu'il n'y a plus de messages
 		if (previousCount !== undefined && currentCount - previousCount < 10) {
@@ -165,22 +165,22 @@ const GroupsMessagesPage: React.FC = () => {
 	// Fonction pour charger plus de messages
 	const handleLoadMoreMessages = useCallback(() => {
 		if (!selectedGroup || selectedMessages.length === 0 || isLoadingMoreMessages) return;
-		
+
 		// Récupérer l'ID du message le plus ancien (le premier dans le tableau trié)
 		setIsLoadingMoreMessages(true);
 		const oldestMessageId = selectedMessages[0]?.id;
 		const currentMessageCount = selectedMessages.length;
-		
+
 		if (oldestMessageId) {
 			loadMessages(selectedGroup.id, oldestMessageId);
-			
+
 			// Tracker le nombre de messages avant le chargement pour savoir s'il y en a plus
 			setMessageLoadCounts(prev => ({
 				...prev,
 				[selectedGroup.id]: currentMessageCount
 			}));
 		}
-		
+
 		// Reset loading state après un délai
 		setTimeout(() => setIsLoadingMoreMessages(false), 1000);
 	}, [selectedGroup, selectedMessages, isLoadingMoreMessages, loadMessages]);
@@ -190,7 +190,7 @@ const GroupsMessagesPage: React.FC = () => {
 		if (!input.trim() || !selectedGroup) return;
 		sendMessage(selectedGroup.id, input);
 		setInput("");
-		
+
 		// Forcer le scroll vers le bas après l'envoi du message
 		setTimeout(() => scrollToBottom(true), 100);
 	}, [input, selectedGroup, sendMessage, scrollToBottom]);
@@ -232,8 +232,8 @@ const GroupsMessagesPage: React.FC = () => {
 		if (!group) return [];
 		const groupMemberIds = group.members.map(member => member.id);
 		return friends
-			.filter(friend => 
-				friend.relation.status === "friend" && 
+			.filter(friend =>
+				friend.relation.status === "friend" &&
 				!groupMemberIds.includes(friend.id)
 			);
 	}, [friends]);
@@ -253,7 +253,7 @@ const GroupsMessagesPage: React.FC = () => {
 		if (id === currentUserId && user?.avatar) {
 			return user.avatar;
 		}
-		
+
 		const friend = friends.find(friend => friend.id === id);
 		return friend?.avatar;
 	}
@@ -263,7 +263,7 @@ const GroupsMessagesPage: React.FC = () => {
 		if (id === currentUserId && user?.username) {
 			return user.username;
 		}
-		
+
 		const friend = friends.find(friend => friend.id === id);
 		return friend?.username;
 	}
@@ -271,14 +271,14 @@ const GroupsMessagesPage: React.FC = () => {
 	const handleUsernameClick = (userId: number, username: string) => {
 		// Don't open modal for the current user
 		if (userId === currentUserId) return;
-		
+
 		openUserProfile(userId, username);
 	};
 
 	const Messages: React.FC = () => {
 		// Déterminer si on doit montrer le bouton "Load More"
-		const shouldShowLoadMore = selectedGroup && selectedMessages.length >= 2 && 
-			selectedMessages[0]?.id > 1 && 
+		const shouldShowLoadMore = selectedGroup && selectedMessages.length >= 2 &&
+			selectedMessages[0]?.id > 1 &&
 			hasMoreMessages[selectedGroup.id] !== false;
 
 		return (
@@ -299,7 +299,7 @@ const GroupsMessagesPage: React.FC = () => {
 				{selectedMessages.map((m, idx) => {
 					const isOwnMessage = m.sender_id === currentUserId;
 					const senderName = getNameById(m.sender_id);
-					
+
 					const formatRelativeTime = (date: Date) => {
 						const now = new Date();
 						const diffInSeconds = (now.getTime() - date.getTime()) / 1000;
@@ -332,16 +332,16 @@ const GroupsMessagesPage: React.FC = () => {
 						>
 							<div className="chat-message__avatar">
 								<img
-										src={ApiService.getFile(getAvatarById(m.sender_id))}
-										alt={senderName}
-										className="chat-avatar-image"
-										onError={(e) => {
-											(e.target as HTMLImageElement).src = ApiService.getFile(null);
-										}}
+									src={ApiService.getFile(getAvatarById(m.sender_id))}
+									alt={senderName}
+									className="chat-avatar-image"
+									onError={(e) => {
+										(e.target as HTMLImageElement).src = ApiService.getFile(null);
+									}}
 								/>
-								
+
 							</div>
-							
+
 							<div className="chat-message__content">
 								<div className="chat-message__header">
 									<span className="chat-message__author">
@@ -356,7 +356,7 @@ const GroupsMessagesPage: React.FC = () => {
 						</div>
 					);
 				})}
-				
+
 				{/* Référence pour l'autoscroll */}
 				<div ref={messagesEndRef} />
 			</div>
@@ -387,7 +387,7 @@ const GroupsMessagesPage: React.FC = () => {
 			setSelectedUsersForGroup([]);
 			setInputSearch("");
 			setShowCreateGroup(false); // Hide form after creation
-			
+
 			// Note: Le nouveau groupe sera automatiquement sélectionné via l'effet dans useEffect
 		} catch (error) {
 			console.error('Error creating group:', error);
@@ -397,7 +397,7 @@ const GroupsMessagesPage: React.FC = () => {
 	const HeaderMessages: React.FC = () => {
 
 		const displayName = selectedGroup ? getGroupDisplayName(selectedGroup) : t('chat.selectGroup');
-		
+
 		return (
 			<div className="chat-content__header">
 				{/* Group management button for non-private groups where user is owner */}
@@ -438,11 +438,11 @@ const GroupsMessagesPage: React.FC = () => {
 							{selectedGroup.members.map((member) => {
 								const isOnline = selectedGroup.onlines_id?.includes(member.id) || false;
 								return (
-									<div 
-										key={member.id} 
+									<div
+										key={member.id}
 										className={`chat-content__header-online-member ${isOnline ? 'chat-content__header-online-member--online' : 'chat-content__header-online-member--offline'}`}
 									>
-										<span 
+										<span
 											className={`chat-content__header-online-name ${member.id !== currentUserId ? 'clickable-username' : ''}`}
 											onClick={() => member.id !== currentUserId && handleUsernameClick(member.id, member.username)}
 										>
@@ -464,7 +464,7 @@ const GroupsMessagesPage: React.FC = () => {
 			if (member.id === currentUserId) {
 				continue;
 			}
-			else{
+			else {
 				return member;
 			}
 		}
@@ -490,7 +490,7 @@ const GroupsMessagesPage: React.FC = () => {
 						/>
 					) : (
 						<svg fill="currentColor" viewBox="0 0 20 20" className="chat-icon-24">
-							<path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3z"/>
+							<path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3z" />
 						</svg>
 					)}
 				</div>
@@ -508,10 +508,10 @@ const GroupsMessagesPage: React.FC = () => {
 			<>
 				<div className="chat-group-item__avatar">
 					<svg fill="currentColor" viewBox="0 0 20 20" className="chat-icon-24">
-						<path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3z"/>
+						<path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3z" />
 					</svg>
 				</div>
-				
+
 				{/* Informations du groupe */}
 				<div className="chat-group-item__info">
 					<div className="chat-group-item__name">
@@ -530,14 +530,14 @@ const GroupsMessagesPage: React.FC = () => {
 					</div>
 				</div>
 			</>
-			)
-		}
+		)
+	}
 
 	// Fonction pour obtenir la date du dernier message d'un groupe
 	const getLastMessageTime = useCallback((groupId: number): number => {
 		const messages = groupMessages[groupId];
 		if (!messages || messages.length === 0) return 0;
-		
+
 		const lastMessage = messages[messages.length - 1];
 		return lastMessage.sent_at ? new Date(lastMessage.sent_at).getTime() : 0;
 	}, [groupMessages]);
@@ -553,7 +553,7 @@ const GroupsMessagesPage: React.FC = () => {
 			return group.name;
 		}
 		return t('chat.groupNoName');
-		
+
 	}, [memberGroup, t]);
 
 
@@ -569,21 +569,21 @@ const GroupsMessagesPage: React.FC = () => {
 			return [...groups].sort((a, b) => {
 				const aLastMessage = getLastMessageTime(a.id);
 				const bLastMessage = getLastMessageTime(b.id);
-				
+
 				// Si aucun des deux n'a de messages, trier par ID décroissant (plus récent créé en premier)
 				if (aLastMessage === 0 && bLastMessage === 0) {
 					return b.id - a.id;
 				}
-				
+
 				// Si un seul a des messages, celui avec messages en premier
 				if (aLastMessage === 0) return 1;
 				if (bLastMessage === 0) return -1;
-				
+
 				// Sinon trier par dernier message (plus récent en premier)
 				return bLastMessage - aLastMessage;
 			});
 		}, [groups, getLastMessageTime]);
-		
+
 		return (
 			<div className="chat-sidebar__list">
 				{/* Liste des groupes publics uniquement */}
@@ -598,7 +598,7 @@ const GroupsMessagesPage: React.FC = () => {
 						const isSelected = selectedGroup?.id === g.id;
 						const lastMessageTime = getLastMessageTime(g.id);
 						const isRecentActivity = lastMessageTime && (Date.now() - lastMessageTime) < 5 * 60 * 1000; // 5 minutes
-						
+
 						return (
 							<div
 								key={g.id}
@@ -606,17 +606,17 @@ const GroupsMessagesPage: React.FC = () => {
 								onClick={() => setSelectedGroupId(g.id)}
 							>
 								<div className="chat-group-item__content chat-group-item__main-content">
-									{ g.private ? (
+									{g.private ? (
 										<GroupPrivate displayName={getGroupDisplayName(g)} g={g} />
 									) : (
 										<GroupPublic displayName={g.name ?? ""} g={g} />
 									)}
-									
-									
+
+
 								</div>
-								
+
 								{/* Bouton supprimer à droite */}
-								{ !g.private && (
+								{!g.private && (
 									<button
 										className="chat-group-item__delete-btn"
 										onClick={(e) => {
@@ -662,10 +662,10 @@ const GroupsMessagesPage: React.FC = () => {
 						<div className="chat-sidebar__header">
 							<h1 className="chat-sidebar__header-title ">
 								<span className="gradient-text">
-								{t('chat.messages')}
+									{t('chat.messages')}
 								</span>
 							</h1>
-							
+
 							{/* Barre de recherche */}
 							<div className="chat-sidebar__header-search">
 								<input
@@ -678,72 +678,72 @@ const GroupsMessagesPage: React.FC = () => {
 							</div>
 						</div>
 
-					<div className="chat-sidebar__content">
-						{/* Section de création de groupe */}
-						<div className="chat-create-group-section">
-							<button
-								className={`chat-modal__button ${showCreateGroup ? 'chat-modal__button--secondary' : 'chat-modal__button--primary'} ${showCreateGroup ? 'chat-create-group-button--with-form' : 'chat-create-group-button'}`}
-								onClick={() => setShowCreateGroup(!showCreateGroup)}
-							>
-								{showCreateGroup ? t('chat.cancelCreation') : t('chat.createGroup')}
-							</button>
+						<div className="chat-sidebar__content">
+							{/* Section de création de groupe */}
+							<div className="chat-create-group-section">
+								<button
+									className={`chat-modal__button ${showCreateGroup ? 'chat-modal__button--secondary' : 'chat-modal__button--primary'} ${showCreateGroup ? 'chat-create-group-button--with-form' : 'chat-create-group-button'}`}
+									onClick={() => setShowCreateGroup(!showCreateGroup)}
+								>
+									{showCreateGroup ? t('chat.cancelCreation') : t('chat.createGroup')}
+								</button>
 
-							{showCreateGroup && (
-								<div className="chat-modal__form">
-									<input
-										type="text"
-										className="chat-modal__input"
-										placeholder={t('chat.groupName')}
-										value={newGroupName}
-										onChange={(e) => setNewGroupName(e.target.value)}
-									/>
+								{showCreateGroup && (
+									<div className="chat-modal__form">
+										<input
+											type="text"
+											className="chat-modal__input"
+											placeholder={t('chat.groupName')}
+											value={newGroupName}
+											onChange={(e) => setNewGroupName(e.target.value)}
+										/>
 
-									<div className="chat-friend-selection-title">
-										{t('chat.selectFriends')}
-									</div>
-									<div className="chat-friend-selection-container">
-										{friends.length === 0 ? (
-											<div className="chat-friend-selection-empty">
-												{t('chat.noFriendsAvailableForGroup')}
-											</div>
-										) : (
-											friends
-												.filter(f => f.relation.status !== "blocked")
-												.map(f =>  (
-													<label key={f.id} className="chat-friend-selection-item">
-														<input
-															type="checkbox"
-															checked={selectedUsersForGroup.includes(f.id)}
-															onChange={() => toggleUserSelection(f.id)}
-														/>
-														<div className="chat-friend-avatar-small">
-															<img 
-																src={ApiService.getFile(f.avatar)} 
-																alt={f.username}
-																onError={(e) => {
-																	(e.target as HTMLImageElement).src = ApiService.getFile(null);
-																}}
+										<div className="chat-friend-selection-title">
+											{t('chat.selectFriends')}
+										</div>
+										<div className="chat-friend-selection-container">
+											{friends.length === 0 ? (
+												<div className="chat-friend-selection-empty">
+													{t('chat.noFriendsAvailableForGroup')}
+												</div>
+											) : (
+												friends
+													.filter(f => f.relation.status !== "blocked")
+													.map(f => (
+														<label key={f.id} className="chat-friend-selection-item">
+															<input
+																type="checkbox"
+																checked={selectedUsersForGroup.includes(f.id)}
+																onChange={() => toggleUserSelection(f.id)}
 															/>
-														</div>
-														<span>{f.username}</span>
-													</label>
-												))
-										)}
-									</div>
+															<div className="chat-friend-avatar-small">
+																<img
+																	src={ApiService.getFile(f.avatar)}
+																	alt={f.username}
+																	onError={(e) => {
+																		(e.target as HTMLImageElement).src = ApiService.getFile(null);
+																	}}
+																/>
+															</div>
+															<span>{f.username}</span>
+														</label>
+													))
+											)}
+										</div>
 
-									<button
-										className="chat-modal__button chat-modal__button--primary chat-create-group-submit"
-										onClick={handleCreateGroup}
-										disabled={!newGroupName.trim() || selectedUsersForGroup.length === 0}
-									>
-										{t('chat.createTheGroup')}
-									</button>
-								</div>
-							)}
+										<button
+											className="chat-modal__button chat-modal__button--primary chat-create-group-submit"
+											onClick={handleCreateGroup}
+											disabled={!newGroupName.trim() || selectedUsersForGroup.length === 0}
+										>
+											{t('chat.createTheGroup')}
+										</button>
+									</div>
+								)}
+							</div>
+
+							<ListGroups />
 						</div>
-						
-						<ListGroups />
-					</div>
 
 						{/* Indicateur de statut WebSocket */}
 						<div className="chat-sidebar__status">
@@ -758,7 +758,7 @@ const GroupsMessagesPage: React.FC = () => {
 			<div className="chat-content">
 				<HeaderMessages />
 				{renderContent()}
-				
+
 				{/* Zone de saisie */}
 				<div className="chat-content__input">
 					<div className="chat-content__input-container">
@@ -767,11 +767,11 @@ const GroupsMessagesPage: React.FC = () => {
 							placeholder={t("chat.messagePlaceholder")}
 							value={input}
 							onChange={(e) => setInput(e.target.value)}
-							onKeyDown={(e) => { 
+							onKeyDown={(e) => {
 								if (e.key === "Enter" && !e.shiftKey) {
 									e.preventDefault();
 									handleSendMessage();
-								} 
+								}
 							}}
 							rows={1}
 						/>
@@ -810,8 +810,8 @@ const GroupsMessagesPage: React.FC = () => {
 											<div key={member.id} className="chat-group-member-item">
 												<div className="chat-group-member-info">
 													<div className="chat-friend-avatar-small">
-														<img 
-															src={ApiService.getFile(member.avatar)} 
+														<img
+															src={ApiService.getFile(member.avatar)}
 															alt={member.username}
 															onError={(e) => {
 																(e.target as HTMLImageElement).src = ApiService.getFile(null);
@@ -851,8 +851,8 @@ const GroupsMessagesPage: React.FC = () => {
 												<div key={friend.id} className="chat-group-member-item">
 													<div className="chat-group-member-info">
 														<div className="chat-friend-avatar-small">
-															<img 
-																src={ApiService.getFile(friend.avatar)} 
+															<img
+																src={ApiService.getFile(friend.avatar)}
 																alt={friend.username}
 																onError={(e) => {
 																	(e.target as HTMLImageElement).src = ApiService.getFile(null);
@@ -878,7 +878,7 @@ const GroupsMessagesPage: React.FC = () => {
 					</div>
 				);
 			})()}
-			
+
 			{/* User Profile Modal */}
 			<UserProfileModal
 				isOpen={modalState.isOpen}

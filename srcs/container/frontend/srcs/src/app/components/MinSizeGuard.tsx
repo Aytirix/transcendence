@@ -68,7 +68,7 @@ const MinSizeGuard = ({
 						onClick={handleGoHome}
 						title={t('minSizeGuard.goHome')}
 					>
-						<img src="/avatars/ironman.svg" alt="Iron Man home icon" />
+						<img src="/avatars/ironman.png" alt="Iron Man home icon" />
 						<span className="home-label">{t('minSizeGuard.goHome')}</span>
 					</button>
 					<div className="min-size-guard-content">
@@ -111,7 +111,7 @@ const MinSizeGuard = ({
 						onClick={handleGoHome}
 						title={t('minSizeGuard.goHome')}
 					>
-						<img src="/avatars/ironman.svg" alt="Iron Man home icon" />
+						<img src="/avatars/ironman.png" alt="Iron Man home icon" />
 						<span className="home-label">{t('minSizeGuard.goHome')}</span>
 					</button>
 					<div className="min-size-guard-content">
