@@ -130,7 +130,56 @@ export const getStatistics = {
 	},
 };
 
+export const getStatisticsForUser = {
+	description: "Récupérer les statistiques d'un joueur spécifique par son ID.",
+	tags: ['pong'],
+	params: {
+		type: 'object',
+		properties: {
+			userId: { type: 'string', pattern: '^[0-9]+$' }
+		},
+		required: ['userId'],
+		additionalProperties: false,
+		errorMessage: {
+			required: {
+				userId: 'errors.user.userIdRequired',
+			},
+			properties: {
+				userId: 'errors.user.invalidUserId',
+			},
+		}
+	},
+	response: {
+		200: {
+			description: 'Statistiques récupérées avec succès',
+			type: 'object',
+			properties: {
+				success: { type: 'boolean', const: true },
+				stats: {
+					type: 'object',
+					additionalProperties: true
+				},
+			},
+			required: ['success', 'stats'],
+		},
+		400: {
+			description: 'ID utilisateur invalide',
+			type: 'object',
+			properties: {
+				success: { type: 'boolean', const: false },
+				message: { type: 'string' },
+			},
+			required: ['success', 'message'],
+		},
+		401: {
+			description: 'Erreur d\'authentification',
+			...messageResponse,
+		}
+	},
+};
+
 export default {
 	invitePlayer,
 	getStatistics,
+	getStatisticsForUser,
 };

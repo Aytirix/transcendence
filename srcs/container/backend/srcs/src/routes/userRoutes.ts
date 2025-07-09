@@ -48,4 +48,10 @@ export default async (fastify: FastifyInstance) => {
 		schema: userSchema.verifyCode,
 		handler: controller2FA.verifyCode,
 	});
+
+	fastify.get('/user/:userId', {
+		preHandler: [Middleware.isAuthenticated],
+		schema: userSchema.getUserProfile,
+		handler: userController.getUserProfile,
+	});
 };

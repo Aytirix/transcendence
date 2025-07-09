@@ -6,6 +6,9 @@ import { Group, Message } from "./types/chat";
 import ApiService from "../../api/ApiService";
 import { useLanguage } from '../../contexts/LanguageContext';
 import { useAuth } from '../../contexts/AuthContext';
+import UserProfileModal from '../components/UserProfileModal';
+import { useUserProfileModal } from '../hooks/useUserProfileModal';
+import notification from "../components/Notifications";
 import "../assets/styles/chat.scss";
 
 const GroupsMessagesPage: React.FC = () => {
@@ -19,11 +22,13 @@ const GroupsMessagesPage: React.FC = () => {
 		createGroup,
 		deleteGroup,
 		addUserToGroup,
+		handleCancelInvite,
 		removeUserFromGroup,
 		currentUserId,
 	} = useChatWebSocket();
 	const { t } = useLanguage();
 	const { user } = useAuth();
+	const { modalState, openUserProfile, closeUserProfile } = useUserProfileModal();
 
 	// État local pour l'interface utilisateur
 	const [selectedGroupId, setSelectedGroupId] = useState<number | null>(null);
@@ -65,6 +70,16 @@ const GroupsMessagesPage: React.FC = () => {
 		}
 	}, []);
 
+	async function testInvitePong(friend: any) {
+		const response = await ApiService.post(`/pong/invitePlayer`, { friendId: friend.id });
+		if (response.ok) {
+			const message = t('friendPage.notifications.PonginviteSent', { username: friend.username });
+			notification.cancel(message).then(() => {
+				handleCancelInvite(response.token);
+			});
+		}
+		return response;
+	}
 	// Sélectionner automatiquement le premier groupe lors du chargement
 	useEffect(() => {
 		if (groups.length > 0 && !selectedGroup) {
@@ -243,6 +258,13 @@ const GroupsMessagesPage: React.FC = () => {
 		return friend?.username;
 	}
 
+	const handleUsernameClick = (userId: number, username: string) => {
+		// Don't open modal for the current user
+		if (userId === currentUserId) return;
+		
+		openUserProfile(userId, username);
+	};
+
 	const Messages: React.FC = () => {
 		// Déterminer si on doit montrer le bouton "Load More"
 		const shouldShowLoadMore = selectedGroup && selectedMessages.length >= 2 && 
@@ -312,7 +334,9 @@ const GroupsMessagesPage: React.FC = () => {
 							
 							<div className="chat-message__content">
 								<div className="chat-message__header">
-									<span className="chat-message__author">{senderName}</span>
+									<span className="chat-message__author">
+										{senderName}
+									</span>
 									<time className="chat-message__time">
 										{m.sent_at ? formatRelativeTime(new Date(m.sent_at)) : ""}
 									</time>
@@ -361,32 +385,32 @@ const GroupsMessagesPage: React.FC = () => {
 	};
 
 	const HeaderMessages: React.FC = () => {
-		/* if (showCreateGroup) {
-			return (
-				<div className="chat-content__header">
-					<div className="chat-content__header-info">
-						<div className="chat-content__header-details">
-							<div className="chat-content__header-name">
-								{t('chat.createGroup')}
-							</div>
-						</div>
-					</div>
-				</div>
-			);
-		} */
 
 		const displayName = selectedGroup ? getGroupDisplayName(selectedGroup) : t('chat.selectGroup');
 		
 		return (
 			<div className="chat-content__header">
 				{/* Group management button for non-private groups where user is owner */}
-				{selectedGroup && !selectedGroup.private && isGroupOwner(selectedGroup) && (
+				{selectedGroup && !selectedGroup.private ? (
+					isGroupOwner(selectedGroup) && (
+						<button
+							className="chat-group-manage-btn chat-group-manage-btn--top-right"
+							onClick={() => openGroupManagement(selectedGroup)}
+							title={t('chat.manageGroup')}
+						>
+							⚙️ {t('chat.manage')}
+						</button>
+					)
+				) : selectedGroup && selectedGroup.private && (
 					<button
+						title={t('friendPage.tooltips.pongInvite')}
 						className="chat-group-manage-btn chat-group-manage-btn--top-right"
-						onClick={() => openGroupManagement(selectedGroup)}
-						title={t('chat.manageGroup')}
+						onClick={() => {
+							const member = memberGroup(selectedGroup);
+							if (member) testInvitePong(member);
+						}}
 					>
-						⚙️ {t('chat.manage')}
+						<img src="/images/intro/floating-pong.png" alt={t('friendPage.tooltips.pongInvite')} className="w-7 h-7" />
 					</button>
 				)}
 				<div className="chat-content__header-info">
@@ -395,21 +419,6 @@ const GroupsMessagesPage: React.FC = () => {
 							{selectedGroup ? (selectedGroup.private ? t('chat.discussionWith') : t('chat.groupDiscussion')) : ''}
 							{displayName}
 						</div>
-						{/* {!selectedGroup?.private && selectedGroup && (
-							<div className="chat-content__header-status">
-								{selectedGroup.members.length > 1 && 
-									`${selectedGroup.members.length} ${selectedGroup.members.length > 1 ? t('chat.members') : t('chat.member')}`
-								}
-								{selectedGroup.onlines_id && selectedGroup.onlines_id.length > 0 && (
-									<>
-										{" • "}
-										<span className="chat-online-indicator">
-											{selectedGroup.onlines_id.length} {t('chat.onlineCount')}
-										</span>
-									</>
-								)}
-							</div>
-						)} */}
 					</div>
 				</div>
 				{/* Section des membres */}
@@ -423,7 +432,10 @@ const GroupsMessagesPage: React.FC = () => {
 										key={member.id} 
 										className={`chat-content__header-online-member ${isOnline ? 'chat-content__header-online-member--online' : 'chat-content__header-online-member--offline'}`}
 									>
-										<span className="chat-content__header-online-name">
+										<span 
+											className={`chat-content__header-online-name ${member.id !== currentUserId ? 'clickable-username' : ''}`}
+											onClick={() => member.id !== currentUserId && handleUsernameClick(member.id, member.username)}
+										>
 											{member.username}
 										</span>
 									</div>
@@ -856,6 +868,14 @@ const GroupsMessagesPage: React.FC = () => {
 					</div>
 				);
 			})()}
+			
+			{/* User Profile Modal */}
+			<UserProfileModal
+				isOpen={modalState.isOpen}
+				userId={modalState.userId || 0}
+				username={modalState.username}
+				onClose={closeUserProfile}
+			/>
 		</div>
 	);
 };
