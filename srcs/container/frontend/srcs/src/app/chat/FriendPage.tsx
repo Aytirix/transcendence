@@ -170,7 +170,7 @@ const FriendPage: React.FC = () => {
 
 					{filteredFriends.length === 0 && inputSearch ? (
 						<div className="text-center text-gray-400 py-8 flex-1 flex items-center justify-center">
-							{t('friendPage.noFriendsFound').replace('{search}', inputSearch)}
+							{t('friendPage.noFriendsFound', { search: inputSearch })}
 						</div>
 					) : filteredFriends.length === 0 && friends.length === 0 ? (
 						<div className="text-center text-gray-400 py-8 flex-1 flex items-center justify-center">
