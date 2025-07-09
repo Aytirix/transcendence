@@ -33,7 +33,7 @@ export const Login = async (request: FastifyRequest, reply: FastifyReply) => {
 
 	request.i18n.changeLanguage(user.lang || 'fr');
 
-	if (process.env.NODE_PROJET === 'dev') request.session.user = user;
+	if (process.env.NODE_PROJET === 'dev' || request.session.user.twofa == false) request.session.user = user;
 	else controller2FA.sendRegisterVerifyEmail(request, user.email, "loginAccount_confirm_email", user);
 
 	return reply.send({
@@ -95,6 +95,7 @@ export const UpdateUser = async (request: FastifyRequest, reply: FastifyReply) =
 		confirmPassword: string | null;
 		lang: string | null;
 		avatar: string | null;
+		twofa: boolean | null;
 	};
 
 	const email = body.email || null;
@@ -103,8 +104,11 @@ export const UpdateUser = async (request: FastifyRequest, reply: FastifyReply) =
 	const confirmPassword = body.confirmPassword || null;
 	const lang = body.lang || null;
 	const avatar = body.avatar || null;
+	let twofa = body.twofa;
+	if (twofa !== false && twofa !== true) twofa = null;
+	console.log(`Updating 2fa ${twofa}`);
 
-	if (!email && !username && !password && !confirmPassword && !lang && !avatar) {
+	if (!email && !username && !password && !confirmPassword && !lang && !avatar && twofa === null) {
 		return reply.status(400).send({
 			message: request.i18n.t('errors.user.noChanges'),
 		});
@@ -148,15 +152,17 @@ export const UpdateUser = async (request: FastifyRequest, reply: FastifyReply) =
 	}
 
 	if (email && email !== user.email) {
+		console.log(`User ${user.id} updated email from ${user.email} to ${email}`);
 		await controller2FA.sendUpdateVerifyEmail(request, email);
 	}
 
-	await userModel.UpdateUser(user.id.toString(), null, username, password, lang, avatar);
+	await userModel.UpdateUser(user.id.toString(), null, username, password, lang, avatar, twofa);
 	request.session.user = {
 		...user,
 		username: username || user.username,
 		lang: lang || user.lang,
 		avatar: avatar || user.avatar,
+		twofa: twofa !== null ? twofa : user.twofa,
 	};
 
 	setLangSocketsForUser(user.id, lang);
@@ -169,6 +175,7 @@ export const UpdateUser = async (request: FastifyRequest, reply: FastifyReply) =
 			username: request.session.user.username,
 			lang: request.session.user.lang,
 			avatar: request.session.user.avatar || null,
+			twofa: request.session.user.twofa || false,
 		},
 	});
 }

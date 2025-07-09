@@ -50,7 +50,8 @@ CREATE TABLE IF NOT EXISTS users (
 	password TEXT,
 	google_token TEXT UNIQUE,
 	avatar TEXT NOT NULL DEFAULT 'avatar1.png',
-	lang TEXT NOT NULL DEFAULT 'fr'
+	lang TEXT NOT NULL DEFAULT 'fr',
+	twofa INTEGER NOT NULL DEFAULT 0
 );
 -- Table pacman_map (avec contrainte UNIQUE et CHECK JSON)
 CREATE TABLE IF NOT EXISTS pacman_map (

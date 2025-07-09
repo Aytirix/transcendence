@@ -67,7 +67,7 @@ export const usernameAlreadyExists = async (username: string): Promise<boolean> 
 	return true;
 };
 
-export const UpdateUser = async (id: string, email: string = null, username: string = null, password: string = null, lang: string = null, avatar: string = null): Promise<void> => {
+export const UpdateUser = async (id: string, email: string = null, username: string = null, password: string = null, lang: string = null, avatar: string = null, twofa: boolean | null = null): Promise<void> => {
 	const updates: string[] = [];
 	const params: (string | null)[] = [];
 
@@ -95,6 +95,13 @@ export const UpdateUser = async (id: string, email: string = null, username: str
 	if (avatar) {
 		updates.push('avatar = ?');
 		params.push(avatar);
+	}
+
+	console.log(`brut 2fa: ${twofa}`);
+	console.log(`Updating 2FA for user ${id}: ${twofa !== null ? (twofa ? 'enabled' : 'disabled') : 'not changed'}`);
+	if (twofa !== null) {
+		updates.push('twofa = ?');
+		params.push((twofa ? 1 : 0).toString());
 	}
 
 	params.push(id);

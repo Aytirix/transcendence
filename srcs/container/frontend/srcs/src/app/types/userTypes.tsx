@@ -6,6 +6,7 @@ export type User = {
 	email: string;
 	avatar: string | null;
 	lang: string;
+	twofa?: boolean;
 	relation?: {
 		status: RelationStatus;
 		target: number;

@@ -551,6 +551,9 @@
 					"es": "Español",
 					"it": "Italia"
 				}
+			},
+			"twofa": {
+				"label": "Autenticación de dos factores (2FA)"
 			}
 		},
 		"actions": {
