@@ -117,7 +117,6 @@ const WaitingRooms: React.FC<WaitingRoomsProps> = ({ state }) => {
 
 		// Si l'utilisateur est dans une room, envoyer searchMap et configurer un rafraîchissement
 		if (currentRoom) {
-			console.log('Utilisateur dans une room, envoi de searchMap');
 			
 			// Envoyer immédiatement
 			state.ws.send(JSON.stringify({ action: 'searchMap', text: mapSearch }));

@@ -95,7 +95,6 @@ export class SoundManager {
                 };
                 
                 const onError = (e: Event) => {
-                    console.warn(`⚠️ Failed to preload sound ${name}:`, e);
                     audio.removeEventListener('canplaythrough', onLoad);
                     audio.removeEventListener('error', onError);
                     resolve(); // Don't fail the whole process
@@ -109,15 +108,12 @@ export class SoundManager {
 
         try {
             await Promise.allSettled(loadPromises);
-            console.log('✅ Sound preloading completed');
         } catch (error) {
-            console.warn('⚠️ Some sounds failed to preload:', error);
         }
     }
 
     public async enableAudio(): Promise<boolean> {
         try {
-            console.log('🔊 Attempting to enable audio...');
             
             // Debug sound file accessibility first
             await this.debugSoundPaths();
@@ -145,17 +141,14 @@ export class SoundManager {
                     testSound.pause();
                     testSound.currentTime = 0;
                     testSound.volume = originalVolume;
-                    console.log('🎵 Audio test successful');
                 } catch (testError) {
-                    console.warn('⚠️ Audio test failed but continuing:', testError);
+                    
                 }
             }
 
             this.audioEnabled = true;
-            console.log('✅ Audio enabled successfully');
             return true;
         } catch (error) {
-            console.warn('⚠️ Could not enable audio:', error);
             this.audioEnabled = false;
             return false;
         }
@@ -273,20 +266,6 @@ export class SoundManager {
         const playPromise = sound.play();
         if (playPromise !== undefined) {
             playPromise
-                .then(() => {
-                    console.log(`🎵 Playing: ${soundName}`);
-                })
-                .catch(error => {
-                    console.error(`❌ Error playing ${soundName}:`, error);
-                    this.currentlyPlaying[soundName] = false;
-                    
-                    if (error.name === 'NotAllowedError') {
-                        this.audioEnabled = false;
-                        console.warn('🔇 Audio blocked by browser policy - user interaction required');
-                    } else if (error.name === 'NotSupportedError') {
-                        console.error(`🚫 Audio format not supported for ${soundName}`);
-                    }
-                });
         }
     }
 
@@ -322,7 +301,6 @@ export class SoundManager {
         if (playPromise !== undefined) {
             playPromise
                 .then(() => {
-                    console.log(`🎵 Force playing: ${soundName}`);
                 })
                 .catch(error => {
                     console.error(`❌ Error force playing ${soundName}:`, error);
@@ -344,7 +322,6 @@ export class SoundManager {
             sound.pause();
             sound.currentTime = 0;
             this.currentlyPlaying[soundName] = false;
-            console.log(`⏹️ Stopped: ${soundName}`);
         }
     }
 
@@ -368,25 +345,11 @@ export class SoundManager {
     }
 
     public async debugSoundPaths(): Promise<void> {
-        console.log('🔍 Debugging sound file accessibility...');
         const soundFiles = [
             '/sounds/die.mp3',
             '/sounds/eating.mp3',
             '/sounds/waza.mp3',
             '/sounds/siren.mp3'
         ];
-
-        for (const soundPath of soundFiles) {
-            try {
-                const response = await fetch(soundPath, { method: 'HEAD' });
-                if (response.ok) {
-                    console.log(`✅ Sound file accessible: ${soundPath}`);
-                } else {
-                    console.error(`❌ Sound file not accessible: ${soundPath} (Status: ${response.status})`);
-                }
-            } catch (error) {
-                console.error(`❌ Error accessing sound file ${soundPath}:`, error);
-            }
-        }
     }
 }

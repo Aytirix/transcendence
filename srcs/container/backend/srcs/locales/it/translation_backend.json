@@ -25,7 +25,9 @@
 		"password": {
 			"required": "La password è obbligatoria.",
 			"invalid": "La password deve contenere tra 8 e 25 caratteri, almeno una lettera maiuscola, una lettera minuscola, un numero e un carattere speciale.",
-			"notMatching": "La password e la conferma password non corrispondono."
+			"notMatching": "La password e la conferma password non corrispondono.",
+			"missing": "Password mancante.",
+			"mismatch": "Le password non corrispondono."
 		},
 		"lang": {
 			"required": "La lingua è obbligatoria.",
@@ -36,6 +38,10 @@
 				"required": "Il parametro compresso di Minecraft è obbligatorio.",
 				"invalid": "Il parametro compresso di Minecraft deve essere una stringa base64 non vuota."
 			}
+		},
+		"pacman": {
+			"insertMapError": "Errore nell'inserimento della mappa.",
+			"updateMapError": "Errore nell'aggiornamento della mappa."
 		}
 	},
 	"login": {
@@ -100,6 +106,7 @@
 			"mapNotFound": "Impossibile trovare la mappa richiesta.",
 			"updateMapError": "Errore nell'aggiornamento della mappa nel database.",
 			"deleteMapError": "Errore nell'eliminazione della mappa dal database.",
+			"map_invalid": "Formato mappa non valido.",
 			"name": {
 				"required": "È richiesto un nome per la tua mappa.",
 				"invalid": "Il nome deve contenere tra 3 e 20 caratteri, e può contenere solo lettere, numeri, spazi, trattini e underscore."
@@ -107,7 +114,8 @@
 			"map": {
 				"invalid": "La mappa deve avere 31 righe di 29 caratteri.",
 				"idRequired": "È richiesto un id della mappa.",
-				"required": "È richiesta una mappa."
+				"required": "È richiesta una mappa.",
+				"nameAlreadyExists": "Il nome della mappa esiste già."
 			},
 			"is_public": {
 				"required": "La visibilità della mappa è obbligatoria."
@@ -118,6 +126,10 @@
 				"nameLength": "Il nome della stanza deve essere tra 3 e 15 caratteri",
 				"nameAlreadyUsed": "Il nome della stanza è già in uso"
 			}
+		},
+		"map_invalid": "Mappa non valida.",
+		"pageNotFound": {
+			"title": "Pagina non trovata"
 		},
 		"rooms": {
 			"actionNotFound": "Si prega di specificare un'azione.",
@@ -270,7 +282,12 @@
 			"alreadyInvited": "Hai già invitato {{username}} a giocare.",
 			"inviteSent": "Invito inviato a {{username}} per giocare a Pong",
 			"inviteReceived": "{{username}} ti ha invitato a giocare a Pong",
-			"tooFrequent": "Hai già inviato un invito a {{username}} di recente. Si prega di attendere {{seconds}} secondi prima di riprovare."
+			"tooFrequent": "Hai già inviato un invito a {{username}} di recente. Si prega di attendere {{seconds}} secondi prima di riprovare.",
+			"invalidToken": "Token di invito non valido.",
+			"tokenMissing": "Token di invito mancante."
+		},
+		"tournament": {
+			"nextQualifierRounds": "Qualificato automaticamente per i turni successivi!"
 		}
 	}
 }

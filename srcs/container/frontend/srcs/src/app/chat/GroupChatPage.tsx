@@ -72,7 +72,6 @@ const GroupsMessagesPage: React.FC = () => {
 			// Chercher un groupe privé parmi les nouveaux groupes
 			const newPrivateGroup = newGroups.find(g => g.private);
 			if (newPrivateGroup) {
-				console.log("Auto-selecting new private group:", newPrivateGroup);
 				setSelectedGroupId(newPrivateGroup.id);
 			}
 		}
