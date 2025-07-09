@@ -5,6 +5,7 @@ import { getMinecraftInfo } from './minecraft/FullscreenMinecraftHandler.tsx';
 import './assets/styles/intro.scss';
 import { useAuth } from '../contexts/AuthContext.tsx';
 import { canAccessMinecraft, recordMinecraftAccess } from './minecraft/minecraftUtils';
+import MinSizeGuard from './components/MinSizeGuard.tsx';
 
 function Intro() {
 	const { t } = useLanguage();
@@ -125,9 +126,11 @@ function Intro() {
 							<span className="feature">• {t('home.real_time')}</span>
 							<span className="feature">• {t('home.competitive')}</span>
 						</div>
-						<button className="style-button">
-							{t('home.play_now')} →
-						</button>
+						<MinSizeGuard minWidth={1500} minHeight={850} hideWhenBlocked={true}>
+							<button className="style-button">
+								{t('home.play_now')} →
+							</button>
+						</MinSizeGuard>
 					</div>
 
 					<div
@@ -142,9 +145,11 @@ function Intro() {
 							<span className="feature">• {t('home.high_scores')}</span>
 							<span className="feature">• {t('home.nostalgic')}</span>
 						</div>
-						<button className="style-button">
-							{t('home.play_now')} →
-						</button>
+						<MinSizeGuard minWidth={1200} minHeight={850} hideWhenBlocked={true}>
+							<button className="style-button">
+								{t('home.play_now')} →
+							</button>
+						</MinSizeGuard>
 					</div>
 				</div>
 
