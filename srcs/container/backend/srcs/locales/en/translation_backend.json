@@ -25,7 +25,9 @@
 		"password": {
 			"required": "The password is required.",
 			"invalid": "The password must contain between 8 and 25 characters, at least one uppercase letter, one lowercase letter, one number and one special character.",
-			"notMatching": "The password and password confirmation do not match."
+			"notMatching": "The password and password confirmation do not match.",
+			"missing": "Password is missing.",
+			"mismatch": "Passwords do not match."
 		},
 		"lang": {
 			"required": "The language is required.",
@@ -36,6 +38,10 @@
 				"required": "The compressed Minecraft parameter is required.",
 				"invalid": "The compressed Minecraft parameter must be a non-empty base64 string."
 			}
+		},
+		"pacman": {
+			"insertMapError": "Error inserting map.",
+			"updateMapError": "Error updating map."
 		}
 	},
 	"login": {
@@ -100,6 +106,7 @@
 			"mapNotFound": "Unable to find the requested map.",
 			"updateMapError": "Error updating the map in the database.",
 			"deleteMapError": "Error deleting the map from the database.",
+			"map_invalid": "Invalid map format.",
 			"name": {
 				"required": "A name for your map is required.",
 				"invalid": "The name must contain between 3 and 20 characters, and can only contain letters, numbers, spaces, hyphens and underscores."
@@ -107,7 +114,8 @@
 			"map": {
 				"invalid": "The map must be 31 lines of 29 characters.",
 				"idRequired": "A map id is required.",
-				"required": "A map is required."
+				"required": "A map is required.",
+				"nameAlreadyExists": "Map name already exists."
 			},
 			"is_public": {
 				"required": "Map visibility is required."
@@ -118,6 +126,10 @@
 				"nameLength": "The room name must be between 3 and 15 characters",
 				"nameAlreadyUsed": "The room name is already in use"
 			}
+		},
+		"map_invalid": "Invalid map.",
+		"pageNotFound": {
+			"title": "Page not found"
 		},
 		"rooms": {
 			"actionNotFound": "Please specify an action.",
@@ -270,7 +282,12 @@
 			"alreadyInvited": "Player {{username}} has already been invited by another player.",
 			"inviteSent": "Invitation sent to {{username}} to play Pong",
 			"inviteReceived": "{{username}} has invited you to play Pong",
-			"tooFrequent": "You have already sent an invitation to {{username}} recently. Please wait {{seconds}} seconds before trying again."
+			"tooFrequent": "You have already sent an invitation to {{username}} recently. Please wait {{seconds}} seconds before trying again.",
+			"invalidToken": "Invalid invitation token.",
+			"tokenMissing": "Invitation token is missing."
+		},
+		"tournament": {
+			"nextQualifierRounds": "Automatically qualified for next rounds!"
 		}
 	}
 }

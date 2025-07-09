@@ -122,7 +122,6 @@ export const ChatWebSocketProvider: React.FC<ChatWebSocketProviderProps> = ({ ch
 							[data.group_id]: [...(prev[data.group_id] || []), data.message]
 						}));
 					}
-					// console.log("FRIENDS", data.friends);
 					if (data.friends) {
 						setFriends(prev => [...prev, data.friends]);
 					}
@@ -154,17 +153,13 @@ export const ChatWebSocketProvider: React.FC<ChatWebSocketProviderProps> = ({ ch
 				case "init_connected": {
 					const groupArray: Group[] = Object.values(data.groups || {});
 					setGroups(groupArray);
-					console.log("Groups initialized:", groups);
 
 					setCurrentUserId(data.user.id);
-					console.log(`Current user ID: ${data.user.id}`);
 
-					console.log("FRIENDS init:", data.friends);
 					const groupFriends: Friend[] = Object.values(data.friends || {});
 					if (groupFriends.length > 0) {
 						setFriends(sortFriends(groupFriends));
 					}
-					console.log("FRIENDS2 init:", groupFriends);
 					break;
 				}
 
@@ -229,7 +224,6 @@ export const ChatWebSocketProvider: React.FC<ChatWebSocketProviderProps> = ({ ch
 						});
 
 						const existingFriend = friendsRef.current.find(f => f.id === data.user.id);
-						console.log("Existing friend:", existingFriend, "Data user:", data.user);
 
 						if (!existingFriend) {
 							const newFriend: Friend = {
@@ -302,7 +296,6 @@ export const ChatWebSocketProvider: React.FC<ChatWebSocketProviderProps> = ({ ch
 								// Vérifier si le groupe n'existe pas déjà
 								const groupExists = prev.some(g => g.id === data.group.id);
 								if (!groupExists) {
-									console.log("Adding new private group:", data.group);
 									return [...prev, data.group];
 								}
 								return prev;
@@ -312,7 +305,6 @@ export const ChatWebSocketProvider: React.FC<ChatWebSocketProviderProps> = ({ ch
 					break;
 
 				case "refuse_friend":
-					console.log("receive refuse_friend", data);
 					if (data.result === "ok") {
 						setFriends(prev => prev.filter(friend => friend.id !== data.user_id));
 						setSearchResults(prev =>
@@ -435,7 +427,6 @@ export const ChatWebSocketProvider: React.FC<ChatWebSocketProviderProps> = ({ ch
 							};
 						}));
 					}
-					console.log("all groups after disconnect:",groups);
 					break;
 				case "MultiInviteConfirm": {
 					// Utiliser la socket qui nous a envoyé ce message - si on reçoit le message, c'est qu'elle fonctionne !
@@ -480,11 +471,9 @@ export const ChatWebSocketProvider: React.FC<ChatWebSocketProviderProps> = ({ ch
 					// WebSocket pong response - connection is healthy
 					break;
 				default:
-					console.log("Unhandled WebSocket action:", data.action);
 					break;
 			}
 		} catch (error) {
-			console.error("Error handling WebSocket message:", error);
 		}
 	}, []); // Pas de dépendances car on utilise les refs
 
@@ -499,23 +488,11 @@ export const ChatWebSocketProvider: React.FC<ChatWebSocketProviderProps> = ({ ch
 	// Mettre à jour la ref de la socket
 	useEffect(() => {
 		socketRef.current = socket;
-		console.log("WebSocket reference updated:", socket ? "available" : "null");
 	}, [socket]);
 
-	// Debug: Log socket state changes
-	useEffect(() => {
-		console.log("Socket state changed:", {
-			socket: socket ? "available" : "null",
-			readyState: socket?.readyState,
-			wsStatus,
-			shouldConnectWebSocket,
-			currentPathname
-		});
-	}, [socket, wsStatus, shouldConnectWebSocket, currentPathname]);
-
+	
 	useEffect(() => {
 		if (!shouldConnectWebSocket && socket) {
-			console.log("Closing WebSocket connection as it's not needed");
 			socket.close();
 			socketRef.current = null; // Mettre à jour la ref quand on ferme la socket
 			setGroups([]);
@@ -652,7 +629,6 @@ export const ChatWebSocketProvider: React.FC<ChatWebSocketProviderProps> = ({ ch
 	// --- Actions Amis ---
 	const handleAddFriend = useCallback((userId: number) => {
 		if (socketRef.current?.readyState !== WebSocket.OPEN) return;
-		console.log("add_friend", userId);
 		socketRef.current.send(JSON.stringify({
 			action: "add_friend",
 			user_id: userId,
@@ -693,7 +669,6 @@ export const ChatWebSocketProvider: React.FC<ChatWebSocketProviderProps> = ({ ch
 
 	const handleBlockedFriend = useCallback((userId: number) => {
 		if (socketRef.current?.readyState !== WebSocket.OPEN) return;
-		console.log("block_user", userId);
 		socketRef.current.send(JSON.stringify({
 			action: "block_user",
 			user_id: userId,
@@ -702,7 +677,6 @@ export const ChatWebSocketProvider: React.FC<ChatWebSocketProviderProps> = ({ ch
 
 	const handleUnBlockedFriend = useCallback((userId: number) => {
 		if (socketRef.current?.readyState !== WebSocket.OPEN) return;
-		console.log("unblock_user", userId);
 		socketRef.current.send(JSON.stringify({
 			action: "unblock_user",
 			user_id: userId,

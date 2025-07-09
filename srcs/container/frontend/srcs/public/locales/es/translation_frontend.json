@@ -1,5 +1,6 @@
 {
 	"hello": "Hola",
+	"close": "Cerrar",
 	"logout": "Cerrar sesión",
 	"loading": "Cargando...",
 	"username": "Nombre de usuario",

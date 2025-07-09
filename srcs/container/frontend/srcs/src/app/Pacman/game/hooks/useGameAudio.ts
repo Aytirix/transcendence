@@ -23,14 +23,8 @@ export function useGameAudio(gameState: GameState, playerId?: number) {
 
 	const handleFirstInteraction = useCallback(async () => {
 		if (!audioEnabled) {
-			console.log('🔊 Attempting to enable audio...');
 			const success = await soundManager.enableAudio();
 			setAudioEnabled(success);
-			if (success) {
-				console.log('✅ Audio enabled successfully!');
-			} else {
-				console.warn('⚠️ Failed to enable audio');
-			}
 		}
 	}, [audioEnabled, soundManager]);
 
@@ -52,7 +46,6 @@ export function useGameAudio(gameState: GameState, playerId?: number) {
 		if (!audioEnabled || gameStarted.current) return;
 
 		if (gameState.launch && gameState.players.length > 0) {
-			console.log('🎵 Game starting - Playing ready sound');
 			soundManager.playGameStart();
 			gameStarted.current = true;
 			

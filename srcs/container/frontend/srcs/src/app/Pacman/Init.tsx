@@ -132,7 +132,6 @@ export default function WebSocketPacman() {
 				break;
 			}
 			case 'searchMap': {
-				console.log('Search results:', data.data.maps);
 				setState((prevState: state) => ({
 					...prevState,
 					publicMaps: data.data.maps || [],
@@ -141,8 +140,6 @@ export default function WebSocketPacman() {
 			}
 			case 'insertOrUpdateMap': {
 				setState((prevState: state) => {
-					console.log('old maps:', prevState.maps);
-					console.log('old maps :', data.data.map);
 					
 					// Mettre à jour les données de téléporteurs s'il y en a
 					if (data.data.map.teleportMap && data.data.map.unassignedTeleports) {
@@ -160,7 +157,6 @@ export default function WebSocketPacman() {
 						if (newMapIndex !== -1) {
 							const updatedMaps = [...prevState.maps];
 							updatedMaps[newMapIndex] = data.data.map;
-							console.log('new maps:', updatedMaps);
 							return {
 								...prevState,
 								maps: updatedMaps
@@ -171,7 +167,6 @@ export default function WebSocketPacman() {
 					if (mapIndex !== -1) {
 						const updatedMaps = [...prevState.maps];
 						updatedMaps[mapIndex] = data.data.map;
-						console.log('Map updated:', data.data.map.name);
 						return {
 							...prevState,
 							maps: updatedMaps
@@ -185,18 +180,10 @@ export default function WebSocketPacman() {
 				break;
 			}
 			default:
-				console.log('Unknown action:', data.data.action);
 				break;
 		}
 	};
 	const handleSaveMap = (mapData: PacmanMap, isAutoSave: boolean = false) => {
-		console.log('handleSaveMap state :', state.maps);
-		console.log('handleSaveMap mapData:', mapData);
-		if (isAutoSave) {
-			console.log('Auto-saving map...', mapData.name);
-		} else {
-			console.log('Manually saving map...', mapData.name);
-		}
 
 		if (state.ws && state.ws.readyState === WebSocket.OPEN) {
 			state.ws.send(JSON.stringify({

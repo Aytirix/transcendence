@@ -1,5 +1,6 @@
 {
 	"hello": "Hello",
+	"close": "Close",
 	"logout": "Logout",
 	"loading": "Loading...",
 	"username": "Username",

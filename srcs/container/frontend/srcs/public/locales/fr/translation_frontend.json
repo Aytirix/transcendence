@@ -1,5 +1,6 @@
 {
 	"hello": "Bonjour",
+	"close": "Fermer",
 	"logout": "Déconnexion",
 	"loading": "Chargement...",
 	"username": "Nom d'utilisateur",
@@ -272,6 +273,7 @@
 	},
 	"chat": {
 		"title": "Chat",
+		"loading": "Chargement...",
 		"sendMessage": "Envoyer un message",
 		"messagePlaceholder": "Tapez votre message...",
 		"send": "Envoyer",

@@ -1,5 +1,6 @@
 {
 	"hello": "Ciao",
+	"close": "Chiudi",
 	"logout": "Disconnetti",
 	"loading": "Caricamento...",
 	"username": "Nome utente",
