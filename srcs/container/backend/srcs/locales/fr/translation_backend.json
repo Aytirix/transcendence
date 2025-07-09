@@ -57,7 +57,8 @@
 		"success": "Vous êtes maintenant connecté.",
 		"alreadyLoggedIn": "Vous êtes déjà connecté.",
 		"notLoggedIn": "Veuillez vous connecter pour accéder à cette ressource.",
-		"welcome": "Merci de consulter votre e-mail pour valider votre compte.",
+		"welcome-confirm": "Merci de consulter votre e-mail pour valider votre compte.",
+		"welcome": "Bienvenue sur transcendence ! ",
 		"logout": "Déconnexion réussie."
 	},
 	"user": {

@@ -74,6 +74,7 @@ export async function isAuth(request: FastifyRequest, reply: FastifyReply) {
 				username: user.username,
 				lang: user.lang,
 				avatar: user.avatar || null,
+				twofa: user.twofa || null,
 			},
 		});
 	} else {

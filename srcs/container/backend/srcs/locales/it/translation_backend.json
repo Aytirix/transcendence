@@ -57,7 +57,8 @@
 		"success": "Ora sei connesso.",
 		"alreadyLoggedIn": "Sei già connesso.",
 		"notLoggedIn": "Si prega di accedere per accedere a questa risorsa.",
-		"welcome": "Si prega di controllare la tua email per convalidare il tuo account.",
+		"welcome-confirm": "Si prega di controllare la tua email per convalidare il tuo account.",
+		"welcome": "Benvenuto su Transcendence!",
 		"logout": "Disconnessione riuscita."
 	},
 	"user": {
