@@ -45,7 +45,7 @@ export const CenteredBox: React.FC<CenteredBoxProps> = ({ state, onCreateMap, on
 						aria-label={t("pacman.menu.home")}
 						title={t("pacman.menu.home")}
 					>
-						<img src="/avatars/ironman.svg" alt="Iron Man home icon" />
+						<img src="/avatars/ironman.png" alt="Iron Man home icon" />
 						<span className="home-label">{t("pacman.menu.home")}</span>
 					</button>
 				</div>

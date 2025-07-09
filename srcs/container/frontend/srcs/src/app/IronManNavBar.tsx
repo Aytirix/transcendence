@@ -40,7 +40,7 @@ const IronManNavBar: React.FC = () => {
 							<div className="rounded-full">
 								<img
 									alt="logo"
-									src="avatars/ironman.svg" />
+									src="avatars/ironman.png" />
 							</div>
 						</div>
 					</div>
