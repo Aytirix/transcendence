@@ -10,7 +10,10 @@
 			"notMatching": "Le code de vérification ne correspond pas."
 		},
 		"user": {
-			"noChanges": "Aucun changement a été détecté."
+			"noChanges": "Aucun changement n'a été détecté.",
+			"invalidUserId": "L'ID utilisateur est invalide.",
+			"userIdRequired": "L'ID utilisateur est requis.",
+			"notFound": "Utilisateur non trouvé."
 		},
 		"email": {
 			"required": "L'adresse e-mail est requise.",

@@ -1,11 +1,9 @@
-// Intro Page Styles - Clean and Modern
 .intro-container {
 	min-height: 100vh;
 	color: white;
 	overflow-x: hidden;
 	position: relative;
 
-	// Simple particle background
 	&::before {
 		content: '';
 		position: fixed;
@@ -38,7 +36,6 @@
 	}
 }
 
-// Hero Section
 .hero-section {
 	position: relative;
 	min-height: 100vh;
@@ -98,8 +95,6 @@
 	}
 }
 
-
-// Floating elements
 .floating-elements {
 	position: absolute;
 	top: 0;
@@ -167,7 +162,6 @@
 	}
 }
 
-// Games Section
 .games-section {
 	padding: 5rem 2rem;
 	position: relative;
@@ -314,7 +308,6 @@
 	}
 }
 
-// Footer
 .intro-footer {
 	padding: 2rem;
 	background: rgba(0, 0, 0, 0.2);
@@ -352,7 +345,6 @@
 	}
 }
 
-// Scroll Down Button
 .scroll-down-button {
 	position: fixed;
 	top: 90vh;
@@ -412,7 +404,6 @@
 	}
 }
 
-// Responsive Design
 @media (max-width: 768px) {
 	.hero-stats {
 		gap: 1.5rem;

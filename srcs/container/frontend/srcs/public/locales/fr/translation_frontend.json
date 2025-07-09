@@ -79,7 +79,6 @@
 		"at_42_school": "à l'école 42",
 		"developed_by": "Développé par"
 	},
-
 	"credits": {
 		"contributions_title": "Contributions",
 		"role": {
@@ -355,7 +354,8 @@
 		"sort": "Trier",
 		"yes": "Oui",
 		"no": "Non",
-		"ok": "OK"
+		"ok": "OK",
+		"retry": "Réessayer"
 	},
 	"errors": {
 		"networkError": "Erreur réseau",
@@ -569,6 +569,42 @@
 		},
 		"email": {
 			"confirmationRequired": "Veuillez consulter votre boîte mail\n{{email}}\npour confirmer votre changement.\nL'email expire dans 15 minutes."
+		},
+		"modal": {
+			"title": "Profil de {{username}}",
+			"loading": "Chargement du profil utilisateur...",
+			"errorLoading": "Erreur lors du chargement du profil utilisateur",
+			"tabs": {
+				"profile": "Profil",
+				"pong": "Stats Pong",
+				"pacman": "Stats Pacman"
+			},
+			"pong": {
+				"wins": "Victoires",
+				"losses": "Défaites",
+				"abandons": "Abandons",
+				"winRate": "Taux de victoire",
+				"matchHistory": "Historique des matchs",
+				"noMatches": "Aucun match Pong joué pour le moment"
+			},
+			"pacman": {
+				"gamesAsPacman": "Parties en tant que Pacman",
+				"gamesAsGhost": "Parties en tant que Fantôme",
+				"bestScore": "Meilleur score",
+				"matchHistory": "Historique des parties",
+				"noMatches": "Aucune partie Pacman jouée pour le moment",
+				"asRole": "en tant que {{role}}",
+				"score": "Score",
+				"pacmanRecords": "Records Pacman",
+				"ghostRecords": "Records Fantôme",
+				"noRecords": "Aucun record pour le moment"
+			},
+			"match": {
+				"win": "VICTOIRE",
+				"loss": "DÉFAITE",
+				"abandon": "ABANDON",
+				"vs": "vs"
+			}
 		}
 	},
 	"singlePage": {

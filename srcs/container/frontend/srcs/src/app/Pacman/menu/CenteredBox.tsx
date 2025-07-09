@@ -30,19 +30,26 @@ export const CenteredBox: React.FC<CenteredBoxProps> = ({ state, onCreateMap, on
 	const navigate = useNavigate();
 	const { t } = useLanguage();
 	
+	// Check if user is currently in a waiting room
+	const currentRoom = state.rooms?.waiting?.find(r =>
+		r.players?.some(p => p.id === state.player?.id)
+	);
+	
 	return (
 		<>
-			<div className='home-button'>
-				<button
-					className="home-icon-btn"
-					onClick={async () => {navigate('/');}}
-					aria-label={t("pacman.menu.home")}
-					title={t("pacman.menu.home")}
-				>
-					<img src="/avatars/ironman.svg" alt="Iron Man home icon" />
-					<span className="home-label">{t("pacman.menu.home")}</span>
-				</button>
-			</div>
+			{!currentRoom && (
+				<div className='home-button'>
+					<button
+						className="home-icon-btn"
+						onClick={async () => {navigate('/');}}
+						aria-label={t("pacman.menu.home")}
+						title={t("pacman.menu.home")}
+					>
+						<img src="/avatars/ironman.svg" alt="Iron Man home icon" />
+						<span className="home-label">{t("pacman.menu.home")}</span>
+					</button>
+				</div>
+			)}
 			<div className="centered-box">
 				<div className='title-container'>
 					<h1>{t("pacman.title")}</h1>

@@ -369,6 +369,65 @@ export const getMinecraftUser = {
 	},
 };
 
+export const getUserProfile = {
+	description: 'Récupération du profil utilisateur par ID',
+	tags: ['Utilisateur'],
+	params: {
+		type: 'object',
+		properties: {
+			userId: { type: 'string', pattern: '^[0-9]+$' }
+		},
+		required: ['userId'],
+		additionalProperties: false,
+		errorMessage: {
+			required: {
+				userId: 'errors.user.userIdRequired',
+			},
+			properties: {
+				userId: 'errors.user.invalidUserId',
+			},
+		}
+	},
+	response: {
+		200: {
+			description: 'Profil utilisateur récupéré avec succès',
+			type: 'object',
+			properties: {
+				success: { type: 'boolean', const: true },
+				user: {
+					type: 'object',
+					properties: {
+						id: { type: 'number' },
+						username: { type: 'string' },
+						avatar: { type: 'string', nullable: true },
+						lang: { type: 'string' },
+					},
+					required: ['id', 'username', 'avatar', 'lang'],
+				},
+			},
+			required: ['success', 'user'],
+		},
+		400: {
+			description: 'ID utilisateur invalide',
+			type: 'object',
+			properties: {
+				success: { type: 'boolean', const: false },
+				message: { type: 'string' },
+			},
+			required: ['success', 'message'],
+		},
+		404: {
+			description: 'Utilisateur non trouvé',
+			type: 'object',
+			properties: {
+				success: { type: 'boolean', const: false },
+				message: { type: 'string' },
+			},
+			required: ['success', 'message'],
+		},
+	},
+};
+
 export default {
 	login,
 	register,
@@ -379,4 +438,5 @@ export default {
 	UploadAvatar,
 	verifyCode,
 	forgetPassword,
+	getUserProfile,
 };
