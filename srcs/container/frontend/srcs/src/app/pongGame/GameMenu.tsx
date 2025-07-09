@@ -122,8 +122,11 @@ const GameMenu: React.FC = () => {
 	};
 	const Join = () => {
 		setShowCreate(false);
-		if (showJoin)
+		if (showJoin) {
 			setShowJoin(false);
+			setValidationButton(false)
+			setIdJoin("");
+		}
 		else
 			setShowJoin(true);
 	}
