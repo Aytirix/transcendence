@@ -217,6 +217,48 @@
 		transform: translate(-50%, -50%);
 		border-radius: 0;
 	}
+	
+	// Formes en L avec orientation spécifique
+	.tile.door .l-shape-top-left {
+		width: 20%;
+		height: 20%;
+		background-color: #f77cf0;
+		position: absolute;
+		top: 25%;
+		left: 25%;
+		transform: translate(-50%, -50%);
+		border-radius: 0;
+	}
+	.tile.door .l-shape-top-right {
+		width: 20%;
+		height: 20%;
+		background-color: #f77cf0;
+		position: absolute;
+		top: 25%;
+		left: 75%;
+		transform: translate(-50%, -50%);
+		border-radius: 0;
+	}
+	.tile.door .l-shape-bottom-left {
+		width: 20%;
+		height: 20%;
+		background-color: #f77cf0;
+		position: absolute;
+		top: 75%;
+		left: 25%;
+		transform: translate(-50%, -50%);
+		border-radius: 0;
+	}
+	.tile.door .l-shape-bottom-right {
+		width: 20%;
+		height: 20%;
+		background-color: #f77cf0;
+		position: absolute;
+		top: 75%;
+		left: 75%;
+		transform: translate(-50%, -50%);
+		border-radius: 0;
+	}
 
 	.tile.empty {
 		background-color: #000;
