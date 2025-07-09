@@ -266,10 +266,6 @@ export default class PacmanMap {
 				}
 			}
 
-			// S'il y a des cellules X non connectées, c'est une erreur
-			if (connectedX.size !== xCells.length) {
-				throw new Error("Les cellules accessibles seulement par les fantômes ne forment pas une seule région connectée.");
-			}
 		}
 
 		// ----------------------------------------------------------------

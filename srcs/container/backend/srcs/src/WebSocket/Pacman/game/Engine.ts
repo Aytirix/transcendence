@@ -7,8 +7,8 @@ import Pacman from "./Character/Pacman";
 import modelPacman from "@models/modelPacman";
 
 export const TILE_SIZE = 50;
-export const PACMAN_SPEED = 3;
-export const GHOST_SPEED = 2.5;
+export const PACMAN_SPEED = 4;
+export const GHOST_SPEED = 4;
 
 /**
  * Classe principale du moteur de jeu Pac-Man
@@ -35,8 +35,8 @@ export default class Engine {
 	private isFrightened: boolean = false;
 	private pacmanKillFrightened: number = 0;
 	private frightenedEndTime: number = 0;
-	private static FRIGHTENED_DURATION = 8000; // 8 secondes en mode effrayé
-	private static FRIGHTENED_SPEED = 2 // Vitesse réduite en mode effrayé
+	private static FRIGHTENED_DURATION = 6000; // 8 secondes en mode effrayé
+	private static FRIGHTENED_SPEED = 3 // Vitesse réduite en mode effrayé
 	public lastTimePlayerConnected: number = Date.now();
 
 	constructor(room: room, initialPlayerSockets: Map<number, WebSocket>) {
@@ -770,8 +770,8 @@ export default class Engine {
 			const pacmanId = Array.from(this.players.values()).find(p => p instanceof Pacman)?.player.id;
 			this.reward += -500;
 			this.pause({ key: 'pacman.engine.gameFinishedGhostsWin' });
-			this.addStatistics();
 			this.win = 'ghosts';
+			this.addStatistics();
 			this.broadcastState();
 			if (this.trainingAI) {
 				this.Finished = true;
