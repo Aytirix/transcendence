@@ -175,7 +175,7 @@ const GameMenu: React.FC = () => {
 	useEffect(() => {
 		setValidationButton(() => {
 			for (const tournament of listTournament) {
-				if (tournament.id.toString() === idJoin)
+				if (tournament.id.toString() === idJoin && !tournament.isFull)
 					return true;
 			}
 			return false;
