@@ -157,7 +157,6 @@ async function updateTournament() {
 			value: []
 		};
 
-		// mise a jour du fichier json pour envoi a tout les players
 		for (const [id, tournament] of listTournament) {
 			let listPlayerTemp: Array<any> = [];
 			for (const player of tournament.listPlayer) {
