@@ -119,7 +119,6 @@ export class Game {
 				this.resetDisplay("SameKeyboard");
 			}
 			else if (this.player1.getPlayerInfos().mode === "Solo") {
-				// this.player1.getPlayerInfos().socket.send(JSON.stringify({type: "FINISHED"}));
 				handleFinish(this.player1.getPlayerInfos());
 				this.resetDisplay("Solo");
 			}
@@ -128,7 +127,6 @@ export class Game {
 		if (this.getStatus() === "EXIT") {
 		if ((this.player1.getPlayerInfos().mode === "Multi" && this.player2.getPlayerInfos().mode === "Multi") ||
 			(this.player1.getPlayerInfos().mode === "MultiInvite" && this.player2.getPlayerInfos().mode === "MultiInvite")) {
-				// console.log("test exit pause ")
 				if (this.player1.getPlayerInfos().resultMatch === "Loose")
 					modelPong.insertStatistic(this.player1.getPlayerInfos().id, 0, 2, this.player1.getPlayerInfos().mode, this.player2.getPlayerInfos().id)
 				else
@@ -166,12 +164,11 @@ export class Game {
 	detectionCollision(): void {
 		if (this.player1.isCollidingWithBall(this.ball)) {
 			this.ball.d_x = -1;
-			// if (this.ball.pos_x + this.ball.radius > this.player1.pos_x)
 				this.ball.pos_x = this.player1.pos_x - this.ball.radius; 
 			if (this.ball.speed <= 12)
 				this.ball.speed += 0.5;
 			this.player1.zoneEffect(this.ball);
-			if (this.player1.getPlayerInfos().mode === "Solo") //controler ici si ca fait pas bug le fait de regler la ball par rapport a la raquette 
+			if (this.player1.getPlayerInfos().mode === "Solo") 
 				handleCollisionWithPlayer1(this.ball, this.player1, this.player2, this)
 		}
 		else if ((this.ball.pos_x + this.ball.radius) <= 0) {
@@ -183,9 +180,7 @@ export class Game {
 		}
 		else if (this.player2.isCollidingWithBall(this.ball)) {
 			this.ball.d_x = 1;
-			// if (this.ball.pos_x - + this.ball.radius < this.player2.pos_x)
 				this.ball.pos_x = this.player2.pos_x + this.ball.radius;
-			// console.log(this.ball.pos_x);
 			if (this.ball.speed <= 12)
 				this.ball.speed += 0.5;
 			this.player2.zoneEffect(this.ball);
@@ -209,12 +204,12 @@ export class Game {
 	serviceBall(direction: number, ball: Ball, player1: Paddle, player2: Paddle) : void {
 		ball.pos_x = this.width / 2;
 		ball.pos_y = this.height / 2;
-		ball.speed = 9 //ici enlever
+		ball.speed = 9
 		player1.pos_x = 780;
 		player1.pos_y = 250;
 		player2.pos_x = 20;
 		player2.pos_y = 250;
-		this.setStatus("SERVICE"); //KICKOFF
+		this.setStatus("SERVICE");
 
 		setTimeout(() => {
 			switch (direction) {

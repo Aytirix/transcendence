@@ -44,7 +44,6 @@ const TournamentPage: React.FC = () => {
 				setListTournament(data.value);
 			else if (data.action === "infoTournament") {
 				setIdTournament(data.id);
-				console.log("name action", data.name)
 				playerName.current = data.name;
 				socketRef.current?.send(JSON.stringify({ type: "Tournament", action: "Display" }));
 			}
@@ -54,7 +53,6 @@ const TournamentPage: React.FC = () => {
 				setTimeout(() => {
 					setAutoQualified(false);
 				}, 3000);
-				console.log("win next manche")
 			}
 			else if (data.action === "Display") {
 				if (!switchDisplay.current) {
@@ -68,7 +66,6 @@ const TournamentPage: React.FC = () => {
 				switchDisplay.current = false;
 			}
 			else if (data.action === "WinnerTournament") {
-				console.log(data.message);
 				setIsWinnerTournament(true);
 				setNameWinner(data.value);
 			}
@@ -79,8 +76,6 @@ const TournamentPage: React.FC = () => {
 	}, []);
 
 	useEffect(() => {
-		console.log("player1:", player1);
-		console.log("player2:", player2);
 	}, [player1, player2]);
 
 	useEffect(() => {
@@ -99,8 +94,6 @@ const TournamentPage: React.FC = () => {
 		for (const tournament of listTournament) {
 			if (tournament.id === idTournament) {
 				setListNameAvatar(tournament.listPlayers);
-				console.log("ListNameAvatar : ", listNameAvatar);
-				console.log("tournament ListNameAvatar : ", tournament.listPlayers);
 				setSizeTournament(tournament.max)
 			}
 		}
