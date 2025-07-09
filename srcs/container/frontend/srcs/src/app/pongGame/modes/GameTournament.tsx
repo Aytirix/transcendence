@@ -64,7 +64,6 @@ const GameTournament: React.FC = () => {
 				camera.current!.rotation.y = data.camera.rot_y;
 		
 			}
-			// Initialisation Babylon + WebSocket
 			useEffect(() => {
 				const canvas = canvasRef.current;
 				if (!canvas) return;
@@ -73,13 +72,10 @@ const GameTournament: React.FC = () => {
 				socketRef.current = socket;
 		
 				if (reconnection) {
-					console.log("reco :", reconnection);
 					if (reconnection === "Tournament") {
-						// setIscinematic(true);
 						setStartReco(true);
 						setIsPause(true);
 						setIsStarted(true);
-						console.log("reconnection")
 					}
 					else {
 						localStorage.removeItem("reconnection")
@@ -139,15 +135,12 @@ const GameTournament: React.FC = () => {
 						}
 					}
 					if (data.type === "WinnerTournament") {
-						console.log("WinnerTournament")
 						engine.current?.dispose();
 						localStorage.removeItem("reconnection");
 						localStorage.removeItem("data");
 						navigate("/pong/menu/WinnerPage");
 					}
 					if (data.type === "Win") {
-						// socket.close();
-						console.log("win")
 						engine.current?.dispose();
 						localStorage.removeItem("reconnection");
 						localStorage.removeItem("data");
@@ -185,7 +178,6 @@ const GameTournament: React.FC = () => {
 						localStorage.removeItem("data");
 						if (data.value)			
 							nameWinner.current = data.value;
-						console.log("le joueur a perdu finished")
 						setisWinner(true);
 						camera!.current!.position.x = 338.131
 						camera!.current!.position.y = 136.188;
@@ -215,7 +207,6 @@ const GameTournament: React.FC = () => {
 						}}));
 					}
 				};
-				// Nettoyage
 				return () => {
 					engine.current?.dispose();
 					socket.close();
@@ -253,7 +244,6 @@ const GameTournament: React.FC = () => {
 				setIsStarted(true);
 			}, [isReady3d, count]);
 		
-			// Mise à jour des positions
 			useEffect(() => {
 				if (!ball.current || !parsedData || !isReady3d) return;
 		
@@ -269,7 +259,6 @@ const GameTournament: React.FC = () => {
 				paddle2.current!.position.z = paddleUp - ((parsedData.player1.pos_y + 50) * (paddleUp - paddleDown)) / pixelHeight;
 			}, [parsedData, isReady3d]);
 		
-			// Ping pour maintenir la connexion WebSocket
 			useEffect(() => {
 				if (!isReady3d || !socketRef.current) return;
 		
@@ -281,7 +270,6 @@ const GameTournament: React.FC = () => {
 				return () => clearInterval(interval);
 			}, [isReady3d]);
 		
-			// Gestion des touches clavier
 			useEffect(() => {
 				if (!isReady3d || !socketRef.current || !waitingPlayers || !isStarted) return;
 				const handlePause = (event: KeyboardEvent) => {

@@ -36,18 +36,12 @@ export function handleTournament(playerInfos: playerStat, msg: webMsg) {
 		if (!game) return;
 		if (game.getPlayer1().getPlayerInfos().id === playerInfos.id) {
 			game.setPlayer1Ready(true);
-			// game.getPlayer1().getPlayerInfos().socket.send(JSON.stringify({ type: "assign", value: "p1" }))
-			// game.getPlayer1().getPlayerInfos().socket.send(JSON.stringify({ type: "Pause" }))
 		} else if (game.getPlayer2().getPlayerInfos().id === playerInfos.id) {
 			game.setPlayer2Ready(true);
-			// game.getPlayer2().getPlayerInfos().socket.send(JSON.stringify({ type: "assign", value: "p2" }))
-			// game.getPlayer2().getPlayerInfos().socket.send(JSON.stringify({ type: "Pause" }))
 		}
 		if (game.getPlayer1Ready() && game.getPlayer2Ready()) {
 			game.setStatus("PLAYING");
-			// setTimeout(() => {
 				game.start();
-			// }, 3000)
 		}
 	}
 	else if (msg.action === "readyToNext") {
@@ -65,11 +59,11 @@ function quitTournament(playerInfos: playerStat) {
 		if (id === playerInfos.idTournament) {
 			const idx = tournament.waitingWinner.indexOf(playerInfos);
 			if (idx !== -1) {
-				tournament.waitingWinner.splice(idx, 1); // je supprime un element a l index donne
+				tournament.waitingWinner.splice(idx, 1);
 				for (let i : number = 0; i < tournament.currentMatch.length; i++) {
 					const match = tournament.currentMatch[i];
 					if (match.player1.id === playerInfos.id || match.player2.id === playerInfos.id) {
-						tournament.currentMatch.splice(i, 1); // je supprime le match à l’index i
+						tournament.currentMatch.splice(i, 1);
 						break;
 					}
 				}
@@ -209,7 +203,6 @@ function startTournament(id: number, tournament: Tournament) {
 	randomMatch(tournament);
 	displayTournament(tournament);
 	createMatchPairs(tournament);
-	//avant de passer a la manche suivante redisplay et afficher gagnant perdant 
 }
 
 function messageTournament(tournament: Tournament, action: string, message: string) {
@@ -314,7 +307,6 @@ function dispatchMatch(tournament: Tournament) {
 
 			tournament.waitingWinner[0].winnerTournament = true;
 
-			console.log("envoi du vainqueur dans dispatch", tournament.waitingWinner[0].name)
 				modelPong.insertStatistic(tournament.waitingWinner[0].id, 1, 1, tournament.waitingWinner[0].mode, 0)
 				tournament.waitingWinner[0].socket.send(JSON.stringify({type: "WinnerTournament"}))
 				setTimeout(() => {
@@ -353,8 +345,6 @@ function dispatchMatch(tournament: Tournament) {
 			player2: tournament.waitingWinner[0]
 		});
 	}
-	//voir comment gerer ca current
-	console.log(tournament.currentMatch)
 	messageTournament(tournament, "Start", "nouvelle Manche");
 	displayTournament(tournament);
 	createMatchPairs(tournament);
@@ -393,10 +383,7 @@ export function isOnFinishMatch(tournament: Tournament, player1: playerStat, pla
 
 			tournament.waitingWinner[0].winnerTournament = true;
 
-			console.log("envoi du vainqueur", tournament.waitingWinner[0].name)
-			tournament.waitingWinner[0].id
 			modelPong.insertStatistic(tournament.waitingWinner[0].id, 1, 1, tournament.waitingWinner[0].mode, looseId);
-				console.log("ENVOI DU WINNER ", tournament.waitingWinner[0].name)
 				tournament.waitingWinner[0].socket.send(JSON.stringify({type: "WinnerTournament"}))
 				setTimeout(() => {
 					tournament.waitingWinner[0].socket.send(JSON.stringify({type: "data", value: {
@@ -408,7 +395,6 @@ export function isOnFinishMatch(tournament: Tournament, player1: playerStat, pla
 					tournament.waitingWinner[0].inRoom = false;
 				}, 300)
 				listTournament.delete(tournament.idTournament);
-			// }, 500)
 			return ;
 		}
 		tournament.nextManche = true;
@@ -445,7 +431,6 @@ async function actualiseDisplay(playerinfos: playerStat) {
 			action: "LIST_RESPONSE",
 			value: []
 		};
-	//mise a jour du fichier json pour envoi a tout les players
 	for (const [id, tournament] of listTournament) {
 		let listPlayerTemp: Array<any> = [];
 			for (const player of tournament.listPlayer) {

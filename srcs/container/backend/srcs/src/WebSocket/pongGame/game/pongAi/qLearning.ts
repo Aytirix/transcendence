@@ -121,7 +121,7 @@ export class Ai {
 		if (this.currentIndex === 0
 			|| this.currentIndex === 3
 			|| this.currentIndex === 6)
-				this.limitFrameRate -= (Math.floor(Math.random() * 41) / 5); // ne pas oublier si j augmente la vitesse de la raquette de modifier peux le 5 
+				this.limitFrameRate -= (Math.floor(Math.random() * 41) / 5);
 		else if (this.currentIndex === 1
 			|| this.currentIndex === 4
 			|| this.currentIndex === 7)
