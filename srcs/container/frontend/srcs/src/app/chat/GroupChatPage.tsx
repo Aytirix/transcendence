@@ -61,6 +61,7 @@ const GroupsMessagesPage: React.FC = () => {
 	const [hasMoreMessages, setHasMoreMessages] = useState<Record<number, boolean>>({});
 	const [messageLoadCounts, setMessageLoadCounts] = useState<Record<number, number>>({});
 	const [pendingLoadRequests, setPendingLoadRequests] = useState<Set<number>>(new Set());
+	const [groupsInitiallyLoaded, setGroupsInitiallyLoaded] = useState<Set<number>>(new Set());
 
 	// Messages du groupe actuellement sélectionné (triés par ID décroissant pour affichage du plus récent au plus ancien)
 	const selectedMessages: Message[] = selectedGroup
@@ -105,9 +106,10 @@ const GroupsMessagesPage: React.FC = () => {
 			// Vérifier si des messages sont déjà chargés pour ce groupe
 			const existingMessages = groupMessages[selectedGroupId];
 			const hasExistingMessages = existingMessages && existingMessages.length > 0;
+			const alreadyLoaded = groupsInitiallyLoaded.has(selectedGroupId);
 
-			// Réinitialiser l'état pour ce groupe seulement si pas de messages existants
-			if (!hasExistingMessages) {
+			// Réinitialiser l'état pour ce groupe seulement si pas de messages existants et pas encore chargé
+			if (!hasExistingMessages && !alreadyLoaded) {
 				setHasMoreMessages(prev => ({
 					...prev,
 					[selectedGroupId]: true // Assumer qu'il y a des messages au début
@@ -117,11 +119,39 @@ const GroupsMessagesPage: React.FC = () => {
 					[selectedGroupId]: 0
 				}));
 
+				// Marquer ce groupe comme ayant été chargé
+				setGroupsInitiallyLoaded(prev => new Set(prev).add(selectedGroupId));
+
 				loadMessages(selectedGroupId, 0, () => {
+					// Le callback sera exécuté après le chargement
+					// La logique de détection de fin de messages sera gérée dans l'useEffect suivant
 				});
 			}
 		}
-	}, [selectedGroupId, loadMessages, groupMessages]);
+	}, [selectedGroupId, loadMessages, groupMessages, groupsInitiallyLoaded]);
+
+	// Écouter l'événement personnalisé pour détecter quand il n'y a plus de messages
+	useEffect(() => {
+		const handleNoMoreMessages = (event: CustomEvent) => {
+			const { groupId } = event.detail;
+			setHasMoreMessages(prev => ({
+				...prev,
+				[groupId]: false
+			}));
+			setIsLoadingMoreMessages(false);
+			setPendingLoadRequests(prev => {
+				const newSet = new Set(prev);
+				newSet.delete(groupId);
+				return newSet;
+			});
+		};
+
+		window.addEventListener('noMoreMessages', handleNoMoreMessages as EventListener);
+		
+		return () => {
+			window.removeEventListener('noMoreMessages', handleNoMoreMessages as EventListener);
+		};
+	}, []);
 
 	// Détecter si on a atteint la fin des messages
 	useEffect(() => {
@@ -131,12 +161,27 @@ const GroupsMessagesPage: React.FC = () => {
 		const currentCount = selectedMessages.length;
 		const previousCount = messageLoadCounts[groupId];
 
+		// Si le groupe a été chargé initialement mais n'a aucun message, marquer comme pas plus de messages
+		if (groupsInitiallyLoaded.has(groupId) && currentCount === 0) {
+			setHasMoreMessages(prev => ({
+				...prev,
+				[groupId]: false
+			}));
+			return;
+		}
+
 		// Seulement traiter si on a eu un chargement précédent et qu'on n'est pas en train de charger
-		if (previousCount !== undefined && !isLoadingMoreMessages) {
+		if (previousCount !== undefined && !isLoadingMoreMessages && groupsInitiallyLoaded.has(groupId)) {
 			const newMessagesReceived = currentCount - previousCount;
 
-			// Si on a reçu moins de 10 nouveaux messages, considérer qu'il n'y en a plus
-			if (newMessagesReceived < 10) {
+			// Si on a reçu 0 nouveau message, c'est qu'il n'y en a plus
+			if (newMessagesReceived === 0) {
+				setHasMoreMessages(prev => ({
+					...prev,
+					[groupId]: false
+				}));
+			} else if (newMessagesReceived < 10) {
+				// Si on a reçu moins de 10 nouveaux messages, considérer qu'il n'y en a plus
 				setHasMoreMessages(prev => ({
 					...prev,
 					[groupId]: false
@@ -149,15 +194,24 @@ const GroupsMessagesPage: React.FC = () => {
 				}));
 			}
 		}
-	}, [selectedGroup?.id, selectedMessages.length, messageLoadCounts, isLoadingMoreMessages]);
+	}, [selectedGroup?.id, selectedMessages.length, messageLoadCounts, isLoadingMoreMessages, groupsInitiallyLoaded]);
 
 	// Fonction pour charger plus de messages
 	const handleLoadMoreMessages = useCallback(() => {
-		if (!selectedGroup || selectedMessages.length === 0 || isLoadingMoreMessages) return;
+		if (!selectedGroup || isLoadingMoreMessages) return;
 
 		// Vérifier qu'on a bien des messages et éviter les doublons
 		if (hasMoreMessages[selectedGroup.id] === false) {
 			return; // Pas plus de messages disponibles
+		}
+
+		// Si le groupe n'a aucun message, ne pas essayer de charger plus
+		if (selectedMessages.length === 0) {
+			setHasMoreMessages(prev => ({
+				...prev,
+				[selectedGroup.id]: false
+			}));
+			return;
 		}
 
 		// Éviter les requêtes multiples pour le même groupe
@@ -291,9 +345,10 @@ const GroupsMessagesPage: React.FC = () => {
 
 	const Messages: React.FC = () => {
 		// Déterminer si on doit montrer le bouton "Load More"
-		const shouldShowLoadMore = selectedGroup && selectedMessages.length >= 2 &&
+		const shouldShowLoadMore = selectedGroup && 
+			selectedMessages.length > 0 &&
 			selectedMessages[0]?.id > 1 &&
-			hasMoreMessages[selectedGroup.id] !== false;
+			hasMoreMessages[selectedGroup.id] === true;
 
 		return (
 			<div className="chat-content__messages" ref={messagesContainerRef}>

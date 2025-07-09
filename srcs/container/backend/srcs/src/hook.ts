@@ -25,9 +25,9 @@ export async function registerHook(app: FastifyInstance) {
 	});
 
 	app.setErrorHandler(async (error, request, reply) => {
-		// Si l'erreur est une erreur de validation, on renvoie un message d'erreur
-		// avec la bonne traduction
 		if (error.validation && !reply.sent) {
+			const lang = request.session?.user?.lang || request.headers['accept-language'] || 'fr';
+			request.i18n = i18n.cloneInstance({ lng: lang, fallbackLng: 'fr', initImmediate: false });
 			const messages = error.validation.map(err => {
 				const code = err.message;
 				return request.i18n.t(code);

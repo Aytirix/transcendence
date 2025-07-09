@@ -10,6 +10,7 @@
 			"notMatching": "Le code de vérification ne correspond pas."
 		},
 		"user": {
+			"inGame": "Vous ne pouvez pas vous connecter pendant que vous êtes en jeu.",
 			"noChanges": "Aucun changement n'a été détecté.",
 			"invalidUserId": "L'ID utilisateur est invalide.",
 			"userIdRequired": "L'ID utilisateur est requis.",

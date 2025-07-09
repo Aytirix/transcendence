@@ -10,6 +10,7 @@
 			"notMatching": "El código de verificación no coincide."
 		},
 		"user": {
+			"inGame": "No puede iniciar sesión mientras está en el juego.",
 			"noChanges": "No se han detectado cambios.",
 			"invalidUserId": "El ID del usuario es inválido.",
 			"userIdRequired": "El ID del usuario es requerido.",

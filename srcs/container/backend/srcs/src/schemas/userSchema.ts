@@ -8,12 +8,6 @@ export const login = {
 		properties: {
 			email: { type: 'string', minLength: 3, maxLength: 50 },
 			password: { type: 'string', minLength: 3 },
-			// password: { 
-			// 	type: 'string', 
-			// 	minLength: 8, 
-			// 	maxLength: 25, 
-			// 	pattern: '^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%$#^:;\'"|*?&.,<>\\\\/\\-_=+()])[A-Za-z\\d@$!%$#^:;\'"|*?&.,<>\\\\/\\-_=+()]{8,25}$' 
-			// },
 		},
 		required: ['email', 'password'],
 		additionalProperties: false,
@@ -59,13 +53,12 @@ export const register = {
 			...login.body.properties,
 			email: { type: 'string', minLength: 3, maxLength: 50, format: 'email' },
 			username: { type: 'string', minLength: 3, maxLength: 10, pattern: '^[a-zA-Z0-9]+$' },
-			confirmPassword: { type: 'string', minLength: 3 },
-			// confirmPassword: { 
-			// 	type: 'string', 
-			// 	minLength: 8, 
-			// 	maxLength: 25, 
-			// 	pattern: '^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%$#^:;\'"|*?&.,<>\\\\/\\-_=+()])[A-Za-z\\d@$!%$#^:;\'"|*?&.,<>\\\\/\\-_=+()]{8,25}$' 
-			// },
+			confirmPassword: { 
+				type: 'string', 
+				minLength: 8, 
+				maxLength: 25, 
+				pattern: '^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%$#^:;\'"|*?&.,<>\\\\/\\-_=+()])[A-Za-z\\d@$!%$#^:;\'"|*?&.,<>\\\\/\\-_=+()]{8,25}$' 
+			},
 			lang: { type: 'string', enum: ['fr', 'en', 'it', 'es'] },
 		},
 		required: [...login.body.required, 'username', 'confirmPassword'],
