@@ -8,6 +8,22 @@ import controllerFriends from './controllerFriends';
 import { mapToObject } from '@tools';
 import modelUser from '@models/modelUser';
 
+// Rate limiting pour les requêtes loadMoreMessage - Map<userId_groupId, lastRequestTime>
+const loadMessageRateLimit = new Map<string, number>();
+const LOAD_MESSAGE_COOLDOWN = 500; // 500ms entre les requêtes
+
+// Nettoyage périodique du rate limiting (toutes les 5 minutes)
+setInterval(() => {
+	const now = Date.now();
+	const cutoff = now - (5 * 60 * 1000); // Garder seulement les entrées des 5 dernières minutes
+	
+	for (const [key, timestamp] of loadMessageRateLimit.entries()) {
+		if (timestamp < cutoff) {
+			loadMessageRateLimit.delete(key);
+		}
+	}
+}, 5 * 60 * 1000);
+
 /*
  * Vérifie si le groupe existe
  * @param wsSender WebSocket de l'utilisateur
@@ -206,25 +222,28 @@ export const loadMoreMessage = async (ws: WebSocket, user: User, state: State, r
 	if (!group) return;
 	if (!userInGroup(ws, user, group)) return;
 	if (req.firstMessageId < 0) return ws.send(JSON.stringify({ action: 'error', result: 'error', notification: [ws.i18n.t('Chat.messageIdMissing')] } as reponse));
+
+	// Rate limiting - éviter le spam
+	const rateLimitKey = `${user.id}_${req.group_id}`;
+	const now = Date.now();
+	const lastRequest = loadMessageRateLimit.get(rateLimitKey);
+	
+	if (lastRequest && (now - lastRequest) < LOAD_MESSAGE_COOLDOWN) {
+		console.log(`Rate limit appliqué pour l'utilisateur ${user.id} sur le groupe ${req.group_id}`);
+		return; // Ignorer silencieusement la requête spam
+	}
+	
+	loadMessageRateLimit.set(rateLimitKey, now);
+
 	if (req.firstMessageId > 0 && !group.messages.has(req.firstMessageId)) return ws.send(JSON.stringify({ action: 'error', result: 'error', notification: [ws.i18n.t('Chat.messageNotFound')] } as reponse));
 
 	const listUserIdBlocked = BlockedUserId(user, state);
 
-	let messagesFiltered = filterBlockedUserMessages(group.messages, user, state);
+	let lstMsgId = req.firstMessageId === 0 ? null : req.firstMessageId;
 
-	// voir combien il y a de message avant le lastMessage deja recuperer de la db
-	const messagesToGet: Map<number, Message> = new Map(
-		Array.from(messagesFiltered.entries()).filter(([_, message]: [number, Message]) => {
-			if (req.firstMessageId === 0 || message.id < req.firstMessageId) return true;
-			return false;
-		}));
-	let messages: Map<number, Message>;
-	if (messagesToGet.size >= 20) messages = new Map(Array.from(messagesToGet.entries()).slice(0, 20));
-	else {
-		const messagesFromDb = await modelsChat.getMessagesFromGroup(group, 20 - messagesToGet.size, listUserIdBlocked);
-		messages = new Map([...messagesToGet, ...messagesFromDb]);
-	}
-	ws.send(JSON.stringify({ action: 'loadMoreMessage', result: 'ok', group_id: group.id, messages: mapToObject(messages) } as res_loadMoreMessage));
+	const messagesFromDb = await modelsChat.getMessagesFromGroup(group, 20, listUserIdBlocked, lstMsgId);
+
+	ws.send(JSON.stringify({ action: 'loadMoreMessage', result: 'ok', group_id: group.id, messages: mapToObject(messagesFromDb) } as res_loadMoreMessage));
 }
 
 export const createGroup = async (ws: WebSocket, user: User, state: State, req: req_createGroup) => {

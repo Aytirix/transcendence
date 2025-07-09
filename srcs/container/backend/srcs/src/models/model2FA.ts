@@ -33,7 +33,6 @@ export const createCode = async (email: string, username: string, code: string, 
 export const verifyCode = async (email: string, type: string, code: string): Promise<User | null | true> => {
 	const timestampNow = Date.now();
 	const result: any = await executeReq(`SELECT code, user_json FROM verification_codes WHERE email = ? AND type = ? AND expires_at > ?`, [email, type, timestampNow]);
-	console.log(`SELECT code, user_json FROM verification_codes WHERE email = '${email}' AND type = '${type}' AND expires_at > ${timestampNow}`);
 
 	if (result.length === 0) {
 		console.warn(`No verification code found for email: ${email}`);

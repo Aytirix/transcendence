@@ -208,6 +208,7 @@ export async function createVerificationCode(email: string, username: string = n
 	const code = generateCode();
 	const expiresAt = new Date(Date.now() + 15 * 60 * 1000); // 15 minutes expiration
 
+	console.log(`user creat verif code : ${JSON.stringify(user)}`);
 	const result = await model2FA.createCode(email, username, code, expiresAt, type, user);
 	if (!result) {
 		return false;

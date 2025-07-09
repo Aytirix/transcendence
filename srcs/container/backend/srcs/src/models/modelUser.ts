@@ -26,6 +26,7 @@ export const Login = async (email: string, password: string): Promise<User | nul
 		email: user.email,
 		avatar: user.avatar,
 		lang: user.lang,
+		twofa: user.twofa
 	};
 };
 
@@ -48,6 +49,7 @@ export const Register = async (email: string, username: string, password: string
 		email,
 		avatar,
 		lang,
+		twofa: false,
 	};
 };
 
