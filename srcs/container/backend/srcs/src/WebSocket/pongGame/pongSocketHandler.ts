@@ -106,16 +106,18 @@ export function pongWebSocket(socket: WebSocket, user: User) {
 				break;
 		}
 	});
-	socket.on('close', () => {
+	socket.on('close', () => { 
 		const playerInfos = sockets.get(socket);
 		console.log("close");
 		if (playerInfos) handleClose(playerInfos);
 		if ((playerInfos && playerInfos.mode === "Multi")|| (playerInfos && playerInfos.mode === "Tournament") || (playerInfos && playerInfos.mode === "MultiInvite")) {
 			if (playerInfos && playerInfos.game) {
 				if (playerInfos.name !== playerInfos.game.getPlayer1().getPlayerInfos().name) {
+					playerInfos.game.getPlayer2().getPlayerInfos().timePause =  Date.now();
 					playerInfos.game.getPlayer1().getPlayerInfos().socket.send(JSON.stringify({type: "Pause", value: true, message: "Adversaire en pause. Reprise imminente."}))
 				}
 				else {
+					playerInfos.game.getPlayer1().getPlayerInfos().timePause =  Date.now();
 					playerInfos.game.getPlayer2().getPlayerInfos().socket.send(JSON.stringify({type: "Pause", value: true, message: "Adversaire en pause. Reprise imminente."}))
 				}
 			}

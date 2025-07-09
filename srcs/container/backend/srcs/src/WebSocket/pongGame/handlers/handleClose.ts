@@ -1,7 +1,7 @@
 import { playerStat } from "../types/playerStat";
 import { waitingID, waitingMulti } from "../state/serverState";
 
-export function 		handleClose(playerInfos: playerStat) {
+export function handleClose(playerInfos: playerStat) {
 	if (!playerInfos.game && playerInfos.mode !== "Tournament") {
 		if (playerInfos.mode === "Multi" || playerInfos.mode === "MultiInvite") {
 			if (waitingMulti.has(playerInfos))
@@ -14,10 +14,14 @@ export function 		handleClose(playerInfos: playerStat) {
 		if (playerInfos.game.getIsStarted())
 			playerInfos.pauseGame = true;
 		if (playerInfos.mode === "Multi" || playerInfos.mode === "Tournament" || playerInfos.mode === "MultiInvite") {
-			if (playerInfos.name !== playerInfos.game.getPlayer1().getPlayerInfos().name)
+			if (playerInfos.name !== playerInfos.game.getPlayer1().getPlayerInfos().name) {
 				playerInfos.game.getPlayer1().getPlayerInfos().pauseGame = false;
-			else
+				playerInfos.game.getPlayer1().getPlayerInfos().timePause = 0;
+			}
+			else {
 				playerInfos.game.getPlayer2().getPlayerInfos().pauseGame = false;
+				playerInfos.game.getPlayer2().getPlayerInfos().timePause = 0;
+			}
 		}
 	}
 	if (waitingID.has(playerInfos.id) === false && playerInfos.mode === "SameKeyboard")
