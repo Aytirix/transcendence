@@ -53,14 +53,12 @@
 	cursor: pointer;
 	padding: 0.5rem;
 	border-radius: 8px;
-	transition: all 0.3s ease;
 	line-height: 1;
 }
 
 .user-profile-modal__close:hover {
 	color: #ffffff;
 	background: rgba(255, 255, 255, 0.1);
-	transform: scale(1.1);
 }
 
 .user-profile-modal__loading,
@@ -92,12 +90,10 @@
 	color: #4ecdc4;
 	border-radius: 8px;
 	cursor: pointer;
-	transition: all 0.3s ease;
 }
 
 .retry-button:hover {
 	background: rgba(78, 205, 196, 0.3);
-	transform: translateY(-1px);
 }
 
 /* Tabs */
@@ -115,7 +111,6 @@
 	color: rgba(255, 255, 255, 0.7);
 	font-weight: 500;
 	cursor: pointer;
-	transition: all 0.3s ease;
 	position: relative;
 	border-bottom: 3px solid transparent;
 }
@@ -187,12 +182,10 @@
 	overflow: hidden;
 	border: 4px solid rgba(78, 205, 196, 0.3);
 	box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
-	transition: all 0.3s ease;
 }
 
 .profile-avatar:hover {
 	border-color: #4ecdc4;
-	transform: scale(1.05);
 }
 
 .profile-avatar img {
@@ -240,13 +233,11 @@
 	border-radius: 12px;
 	padding: 1.2rem;
 	text-align: center;
-	transition: all 0.3s ease;
 }
 
 .stat-card:hover {
 	background: rgba(255, 255, 255, 0.08);
 	border-color: rgba(78, 205, 196, 0.3);
-	transform: translateY(-2px);
 	box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
 }
 
@@ -303,12 +294,10 @@
 	background: rgba(255, 255, 255, 0.05);
 	border: 1px solid rgba(255, 255, 255, 0.1);
 	border-radius: 8px;
-	transition: all 0.3s ease;
 }
 
 .match-item:hover {
 	background: rgba(255, 255, 255, 0.08);
-	transform: translateX(4px);
 }
 
 .match-item.win {
@@ -367,7 +356,6 @@
 /* Clickable username styles */
 .clickable-username {
 	cursor: pointer;
-	transition: all 0.3s ease;
 	position: relative;
 }
 
@@ -376,11 +364,6 @@
 	text-decoration: underline;
 	text-decoration-color: rgba(78, 205, 196, 0.5);
 }
-
-.clickable-username:active {
-	transform: scale(0.98);
-}
-
 /* Pacman Records */
 .pacman-records {
 	display: flex;
@@ -417,7 +400,6 @@
 	background: rgba(255, 255, 255, 0.05);
 	border-radius: 6px;
 	border: 1px solid rgba(255, 255, 255, 0.1);
-	transition: all 0.3s ease;
 }
 
 .record-item:hover {
