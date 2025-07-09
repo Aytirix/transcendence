@@ -381,7 +381,6 @@ export function isOnFinishMatch(tournament: Tournament, player1: playerStat, pla
 			tournament.winner = true;
 
 			tournament.waitingWinner[0].winnerTournament = true;
-
 			modelPong.insertStatistic(tournament.waitingWinner[0].id, 1, 1, tournament.waitingWinner[0].mode, looseId);
 				tournament.waitingWinner[0].socket.send(JSON.stringify({type: "WinnerTournament"}))
 				setTimeout(() => {
