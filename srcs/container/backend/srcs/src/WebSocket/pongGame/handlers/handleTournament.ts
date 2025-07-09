@@ -316,7 +316,7 @@ function dispatchMatch(tournament: Tournament) {
 
 			console.log("envoi du vainqueur dans dispatch", tournament.waitingWinner[0].name)
 			// setTimeout(() => {
-
+				modelPong.insertStatistic(tournament.waitingWinner[0].id, 1, 1, tournament.waitingWinner[0].mode, tournament.waitingWinner[0].id)
 				tournament.waitingWinner[0].socket.send(JSON.stringify({type: "WinnerTournament"}))
 				setTimeout(() => {
 					tournament.waitingWinner[0].socket.send(JSON.stringify({type: "data", value: {
