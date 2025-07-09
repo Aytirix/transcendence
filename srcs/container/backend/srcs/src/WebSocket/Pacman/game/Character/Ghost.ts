@@ -4,7 +4,7 @@ import Pacman from "./Pacman";
 import Character from "./Character";
 
 export const TILE_SIZE = 50;
-export const GHOST_SPEED = 2.5;
+export const GHOST_SPEED = 3.5;
 
 /**
  * Classe Ghost enrichie avec AI Chase permanente (sans scatter),
@@ -12,7 +12,7 @@ export const GHOST_SPEED = 2.5;
  */
 export default class Ghost extends Character {
 	public static _speed = GHOST_SPEED;
-	public static _speedRespawn = 5;
+	public static _speedRespawn = 8;
 
 	// Référence à la map pour les collisions et pathfinding
 	private map: PacmanMap;

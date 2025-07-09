@@ -643,6 +643,13 @@ position: relative;
 	text-align: center;
 }
 
+.popup-player1 img {
+  width: 300px;
+  height: 300px;
+  object-fit: cover;
+  border-radius: 20px;
+}
+
 .popup-player2 {
 	position: fixed;
 	width: 400px;
@@ -661,6 +668,13 @@ position: relative;
 	justify-content: center; /* centre horizontalement */
 	/* align-items: center;     centre verticalement */
 	text-align: center;
+}
+
+.popup-player2 img {
+  width: 300px;
+  height: 300px;
+  object-fit: cover;
+  border-radius: 20px;
 }
 
 .Player1 {

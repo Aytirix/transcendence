@@ -2,7 +2,7 @@ import { player, room, GameState, vector2, CharacterType } from "@Pacman/TypesPa
 import { WebSocket } from 'ws';
 import Character from "./Character";
 
-export const PACMAN_SPEED = 3;
+export const PACMAN_SPEED = 4;
 
 /**
  * Classe principale du moteur de jeu Pac-Man

@@ -167,7 +167,7 @@ export class Game {
 		if (this.player1.isCollidingWithBall(this.ball)) {
 			this.ball.d_x = -1;
 			// if (this.ball.pos_x + this.ball.radius > this.player1.pos_x)
-				this.ball.pos_x = this.player1.pos_x - this.ball.radius; 
+			this.ball.pos_x = this.player1.pos_x - this.ball.radius; 
 			if (this.ball.speed <= 12.5)
 				this.ball.speed += 0.5;
 			this.player1.zoneEffect(this.ball);
@@ -238,7 +238,7 @@ export class Game {
 		}, 1000); //2000
 	}
 	checkScore(player1: Paddle, player2: Paddle) : boolean {
-		if (player1.getScore() == 3) {
+		if (player1.getScore() == 10) {
 			if (player1.getPlayerInfos().mode === "Tournament") {
 				modelPong.insertStatistic(player1.getPlayerInfos().id, 0, 1, this.player1.getPlayerInfos().mode, this.player2.getPlayerInfos().id)
 				modelPong.insertStatistic(player2.getPlayerInfos().id, 0, 0, this.player2.getPlayerInfos().mode, this.player1.getPlayerInfos().id)
@@ -257,7 +257,7 @@ export class Game {
 			console.log("Winner is player 1")
 			return (true);
 		}
-		else if (player2.getScore() == 3){
+		else if (player2.getScore() == 10){
 			if (player1.getPlayerInfos().mode === "Tournament") {
 				modelPong.insertStatistic(player2.getPlayerInfos().id, 0, 1, this.player2.getPlayerInfos().mode, this.player1.getPlayerInfos().id)
 				modelPong.insertStatistic(player1.getPlayerInfos().id, 0, 0, this.player1.getPlayerInfos().mode, this.player2.getPlayerInfos().id)
