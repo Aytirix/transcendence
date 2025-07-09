@@ -109,7 +109,6 @@ const GameMenu: React.FC = () => {
 			if (showStatistique)
 				setShowStatistique(false)
 			socketRef.current?.send(JSON.stringify({ type: "Tournament", action: "Display" }));
-			console.log("test")
 		}
 	};
 	const Create = () => {
@@ -137,7 +136,6 @@ const GameMenu: React.FC = () => {
 			}
 		}
 		fetchStat();
-		console.log("stats", statistique);
 	}, [])
 	
 	useEffect(() => {
@@ -148,7 +146,6 @@ const GameMenu: React.FC = () => {
 			const data = JSON.parse(message.data);
 			if (data.action === "LIST_RESPONSE") {
 				setListTournament(data.value);
-				console.log(data.value);
 			}
 		};
 		return () => {
@@ -168,14 +165,13 @@ const GameMenu: React.FC = () => {
 	}, []);
 
 	useEffect(() => {
-		//penser a ne pas pouvoir valider si isFull
 		setValidationButton(nameTournament.length >= 3);
 	}, [nameTournament]);
 
 	useEffect(() => {
 		setValidationButton(() => {
 			for (const tournament of listTournament) {
-				if (tournament.id.toString() === idJoin)
+				if (tournament.id.toString() === idJoin && !tournament.isFull)
 					return true;
 			}
 			return false;
@@ -370,14 +366,6 @@ const GameMenu: React.FC = () => {
 					</table>
 				</div>
 			)}
-
-
-
-
-
-
-
-
 			{showCreate && (
 				<div className="popup_create">
 					<table className="table-menu">

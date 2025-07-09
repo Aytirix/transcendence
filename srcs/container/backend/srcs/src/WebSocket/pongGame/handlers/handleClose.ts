@@ -4,7 +4,7 @@ import { waitingID, waitingMulti } from "../state/serverState";
 export function 		handleClose(playerInfos: playerStat) {
 	if (!playerInfos.game && playerInfos.mode !== "Tournament") {
 		if (playerInfos.mode === "Multi" || playerInfos.mode === "MultiInvite") {
-			if (waitingMulti.has(playerInfos)) //if
+			if (waitingMulti.has(playerInfos))
 				waitingMulti.delete(playerInfos);
 		}
 		return;

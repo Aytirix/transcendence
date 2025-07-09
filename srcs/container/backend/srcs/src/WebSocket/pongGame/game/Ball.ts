@@ -10,7 +10,5 @@ export class Ball {
 	move(): void{
 		this.pos_x += this.d_x * this.speed;
 		this.pos_y += this.d_y * this.speed;
-		// console.log(`ball : X = ${this.pos_x}`);
-		// console.log(`ball : Y = ${this.pos_y}`);
 	}
 }
