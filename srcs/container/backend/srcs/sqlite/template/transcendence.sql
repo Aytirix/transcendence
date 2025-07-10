@@ -113,4 +113,24 @@ CREATE TABLE IF NOT EXISTS pong_invite (
 	UNIQUE(user_id, friend_id)
 );
 
+CREATE TABLE game_settings_queens (
+    user_id INTEGER PRIMARY KEY,
+    board_size INTEGER NOT NULL DEFAULT 9,
+    difficultyLevel INTEGER NOT NULL DEFAULT 5,
+    autoCross INTEGER NOT NULL DEFAULT 0,
+    game_state TEXT DEFAULT NULL,
+    FOREIGN KEY (user_id) REFERENCES user(id) ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS map_valid (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    board_size INTEGER NOT NULL,
+    difficultyLevel INTEGER NOT NULL,
+    regionAssignment TEXT NOT NULL CHECK (json_valid(regionAssignment)),
+    solutionMapping TEXT NOT NULL CHECK (json_valid(solutionMapping)),
+    UNIQUE(regionAssignment, solutionMapping)
+);
+
+CREATE INDEX IF NOT EXISTS idx_map_valid_difficultyLevel ON map_valid(difficultyLevel);
+
 COMMIT;

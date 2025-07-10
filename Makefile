@@ -1,5 +1,5 @@
 DOCKER_COMPOSE_FILE=srcs/docker-compose.yml
-DOCKER_COMPOSE=docker compose
+DOCKER_COMPOSE=docker-compose
 export COMPOSE_BAKE=true
 .PHONY: all dev build down stop start lf lb re exec logs
 
@@ -38,12 +38,12 @@ clearlogs:
 # log frontend
 lf:
 	clear
-	docker logs -f frontend
+	docker logs -f transcendencefrontend
 
 # log backend
 lb:
 	clear
-	docker exec -it backend pm2 logs api_transcendence
+	docker exec -it transcendence_backend pm2 logs api_transcendence
 
 re: clearlogs down dev
 

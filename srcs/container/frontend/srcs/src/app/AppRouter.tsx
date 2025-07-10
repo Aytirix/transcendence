@@ -25,6 +25,7 @@ import IronManForgetPass from './IronManForgetPass';
 import MinSizeGuard from './components/MinSizeGuard';
 import ModuleManager from './ModuleManager/ModuleManager';
 import Minecraft from './minecraft/Minecraft';
+import Queens from './queens/solo';
 import MinecraftRouteGuard from './minecraft/MinecraftRouteGuard';
 
 class AppRouter extends Component {
@@ -102,6 +103,13 @@ class AppRouter extends Component {
 					<Route path="/module-manager" element={
 						<MinSizeGuard minWidth={400} minHeight={400} message="Écran trop petit">
 							<ModuleManager />
+						</MinSizeGuard>
+					} />
+
+					{/* Route pour le jeu Queens */}
+					<Route path="/queens" element={
+						<MinSizeGuard minWidth={0} minHeight={0} message="Écran trop petit">
+							<Queens />
 						</MinSizeGuard>
 					} />
 

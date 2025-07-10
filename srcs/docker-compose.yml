@@ -15,7 +15,7 @@ services:
       NODE_PROJET: ${NODE_PROJET}
       FRONTEND_PATH: ${FRONTEND_PATH}
     ports:
-      - "127.0.0.1:3500:3000"
+      - "127.0.0.1:3000:3000"
     volumes:
       - backend_data:${BACKEND_PATH}
       - frontend_data:${FRONTEND_PATH}
