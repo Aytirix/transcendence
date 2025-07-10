@@ -264,6 +264,7 @@
 		"games": "Games",
 		"pong": "Pong",
 		"pacman": "Pac-Man",
+		"queens": "Queens",
 		"profile": "Profile",
 		"chat": "Chat",
 		"logout": "Logout",

@@ -9,7 +9,6 @@ function wsQueenSolo(ws, user: User) {
 		try {
 			const data = JSON.parse(message);
 			let result = null;
-			console.log(`📩 Message reçu: ${data.action}`);
 			switch (data.action) {
 				case 'ping':
 					result = { status: 'success', message: 'pong' };

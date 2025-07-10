@@ -8,7 +8,7 @@ import { BoardProps } from './types';
 const Board: React.FC<BoardProps> = ({ game, makeMove }) => {
   // Vérification que le jeu est correctement initialisé
   if (!game || !game.map || !game.map.board_size || !game.state || !game.state.boardState) {
-    return <div className="board-loading">Chargement du plateau...</div>;
+    return <div></div>;
   }
 
   const bs = game.map.board_size;
