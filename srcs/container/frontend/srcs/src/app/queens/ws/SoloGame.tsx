@@ -3,28 +3,53 @@ import { Game, NotificationMessage, SoloGameHook, UpdateParameters } from '../ty
 import { useSafeWebSocket } from '../../../api/useSafeWebSocket';
 
 const SoloGame = (): SoloGameHook => {
-	const [game, setGame] = useState<Game | null>(null);
+	// Fonction pour charger le jeu depuis le localStorage
+	const loadGameFromStorage = useCallback((): Game | null => {
+		try {
+			const savedGame = localStorage.getItem('queens-game');
+			if (savedGame) {
+				return JSON.parse(savedGame);
+			}
+		} catch (error) {
+			console.error('Erreur lors du chargement du jeu depuis localStorage:', error);
+		}
+		return null;
+	}, []);
+
+	// Fonction pour sauvegarder le jeu dans le localStorage
+	const saveGameToStorage = useCallback((game: Game) => {
+		try {
+			localStorage.setItem('queens-game', JSON.stringify(game));
+		} catch (error) {
+			console.error('Erreur lors de la sauvegarde du jeu dans localStorage:', error);
+		}
+	}, []);
+
+	const [game, setGame] = useState<Game | null>(loadGameFromStorage);
 	const [notifMessage, setNotifMessage] = useState<NotificationMessage>({ message: '', type: '' });
 	const [isConnected, setIsConnected] = useState<boolean>(false);
 
 	const handleMessage = useCallback((event: any) => {
 		if (event.status === 'success') {
 			const { setting, map, state } = event.game;
-			setGame({
+			const newGame = {
 				setting: {
 					...setting,
 					autoCross: Boolean(setting.autoCross)
 				},
 				map,
 				state,
-			});
+			};
+			setGame(newGame);
+			// Sauvegarder automatiquement dans localStorage
+			saveGameToStorage(newGame);
 			if (event.message) {
 				setNotifMessage(event.message);
 			}
 		} else {
 			setNotifMessage(event.message);
 		}
-	}, []);
+	}, [saveGameToStorage]);
 
 	const handleStatusChange = useCallback((status: string) => {
 		if (status === 'Connected') {
@@ -59,7 +84,11 @@ const SoloGame = (): SoloGameHook => {
 	}, [isConnected, socket, sendMessage]);
 
 	// Fonctions d'actions envoyées au serveur
-	const newGame = () => sendMessage({ action: 'new_game' });
+	const newGame = () => {
+		// Nettoyer le localStorage pour un nouveau jeu
+		localStorage.removeItem('queens-game');
+		sendMessage({ action: 'new_game' });
+	};
 	const makeMove = (row: number, col: number, newState: number) => sendMessage({ action: 'make_move', row, col, newState });
 	const undoMove = () => sendMessage({ action: 'undo' });
 	const hint = () => sendMessage({ action: 'hint' });

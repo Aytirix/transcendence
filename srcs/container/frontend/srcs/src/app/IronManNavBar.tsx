@@ -48,6 +48,9 @@ const IronManNavBar: React.FC = () => {
 						<MinSizeGuard minWidth={1200} minHeight={850} hideWhenBlocked={true}>
 							<Link to="/Pacman" className="btn btn-ghost sm:text-lg md:text-xl lg:text-2xl">{t('nav.pacman')}</Link>
 						</MinSizeGuard>
+						<MinSizeGuard minWidth={0} minHeight={0} hideWhenBlocked={true}>
+							<Link to="/queens" className="btn btn-ghost sm:text-lg md:text-xl lg:text-2xl">{t('nav.queens')}</Link>
+						</MinSizeGuard>
 						<MinSizeGuard minWidth={1500} minHeight={850} hideWhenBlocked={true}>
 							<Link to="/pong" className="btn btn-ghost sm:text-lg md:text-xl lg:text-2xl">{t('nav.pong')}</Link>
 						</MinSizeGuard>
