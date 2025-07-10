@@ -7,7 +7,7 @@ services:
         FRONTEND_PATH: ${FRONTEND_PATH}
       context: container/nginx
       dockerfile: Dockerfile
-    container_name: nginx
+    container_name: transcendence_nginx
     depends_on:
       - backend
       - frontend
@@ -15,7 +15,7 @@ services:
       NODE_PROJET: ${NODE_PROJET}
       FRONTEND_PATH: ${FRONTEND_PATH}
     ports:
-      - "3000:3000"
+      - "127.0.0.1:3500:3000"
     volumes:
       - backend_data:${BACKEND_PATH}
       - frontend_data:${FRONTEND_PATH}
@@ -29,7 +29,7 @@ services:
     build:
       context: container/backend
       dockerfile: Dockerfile
-    container_name: backend
+    container_name: transcendence_backend
     environment:
       - NODE_PROJET=${NODE_PROJET}
       - BACKEND_PATH=${BACKEND_PATH}
@@ -44,14 +44,14 @@ services:
     build:
       context: container/frontend
       dockerfile: Dockerfile
-    container_name: frontend
+    container_name: transcendence_frontend
     environment:
       - NODE_PROJET=${NODE_PROJET}
     volumes:
       - frontend_data:${FRONTEND_PATH}
       - build_data:/var/www/html/frontend
     working_dir: ${FRONTEND_PATH}
-    restart: on-failure
+    restart: always
     networks:
       - iron_network
 

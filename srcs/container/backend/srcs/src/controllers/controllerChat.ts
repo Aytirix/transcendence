@@ -336,10 +336,6 @@ export const leaveGroup = async (ws: WebSocket, user: User, state: State, req: r
 
 	if (!userInGroup(ws, user, group)) return;
 
-	if (userIsOwnerGroup(ws, user, group, false) && group.owners_id.length < 2) {
-		return ws.send(JSON.stringify({ action: 'error', result: 'error', notification: [ws.i18n.t('Chat.cannotLeaveAsOnlyOwner')] } as reponse));
-	}
-
 	const added = await modelsChat.removeUserFromGroup(group, user);
 	if (!added) return ws.send(JSON.stringify({ action: 'error', result: 'error', notification: [ws.i18n.t('Chat.errorLeavingGroup', { groupName: group.name })] } as reponse));
 
@@ -358,24 +354,27 @@ export const leaveGroup = async (ws: WebSocket, user: User, state: State, req: r
 export const deleteGroup = async (ws: WebSocket, user: User, state: State, req: req_deleteGroup) => {
 	const group = groupExists(ws, state, req.group_id);
 	if (!group) return;
+	
+	leaveGroup(ws, user, state, { action: 'leave_group', group_id: group.id });
+	return;
 
-	if (!userIsOwnerGroup(ws, user, group)) return;
+	// if (!userIsOwnerGroup(ws, user, group)) return ;
 
-	if (group.private) return ws.send(JSON.stringify({ action: 'error', result: 'error', notification: [ws.i18n.t('Chat.cannotDeletePrivateGroup')] } as reponse));
+	// if (group.private) return ws.send(JSON.stringify({ action: 'error', result: 'error', notification: [ws.i18n.t('Chat.cannotDeletePrivateGroup')] } as reponse));
 
-	const del = await modelsChat.deleteGroup(group.id, state);
-	if (!del) return ws.send(JSON.stringify({ action: 'error', result: 'error', notification: [ws.i18n.t('Chat.errorDeletingGroup', { groupName: group.name })] } as reponse));
+	// const del = await modelsChat.deleteGroup(group.id, state);
+	// if (!del) return ws.send(JSON.stringify({ action: 'error', result: 'error', notification: [ws.i18n.t('Chat.errorDeletingGroup', { groupName: group.name })] } as reponse));
 
-	ws.send(JSON.stringify({ action: 'leave_group', result: 'ok', group_id: group.id, user_id: user.id, notification: [ws.i18n.t('Chat.groupDeleted', { groupName: group.name })] } as res_leaveGroup));
+	// ws.send(JSON.stringify({ action: 'leave_group', result: 'ok', group_id: group.id, user_id: user.id, notification: [ws.i18n.t('Chat.groupDeleted', { groupName: group.name })] } as res_leaveGroup));
 
-	group.members.forEach((member: User) => {
-		if (member.id !== user.id) {
-			const wsMember = state.onlineSockets.get(member.id);
-			if (wsMember && wsMember.readyState === WebSocket.OPEN) {
-				wsMember.send(JSON.stringify({ action: 'leave_group', result: 'ok', group_id: group.id, user_id: user.id, notification: [ws.i18n.t('Chat.groupDeletedByUser', { username: user.username, groupName: group.name })] } as res_leaveGroup));
-			}
-		}
-	});
+	// group.members.forEach((member: User) => {
+	// 	if (member.id !== user.id) {
+	// 		const wsMember = state.onlineSockets.get(member.id);
+	// 		if (wsMember && wsMember.readyState === WebSocket.OPEN) {
+	// 			wsMember.send(JSON.stringify({ action: 'leave_group', result: 'ok', group_id: group.id, user_id: user.id, notification: [ws.i18n.t('Chat.groupDeletedByUser', { username: user.username, groupName: group.name })] } as res_leaveGroup));
+	// 		}
+	// 	}
+	// });
 }
 
 export default {
