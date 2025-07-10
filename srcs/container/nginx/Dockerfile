@@ -18,9 +18,6 @@ COPY conf/nginx.conf.template /etc/nginx/nginx.conf.template
 # Copier tous les fichiers de configuration .conf dans /etc/nginx/conf.d/ sauf default.conf
 COPY conf/*.conf /etc/nginx/conf.d/
 
-# Exposer le port 443 pour HTTPS
-EXPOSE 443
-
 # Substituer la variable d'environnement dans nginx.conf.template et créer nginx.conf
 RUN envsubst '$NODE_PROJET' < /etc/nginx/nginx.conf.template > /etc/nginx/nginx.conf
 
