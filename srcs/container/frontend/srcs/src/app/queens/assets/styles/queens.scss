@@ -1,0 +1,258 @@
+// Styles spécifiques à la page Queens
+.queens-page {
+	min-height: 100vh;
+	color: white;
+	overflow: hidden !important;
+	position: relative;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+
+	/* Grille de jeu */
+	.board {
+		display: grid;
+		place-items: center;
+		width: 100%;
+		max-width: 600px;
+		height: auto;
+		grid-template-columns: repeat(var(--board-cols), 1fr);
+		background-color: #000;
+		overflow: auto;
+		justify-content: center;
+		align-items: center;
+		margin-left: auto;
+		margin-right: auto;
+	}
+
+	/* Chaque cellule occupe toute la largeur de sa colonne et reste carrée */
+	.cell {
+		width: 100%;
+		aspect-ratio: 1;
+		/* Force la hauteur à être égale à la largeur */
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		font-size: calc(1rem + 0.5vw);
+		/* Taille de police ajustée selon la taille */
+		cursor: pointer;
+		position: relative;
+		border: 2px solid #000;
+		border-radius: 5px;
+		box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
+		transition: all 0.2s ease;
+	}
+
+
+	/* En cas de conflit, overlay de bandes rouges diagonales */
+	.cell.conflict {
+		border: 5px solid rgb(220, 20, 60) !important;
+	}
+
+	.cell.conflict::after {
+		content: "";
+		position: absolute;
+		top: 0;
+		left: 0;
+		width: 100%;
+		height: 100%;
+		background: repeating-linear-gradient(45deg, rgba(220, 20, 60, 0.5), rgba(220, 20, 60, 0.5) 5px, transparent 5px, transparent 10px);
+		pointer-events: none;
+	}
+
+	/* Reine affichée via un SVG */
+	.queen {
+		width: 80%;
+		height: auto;
+	}
+
+	/* Croix manuelle (noir) et auto (bleu) */
+	.board .cell .cross.manual {
+		color: #000 !important;
+	}
+
+
+	.cross.auto {
+		font-weight: bold;
+	}
+
+	/* Menu */
+	#menuToggle {
+		position: fixed;
+		top: 5rem;
+		bottom: auto;
+		right: 1rem;
+		z-index: 1100;
+	}
+
+	#menuPanel {
+		position: fixed;
+		top: 9rem;
+		right: 1rem;
+		background: #23282d;
+		border: 3px solid #3b4249;
+		border-radius: 10px;
+		color: white;
+		padding: 10px;
+		z-index: 1050;
+		display: none;
+		width: 280px;
+		max-height: 80vh;
+		min-width: 200px;
+	}
+
+	.menu-option {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 15px;
+		width: 100%;
+		padding: 5px 0;
+		color: white;
+	}
+
+	.menu-option span {
+		white-space: nowrap;
+		flex-shrink: 0;
+	}
+
+	.menu-option div {
+		display: flex;
+		gap: 5px;
+	}
+
+	.menu-option button {
+		min-width: 20px;
+		height: 30px;
+		background-color: #3b4249;
+		border: none;
+		outline: none;
+		box-shadow: none;
+		border-radius: 5px;
+		color: white;
+		cursor: pointer;
+		user-select: none;
+	}
+
+	.menu-option input[type="checkbox"] {
+		background-color: #3b4249;
+		margin-left: 5px;
+		transform: scale(2);
+		cursor: pointer;
+		accent-color: #ff0000; // Ajoute une couleur rouge à la case cochée (croix)
+	}
+
+	#resetDefaults {
+		margin-top: 5px;
+	}
+
+	/* Message principal */
+	#message {
+		margin: 25px auto 0px auto;
+		width: fit-content;
+		border: 2px solid transparent;
+		min-height: 80px;
+	}
+
+	/* Messages d'état */
+	.error {
+		background-color: #ffb5bb;
+		border: 5px solid #76030f;
+		color: #721c24;
+		padding: 10px;
+		border-radius: 10px;
+		text-align: center;
+	}
+
+	.info {
+		background-color: #d1ecf1;
+		border: 5px solid #1095a9;
+		color: #0c5460;
+		padding: 10px;
+		border-radius: 10px;
+	}
+
+	.victory {
+		background-color: #d4edda;
+		border: 5px solid #1b8734;
+		color: #155724;
+		padding: 10px;
+		border-radius: 10px;
+	}
+
+	#btn-action {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 10px;
+		justify-content: center;
+		margin-top: 20px;
+		margin-bottom: 20px;
+	}
+
+	/* Responsive */
+
+	@media (max-width: 1399px) {
+		.board {
+			width: 55%;
+		}
+	}
+
+	@media (max-width: 1300px) {
+		.board {
+			width: 55%;
+		}
+	}
+
+	@media (max-width: 1200px) {
+		.board {
+			width: 60%;
+		}
+	}
+
+	@media (max-width: 1000px) {
+		.board {
+			width: 65%;
+		}
+	}
+
+	@media (max-width: 950px) {
+		.board {
+			width: 80%;
+		}
+	}
+
+	@media (max-width: 768px) {
+
+		#menuPanel {
+			top: auto;
+			bottom: 5rem;
+			right: 1rem;
+			width: auto;
+			left: auto;
+		}
+
+		#menuToggle {
+			top: auto;
+			bottom: 1rem;
+			right: 1rem;
+		}
+
+		.board {
+			height: 100%;
+			width: 100%;
+			max-width: 100%;
+		}
+	}
+
+	@media (max-width: 668px) {
+		.title {
+			margin-top: 5px;
+			font-size: 1.5rem;
+		}
+
+		#message {
+			width: 100%;
+			font-size: 1rem;
+		}
+	}
+}
