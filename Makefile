@@ -4,10 +4,14 @@ export COMPOSE_BAKE=true
 .PHONY: all dev build down stop start lf lb re exec logs
 
 dev:
+	bash ./srcs/shared/env/generate_env.sh first
+	bash ./srcs/shared/certificates/generate.sh first
 	mkdir -p ./srcs/build
 	NODE_PROJET=dev $(DOCKER_COMPOSE) -f $(DOCKER_COMPOSE_FILE) up --build -d
 
 prod: down
+	bash ./srcs/shared/env/generate_env.sh first
+	bash ./srcs/shared/certificates/generate.sh first
 	mkdir -p ./srcs/build
 	NODE_PROJET=production $(DOCKER_COMPOSE) -f $(DOCKER_COMPOSE_FILE) up --build -d
 
@@ -39,6 +43,26 @@ clearlogs:
 lf:
 	clear
 	docker logs -f transcendencefrontend
+
+generate_env:
+	bash ./srcs/shared/env/generate_env.sh
+
+generate_ca:
+	bash ./srcs/shared/certificates/generate.sh
+
+clear: down
+# 	supprimer tout les .env
+	find ./srcs/shared -type f -name ".env" -exec rm -f {} \;
+	find ./srcs/shared -type f -name "*.key" -exec rm -f {} \;
+	find ./srcs/shared -type f -name "*.crt" -exec rm -f {} \;
+	find ./srcs/shared -type f -name "*.csr" -exec rm -f {} \;
+	rm -rf ./srcs/container/backend/srcs/sqlite/sessions.sqlite
+	rm -rf ./srcs/container/backend/srcs/sqlite/transcendence.sqlite
+	rm -rf ./srcs/container/backend/srcs/logs
+	rm -rf ./srcs/container/backend/srcs/node_modules
+	rm -rf ./srcs/container/backend/srcs/minecraft_data
+	rm -rf ./srcs/container/backend/srcs/uploads
+	rm -rf ./srcs/container/frontend/srcs/node_modules
 
 # log backend
 lb:

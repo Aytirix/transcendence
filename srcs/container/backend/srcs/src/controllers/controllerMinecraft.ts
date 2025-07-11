@@ -4,6 +4,7 @@ import path from 'path';
 
 require('dotenv').config();
 
+
 const DIRECTORY = path.join(__dirname, '..', '..', 'minecraft_data');
 
 if (!fs.existsSync(DIRECTORY)) {
