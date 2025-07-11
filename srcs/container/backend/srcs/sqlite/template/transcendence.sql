@@ -118,6 +118,7 @@ CREATE TABLE game_settings_queens (
     board_size INTEGER NOT NULL DEFAULT 9,
     difficultyLevel INTEGER NOT NULL DEFAULT 5,
     autoCross INTEGER NOT NULL DEFAULT 0,
+    view_tutorial INTEGER NOT NULL DEFAULT 0,
     game_state TEXT DEFAULT NULL,
     FOREIGN KEY (user_id) REFERENCES user(id) ON DELETE CASCADE ON UPDATE CASCADE
 );

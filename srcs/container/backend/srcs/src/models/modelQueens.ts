@@ -15,6 +15,7 @@ interface GameSettings {
 	board_size: number;
 	difficultyLevel: number;
 	autoCross: number;
+	view_tutorial: number;
 }
 
 interface GameMap {
@@ -44,18 +45,12 @@ interface GameResult {
 	message?: { message: string; type: string };
 }
 
-interface Move {
-	row: number;
-	col: number;
-	from: number;
-	to: number;
-}
-
 interface DatabaseRow {
 	id: number;
 	board_size: number;
 	difficultyLevel: number;
 	autoCross: number;
+	view_tutorial: number;
 	game_state: string;
 	regionAssignment: string;
 	solutionMapping: string;
@@ -65,6 +60,7 @@ interface UpdateParams {
 	board_size?: number;
 	difficultyLevel?: number;
 	autoCross?: number;
+	view_tutorial?: number;
 }
 
 const allowedColors: string[] = [
@@ -134,7 +130,8 @@ class GameModel {
 				setting: {
 					board_size: row.board_size,
 					difficultyLevel: row.difficultyLevel,
-					autoCross: row.autoCross
+					autoCross: row.autoCross,
+					view_tutorial: row.view_tutorial || 0
 				},
 				map: {
 					id: null,
@@ -162,7 +159,8 @@ class GameModel {
 				setting: {
 					board_size: 9,
 					difficultyLevel: 5,
-					autoCross: 0
+					autoCross: 0,
+					view_tutorial: 0
 				},
 				map: {
 					id: null,
@@ -356,7 +354,8 @@ class GameModel {
 		await this.ensureInitialized();
 		let board_size = params.board_size || (this.session.gameState ? this.session.gameState.map.board_size : 9);
 		let difficultyLevel = params.difficultyLevel || (this.session.gameState ? this.session.gameState.setting.difficultyLevel : 5);
-		let autoCross = params.autoCross;
+		let autoCross = params.autoCross !== undefined ? params.autoCross : (this.session.gameState ? this.session.gameState.setting.autoCross : 0);
+		let view_tutorial = params.view_tutorial !== undefined ? params.view_tutorial : (this.session.gameState ? this.session.gameState.setting.view_tutorial : 0);
 		if (this.session.gameState!.setting.autoCross != autoCross) {
 			reloadMap = false;
 		}
@@ -368,18 +367,20 @@ class GameModel {
 		}
 		try {
 			await executeReq(
-				`INSERT INTO queens_settings (user_id, board_size, difficultyLevel, autoCross, game_state)
-				 VALUES (?, ?, ?, ?, ?)
+				`INSERT INTO queens_settings (user_id, board_size, difficultyLevel, autoCross, view_tutorial, game_state)
+				 VALUES (?, ?, ?, ?, ?, ?)
 				 ON CONFLICT(user_id) DO UPDATE SET
 					board_size = excluded.board_size,
 					difficultyLevel = excluded.difficultyLevel,
 					autoCross = excluded.autoCross,
+					view_tutorial = excluded.view_tutorial,
 					game_state = excluded.game_state`,
 				[
 					this.session.user.id,
 					board_size,
-					this.session.gameState!.setting.difficultyLevel,
+					difficultyLevel,
 					autoCross,
+					view_tutorial,
 					JSON.stringify(this.session.gameState)
 				]
 			);
@@ -388,7 +389,9 @@ class GameModel {
 			return { status: 'error', message: { message: "Erreur interne", type: "error" } };
 		}
 		this.session.gameState!.setting.board_size = board_size!;
+		this.session.gameState!.setting.difficultyLevel = difficultyLevel!;
 		this.session.gameState!.setting.autoCross = autoCross!;
+		this.session.gameState!.setting.view_tutorial = view_tutorial!;
 		return await this.check_game_state(false);
 	}
 }
@@ -565,6 +568,7 @@ class GameSolo extends GameModel {
 				this.session.gameState!.setting.board_size = row.board_size;
 				this.session.gameState!.setting.difficultyLevel = row.difficultyLevel;
 				this.session.gameState!.setting.autoCross = row.autoCross;
+				this.session.gameState!.setting.view_tutorial = row.view_tutorial;
 				const game_state = JSON.parse(row.game_state);
 				if (game_state && game_state.map.regionAssignment && game_state.map.regionAssignment.length > 0) {
 					this.session.gameState!.map.id = game_state.map.id;

@@ -23,6 +23,7 @@
     "framer-motion": "^12.11.3",
     "i18next-browser-languagedetector": "^8.2.0",
     "i18next-http-backend": "^3.0.2",
+    "intro.js": "^8.3.1",
     "lucide-react": "^0.501.0",
     "pako": "^2.1.0",
     "react": "^19.0.0",
