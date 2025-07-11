@@ -40,7 +40,7 @@ const Tutorial: React.FC<TutorialProps> = ({ gameSettings, updateParameters }) =
 		{
 			id: 2,
 			title: "La grille de jeu",
-			content: "Voici votre plateau de jeu. C'est une grille de NxN cases divisée en régions colorées. Chaque couleur représente une région distincte.",
+			content: "Voici votre plateau de jeu. C'est une grille de 9x9 cases divisée en régions colorées. Chaque couleur représente une région distincte.",
 			target: '#board',
 			position: 'right'
 		},
@@ -54,7 +54,7 @@ const Tutorial: React.FC<TutorialProps> = ({ gameSettings, updateParameters }) =
 		{
 			id: 4,
 			title: "Objectif du jeu 🎯",
-			content: "Votre mission : placer exactement N reines sur la grille (où N est la taille de la grille). Une reine par région colorée.",
+			content: "Votre mission : placer exactement 9 reines sur la grille (où 9 est la taille de la grille). Une reine par région colorée.",
 			target: '#board',
 			position: 'right'
 		},
@@ -68,7 +68,7 @@ const Tutorial: React.FC<TutorialProps> = ({ gameSettings, updateParameters }) =
 		{
 			id: 6,
 			title: "Règle n°2 : Pas de voisinage ! 🚫",
-			content: "Une reine ne peut pas être placée dans une case adjacente à une autre reine. Les 8 cases autour d'une reine sont interdites.",
+			content: "Une reine ne peut pas être placée dans une case adjacente à une autre reine.",
 			target: '#board',
 			position: 'right'
 		},
@@ -82,7 +82,7 @@ const Tutorial: React.FC<TutorialProps> = ({ gameSettings, updateParameters }) =
 		{
 			id: 8,
 			title: "Comment jouer ? 🎮",
-			content: "Cliquez sur une case vide pour y placer une reine. Cliquez sur une reine pour la retirer. Vous pouvez aussi placer des croix pour marquer les cases interdites.",
+			content: "Premier clic : place une croix (marquage). Deuxième clic : place une reine. Troisième clic : case vide.",
 			target: '#board',
 			position: 'right'
 		},
