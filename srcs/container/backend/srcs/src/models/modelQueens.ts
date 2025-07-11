@@ -355,7 +355,11 @@ class GameModel {
 		let board_size = params.board_size || (this.session.gameState ? this.session.gameState.map.board_size : 9);
 		let difficultyLevel = params.difficultyLevel || (this.session.gameState ? this.session.gameState.setting.difficultyLevel : 5);
 		let autoCross = params.autoCross !== undefined ? params.autoCross : (this.session.gameState ? this.session.gameState.setting.autoCross : 0);
-		let view_tutorial = params.view_tutorial !== undefined ? params.view_tutorial : (this.session.gameState ? this.session.gameState.setting.view_tutorial : 0);
+		let view_tutorial = params.view_tutorial = 1;
+		this.session.gameState!.setting.board_size = board_size!;
+		this.session.gameState!.setting.difficultyLevel = difficultyLevel!;
+		this.session.gameState!.setting.autoCross = autoCross!;
+		this.session.gameState!.setting.view_tutorial = view_tutorial!;
 		if (this.session.gameState!.setting.autoCross != autoCross) {
 			reloadMap = false;
 		}
@@ -388,10 +392,6 @@ class GameModel {
 			console.error(err);
 			return { status: 'error', message: { message: "Erreur interne", type: "error" } };
 		}
-		this.session.gameState!.setting.board_size = board_size!;
-		this.session.gameState!.setting.difficultyLevel = difficultyLevel!;
-		this.session.gameState!.setting.autoCross = autoCross!;
-		this.session.gameState!.setting.view_tutorial = view_tutorial!;
 		return await this.check_game_state(false);
 	}
 }
@@ -565,21 +565,21 @@ class GameSolo extends GameModel {
 				return { status: 'error', message: { message: "Aucune partie trouvée", type: "error" } };
 			const row = rows[0];
 			if (row) {
-				this.session.gameState!.setting.board_size = row.board_size;
-				this.session.gameState!.setting.difficultyLevel = row.difficultyLevel;
-				this.session.gameState!.setting.autoCross = row.autoCross;
-				this.session.gameState!.setting.view_tutorial = row.view_tutorial;
+				this.session.gameState.setting.board_size = row.board_size;
+				this.session.gameState.setting.difficultyLevel = row.difficultyLevel;
+				this.session.gameState.setting.autoCross = row.autoCross;
+				this.session.gameState.setting.view_tutorial = row.view_tutorial;
 				const game_state = JSON.parse(row.game_state);
 				if (game_state && game_state.map.regionAssignment && game_state.map.regionAssignment.length > 0) {
-					this.session.gameState!.map.id = game_state.map.id;
-					this.session.gameState!.map.board_size = game_state.map.board_size;
-					this.session.gameState!.map.regionAssignment = game_state.map.regionAssignment;
-					this.session.gameState!.map.difficultyLevel = game_state.map.difficultyLevel;
-					this.session.gameState!.map.solutionMapping = game_state.map.solutionMapping;
-					this.session.gameState!.state.boardState = game_state.state.boardState;
-					this.session.gameState!.state.regionColors = game_state.state.regionColors;
-					this.session.gameState!.state.moveHistory = game_state.state.moveHistory;
-					this.session.gameState!.state.nbHint = game_state.state.nbHint;
+					this.session.gameState.map.id = game_state.map.id;
+					this.session.gameState.map.board_size = game_state.map.board_size;
+					this.session.gameState.map.regionAssignment = game_state.map.regionAssignment;
+					this.session.gameState.map.difficultyLevel = game_state.map.difficultyLevel;
+					this.session.gameState.map.solutionMapping = game_state.map.solutionMapping;
+					this.session.gameState.state.boardState = game_state.state.boardState;
+					this.session.gameState.state.regionColors = game_state.state.regionColors;
+					this.session.gameState.state.moveHistory = game_state.state.moveHistory;
+					this.session.gameState.state.nbHint = game_state.state.nbHint;
 				} else {
 					await this.loadMapFromDB(row.board_size, row.difficultyLevel);
 				}
