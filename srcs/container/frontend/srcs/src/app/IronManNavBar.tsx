@@ -56,13 +56,13 @@ const IronManNavBar: React.FC = () => {
 						</MinSizeGuard>
 						<Link to="/Chat" className="btn btn-ghost sm:text-lg md:text-xl lg:text-2xl">{t('nav.chat')}</Link>
 						<Link to="/friend" className="btn btn-ghost sm:text-lg md:text-xl lg:text-2xl">{t('nav.friends')}</Link>
-						<Link to="/credits" className="btn btn-ghost sm:text-lg md:text-xl lg:text-2xl">{t('project_credits')}</Link>
-						<MinSizeGuard minWidth={400} minHeight={400} hideWhenBlocked={true}>
+							<Link to="/credits" className="btn btn-ghost sm:text-lg md:text-xl lg:text-2xl">{t('project_credits')}</Link>
+						<MinSizeGuard minWidth={500} minHeight={400} hideWhenBlocked={true}>
 							<Link to="/module-manager" className="btn btn-ghost sm:text-lg md:text-xl lg:text-2xl">{t('nav.modules')}</Link>
 						</MinSizeGuard>
 					</div>
 					<div className="navbar-end mr-2">
-						<MinSizeGuard minWidth={534} minHeight={0} hideWhenBlocked={true}>
+						<MinSizeGuard minWidth={615} hideWhenBlocked={true}>
 							<div className="mr-5">
 								<LanguageToggle showLabel={false} />
 							</div>
@@ -78,6 +78,11 @@ const IronManNavBar: React.FC = () => {
 							<ul
 								tabIndex={0}
 								className="menu menu-sm dropdown-content bg-base-300 rounded-box z-[60] mt-3 w-30 p-2 shadow">
+								<li>
+									<MinSizeGuard minWidth={400} minHeight={400} maxWidth={500} hideWhenBlocked={true}>
+										<a className="justify-between" onClick={() => { navigate('/module-manager'); (document.activeElement as HTMLElement)?.blur(); }}>{t('nav.modules')}</a>
+									</MinSizeGuard>
+								</li>
 								<li>
 									<a className="justify-between" onClick={() => { navigate('/profile'); (document.activeElement as HTMLElement)?.blur(); }}>{t('profile.title')}</a>
 								</li>
