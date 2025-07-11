@@ -11,7 +11,7 @@ function wsQueenSolo(ws, user: User) {
 			let result = null;
 			switch (data.action) {
 				case 'ping':
-					result = { status: 'success', message: 'pong' };
+					result = { result: 'ok', message: 'pong' };
 					break;
 				case 'new_game':
 					result = await game.newGame();
