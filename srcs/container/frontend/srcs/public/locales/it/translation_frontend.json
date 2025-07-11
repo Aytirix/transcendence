@@ -636,5 +636,53 @@
 		"notifications": {
 			"PonginviteSent": "Invito inviato a {{username}} per giocare a Pong"
 		}
+	},
+	"queens": {
+		"title": "Gioco Queens",
+		"tutorial": {
+			"step1": {
+				"title": "Benvenuto in Queens! 👑",
+				"content": "Queens è una variante del famoso problema delle N regine. Lascia che ti spieghi come giocare!"
+			},
+			"step2": {
+				"title": "La griglia di gioco",
+				"content": "Ecco il tuo campo di gioco. È una griglia 9x9 divisa in regioni colorate. Ogni colore rappresenta una regione distinta."
+			},
+			"step3": {
+				"title": "Obiettivo del gioco 🎯",
+				"content": "La tua missione: posizionare esattamente 9 regine sulla griglia. Una regina per regione colorata."
+			},
+			"step4": {
+				"title": "Regola n°1: Niente attacchi! ⚔️",
+				"content": "Le regine non possono attaccarsi tra loro. Questo significa:\n- Una sola regina per riga\n- Una sola regina per colonna\n- Nessuna regina sulla stessa diagonale\n- Nessuna regina adiacente"
+			},
+			"step5": {
+				"title": "Regola n°3: Una regina per colore! 🌈",
+				"content": "Ogni regione colorata può contenere esattamente UNA regina - non di più, non di meno!"
+			},
+			"step6": {
+				"title": "Come giocare? 🎮",
+				"content": "Primo clic: posiziona una croce (marcatura).\nSecondo clic: posiziona una regina.\nTerzo clic: casella vuota."
+			},
+			"step7": {
+				"title": "Gli aiuti disponibili 🛠️",
+				"content": "Usa i pulsanti\n'Indizio' per ottenere aiuto.\n'Indietro' per annullare una mossa\n'Mostra soluzione' se sei bloccato.\n'Nuova partita' per cambiare griglia."
+			},
+			"step8": {
+				"title": "Tocca a te! 🚀",
+				"content": "Ora conosci tutte le regole. Posiziona le tue regine strategicamente e divertiti!"
+			}
+		},
+		"buttons": {
+			"skip": "Salta",
+			"previous": "Precedente",
+			"next": "Successivo",
+			"finish": "Termina",
+			"hint": "Indizio",
+			"undo": "Indietro",
+			"showSolution": "Mostra soluzione",
+			"newGame": "Nuova partita",
+			"tutorial": "🎓 Tutorial"
+		}
 	}
 }

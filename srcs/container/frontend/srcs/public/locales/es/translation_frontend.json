@@ -636,5 +636,53 @@
 		"notifications": {
 			"PonginviteSent": "Invitación enviada a {{username}} para jugar a Pong"
 		}
+	},
+	"queens": {
+		"title": "Juego Queens",
+		"tutorial": {
+			"step1": {
+				"title": "¡Bienvenido a Queens! 👑",
+				"content": "Queens es una variante del famoso problema de las N reinas. ¡Déjame explicarte cómo jugar!"
+			},
+			"step2": {
+				"title": "La cuadrícula de juego",
+				"content": "Aquí tienes tu tablero de juego. Es una cuadrícula de 9x9 casillas dividida en regiones de colores. Cada color representa una región distinta."
+			},
+			"step3": {
+				"title": "Objetivo del juego 🎯",
+				"content": "Tu misión: colocar exactamente 9 reinas en la cuadrícula. Una reina por región de color."
+			},
+			"step4": {
+				"title": "Regla n°1: ¡No atacar! ⚔️",
+				"content": "Las reinas no pueden atacarse entre sí. Esto significa:\n- Una sola reina por fila\n- Una sola reina por columna\n- Sin reinas en la misma diagonal\n- Sin reinas adyacentes"
+			},
+			"step5": {
+				"title": "Regla n°3: ¡Una reina por color! 🌈",
+				"content": "Cada región de color puede contener exactamente UNA reina - ¡ni más, ni menos!"
+			},
+			"step6": {
+				"title": "¿Cómo jugar? 🎮",
+				"content": "Primer clic: coloca una cruz (marcado).\nSegundo clic: coloca una reina.\nTercer clic: casilla vacía."
+			},
+			"step7": {
+				"title": "Ayudas disponibles 🛠️",
+				"content": "Usa los botones\n'Pista' para obtener ayuda.\n'Deshacer' para cancelar un movimiento\n'Mostrar solución' si estás bloqueado.\n'Nueva partida' para cambiar de cuadrícula."
+			},
+			"step8": {
+				"title": "¡A jugar! 🚀",
+				"content": "Ahora conoces todas las reglas. ¡Coloca tus reinas estratégicamente y diviértete!"
+			}
+		},
+		"buttons": {
+			"skip": "Saltar",
+			"previous": "Anterior",
+			"next": "Siguiente",
+			"finish": "Terminar",
+			"hint": "Pista",
+			"undo": "Deshacer",
+			"showSolution": "Mostrar solución",
+			"newGame": "Nueva partida",
+			"tutorial": "🎓 Tutorial"
+		}
 	}
 }

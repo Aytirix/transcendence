@@ -297,5 +297,17 @@
 		"tournament": {
 			"nextQualifierRounds": "¡Calificado automáticamente para las siguientes rondas!"
 		}
+	},
+	"queens": {
+		"messages": {
+			"victory": "¡Felicidades, has ganado!",
+			"rules": "Debe haber exactamente una reina por región, fila y columna y ninguna reina adyacente.",
+			"gameNotInitialized": "Juego no inicializado",
+			"noMoveToUndo": "Ningún movimiento para deshacer",
+			"cannotLoadMap": "No se puede cargar un mapa para estos parámetros.",
+			"internalError": "Error interno",
+			"noHintAvailable": "No hay pista disponible",
+			"noGameFound": "No se encontró juego"
+		}
 	}
 }

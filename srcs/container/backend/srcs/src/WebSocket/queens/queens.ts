@@ -4,7 +4,7 @@ import { GameSolo } from "@models/modelQueens";
 import { User } from '@types';
 
 function wsQueenSolo(ws, user: User) {
-	const game = new GameSolo(user.id);
+	const game = new GameSolo(user.id, ws);
 	ws.on("message", async (message) => {
 		try {
 			const data = JSON.parse(message);

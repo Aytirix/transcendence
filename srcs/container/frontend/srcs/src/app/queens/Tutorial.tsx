@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import './Tutorial.css';
+import './assets/styles/Tutorial.scss';
+import { useLanguage } from '../../contexts/LanguageContext';
 
 interface TutorialStep {
 	id: number;
@@ -28,6 +29,7 @@ const Tutorial: React.FC<TutorialProps> = ({ gameSettings, updateParameters }) =
 	const [showOverlay, setShowOverlay] = useState(false);
 	const [tooltipVisible, setTooltipVisible] = useState(false);
 	const [forceUpdate, setForceUpdate] = useState(0);
+	const { t } = useLanguage();
 
 	// Déterminer si le tutoriel doit être affiché
 	const shouldShowTutorial = gameSettings.view_tutorial === 0;
@@ -35,57 +37,57 @@ const Tutorial: React.FC<TutorialProps> = ({ gameSettings, updateParameters }) =
 	const steps: TutorialStep[] = [
 		{
 			id: 1,
-			title: "Bienvenue dans Queens ! 👑",
+			title: t('queens.tutorial.step1.title'),
 			target: '',
-			content: "Queens est une variante du célèbre problème des N reines. Laissez-moi vous expliquer comment jouer !",
+			content: t('queens.tutorial.step1.content'),
 			position: 'center'
 		},
 		{
 			id: 2,
-			title: "La grille de jeu",
-			content: "Voici votre plateau de jeu. C'est une grille de 9x9 cases divisée en régions colorées. Chaque couleur représente une région distincte.",
+			title: t('queens.tutorial.step2.title'),
+			content: t('queens.tutorial.step2.content'),
 			target: '#board',
 			position: 'right'
 		},
 		{
 			id: 3,
-			title: "Objectif du jeu 🎯",
-			content: "Votre mission : placer exactement 9 reines sur la grille. Une reine par région colorée.",
+			title: t('queens.tutorial.step3.title'),
+			content: t('queens.tutorial.step3.content'),
 			target: '#board',
 			position: 'right'
 		},
 		{
 			id: 4,
-			title: "Règle n°1 : Pas d'attaque ! ⚔️",
-			content: "Les reines ne peuvent pas s'attaquer entre elles. Cela signifie :\n- Une seul reine par ligne\n- Une seule reine par colonne\n- Pas de reines sur la même diagonale\n- Pas de reines adjacentes",
+			title: t('queens.tutorial.step4.title'),
+			content: t('queens.tutorial.step4.content'),
 			target: '#board',
 			position: 'right'
 		},
 		{
 			id: 5,
-			title: "Règle n°3 : Une reine par couleur ! 🌈",
-			content: "Chaque région colorée ne peut contenir exactement UNE reine - pas plus, pas moins !",
+			title: t('queens.tutorial.step5.title'),
+			content: t('queens.tutorial.step5.content'),
 			target: '#board',
 			position: 'right'
 		},
 		{
 			id: 6,
-			title: "Comment jouer ? 🎮",
-			content: "Premier clic : place une croix (marquage).\nDeuxième clic : place une reine.\nTroisième clic : case vide.",
+			title: t('queens.tutorial.step6.title'),
+			content: t('queens.tutorial.step6.content'),
 			target: '#board',
 			position: 'right'
 		},
 		{
 			id: 7,
-			title: "Les aides disponibles 🛠️",
-			content: "Utilisez les boutons\n'Indice' pour obtenir de l'aide.\n 'Retour' pour annuler un coup\n'Afficher solution' si vous êtes bloqué.\n'Nouvelle partie' pour changer de grille.",
+			title: t('queens.tutorial.step7.title'),
+			content: t('queens.tutorial.step7.content'),
 			target: '#btn-action',
 			position: 'bottom'
 		},
 		{
 			id: 8,
-			title: "À vous de jouer ! 🚀",
-			content: "Vous connaissez maintenant toutes les règles. Placez vos reines stratégiquement et amusez-vous bien !",
+			title: t('queens.tutorial.step8.title'),
+			content: t('queens.tutorial.step8.content'),
 			position: 'center'
 		}
 	];
@@ -304,7 +306,7 @@ const Tutorial: React.FC<TutorialProps> = ({ gameSettings, updateParameters }) =
 								className="tutorial-btn tutorial-btn-secondary"
 								onClick={completeTutorial}
 							>
-								Passer
+								{t('queens.buttons.skip')}
 							</button>
 
 							{currentStep > 0 && (
@@ -312,7 +314,7 @@ const Tutorial: React.FC<TutorialProps> = ({ gameSettings, updateParameters }) =
 									className="tutorial-btn tutorial-btn-secondary"
 									onClick={prevStep}
 								>
-									Précédent
+									{t('queens.buttons.previous')}
 								</button>
 							)}
 
@@ -320,7 +322,7 @@ const Tutorial: React.FC<TutorialProps> = ({ gameSettings, updateParameters }) =
 								className="tutorial-btn tutorial-btn-primary"
 								onClick={nextStep}
 							>
-								{currentStep === steps.length - 1 ? 'Terminer' : 'Suivant'}
+								{currentStep === steps.length - 1 ? t('queens.buttons.finish') : t('queens.buttons.next')}
 							</button>
 						</div>
 					</div>
