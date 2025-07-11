@@ -1,0 +1,11 @@
+**/.enve
+**/node_modules
+**/package-lock.json
+**/dist
+srcs/container/backend/srcs/logs
+srcs/build/**
+sqlite/sessions.sqlite
+sqlite/transcendence.sqlite
+uploads
+minecraft_data
+logs

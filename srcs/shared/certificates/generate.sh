@@ -3,7 +3,8 @@
 set -e  # Arrête le script en cas d'erreur
 
 # Dossiers
-CERT_DIR="$(pwd)"
+CERT_DIR="$(pwd)/srcs/shared/certificates"
+
 CA_DIR="$CERT_DIR/CA"
 
 # Fichiers
@@ -14,6 +15,26 @@ SERVER_CSR="$CERT_DIR/server.csr"
 SERVER_CRT="$CERT_DIR/server.crt"
 SSL_CONF="$CERT_DIR/ssl.conf"
 CA_EXT="$CA_DIR/CA.ext"
+
+
+if [[ "$1" == "first" ]]; then
+  if [[ -f "$CA_KEY" || -f "$CA_CRT" || -f "$SERVER_KEY" || -f "$SERVER_CSR" || -f "$SERVER_CRT" ]]; then
+    exit 0
+  fi
+else
+  echo "⚠️  Cette commande va générer ou écraser des certificats SSL/TLS."
+  read -p "Voulez-vous continuer ? (o/n) " confirmation
+  if [[ ! "$confirmation" =~ ^[oO]$ ]]; then
+    echo "❌ Opération annulée."
+    exit 1
+  fi
+fi
+
+# Supprimer les anciens certificats s'ils existent
+rm -f "$CA_KEY" "$CA_CRT" "$SERVER_KEY" "$SERVER_CSR" "$SERVER_CRT"
+
+
+mkdir -p "$CA_DIR"
 
 # 1. Générer la clé privée de la CA
 echo "[1/6] Génération de la clé privée de la CA..."
