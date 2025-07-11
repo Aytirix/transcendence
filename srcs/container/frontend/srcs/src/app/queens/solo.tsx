@@ -1,12 +1,23 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Board from './Board';
 import Menu from './Menu';
+import Tutorial from './Tutorial';
 import soloGame from './ws/SoloGame';
 import './assets/styles/queens.scss';
 import '../assets/styles/Star.scss';
 
 const Solo: React.FC = () => {
 	const { game, newGame, makeMove, undoMove, hint, solution, updateParameters, notification } = soloGame();
+
+	const startTutorial = () => {
+		if (!game || !game.setting) {
+			return;
+		}
+		updateParameters({
+			...game.setting,
+			view_tutorial: 0,
+		});
+	};
 
 	if (!game || !game.map || !game.map.board_size || !game.state || !game.state.boardState) {
 		return <div></div>;
@@ -37,6 +48,9 @@ const Solo: React.FC = () => {
 						<button onClick={newGame} className="btn btn-primary text-black">
 							Nouvelle partie
 						</button>
+						<button onClick={startTutorial} className="btn btn-success">
+							🎓 Tutorial
+						</button>
 					</div>
 					{/* Affichage du plateau de jeu */}
 					{game && <Board game={game} makeMove={makeMove} />}
@@ -48,6 +62,12 @@ const Solo: React.FC = () => {
 						)}
 					</div>
 				</div>
+
+				{/* Tutorial interactif */}
+				<Tutorial
+					gameSettings={game.setting}
+					updateParameters={updateParameters}
+				/>
 			</div>
 		</div>
 	);

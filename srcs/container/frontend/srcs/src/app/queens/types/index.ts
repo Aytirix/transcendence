@@ -4,6 +4,7 @@ export interface GameSettings {
 	board_size: number;
 	difficultyLevel: number;
 	autoCross: boolean;
+	view_tutorial: number; // 0: non vu, 1: vu
 }
 
 export interface GameMap {
@@ -49,6 +50,7 @@ export interface UpdateParameters {
 	board_size?: number;
 	difficultyLevel?: number;
 	autoCross?: boolean;
+	view_tutorial?: number; // 0: non vu, 1: vu
 }
 
 export interface SoloGameHook {

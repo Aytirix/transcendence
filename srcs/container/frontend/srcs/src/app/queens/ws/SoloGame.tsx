@@ -94,8 +94,8 @@ const SoloGame = (): SoloGameHook => {
 	const hint = () => sendMessage({ action: 'hint' });
 	const solution = () => sendMessage({ action: 'solution' });
 	const updateParameters = (newParams: UpdateParameters) => {
-		const { board_size, difficultyLevel, autoCross } = newParams;
-		sendMessage({ action: 'update_parameters', board_size, difficultyLevel, autoCross: autoCross ? 1 : 0 });
+		const { board_size, difficultyLevel, autoCross, view_tutorial } = newParams;
+		sendMessage({ action: 'update_parameters', board_size, difficultyLevel, autoCross: autoCross ? 1 : 0, view_tutorial: view_tutorial || 0 });
 	};
 
 	return { game, newGame, makeMove, undoMove, hint, solution, updateParameters, notification: notifMessage };

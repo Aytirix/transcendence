@@ -1,6 +1,6 @@
 // wsServer.js
 import { WebSocket } from 'ws';
-import { GameSolo } from "@models/model-queens";
+import { GameSolo } from "@models/modelQueens";
 import { User } from '@types';
 
 function wsQueenSolo(ws, user: User) {
