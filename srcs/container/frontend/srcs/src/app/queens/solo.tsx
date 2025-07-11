@@ -1,13 +1,15 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import Board from './Board';
 import Menu from './Menu';
 import Tutorial from './Tutorial';
 import soloGame from './ws/SoloGame';
+import { useLanguage } from '../../contexts/LanguageContext';
 import './assets/styles/queens.scss';
 import '../assets/styles/Star.scss';
 
 const Solo: React.FC = () => {
 	const { game, newGame, makeMove, undoMove, hint, solution, updateParameters, notification } = soloGame();
+	const { t } = useLanguage();
 
 	const startTutorial = () => {
 		if (!game || !game.setting) {
@@ -34,22 +36,22 @@ const Solo: React.FC = () => {
 			<div className="queens-page">
 				<Menu game={game} updateParameters={updateParameters} />
 				<div className="container text-center title">
-					<h1 style={{ color: 'white' }}>Jeu Queens – Une reine par couleur</h1>
+					<h1 style={{ color: 'white' }}>{t('queens.title')}</h1>
 					<div id="btn-action">
 						<button onClick={undoMove} className="btn btn-secondary text-black">
-							Retour
+							{t('queens.buttons.undo')}
 						</button>
 						<button onClick={hint} className="btn btn-warning">
-							Indice
+							{t('queens.buttons.hint')}
 						</button>
 						<button onClick={solution} className="btn btn-info">
-							Afficher solution
+							{t('queens.buttons.showSolution')}
 						</button>
 						<button onClick={newGame} className="btn btn-primary text-black">
-							Nouvelle partie
+							{t('queens.buttons.newGame')}
 						</button>
 						<button onClick={startTutorial} className="btn btn-success">
-							🎓 Tutoriel
+							{t('queens.buttons.tutorial')}
 						</button>
 					</div>
 					{/* Affichage du plateau de jeu */}

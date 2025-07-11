@@ -99,8 +99,6 @@ export const UpdateUser = async (id: string, email: string = null, username: str
 		params.push(avatar);
 	}
 
-	console.log(`brut 2fa: ${twofa}`);
-	console.log(`Updating 2FA for user ${id}: ${twofa !== null ? (twofa ? 'enabled' : 'disabled') : 'not changed'}`);
 	if (twofa !== null) {
 		updates.push('twofa = ?');
 		params.push((twofa ? 1 : 0).toString());

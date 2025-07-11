@@ -297,5 +297,17 @@
 		"tournament": {
 			"nextQualifierRounds": "Qualificato automaticamente per i turni successivi!"
 		}
+	},
+	"queens": {
+		"messages": {
+			"victory": "Congratulazioni, hai vinto!",
+			"rules": "Deve esserci esattamente una regina per regione, riga e colonna e nessuna regina adiacente.",
+			"gameNotInitialized": "Gioco non inizializzato",
+			"noMoveToUndo": "Nessuna mossa da annullare",
+			"cannotLoadMap": "Impossibile caricare una mappa per questi parametri.",
+			"internalError": "Errore interno",
+			"noHintAvailable": "Nessun indizio disponibile",
+			"noGameFound": "Nessun gioco trovato"
+		}
 	}
 }

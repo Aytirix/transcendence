@@ -297,5 +297,17 @@
 		"tournament": {
 			"nextQualifierRounds": "Automatically qualified for next rounds!"
 		}
+	},
+	"queens": {
+		"messages": {
+			"victory": "Congratulations, you won!",
+			"rules": "There must be exactly one queen per region, row and column and no adjacent queens.",
+			"gameNotInitialized": "Game not initialized",
+			"noMoveToUndo": "No move to undo",
+			"cannotLoadMap": "Cannot load a map for these parameters.",
+			"internalError": "Internal error",
+			"noHintAvailable": "No hint available",
+			"noGameFound": "No game found"
+		}
 	}
 }

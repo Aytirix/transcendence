@@ -636,5 +636,53 @@
 		"notifications": {
 			"PonginviteSent": "Invitation envoyée à {{username}} pour jouer à Pong"
 		}
+	},
+	"queens": {
+		"title": "Jeu Queens",
+		"tutorial": {
+			"step1": {
+				"title": "Bienvenue dans Queens ! 👑",
+				"content": "Queens est une variante du célèbre problème des N reines. Laissez-moi vous expliquer comment jouer !"
+			},
+			"step2": {
+				"title": "La grille de jeu",
+				"content": "Voici votre plateau de jeu. C'est une grille de 9x9 cases divisée en régions colorées. Chaque couleur représente une région distincte."
+			},
+			"step3": {
+				"title": "Objectif du jeu 🎯",
+				"content": "Votre mission : placer exactement 9 reines sur la grille. Une reine par région colorée."
+			},
+			"step4": {
+				"title": "Règle n°1 : Pas d'attaque ! ⚔️",
+				"content": "Les reines ne peuvent pas s'attaquer entre elles. Cela signifie :\n- Une seul reine par ligne\n- Une seule reine par colonne\n- Pas de reines sur la même diagonale\n- Pas de reines adjacentes"
+			},
+			"step5": {
+				"title": "Règle n°3 : Une reine par couleur ! 🌈",
+				"content": "Chaque région colorée ne peut contenir exactement UNE reine - pas plus, pas moins !"
+			},
+			"step6": {
+				"title": "Comment jouer ? 🎮",
+				"content": "Premier clic : place une croix (marquage).\nDeuxième clic : place une reine.\nTroisième clic : case vide."
+			},
+			"step7": {
+				"title": "Les aides disponibles 🛠️",
+				"content": "Utilisez les boutons\n'Indice' pour obtenir de l'aide.\n 'Retour' pour annuler un coup\n'Afficher solution' si vous êtes bloqué.\n'Nouvelle partie' pour changer de grille."
+			},
+			"step8": {
+				"title": "À vous de jouer ! 🚀",
+				"content": "Vous connaissez maintenant toutes les règles. Placez vos reines stratégiquement et amusez-vous bien !"
+			}
+		},
+		"buttons": {
+			"skip": "Passer",
+			"previous": "Précédent",
+			"next": "Suivant",
+			"finish": "Terminer",
+			"hint": "Indice",
+			"undo": "Retour",
+			"showSolution": "Afficher solution",
+			"newGame": "Nouvelle partie",
+			"tutorial": "🎓 Tutoriel"
+		}
 	}
 }

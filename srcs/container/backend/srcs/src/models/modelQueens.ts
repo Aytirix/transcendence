@@ -1,5 +1,6 @@
 // models/GameModel.ts
 import executeReq from '@models/database';
+import { WebSocket } from 'ws'
 
 // Interfaces TypeScript
 interface User {
@@ -8,6 +9,7 @@ interface User {
 
 interface Session {
 	user: User;
+	ws: WebSocket;
 	gameState?: GameState;
 }
 
@@ -94,14 +96,16 @@ const allowedColors: string[] = [
  */
 class GameModel {
 	protected session: Session;
+	protected ws: WebSocket;
 	private initPromise: Promise<void>;
 
 	/**
 	 * Le constructeur reçoit la session (ex: req.session)
 	 */
-	constructor(user_id: number) {
+	constructor(user_id: number, ws: WebSocket) {
 		this.session = {
 			user: { id: user_id },
+			ws: ws,
 			gameState: undefined
 		};
 		this.initPromise = this.init_gameState();
@@ -185,7 +189,7 @@ class GameModel {
 	async check_game_state(update_db: boolean = true): Promise<GameResult> {
 		await this.ensureInitialized();
 		if (!this.session.gameState) {
-			return { status: 'error', message: { message: 'Game not initialized', type: 'error' } };
+			return { status: 'error', message: { message: (this.session.ws as any).i18n?.t('queens.messages.gameNotInitialized') || 'Game not initialized', type: 'error' } };
 		}
 		const game = this.session.gameState;
 		const board_size = game.map.board_size!;
@@ -296,9 +300,9 @@ class GameModel {
 			conflictPositions.size === 0;
 
 		if (win) {
-			message = { message: "Bravo, vous avez gagné !", type: "victory" };
+			message = { message: (this.session.ws as any).i18n?.t('queens.messages.victory') || "Bravo, vous avez gagné !", type: "victory" };
 		} else if (conflictPositions.size > 0) {
-			message = { message: "Il doit y avoir exactement une reine par région, ligne et colonne et aucune reine adjacente.", type: "error" };
+			message = { message: (this.session.ws as any).i18n?.t('queens.messages.rules') || "Il doit y avoir exactement une reine par région, ligne et colonne et aucune reine adjacente.", type: "error" };
 		} else {
 			message = { message: "", type: "" };
 		}
@@ -315,7 +319,7 @@ class GameModel {
 	async makeMove(row: number, col: number, newState: number): Promise<GameResult> {
 		await this.ensureInitialized();
 		if (!this.session.gameState) {
-			return { status: 'error', message: { message: "Game not initialized", type: "error" } };
+			return { status: 'error', message: { message: (this.session.ws as any).i18n?.t('queens.messages.gameNotInitialized') || "Game not initialized", type: "error" } };
 		}
 		const game = this.session.gameState;
 		const current = game.state.boardState![row][col];
@@ -332,11 +336,11 @@ class GameModel {
 	async undo(): Promise<GameResult> {
 		await this.ensureInitialized();
 		if (!this.session.gameState) {
-			return { status: 'error', message: { message: "Game not initialized", type: "error" } };
+			return { status: 'error', message: { message: (this.session.ws as any).i18n?.t('queens.messages.gameNotInitialized') || "Game not initialized", type: "error" } };
 		}
 		const game = this.session.gameState;
 		if (!game.state.moveHistory || game.state.moveHistory.length === 0) {
-			return { status: 'error', message: { message: "Aucun coup à annuler", type: "info" } };
+			return { status: 'error', message: { message: (this.session.ws as any).i18n?.t('queens.messages.noMoveToUndo') || "Aucun coup à annuler", type: "info" } };
 		}
 		const lastMove = game.state.moveHistory.pop()!;
 		lastMove.forEach(move => {
@@ -369,7 +373,7 @@ class GameModel {
 		if (needsMapReload && reloadMap && 'loadMapFromDB' in this && typeof (this as any).loadMapFromDB === 'function') {
 			const game = await (this as any).loadMapFromDB(board_size, difficultyLevel);
 			if (!game) {
-				return { status: 'error', message: { message: "Impossible de charger une map pour ces paramètres.", type: "error" } };
+				return { status: 'error', message: { message: (this.session.ws as any).i18n?.t('queens.messages.cannotLoadMap') || "Impossible de charger une map pour ces paramètres.", type: "error" } };
 			}
 		}
 		try {
@@ -393,7 +397,7 @@ class GameModel {
 			);
 		} catch (err) {
 			console.error(err);
-			return { status: 'error', message: { message: "Erreur interne", type: "error" } };
+			return { status: 'error', message: { message: (this.session.ws as any).i18n?.t('queens.messages.internalError') || "Erreur interne", type: "error" } };
 		}
 		return await this.check_game_state(false);
 	}
@@ -483,7 +487,7 @@ class GameSolo extends GameModel {
 		console.log("Creating new game");
 		const game = await this.loadMapFromDB(this.session.gameState!.setting.board_size, this.session.gameState!.setting.difficultyLevel);
 		if (!game) {
-			return { status: 'error', message: { message: "Impossible de charger une map pour ces paramètres.", type: "error" } };
+			return { status: 'error', message: { message: (this.session.ws as any).i18n?.t('queens.messages.cannotLoadMap') || "Impossible de charger une map pour ces paramètres.", type: "error" } };
 		}
 		return { status: 'success', game: this.session.gameState, message: { message: "", type: "" } };
 	}
@@ -494,7 +498,7 @@ class GameSolo extends GameModel {
 	async hint(): Promise<GameResult> {
 		await this.ensureInitialized();
 		if (!this.session.gameState) {
-			return { status: 'error', message: { message: "Game not initialized", type: "error" } };
+			return { status: 'error', message: { message: (this.session.ws as any).i18n?.t('queens.messages.gameNotInitialized') || "Game not initialized", type: "error" } };
 		}
 		const game = this.session.gameState;
 		const board_size = game.map.board_size!;
@@ -521,7 +525,7 @@ class GameSolo extends GameModel {
 			this.session.gameState = game;
 			return await this.check_game_state();
 		} else {
-			return { status: 'error', message: { message: "Aucun indice disponible", type: "info" } };
+			return { status: 'error', message: { message: (this.session.ws as any).i18n?.t('queens.messages.noHintAvailable') || "Aucun indice disponible", type: "info" } };
 		}
 	}
 
@@ -531,7 +535,7 @@ class GameSolo extends GameModel {
 	async solution(): Promise<GameResult> {
 		await this.ensureInitialized();
 		if (!this.session.gameState) {
-			return { status: 'error', message: { message: "Game not initialized", type: "error" } };
+			return { status: 'error', message: { message: (this.session.ws as any).i18n?.t('queens.messages.gameNotInitialized') || "Game not initialized", type: "error" } };
 		}
 		const game = this.session.gameState;
 		const board_size = game.map.board_size!;
@@ -589,11 +593,11 @@ class GameSolo extends GameModel {
 				}
 				return await this.check_game_state(false);
 			} else {
-				return { status: 'error', message: { message: "Aucune partie trouvée", type: "error" } };
+				return { status: 'error', message: { message: (this.session.ws as any).i18n?.t('queens.messages.noGameFound') || "Aucune partie trouvée", type: "error" } };
 			}
 		} catch (err) {
 			console.error(err);
-			return { status: 'error', message: { message: "Erreur interne", type: "error" } };
+			return { status: 'error', message: { message: (this.session.ws as any).i18n?.t('queens.messages.internalError') || "Erreur interne", type: "error" } };
 		}
 	}
 }

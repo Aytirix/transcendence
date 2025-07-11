@@ -636,5 +636,53 @@
 		"notifications": {
 			"PonginviteSent": "Invitation sent to {{username}} to play Pong"
 		}
+	},
+	"queens": {
+		"title": "Queens Game",
+		"tutorial": {
+			"step1": {
+				"title": "Welcome to Queens! 👑",
+				"content": "Queens is a variant of the famous N queens problem. Let me explain how to play!"
+			},
+			"step2": {
+				"title": "The game board",
+				"content": "Here's your game board. It's a 9x9 grid divided into colored regions. Each color represents a distinct region."
+			},
+			"step3": {
+				"title": "Game objective 🎯",
+				"content": "Your mission: place exactly 9 queens on the grid. One queen per colored region."
+			},
+			"step4": {
+				"title": "Rule #1: No attacks! ⚔️",
+				"content": "Queens cannot attack each other. This means:\n- Only one queen per row\n- Only one queen per column\n- No queens on the same diagonal\n- No adjacent queens"
+			},
+			"step5": {
+				"title": "Rule #2: One queen per color! 🌈",
+				"content": "Each colored region can contain exactly ONE queen - no more, no less!"
+			},
+			"step6": {
+				"title": "How to play? 🎮",
+				"content": "First click: places a cross (marking).\nSecond click: places a queen.\nThird click: empty cell."
+			},
+			"step7": {
+				"title": "Available help 🛠️",
+				"content": "Use the buttons\n'Hint' to get help.\n'Undo' to cancel a move\n'Show solution' if you're stuck.\n'New game' to change the grid."
+			},
+			"step8": {
+				"title": "Your turn to play! 🚀",
+				"content": "You now know all the rules. Place your queens strategically and have fun!"
+			}
+		},
+		"buttons": {
+			"skip": "Skip",
+			"previous": "Previous",
+			"next": "Next",
+			"finish": "Finish",
+			"hint": "Hint",
+			"undo": "Undo",
+			"showSolution": "Show solution",
+			"newGame": "New game",
+			"tutorial": "🎓 Tutorial"
+		}
 	}
 }
