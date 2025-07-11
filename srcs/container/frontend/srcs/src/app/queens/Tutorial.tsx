@@ -54,28 +54,28 @@ const Tutorial: React.FC<TutorialProps> = ({ gameSettings, updateParameters }) =
 			title: t('queens.tutorial.step3.title'),
 			content: t('queens.tutorial.step3.content'),
 			target: '#board',
-			position: 'left'
+			position: 'right'
 		},
 		{
 			id: 4,
 			title: t('queens.tutorial.step4.title'),
 			content: t('queens.tutorial.step4.content'),
 			target: '#board',
-			position: 'left'
+			position: 'right'
 		},
 		{
 			id: 5,
 			title: t('queens.tutorial.step5.title'),
 			content: t('queens.tutorial.step5.content'),
 			target: '#board',
-			position: 'left'
+			position: 'right'
 		},
 		{
 			id: 6,
 			title: t('queens.tutorial.step6.title'),
 			content: t('queens.tutorial.step6.content'),
 			target: '#board',
-			position: 'left'
+			position: 'right'
 		},
 		{
 			id: 7,
