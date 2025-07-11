@@ -2,6 +2,10 @@
 
 Ce projet, réalisé dans le cadre du cursus de l'École 42, a pour objectif de développer une application de jeu en ligne. Le projet est conçu pour être une plateforme de jeu où les utilisateurs peuvent s'affronter dans des jeux variés, tout en offrant une interface utilisateur intuitive et agréable.
 
+## 🌐 Accès en ligne
+
+Le projet est disponible en ligne à l'adresse suivante : [https://game.theomouty.fr/](https://game.theomouty.fr/)
+
 
 ## Table des matières
 
