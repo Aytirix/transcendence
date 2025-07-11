@@ -49,7 +49,7 @@ const Solo: React.FC = () => {
 							Nouvelle partie
 						</button>
 						<button onClick={startTutorial} className="btn btn-success">
-							🎓 Tutorial
+							🎓 Tutoriel
 						</button>
 					</div>
 					{/* Affichage du plateau de jeu */}
