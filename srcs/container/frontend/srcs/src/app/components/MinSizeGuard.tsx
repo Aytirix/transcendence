@@ -7,6 +7,8 @@ interface MinSizeGuardProps {
 	children: ReactNode;
 	minWidth?: number;
 	minHeight?: number;
+	maxWidth?: number;
+	maxHeight?: number;
 	message?: string;
 	className?: string;
 	hideWhenBlocked?: boolean;
@@ -15,8 +17,10 @@ interface MinSizeGuardProps {
 
 const MinSizeGuard = ({
 	children,
-	minWidth = 768,
-	minHeight = 600,
+	minWidth = 0,
+	minHeight = 0,
+	maxWidth = 9999,
+	maxHeight = 9999,
 	message = '',
 	className = '',
 	hideWhenBlocked = false,
@@ -53,7 +57,7 @@ const MinSizeGuard = ({
 		navigate('/', { replace: true });
 	};
 
-	const isBlocked = windowSize.width < minWidth || windowSize.height < minHeight;
+	const isBlocked = windowSize.width < minWidth || windowSize.height < minHeight || windowSize.width > maxWidth || windowSize.height > maxHeight;
 
 	if (isBlocked || (blockChromium && isChromium)) {
 		// Si hideWhenBlocked est true, ne rien afficher du tout

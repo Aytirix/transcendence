@@ -54,28 +54,28 @@ const Tutorial: React.FC<TutorialProps> = ({ gameSettings, updateParameters }) =
 			title: t('queens.tutorial.step3.title'),
 			content: t('queens.tutorial.step3.content'),
 			target: '#board',
-			position: 'right'
+			position: 'left'
 		},
 		{
 			id: 4,
 			title: t('queens.tutorial.step4.title'),
 			content: t('queens.tutorial.step4.content'),
 			target: '#board',
-			position: 'right'
+			position: 'left'
 		},
 		{
 			id: 5,
 			title: t('queens.tutorial.step5.title'),
 			content: t('queens.tutorial.step5.content'),
 			target: '#board',
-			position: 'right'
+			position: 'left'
 		},
 		{
 			id: 6,
 			title: t('queens.tutorial.step6.title'),
 			content: t('queens.tutorial.step6.content'),
 			target: '#board',
-			position: 'right'
+			position: 'left'
 		},
 		{
 			id: 7,
@@ -124,8 +124,20 @@ const Tutorial: React.FC<TutorialProps> = ({ gameSettings, updateParameters }) =
 			setForceUpdate(prev => prev + 1);
 		};
 
+		const handleOrientationChange = () => {
+			// Petit délai pour laisser le temps à l'orientation de changer
+			setTimeout(() => {
+				setForceUpdate(prev => prev + 1);
+			}, 100);
+		};
+
 		window.addEventListener('resize', handleResize);
-		return () => window.removeEventListener('resize', handleResize);
+		window.addEventListener('orientationchange', handleOrientationChange);
+
+		return () => {
+			window.removeEventListener('resize', handleResize);
+			window.removeEventListener('orientationchange', handleOrientationChange);
+		};
 	}, [showOverlay]);
 
 	const nextStep = () => {
@@ -203,14 +215,16 @@ const Tutorial: React.FC<TutorialProps> = ({ gameSettings, updateParameters }) =
 
 	const getCurrentStepData = () => steps[currentStep];
 
-	const getTooltipPosition = (target: string, position: string) => {
+	const getTooltipPosition = (target: string, position: string): { top: string; left: string; position: string } => {
+		const isMobile = window.innerWidth <= 1468;
+
 		// Si pas de target ou position center, retourner des valeurs pour le centrage CSS
 		if (!target || position === 'center') {
-			return { top: '50%', left: '50%' };
+			return { top: '50%', left: '50%', position: position };
 		}
 
 		const element = document.querySelector(target);
-		if (!element) return { top: '50%', left: '50%' };
+		if (!element) return { top: '50%', left: '50%', position: position };
 
 		const rect = element.getBoundingClientRect();
 		const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
@@ -223,7 +237,11 @@ const Tutorial: React.FC<TutorialProps> = ({ gameSettings, updateParameters }) =
 		let top = 0;
 		let left = 0;
 
-		switch (position) {
+		const shouldUseTopOnMobile = isMobile && (position === 'left' || position === 'right');
+
+		const finalPosition = shouldUseTopOnMobile ? 'top' : position;
+
+		switch (finalPosition) {
 			case 'top':
 				// Le bas de la carte doit être aligné avec le haut de l'élément
 				top = elementTop - 20;
@@ -249,13 +267,18 @@ const Tutorial: React.FC<TutorialProps> = ({ gameSettings, updateParameters }) =
 				left = window.innerWidth / 2 + scrollLeft;
 		}
 
-		return { top: `${top}px`, left: `${left}px` };
+		return { top: `${top}px`, left: `${left}px`, position: finalPosition };
 	};
 
 	if (!showOverlay || !shouldShowTutorial) return null;
 
 	const step = getCurrentStepData();
-	const position = getTooltipPosition(step.target || '', step.position || 'center');
+	const res = getTooltipPosition(step.target || '', step.position || 'center');
+	const position = {
+		top: res.top,
+		left: res.left,
+	};
+	const finalPosition = res.position;
 
 	return (
 		<div className="tutorial-overlay">
@@ -282,14 +305,14 @@ const Tutorial: React.FC<TutorialProps> = ({ gameSettings, updateParameters }) =
 			{/* Tooltip avec le contenu de l'étape */}
 			<div
 				className="tutorial-tooltip"
-				data-position={step.position || 'center'}
+				data-position={finalPosition}
 				style={{
 					position: 'fixed',
 					top: position.top,
 					left: position.left,
 					zIndex: 10000,
 					visibility: tooltipVisible ? 'visible' : 'hidden',
-					opacity: tooltipVisible ? 1 : 0
+					opacity: tooltipVisible ? 1 : 0,
 				}}
 			>
 				<div className="tutorial-content">
