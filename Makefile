@@ -42,7 +42,7 @@ clearlogs:
 # log frontend
 lf:
 	clear
-	docker logs -f transcendencefrontend
+	docker logs -f transcendence_frontend
 
 generate_env:
 	bash ./srcs/shared/env/generate_env.sh
