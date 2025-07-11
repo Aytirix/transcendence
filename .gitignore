@@ -5,3 +5,8 @@
 srcs/build/**
 srcs/dist/**
 **/*.srl
+srcs/shared/certificates/CA/myCA.crt
+srcs/shared/certificates/CA/myCA.key
+srcs/shared/certificates/server.crt
+srcs/shared/certificates/server.csr
+srcs/shared/certificates/server.key
