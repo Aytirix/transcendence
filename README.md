@@ -74,3 +74,32 @@ make clear
 - Jeu pong et système de matchmaking
 - Minecraft intégré
 - Jeu queen
+
+## Contributeurs
+
+Ce projet a été réalisé par une équipe de 4 développeurs :
+
+<table>
+  <tr>
+    <td align="center">
+      <img src="https://cdn.intra.42.fr/users/a08c0df0f3154c3567ef9974e3cdceea/thmouty.jpg" width="100px;" height="100px;" style="border-radius: 50%; object-fit: cover;" alt="Theo"/>
+      <br />
+      <sub><b>Theo</b></sub>
+    </td>
+    <td align="center">
+      <img src="https://cdn.intra.42.fr/users/9c72703c120e32659983449b85b025b1/gacavali.jpg" width="100px;" height="100px;" style="border-radius: 50%; object-fit: cover;" alt="Gabriel"/>
+      <br />
+      <sub><b>Gabriel</b></sub>
+    </td>
+    <td align="center">
+      <img src="https://cdn.intra.42.fr/users/ee730a412005a752267949978eacef43/cgorin.jpg" width="100px;" height="100px;" style="border-radius: 50%; object-fit: cover;" alt="Camille"/>
+      <br />
+      <sub><b>Camille</b></sub>
+    </td>
+    <td align="center">
+      <img src="https://cdn.intra.42.fr/users/d75d575fb7b82c1d6eb10d69670b892c/yenaiji.jpg" width="100px;" height="100px;" style="border-radius: 50%; object-fit: cover;" alt="Yassine"/>
+      <br />
+      <sub><b>Yassine</b></sub>
+    </td>
+  </tr>
+</table>
