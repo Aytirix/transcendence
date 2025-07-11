@@ -49,55 +49,41 @@ const Tutorial: React.FC<TutorialProps> = ({ gameSettings, updateParameters }) =
 		},
 		{
 			id: 3,
-			title: "Les régions colorées",
-			content: "Observez bien les différentes couleurs. Chaque région colorée peut contenir exactement UNE reine - pas plus, pas moins !",
+			title: "Objectif du jeu 🎯",
+			content: "Votre mission : placer exactement 9 reines sur la grille. Une reine par région colorée.",
 			target: '#board',
 			position: 'right'
 		},
 		{
 			id: 4,
-			title: "Objectif du jeu 🎯",
-			content: "Votre mission : placer exactement 9 reines sur la grille (où 9 est la taille de la grille). Une reine par région colorée.",
+			title: "Règle n°1 : Pas d'attaque ! ⚔️",
+			content: "Les reines ne peuvent pas s'attaquer entre elles. Cela signifie :\n- Une seul reine par ligne\n- Une seule reine par colonne\n- Pas de reines sur la même diagonale\n- Pas de reines adjacentes",
 			target: '#board',
 			position: 'right'
 		},
 		{
 			id: 5,
-			title: "Règle n°1 : Pas d'attaque ! ⚔️",
-			content: "Les reines ne peuvent pas s'attaquer entre elles. Cela signifie : pas deux reines sur la même ligne, colonne ou diagonale.",
+			title: "Règle n°3 : Une reine par couleur ! 🌈",
+			content: "Chaque région colorée ne peut contenir exactement UNE reine - pas plus, pas moins !",
 			target: '#board',
 			position: 'right'
 		},
 		{
 			id: 6,
-			title: "Règle n°2 : Pas de voisinage ! 🚫",
-			content: "Une reine ne peut pas être placée dans une case adjacente à une autre reine.",
+			title: "Comment jouer ? 🎮",
+			content: "Premier clic : place une croix (marquage).\nDeuxième clic : place une reine.\nTroisième clic : case vide.",
 			target: '#board',
 			position: 'right'
 		},
 		{
 			id: 7,
-			title: "Règle n°3 : Une reine par couleur ! 🌈",
-			content: "Chaque région colorée ne peut contenir qu'une seule reine. C'est ce qui rend ce jeu unique !",
-			target: '#board',
-			position: 'right'
-		},
-		{
-			id: 8,
-			title: "Comment jouer ? 🎮",
-			content: "Premier clic : place une croix (marquage). Deuxième clic : place une reine. Troisième clic : case vide.",
-			target: '#board',
-			position: 'right'
-		},
-		{
-			id: 9,
 			title: "Les aides disponibles 🛠️",
-			content: "Utilisez les boutons 'Indice' pour obtenir de l'aide, 'Retour' pour annuler un coup, ou 'Afficher solution' si vous êtes bloqué.",
+			content: "Utilisez les boutons\n'Indice' pour obtenir de l'aide.\n 'Retour' pour annuler un coup\n'Afficher solution' si vous êtes bloqué.\n'Nouvelle partie' pour changer de grille.",
 			target: '#btn-action',
 			position: 'bottom'
 		},
 		{
-			id: 10,
+			id: 8,
 			title: "À vous de jouer ! 🚀",
 			content: "Vous connaissez maintenant toutes les règles. Placez vos reines stratégiquement et amusez-vous bien !",
 			position: 'center'
@@ -155,14 +141,6 @@ const Tutorial: React.FC<TutorialProps> = ({ gameSettings, updateParameters }) =
 	};
 
 	const completeTutorial = () => {
-		setShowOverlay(false);
-		setFirstCardRender(0);
-		setCurrentStep(0);
-		setTooltipVisible(false);
-		updateParameters({ view_tutorial: 1 });
-	};
-
-	const skipTutorial = () => {
 		setShowOverlay(false);
 		setFirstCardRender(0);
 		setCurrentStep(0);
@@ -284,12 +262,10 @@ const Tutorial: React.FC<TutorialProps> = ({ gameSettings, updateParameters }) =
 				<div
 					className="tutorial-backdrop-with-hole"
 					style={getBackdropStyle(step.target)}
-					onClick={skipTutorial}
 				/>
 			) : (
 				<div
 					className="tutorial-backdrop-full"
-					onClick={skipTutorial}
 				/>
 			)}
 
@@ -316,7 +292,7 @@ const Tutorial: React.FC<TutorialProps> = ({ gameSettings, updateParameters }) =
 			>
 				<div className="tutorial-content">
 					<h3>{step.title}</h3>
-					<p>{step.content}</p>
+					<p style={{ whiteSpace: 'pre-line' }}>{step.content}</p>
 
 					<div className="tutorial-actions">
 						<div className="step-counter">
@@ -326,7 +302,7 @@ const Tutorial: React.FC<TutorialProps> = ({ gameSettings, updateParameters }) =
 						<div className="tutorial-buttons">
 							<button
 								className="tutorial-btn tutorial-btn-secondary"
-								onClick={skipTutorial}
+								onClick={completeTutorial}
 							>
 								Passer
 							</button>

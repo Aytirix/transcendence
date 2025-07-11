@@ -355,15 +355,18 @@ class GameModel {
 		let board_size = params.board_size || (this.session.gameState ? this.session.gameState.map.board_size : 9);
 		let difficultyLevel = params.difficultyLevel || (this.session.gameState ? this.session.gameState.setting.difficultyLevel : 5);
 		let autoCross = params.autoCross !== undefined ? params.autoCross : (this.session.gameState ? this.session.gameState.setting.autoCross : 0);
-		let view_tutorial = params.view_tutorial = 1;
+		let view_tutorial = params.view_tutorial !== undefined ? params.view_tutorial : (this.session.gameState ? this.session.gameState.setting.view_tutorial : 0);
+		
+		const needsMapReload = 
+			(params.board_size !== undefined && params.board_size !== this.session.gameState!.map.board_size) ||
+			(params.difficultyLevel !== undefined && params.difficultyLevel !== this.session.gameState!.setting.difficultyLevel);
+
 		this.session.gameState!.setting.board_size = board_size!;
 		this.session.gameState!.setting.difficultyLevel = difficultyLevel!;
 		this.session.gameState!.setting.autoCross = autoCross!;
 		this.session.gameState!.setting.view_tutorial = view_tutorial!;
-		if (this.session.gameState!.setting.autoCross != autoCross) {
-			reloadMap = false;
-		}
-		if (reloadMap && 'loadMapFromDB' in this && typeof (this as any).loadMapFromDB === 'function') {
+		
+		if (needsMapReload && reloadMap && 'loadMapFromDB' in this && typeof (this as any).loadMapFromDB === 'function') {
 			const game = await (this as any).loadMapFromDB(board_size, difficultyLevel);
 			if (!game) {
 				return { status: 'error', message: { message: "Impossible de charger une map pour ces paramètres.", type: "error" } };
@@ -477,6 +480,7 @@ class GameSolo extends GameModel {
 	 */
 	async newGame(): Promise<GameResult> {
 		await this.ensureInitialized();
+		console.log("Creating new game");
 		const game = await this.loadMapFromDB(this.session.gameState!.setting.board_size, this.session.gameState!.setting.difficultyLevel);
 		if (!game) {
 			return { status: 'error', message: { message: "Impossible de charger une map pour ces paramètres.", type: "error" } };
@@ -553,7 +557,7 @@ class GameSolo extends GameModel {
 	 */
 	async getGame(): Promise<GameResult> {
 		await this.ensureInitialized();
-		if (this.session.gameState) {
+		if (this.session.gameState.map.id) {
 			return { status: 'success', game: this.session.gameState };
 		}
 		try {
@@ -562,7 +566,7 @@ class GameSolo extends GameModel {
 				[this.session.user.id]
 			) as DatabaseRow[];
 			if (!rows || rows.length === 0)
-				return { status: 'error', message: { message: "Aucune partie trouvée", type: "error" } };
+				return this.newGame();
 			const row = rows[0];
 			if (row) {
 				this.session.gameState.setting.board_size = row.board_size;
