@@ -188,9 +188,13 @@
 		justify-content: center;
 		margin-top: 20px;
 		margin-bottom: 20px;
+		width: max-content;
+		margin-left: auto;
+		margin-right: auto;
 	}
 
 	/* Responsive */
+
 
 	@media (max-width: 1399px) {
 		.board {
@@ -242,6 +246,14 @@
 			height: 100%;
 			width: 100%;
 			max-width: 100%;
+		}
+
+		#btn-action {
+			flex-direction: row;
+			gap: 5px;
+			width: 100%;
+			margin-left: 0;
+			margin-right: 0;
 		}
 	}
 
