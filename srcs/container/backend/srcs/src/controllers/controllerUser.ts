@@ -75,9 +75,9 @@ export const Register = async (request: FastifyRequest, reply: FastifyReply) => 
 
 	request.i18n.changeLanguage(lang);
 
-	const twoFA = process.env.NODE_PROJET !== 'null' ? true : false;
+	const twoFA = false;
 
-	if (!twoFA) {
+	if (twoFA == false) {
 		const tmp = await userModel.Register(email, username, password, defaultAvatar, lang);
 		request.session.user = tmp;
 	} else {
@@ -92,8 +92,8 @@ export const Register = async (request: FastifyRequest, reply: FastifyReply) => 
 	}
 
 	return reply.send({
-		message: request.i18n.t('login.welcome'),
-		redirect: !twoFA ? '/' : null,
+		message: twoFA ? request.i18n.t('login.welcome-confirm') : request.i18n.t('login.welcome'),
+		redirect: twoFA == false ? '/' : null,
 	});
 };
 
