@@ -24,7 +24,10 @@ interface TutorialProps {
 
 const Tutorial: React.FC<TutorialProps> = ({ gameSettings, updateParameters }) => {
 	const [currentStep, setCurrentStep] = useState(0);
+	const [firstCardRender, setFirstCardRender] = useState(0);
 	const [showOverlay, setShowOverlay] = useState(false);
+	const [tooltipVisible, setTooltipVisible] = useState(false);
+	const [forceUpdate, setForceUpdate] = useState(0);
 
 	// Déterminer si le tutoriel doit être affiché
 	const shouldShowTutorial = gameSettings.view_tutorial === 0;
@@ -105,10 +108,37 @@ const Tutorial: React.FC<TutorialProps> = ({ gameSettings, updateParameters }) =
 		if (shouldShowTutorial) {
 			setShowOverlay(true);
 			setCurrentStep(0);
+			setTooltipVisible(false);
 		} else {
 			setShowOverlay(false);
 		}
 	}, [shouldShowTutorial]);
+
+	// Effet pour gérer la visibilité de la tooltip après changement d'étape
+	useEffect(() => {
+		if (showOverlay && !firstCardRender) {
+			setTooltipVisible(false);
+			setFirstCardRender(1);
+			// Petit délai pour permettre le calcul de la position
+			const timer = setTimeout(() => {
+				setTooltipVisible(true);
+			}, 300);
+			return () => clearTimeout(timer);
+		}
+	}, [currentStep, showOverlay]);
+
+	// Effet pour gérer le redimensionnement de la fenêtre
+	useEffect(() => {
+		if (!showOverlay) return;
+
+		const handleResize = () => {
+			// Forcer le re-render pour actualiser les positions
+			setForceUpdate(prev => prev + 1);
+		};
+
+		window.addEventListener('resize', handleResize);
+		return () => window.removeEventListener('resize', handleResize);
+	}, [showOverlay]);
 
 	const nextStep = () => {
 		if (currentStep < steps.length - 1) {
@@ -126,13 +156,17 @@ const Tutorial: React.FC<TutorialProps> = ({ gameSettings, updateParameters }) =
 
 	const completeTutorial = () => {
 		setShowOverlay(false);
-		// Marquer le tutoriel comme vu
+		setFirstCardRender(0);
+		setCurrentStep(0);
+		setTooltipVisible(false);
 		updateParameters({ view_tutorial: 1 });
 	};
 
 	const skipTutorial = () => {
 		setShowOverlay(false);
-		// Marquer le tutoriel comme vu
+		setFirstCardRender(0);
+		setCurrentStep(0);
+		setTooltipVisible(false);
 		updateParameters({ view_tutorial: 1 });
 	};
 
@@ -190,6 +224,11 @@ const Tutorial: React.FC<TutorialProps> = ({ gameSettings, updateParameters }) =
 	const getCurrentStepData = () => steps[currentStep];
 
 	const getTooltipPosition = (target: string, position: string) => {
+		// Si pas de target ou position center, retourner des valeurs pour le centrage CSS
+		if (!target || position === 'center') {
+			return { top: '50%', left: '50%' };
+		}
+
 		const element = document.querySelector(target);
 		if (!element) return { top: '50%', left: '50%' };
 
@@ -236,7 +275,7 @@ const Tutorial: React.FC<TutorialProps> = ({ gameSettings, updateParameters }) =
 	if (!showOverlay || !shouldShowTutorial) return null;
 
 	const step = getCurrentStepData();
-	const position = step.target ? getTooltipPosition(step.target, step.position || 'bottom') : { top: '50%', left: '50%' };
+	const position = getTooltipPosition(step.target || '', step.position || 'center');
 
 	return (
 		<div className="tutorial-overlay">
@@ -270,7 +309,9 @@ const Tutorial: React.FC<TutorialProps> = ({ gameSettings, updateParameters }) =
 					position: 'fixed',
 					top: position.top,
 					left: position.left,
-					zIndex: 10000
+					zIndex: 10000,
+					visibility: tooltipVisible ? 'visible' : 'hidden',
+					opacity: tooltipVisible ? 1 : 0
 				}}
 			>
 				<div className="tutorial-content">
