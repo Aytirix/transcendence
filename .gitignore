@@ -4,3 +4,4 @@
 **/dist
 srcs/build/**
 srcs/dist/**
+**/*.srl

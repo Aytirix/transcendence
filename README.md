@@ -55,6 +55,11 @@ Arrêter l'application et les conteneurs Docker :
 make stop
 ```
 
+Supprimer les conteneurs Docker sans perdre les données :
+```bash
+make down
+```
+
 Remise a zéro de la base de données, avatars, minecraft_data, Certificats, SSL, .env:
 ```bash
 make clear
