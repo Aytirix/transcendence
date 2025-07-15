@@ -25,6 +25,7 @@ exec-frontend:
 	docker exec -it frontend zsh
 
 down: clearlogs
+	bash ./srcs/shared/env/generate_env.sh first
 	$(DOCKER_COMPOSE) -f $(DOCKER_COMPOSE_FILE) down --volumes --remove-orphans --rmi all
 	rm -rf ./srcs/build/*
 	docker volume prune -f
