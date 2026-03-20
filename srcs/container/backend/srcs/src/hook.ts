@@ -1,4 +1,4 @@
-import { FastifyInstance } from 'fastify';
+import { FastifyInstance, FastifyError } from 'fastify';
 import { Logout } from '@controllers/controllerUser';
 import i18n from './i18n';
 
@@ -24,7 +24,7 @@ export async function registerHook(app: FastifyInstance) {
 		request.i18n = i18n.cloneInstance({ lng: lang, fallbackLng: 'fr', initImmediate: false });
 	});
 
-	app.setErrorHandler(async (error, request, reply) => {
+	app.setErrorHandler(async (error: FastifyError, request, reply) => {
 		if (error.validation && !reply.sent) {
 			const lang = request.session?.user?.lang || request.headers['accept-language'] || 'fr';
 			request.i18n = i18n.cloneInstance({ lng: lang, fallbackLng: 'fr', initImmediate: false });
